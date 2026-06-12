@@ -67,8 +67,13 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   from zones <= the mission's zone (lettersFor()).
 - Group 3 (live, "Thunder Ridge" zone): e u r h b f — missions 18–26, forge words red/run/rub,
   fun/hen/bed/bug; finale = Vex Captain (no ally rescue; the road to the Fortress). Earns Gem Gauntlet.
+- Reading Rally (live, zone 4): DECODE direction — "Read It" missions (27–30) show a word, child
+  sounds it out and taps the picture it means (READWORDS, picture-match, audio-first). This is the
+  letter→sound→blend READING skill the sound-ID/forge tasks don't cover. Earns the Reading Crown.
 - Group 4 (next): l j v w x y z q. Then: first ~25 heart/sight words ("Instant Spells") → decodable
   sentences. Uppercase+lowercase paired, lowercase weighted; deliberate uppercase rounds every 3rd rep.
+- DIRECTION NOTE (prime objective = reading): scan/find/boss/forge train sound→letter (ID + spell).
+  "Read It" adds letter→sound (decode). Keep growing the decode side (sight words, sentences).
 - Mastery model: per-grapheme strength scores recorded on every answer. Patrols are ADAPTIVE
   (pickWeak/taughtLetters): they span everything taught so far, weighted toward the weakest items
   (unseen > failing > mastered), and only ever show already-taught letters as distractors.

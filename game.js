@@ -44,9 +44,21 @@ const MISSIONS=[
   {id:23,type:"learn",letter:"h",lbl:"Rescue Gem H",z:3},
   {id:24,type:"learn",letter:"b",lbl:"Rescue Gem B",z:3},
   {id:25,type:"learn",letter:"f",lbl:"Rescue Gem F",z:3},
-  {id:26,type:"forge",words:["fun","hen","bed","bug"],lbl:"Ridge Battle: Vex Captain",finale:true,z:3}
+  {id:26,type:"forge",words:["fun","hen","bed","bug"],lbl:"Ridge Battle: Vex Captain",finale:true,z:3},
+  /* --- ZONE 4 · READING RALLY — DECODE: see the word, read it, tap what it means --- */
+  {id:27,type:"read",words:["cat","dog","sun","hat"],lbl:"Reading Rally I",z:4},
+  {id:28,type:"read",words:["pig","bug","bed","cup"],lbl:"Reading Rally II",z:4},
+  {id:29,type:"read",words:["hen","bus","bag","mug"],lbl:"Reading Rally III",z:4},
+  {id:30,type:"read",words:["fan","nut","pot","hug","cap","pan"],lbl:"Reading Champion",z:4}
 ];
-const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield",22:"Gem Gauntlet"};
+const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield",22:"Gem Gauntlet",30:"Reading Crown"};
+/* Decodable words for Read-It (DECODE direction): every word uses only taught
+   letters and has a clear picture, so reading is checked by meaning, audio-first. */
+const READWORDS={
+  cat:"🐱", dog:"🐶", hen:"🐔", pig:"🐷", bug:"🐛", sun:"☀️", hat:"🎩", cup:"🥤",
+  bus:"🚌", bag:"🎒", cap:"🧢", pan:"🍳", nut:"🥜", fan:"🪭", mug:"☕", pot:"🍲",
+  hug:"🤗", bed:"🛏️", net:"🥅", bun:"🍞"
+};
 const TRACE={
   s:[[[205,80],[150,58],[102,86],[106,132],[160,152],[196,188],[172,236],[102,232]]],
   a:[[[196,128],[150,96],[106,126],[100,176],[140,216],[192,200]],[[200,98],[200,234]]],
@@ -87,7 +99,10 @@ const ZONES=[
     nodes:autoNodes(9,{y0:370,step:104,phase:2.2}) },
   { id:3, name:"THUNDER RIDGE", bg:"ridge",
     letters:["e","u","r","h","b","f"],
-    nodes:autoNodes(9,{y0:-570,step:104,phase:4.6}) }
+    nodes:autoNodes(9,{y0:-570,step:104,phase:4.6}) },
+  { id:4, name:"READING RALLY", bg:"rally",
+    letters:[],   /* no new letters — this zone is decode/reading practice */
+    nodes:autoNodes(4,{y0:-1560,step:110,phase:1.2}) }
 ];
 /* Derived geometry. The canvas grows UPWARD as zones are appended: the
    viewBox top (VIEW_TOP) tracks the highest node, and Vex's fortress always
@@ -141,6 +156,14 @@ const LINES={
   word_cat:{t:"cat!"}, word_dog:{t:"dog!"}, word_mom:{t:"mom!"}, word_kid:{t:"kid!"},
   word_red:{t:"red!"}, word_run:{t:"run!"}, word_rub:{t:"rub!"},
   word_fun:{t:"fun!"}, word_hen:{t:"hen!"}, word_bed:{t:"bed!"}, word_bug:{t:"bug!"},
+  word_sun:{t:"sun!"}, word_pig:{t:"pig!"}, word_hat:{t:"hat!"}, word_cup:{t:"cup!"}, word_bus:{t:"bus!"},
+  word_bag:{t:"bag!"}, word_cap:{t:"cap!"}, word_pan:{t:"pan!"}, word_nut:{t:"nut!"}, word_fan:{t:"fan!"},
+  word_mug:{t:"mug!"}, word_pot:{t:"pot!"}, word_hug:{t:"hug!"}, word_net:{t:"net!"}, word_bun:{t:"bun!"},
+  read_intro:{t:"READING RALLY! Now YOU read the words, hero. Sound them out, then tap the picture it means!"},
+  read_prompt:{t:"Read the word... then tap what it means!"},
+  read_yes:{t:"You READ it! Awesome!"},
+  rally_champ:{t:"You are a READING CHAMPION, Super Teddy! You can read real words now!"},
+  gear_crown:{t:"The READING CROWN! Only true readers can wear it!"},
   panel1:{t:"This is Star Force City. A city powered by magical Letter Gems, words, and stories."},
   panel2:{t:"But one night, LORD VEX and his Vexbot army attacked! They stole the Letter Gems and smashed every word into pieces. Now nobody can read. Not signs, not books, not even bedtime stories."},
   panel3:{t:"The city needed a hero. The founders of the Hero League, your mom and dad, searched everywhere... and they chose YOU, Super Teddy."},
@@ -197,7 +220,7 @@ const LINES={
   rest2:{t:"Even heroes rest. Great work today, Super Teddy. The city is safer because of you!"},
   test:{t:"Hello Super Teddy! This is your mentor speaking. Star Force City needs you!"}
 };
-const GEARLINE={ "Power Belt":"gear_belt","Rocket Boots":"gear_boots","Word Hammer":"gear_hammer","Gem Sword":"gear_sword","Gem Shield":"gear_shield","Gem Gauntlet":"gear_gauntlet" };
+const GEARLINE={ "Power Belt":"gear_belt","Rocket Boots":"gear_boots","Word Hammer":"gear_hammer","Gem Sword":"gear_sword","Gem Shield":"gear_shield","Gem Gauntlet":"gear_gauntlet","Reading Crown":"gear_crown" };
 const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#ffc93c",
   m:"#f06292",d:"#9c2f2f",g:"#1abc9c",o:"#5dade2",c:"#7d3c98",k:"#aab7c4",
   e:"#27ae60",u:"#e67e22",r:"#ff5e57",h:"#5f6dff",b:"#3742fa",f:"#16a085"};
@@ -322,7 +345,7 @@ const $=id=>document.getElementById(id);
 /* Painted-scene slots: screen -> art/bg-<name>.* . Add an image to swap a scene;
    if the file is missing the layer stays transparent and the original look shows.
    Several screens intentionally share one scene (e.g. learn/trace, boss/forge). */
-const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrScan:"lab", scrMap:"city",
+const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrScan:"lab", scrMap:"city", scrRead:"learn",
   scrBase:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
   scrBoss:"battle", scrForge:"battle", scrWin:"victory", scrRest:"rest" };
 const __bgCache={};
@@ -647,6 +670,7 @@ function pickWeak(pool){ if(!pool.length)return null;
 function startMission(m){ clearFlow(); CUR=m; $("hudTitle").textContent=m.lbl.toUpperCase();
   if(m.type==="learn")startLearn(m);
   else if(m.type==="patrol")startPatrol(m.set);
+  else if(m.type==="read")startRead(m);
   else startForge(m); }
 function missionComplete(){
   const firstTime=!S.done[CUR.id];
@@ -752,6 +776,40 @@ function bossRound(g){
           flow(Aud.play([lead,"snd_"+g]),()=>bossRound(g)); } }
       else { record(g,false); t.classList.add("dim"); Aud.play(["dodge","snd_"+g]); } };
     row.appendChild(t); }); }
+
+/* ---------------- READ IT (DECODE) ----------------
+   The reading direction: see the word -> sound it out -> tap the picture it
+   means. Letter->sound->blend, checked by meaning. The word IS shown (this is
+   reading, not sound-ID), so the anti-gaming rule about hiding the target
+   letter does not apply here. */
+let readWords,readIx,readGoal,readMiss;
+function startRead(m){ show("scrRead");
+  readWords=m.words.slice(); readIx=0; readGoal=readWords.length; readMiss=0;
+  flow(narrate("read",$("readText"),["read_intro"]),()=>nextRead()); }
+function readSoundOut(w){ return Aud.play([...w.split("").map(c=>"snd_"+c),"word_"+w]); }
+function nextRead(){
+  if(readIx>=readWords.length){
+    const champ = CUR.id===30;
+    flow(Aud.play(champ?["rally_champ"]:["read_yes"]), missionComplete); return; }
+  const w=readWords[readIx]; readMiss=0;
+  $("readProg").textContent="📖 "+readIx+" / "+readGoal;
+  narrate("read",$("readText"),["read_prompt"],"Read the word… then tap what it means! 📖");
+  /* the word, as tappable letter tiles (tap = hear that sound) */
+  const wr=$("readWord"); wr.innerHTML="";
+  w.split("").forEach(c=>{ const t=document.createElement("button"); t.className="tile read rletter"; t.textContent=c;
+    t.onclick=()=>Aud.play("snd_"+c); wr.appendChild(t); });
+  /* three picture choices: the word + two other picture-words */
+  const foils=Object.keys(READWORDS).filter(x=>x!==w).sort(()=>Math.random()-.5).slice(0,2);
+  const opts=[w,...foils].sort(()=>Math.random()-.5);
+  const cr=$("readChoices"); cr.innerHTML="";
+  opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.textContent=READWORDS[o]; b.dataset.w=o;
+    b.onclick=()=>{ if(o===w){ record("w_"+w,true); b.classList.add("win"); burstAt(b); Aud.ding();
+        readIx++; flow(Aud.play(["read_yes",...w.split("").map(c=>"snd_"+c),"word_"+w]),()=>setTimeout(nextRead,200)); }
+      else { record("w_"+w,false); readMiss++; b.classList.add("dim");
+        if(readMiss>=2){ cr.querySelectorAll(".picktile").forEach(x=>{ if(x.dataset.w===w)x.classList.add("hint"); }); }
+        readSoundOut(w); } };
+    cr.appendChild(b); }); }
+$("btnReadSound").onclick=()=>{ const w=readWords&&readWords[readIx]; if(w)readSoundOut(w); };
 
 /* ---------------- PATROL ---------------- */
 function startPatrol(set){ Aud.play("patrol_intro");
