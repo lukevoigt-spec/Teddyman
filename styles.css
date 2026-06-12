@@ -93,6 +93,12 @@ body{
 .chip{background:rgba(21,15,46,.85);border:3px solid var(--txt);border-radius:18px;padding:6px 16px;font-family:'Bangers',cursive;font-size:clamp(17px,2.6vw,24px);color:var(--gold);letter-spacing:.06em;}
 .roundbtn{width:54px;height:54px;border-radius:50%;background:rgba(21,15,46,.85);border:3px solid var(--txt);color:var(--txt);font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
 .starsrow{font-size:clamp(20px,3vw,28px);color:var(--gold);}
+/* Daily Training meter — encouragement only, fills as he plays, never drains/penalizes */
+#dailyMeter{position:absolute;top:calc(env(safe-area-inset-top,8px) + 58px);left:14px;right:14px;z-index:5;pointer-events:none;}
+.dailylabel{font-family:'Bangers',cursive;font-size:clamp(14px,2.4vw,19px);letter-spacing:.06em;color:var(--gold);text-align:center;-webkit-text-stroke:3px var(--ink);paint-order:stroke;}
+.dailybar{height:16px;border-radius:10px;border:3px solid var(--ink);background:rgba(21,15,46,.8);overflow:hidden;box-shadow:0 3px 0 rgba(0,0,0,.3);margin-top:2px;}
+#dailyFill{height:100%;width:0%;background:linear-gradient(90deg,#5fe0a0,#23a35f);transition:width .5s ease;}
+#dailyFill.done{background:linear-gradient(90deg,#ffd75e,#f0a82b);}
 
 /* ------- CITY MAP ------- */
 #mapScroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}

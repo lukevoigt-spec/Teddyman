@@ -17,6 +17,12 @@
        present, otherwise stays transparent so the original look is unchanged. -->
   <div id="bgLayer" aria-hidden="true"></div>
 
+  <!-- Daily Training meter (shown on the map hub; gentle, never a penalty) -->
+  <div id="dailyMeter" style="display:none;">
+    <div class="dailylabel">🗓️ TODAY'S TRAINING <span id="dailyTime"></span></div>
+    <div class="dailybar"><div id="dailyFill"></div></div>
+  </div>
+
   <div class="hud" id="hud" style="display:none;">
     <div class="chip" id="hudTitle">STAR FORCE CITY</div>
     <div style="display:flex;gap:10px;align-items:center;">

@@ -297,6 +297,7 @@ const LINES={
   youdidit:{t:"You did it, Super Teddy!"},
   patrol_intro:{t:"Rooftop patrol! Letter Gems are hiding all over the city. Find them, hero!"},
   mastery_review:{t:"So close, hero! A few Letter Gems need more power before this rescue. Quick patrol to lock them in!"},
+  daily_goal:{t:"Daily training complete! You trained like a true champion today, Super Teddy!"},
   forge_intro1:{t:"The WORD FORGE is open!"},
   forge_intro2:{t:"Gems together make WORDS. And words forge the mightiest weapons!"},
   forge_build:{t:"Build the word! Listen..."},
@@ -393,6 +394,48 @@ function cloudConnect(url){ cloudURL=(url||"").trim();
     cloudPush(); }); }
 function today(){return new Date().toDateString();}
 function sessionTick(){ if(S.session.day!==today()){S.session={count:0,day:today(),rest:false};save();} }
+
+/* ---------------- DAILY TRAINING (time-on-task) ----------------
+   Tracks ACTIVE minutes per day (idle/background paused) so the parent can see
+   "how much practice today" and set a daily goal. Child sees a gentle meter
+   that fills as he plays — pure encouragement, NEVER a countdown or a "you
+   missed your goal" penalty (hard constraints #1/#2). Spread across short
+   sessions is by design (better retention; ADHD-friendly).                   */
+function dayKey(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function ensureDaily(){ const d=dayKey();
+  if(!S.daily || S.daily.day!==d){
+    if(S.daily && S.daily.secs){ S.history=S.history||{}; S.history[S.daily.day]=S.daily.secs;
+      const ks=Object.keys(S.history).sort(); while(ks.length>60)delete S.history[ks.shift()]; }
+    S.daily={day:d, secs:0, missions:0, goalHit:false};
+    if(!S.goalMin)S.goalMin=30;
+    save();
+  } else if(!S.goalMin){ S.goalMin=30; }
+}
+let __lastInteract=Date.now(), __dailyDirty=0;
+function noteInteract(){ __lastInteract=Date.now(); }
+function dailyGoalSecs(){ return (S.goalMin||30)*60; }
+function trainTick(){ ensureDaily();
+  const hidden=(typeof document!=="undefined" && document.hidden);
+  if(!hidden && (Date.now()-__lastInteract)<45000){
+    S.daily.secs++; __dailyDirty++;
+    if(__dailyDirty>=20){ __dailyDirty=0; save(); }
+    updateDailyMeter();
+    if(!S.daily.goalHit && S.daily.secs>=dailyGoalSecs()){ S.daily.goalHit=true; save(); dailyGoalReached(); }
+  }
+}
+function updateDailyMeter(){ const fill=$("dailyFill"); if(!fill)return;
+  const pct=Math.min(100, 100*(S.daily.secs||0)/dailyGoalSecs());
+  fill.style.width=pct+"%"; fill.classList.toggle("done", pct>=100);
+  const t=$("dailyTime"); if(t){ const m=Math.floor((S.daily.secs||0)/60);
+    t.textContent = pct>=100 ? "— "+m+" min · GOAL! ⭐" : "— "+m+" / "+(S.goalMin||30)+" min"; }
+}
+function dailyGoalReached(){ try{Aud.ding();}catch(e){} Aud.play("daily_goal"); }
+ensureDaily();
+if(typeof document!=="undefined"){
+  document.addEventListener("pointerdown",noteInteract,true);
+  document.addEventListener("visibilitychange",()=>{ if(document.hidden)save(); });
+  setInterval(trainTick,1000);
+}
 function mast(g){ if(!S.mastery[g])S.mastery[g]={seen:0,ok:0,str:0}; return S.mastery[g]; }
 function record(g,ok){ const m=mast(g); m.seen++; if(ok){m.ok++;m.str=Math.min(5,m.str+1);} else {m.str=Math.max(0,m.str-1);} save(); }
 /* ---- MASTERY (proficiency, not just completion) ----
@@ -536,7 +579,8 @@ function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.r
   $(id).classList.add("on"); $(id).classList.add("fadein");
   setTimeout(()=>$(id).classList.remove("fadein"),600);
   setBG(id);
-  $("hud").style.display=(id==="scrTitle")?"none":"flex"; refreshHUD(); }
+  $("hud").style.display=(id==="scrTitle")?"none":"flex"; refreshHUD();
+  const dm=$("dailyMeter"); if(dm){ dm.style.display=(id==="scrMap")?"block":"none"; if(id==="scrMap")updateDailyMeter(); } }
 function refreshHUD(){ $("hudStars").textContent="⚡ "+S.stars; }
 function burstAt(el,word){ const r=el.getBoundingClientRect(),st=$("stage").getBoundingClientRect();
   const b=document.createElement("div"); b.className="burst";
@@ -860,6 +904,7 @@ function missionComplete(){
   }
   const firstTime=!S.done[CUR.id];
   S.done[CUR.id]=true;
+  ensureDaily(); S.daily.missions=(S.daily.missions||0)+1;
   if(firstTime){ S.stars+=3; S.session.count++;
     const gear=GEAR_AT[CUR.id];
     if(gear&&!S.gear.includes(gear))S.gear.push(gear); }
@@ -1279,7 +1324,27 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
   const sentTotal=MISSIONS.filter(m=>m.type==="sentence").length;
   const power=["Hero 💪","Super Hero 💪💪","Mega Hero 💪💪💪"][heroOpts().muscle];
   const lettersRow=taught.length? taught.map(g=>`<span class="pgem" style="background:${GEMCOLOR[g]||'#888'}">${g.toUpperCase()}</span>`).join(" ") : "<i>none yet</i>";
+  /* daily training: today + last-7-days history */
+  ensureDaily();
+  const goal=S.goalMin||30, todayMin=Math.floor((S.daily.secs||0)/60);
+  const hist=Object.assign({}, S.history||{}); hist[S.daily.day]=S.daily.secs||0;
+  const days7=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i);
+    const k=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); days7.push([k,hist[k]||0]); }
+  const weekMin=Math.round(days7.reduce((s,x)=>s+x[1],0)/60), daysHit=days7.filter(x=>x[1]>=goal*60).length;
+  const bars=days7.map(x=>{ const h=Math.min(100,100*x[1]/(goal*60)), hit=x[1]>=goal*60;
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+      <div style="width:20px;height:46px;background:#241b4d;border-radius:5px;border:2px solid #3a2d72;display:flex;align-items:flex-end;overflow:hidden;"><div style="width:100%;height:${h}%;background:${hit?'linear-gradient(180deg,#ffd75e,#f0a82b)':'linear-gradient(180deg,#5fe0a0,#23a35f)'};"></div></div>
+      <div class="pnote" style="font-size:10px;">${Math.round(x[1]/60)}</div></div>`; }).join("");
   el.innerHTML=`
+    <div class="psec"><b>Daily training (time on task)</b>
+      <div class="pgrid" style="margin-top:6px;">
+        <div class="pcard"><div class="pnum">${todayMin}<span style="font-size:13px;">m</span></div><div class="plbl">Today / ${goal}m goal</div></div>
+        <div class="pcard"><div class="pnum">${weekMin}<span style="font-size:13px;">m</span></div><div class="plbl">This week</div></div>
+        <div class="pcard"><div class="pnum">${daysHit}<span style="font-size:13px;">/7</span></div><div class="plbl">Days hit goal</div></div>
+      </div>
+      <div style="display:flex;gap:7px;justify-content:center;align-items:flex-end;margin-top:8px;">${bars}</div>
+      <div class="pnote" style="text-align:center;margin-top:7px;">Daily goal: <button class="chipbtn" id="goalDown">−5</button> <b>${goal} min</b> <button class="chipbtn" id="goalUp">+5</button><br>~30 min/day across 3–4 short sessions is ideal — spaced practice beats one long sitting, and suits his focus.</div>
+    </div>
     <div class="pgrid">
       <div class="pcard"><div class="pnum">${doneN}/${totalN}</div><div class="plbl">Missions done</div></div>
       <div class="pcard"><div class="pnum">${taught.length}/${ORDER.length}</div><div class="plbl">Letters learned</div></div>
@@ -1294,7 +1359,10 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
       <div class="pnote">${taught.filter(letterMastered).length} / ${taught.length} letters mastered. A rescue can't be earned until every letter so far is mastered — so an ally freed = real proficiency.</div></div>
     ${weak.length?`<div class="psec"><b>Best to practice next</b> <span class="pnote">(weakest right now)</span>
       <div class="pgems">${weak.map(g=>`<span class="pgem warn">${g.toUpperCase()}</span> <span class="pnote">${progAcc(g)!=null?progAcc(g)+"%":"new"} ${strDots(g)}</span>`).join("<br>")}</div></div>`:""}
-    <div class="psec pnote">Reading direction so far: letter→sound (decode) via Read-It &amp; Story Gate; sound→letter (spell) via Forge &amp; patrols. Both grow as he plays. All data stays on this device.</div>`;
+    <div class="psec pnote">Reading direction so far: letter→sound (decode) via Read-It &amp; Story Gate; sound→letter (spell) via Forge &amp; patrols. Both grow as he plays.</div>`;
+  const gd=$("goalDown"), gu=$("goalUp");
+  if(gd)gd.onclick=()=>{ S.goalMin=Math.max(5,(S.goalMin||30)-5); save(); updateDailyMeter(); window.renderProgress(); };
+  if(gu)gu.onclick=()=>{ S.goalMin=Math.min(120,(S.goalMin||30)+5); save(); updateDailyMeter(); window.renderProgress(); };
 };
 $("btnGear").onclick=()=>{ $("saveBox").value=JSON.stringify(S); $("vpStatus2").textContent=vpMsg(); window.renderProgress();
   $("cloudURL").value=cloudURL; cloudStatus(cloudURL?"Cloud sync ON ☁️ — same URL on any device continues his progress":"Cloud sync off (saved on this device)");
