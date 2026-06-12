@@ -68,8 +68,11 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   (Scarlett-Overkill-coded) who can morph into a DRAGON; her dragon army = Act-2 bosses. She kidnaps
   Miss Kendall + friends JJ, Nora, Cal and escapes through a TIME PORTAL to the MEDIEVAL age — Teddy
   follows and becomes a KNIGHT (new theme/outfit/weapons; the villain steals his powers so muscle/
-  gear reset — keeps it fresh, fights repetition). New adult hero ally = Uncle Noah. Real-person
-  descriptions/images TBD (parent will provide). Likely next rescue = Miss Kendall.
+  gear reset — keeps it fresh, fights repetition). New adult hero ally = NOAH THE RED: a powerful
+  wizard companion (Gandalf / Lord-of-the-Rings-coded; tall, red hair + red beard). He is Act 2's
+  FIRST helper and mentor-narrator — the Amelia-equivalent of Act 1 (greets/guides Teddy, encourages
+  on hard words). Real-person descriptions/images TBD (parent will provide). Likely next rescue =
+  Miss Kendall.
 - Possible mechanic for Act 2: mad-lib / scrambled-sentence WORD-ORDER + Maze/Cloze tasks (validate
   against research for Teddy's profile first; sentence-building supports syntax/comprehension once
   decoding is solid, sequenced AFTER word reading).
