@@ -280,70 +280,6 @@ function heroOpts(){ const done=Object.keys(S.done).length;
            cape: S.equip.cape||"red",
            belt2:S.gear.includes("Power Belt"), boots2:S.gear.includes("Rocket Boots") }; }
 function heroNow(w){ return heroSVG(w,heroOpts()); }
-function inkblotSVG(w=240){
-return `<svg viewBox="-70 -130 320 360" width="${w}" aria-hidden="true">
-<defs>
-<linearGradient id="vxm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a4f6e"/><stop offset="1" stop-color="#23263b"/></linearGradient>
-<linearGradient id="vxd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b2f47"/><stop offset="1" stop-color="#15172a"/></linearGradient>
-<radialGradient id="vxr" cx=".5" cy=".5" r=".6"><stop offset="0" stop-color="#ff6b5e"/><stop offset=".6" stop-color="#e62e2e"/><stop offset="1" stop-color="#7a1010"/></radialGradient>
-</defs>
-<path d="M10 -20 Q-40 60 -28 170 L-6 150 L6 176 L26 150 L40 178 L58 150 L74 172 L96 148 Q132 60 132 -16 Q72 -52 10 -20Z" fill="#1a1030" stroke="#150f2e" stroke-width="6"/>
-<ellipse cx="72" cy="208" rx="58" ry="13" fill="#9fe870" opacity=".5"/>
-<ellipse cx="72" cy="204" rx="34" ry="8" fill="#d2ffb0" opacity=".8"/>
-<path d="M40 150 L104 150 L96 196 L48 196 Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="6"/>
-<rect x="52" y="160" width="40" height="10" rx="4" fill="#9fe870" opacity=".75"/>
-<path d="M16 30 L128 30 L142 70 L128 150 L16 150 L2 70 Z" fill="url(#vxm)" stroke="#150f2e" stroke-width="7"/>
-<path d="M16 30 L72 30 L72 150 L16 150 L2 70Z" fill="#150f2e" opacity=".22"/>
-<path d="M30 44 L114 44 L122 66 L112 86 L32 86 L22 66Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="5"/>
-<circle cx="72" cy="112" r="20" fill="url(#vxr)" stroke="#150f2e" stroke-width="6"/>
-<circle cx="72" cy="112" r="8" fill="#ffd2c9"/>
-<path d="M72 88 L72 70 M52 100 L36 92 M92 100 L108 92" stroke="#e62e2e" stroke-width="4" stroke-linecap="round" opacity=".8"/>
-<path d="M16 30 L-22 6 L10 2 L26 26Z" fill="url(#vxm)" stroke="#150f2e" stroke-width="6"/>
-<path d="M128 30 L166 6 L134 2 L118 26Z" fill="url(#vxm)" stroke="#150f2e" stroke-width="6"/>
-<path d="M8 56 Q-34 78 -38 122 Q-36 142 -20 148 L-10 128 Q-22 118 -18 102 Q-12 80 12 70Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="6"/>
-<g stroke="#150f2e" stroke-width="5" fill="#6e7494"><path d="M-22 144 L-38 168 L-26 166 L-30 184 L-14 164 L-8 178 L-2 150Z"/></g>
-<path d="M136 56 Q178 78 182 122 Q180 142 164 148 L154 128 Q166 118 162 102 Q156 80 132 70Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="6"/>
-<g stroke="#150f2e" stroke-width="5" fill="#6e7494"><path d="M166 144 L182 168 L170 166 L174 184 L158 164 L152 178 L146 150Z"/></g>
-<path d="M38 -64 L106 -64 L118 -36 L114 14 L100 30 L44 30 L30 14 L26 -36Z" fill="url(#vxm)" stroke="#150f2e" stroke-width="7"/>
-<path d="M38 -64 L72 -64 L72 30 L44 30 L30 14 L26 -36Z" fill="#150f2e" opacity=".22"/>
-<path d="M40 -62 L22 -102 L52 -72Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="5"/>
-<path d="M104 -62 L122 -102 L92 -72Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="5"/>
-<path d="M34 -22 L110 -22 L106 -6 L38 -6Z" fill="#e62e2e" stroke="#150f2e" stroke-width="5"/>
-<rect x="42" y="-19" width="26" height="9" rx="4" fill="#ff9d8f"/>
-<g stroke="#150f2e" stroke-width="4"><line x1="56" y1="8" x2="56" y2="22"/><line x1="72" y1="8" x2="72" y2="22"/><line x1="88" y1="8" x2="88" y2="22"/></g>
-<g font-family="Andika,sans-serif" font-weight="700" fill="#9fe870">
-<text x="-52" y="-40" font-size="32" transform="rotate(-18 -52 -40)">k</text>
-<text x="150" y="-48" font-size="30" transform="rotate(14 150 -48)">w</text>
-<text x="176" y="96" font-size="28" transform="rotate(-8 176 96)">z</text>
-</g>
-</svg>`;}
-function mentorChips(w=120){
-return `<svg viewBox="0 0 130 70" width="${w}" aria-hidden="true">
-<circle cx="35" cy="35" r="30" fill="#ffd9b8" stroke="#fff6e3" stroke-width="4"/>
-<path d="M10 24 Q14 4 36 4 Q58 4 60 24 Q50 12 36 14 Q20 14 10 24Z" fill="#6b4a2b" stroke="#150f2e" stroke-width="3"/>
-<path d="M22 48 Q35 56 48 47" stroke="#150f2e" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-<circle cx="27" cy="34" r="3" fill="#150f2e"/><circle cx="44" cy="34" r="3" fill="#150f2e"/>
-<path d="M20 52 Q35 60 50 51 L48 58 Q35 64 22 58Z" fill="#7a5a3a" opacity=".5"/>
-<circle cx="95" cy="35" r="30" fill="#ffd9b8" stroke="#fff6e3" stroke-width="4"/>
-<path d="M68 28 Q70 4 96 4 Q122 6 122 30 Q112 14 96 16 Q78 16 68 28Z" fill="#d8b572" stroke="#150f2e" stroke-width="3"/>
-<circle cx="87" cy="34" r="3" fill="#150f2e"/><circle cx="104" cy="34" r="3" fill="#150f2e"/>
-<path d="M82 48 Q95 56 108 47" stroke="#150f2e" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-<g fill="#f2a9c4"><circle cx="78" cy="58" r="3.4"/><circle cx="86" cy="61" r="3.4"/><circle cx="95" cy="62" r="3.4"/><circle cx="104" cy="61" r="3.4"/><circle cx="112" cy="58" r="3.4"/></g>
-</svg>`;}
-function citySVG(){
-return `<svg viewBox="0 0 600 300">
-<defs><linearGradient id="cs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#171236"/><stop offset="1" stop-color="#7a4fb6"/></linearGradient></defs>
-<rect width="600" height="300" fill="url(#cs)"/>
-<circle cx="500" cy="60" r="34" fill="#fff1cf" stroke="#150f2e" stroke-width="4"/>
-<g fill="#2c2158"><rect x="20" y="140" width="60" height="160"/><rect x="95" y="100" width="55" height="200"/><rect x="165" y="150" width="70" height="150"/><rect x="420" y="120" width="62" height="180"/><rect x="495" y="150" width="80" height="150"/><polygon points="300,300 300,90 330,60 360,90 360,300"/></g>
-<g fill="#ffc93c" opacity=".85"><rect x="32" y="160" width="11" height="14"/><rect x="56" y="190" width="11" height="14"/><rect x="106" y="120" width="11" height="14"/><rect x="128" y="160" width="11" height="14"/><rect x="436" y="140" width="11" height="14"/><rect x="510" y="170" width="11" height="14"/><rect x="540" y="200" width="11" height="14"/></g>
-<g font-family="Andika,sans-serif" font-weight="700" fill="#9fe870" opacity=".9">
-<text x="200" y="60" font-size="30" transform="rotate(-14 200 60)">b</text>
-<text x="120" y="80" font-size="24" transform="rotate(10 120 80)">e</text>
-<text x="400" y="50" font-size="28" transform="rotate(8 400 50)">m</text>
-<text x="540" y="110" font-size="24" transform="rotate(-10 540 110)">r</text></g>
-</svg>`;}
-
 /* ---------------- SCREEN MGMT ---------------- */
 const $=id=>document.getElementById(id);
 /* Painted-scene slots: screen -> art/bg-<name>.* . Add an image to swap a scene;
@@ -583,12 +519,7 @@ function mapSVG(){
   </g>
   </svg>`;
 }
-function allyFace(kind){
-  if(kind==="heart")return `<circle r="26" fill="#ffd9b8" stroke="#150f2e" stroke-width="4"/><path d="M-24 -4 Q-26 -30 0 -30 Q26 -30 24 -4 Q14 -22 0 -20 Q-14 -22 -24 -4Z" fill="#e8a87c" stroke="#150f2e" stroke-width="3"/><circle cx="-8" cy="0" r="3" fill="#150f2e"/><circle cx="9" cy="0" r="3" fill="#150f2e"/><path d="M-9 10 Q1 18 11 9" stroke="#150f2e" stroke-width="3.4" fill="none" stroke-linecap="round"/><path d="M-6 13 L8 12" stroke="#dfe9ff" stroke-width="2" stroke-linecap="round"/><path d="M0 22 q3 -4 6 -1 q3 3 -1 6 l-5 4 -5 -4 q-4 -3 -1 -6 q3 -3 6 1z" fill="#e6453c" stroke="#150f2e" stroke-width="1.6"/>`;
-  if(kind==="tank")return `<circle r="26" fill="#ffd9b8" stroke="#150f2e" stroke-width="4"/><path d="M-24 -8 Q-26 -30 0 -30 Q26 -30 24 -6 Q20 -22 6 -18 Q14 -10 4 -6 Q-8 -16 -18 -10 Q-24 -6 -24 -8Z" fill="#d8b572" stroke="#150f2e" stroke-width="3"/><circle cx="-8" cy="0" r="3" fill="#150f2e"/><circle cx="9" cy="0" r="3" fill="#150f2e"/><path d="M-8 12 Q1 18 10 11" stroke="#150f2e" stroke-width="3.4" fill="none" stroke-linecap="round"/>`;
-  if(kind==="flip")return `<circle r="26" fill="#ffd9b8" stroke="#150f2e" stroke-width="4"/><circle cx="0" cy="-26" r="10" fill="#9a7448" stroke="#150f2e" stroke-width="3"/><path d="M-24 -10 Q-20 -26 0 -26 Q20 -26 24 -10 Q12 -18 0 -16 Q-12 -18 -24 -10Z" fill="#9a7448" stroke="#150f2e" stroke-width="3"/><circle cx="-8" cy="0" r="3" fill="#150f2e"/><circle cx="9" cy="0" r="3" fill="#150f2e"/><path d="M-8 12 Q1 18 10 11" stroke="#150f2e" stroke-width="3.4" fill="none" stroke-linecap="round"/>`;
-  return `<circle r="26" fill="#ffd9b8" stroke="#150f2e" stroke-width="4"/><path d="M-24 -6 Q-24 -30 0 -30 Q24 -30 24 -4 Q16 -20 2 -16 Q-12 -22 -20 -8Z" fill="#f2dfae" stroke="#150f2e" stroke-width="3"/><circle cx="-8" cy="0" r="3" fill="#150f2e"/><circle cx="9" cy="0" r="3" fill="#150f2e"/><path d="M-9 10 Q1 19 11 9" stroke="#150f2e" stroke-width="3.4" fill="none" stroke-linecap="round"/>`;
-}
+
 const CAGED=[{ix:3,kind:"tank",name:"TANK",real:"ARCHIE"},{ix:6,kind:"flip",name:"FLIP",real:"ELLIE"},{ix:8,kind:"sunny",name:"SUNNY",real:"WILLIAM"}];
 /* Hero League: each friend (a REAL person Teddy knows) owns one mission type and
    cheers him BY NAME during it, once freed. Amelia cheers on every win. */

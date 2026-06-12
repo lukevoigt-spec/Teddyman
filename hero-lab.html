@@ -31,6 +31,15 @@ h2{font-family:'Bangers',cursive;color:#9fe870;font-size:24px;margin:26px 0 4px;
   <h2>GEAR FX</h2>
   <div class="grid" id="gGear"></div>
 
+  <h2>LORD VEX · VEXBOT</h2>
+  <div class="grid" id="gVex"></div>
+
+  <h2>THE HERO LEAGUE</h2>
+  <div class="grid" id="gAlly"></div>
+
+  <h2>MENTORS (Mom &amp; Dad)</h2>
+  <div class="grid" id="gMentor"></div>
+
 <script src="art.js"></script>
 <script>
 function card(parent,label,opts){ const d=document.createElement("div"); d.className="card";
@@ -47,6 +56,14 @@ card("gCape","Purple",{muscle:1,cape:"purple"});
 card("gGear","Power Belt",{muscle:1,belt2:true});
 card("gGear","Rocket Boots",{muscle:1,boots2:true});
 card("gGear","Full kit",{muscle:2,weapon:"hammer",cape:"gold",belt2:true,boots2:true});
+
+document.getElementById("gVex").innerHTML=`<div class="card" style="width:230px;background:rgba(10,8,24,.6);"><div style="width:100%;display:flex;justify-content:center;">${inkblotSVG(180)}</div><div class="lbl">Lord Vex</div></div>`;
+
+const allies=[["tank","Archie · Tank"],["flip","Ellie · Flip"],["sunny","William · Sunny"],["heart","Amelia · Heartguard"]];
+document.getElementById("gAlly").innerHTML=allies.map(([k,l])=>
+  `<div class="card" style="width:120px;"><svg viewBox="-34 -38 68 84" style="height:120px;">${allyFace(k)}</svg><div class="lbl" style="font-size:13px;">${l}</div></div>`).join("");
+
+document.getElementById("gMentor").innerHTML=`<div class="card" style="width:230px;"><div style="width:100%;display:flex;justify-content:center;">${mentorChips(200)}</div><div class="lbl">Mom &amp; Dad</div></div>`;
 </script>
 </body>
 </html>
