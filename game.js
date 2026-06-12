@@ -1045,7 +1045,34 @@ function paintBase(){
 $("btnBaseBack").onclick=()=>{Aud.stop();toMap();};
 
 /* ---------------- SETTINGS ---------------- */
-$("btnGear").onclick=()=>{ $("saveBox").value=JSON.stringify(S); $("vpStatus2").textContent=vpMsg(); $("settingsPanel").classList.add("on"); };
+/* Parent-facing progress snapshot (read-only) — what Teddy can actually read. */
+function progAcc(key){ const m=S.mastery[key]; return m&&m.seen? Math.round(100*m.ok/m.seen) : null; }
+function strDots(g){ const s=(mast(g).str)||0; return "●".repeat(s)+"○".repeat(5-s); }
+window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
+  const doneN=Object.keys(S.done).length, totalN=MISSIONS.length;
+  const taught=taughtLetters();
+  const weak=taught.slice().sort((a,b)=>{ const w=g=>{const m=mast(g),acc=m.seen?m.ok/m.seen:0;return (5-(m.str||0))+(1-acc)+(m.seen<3?2:0);}; return w(b)-w(a); }).slice(0,5);
+  const decoded=Object.keys(READWORDS).filter(w=>{const m=S.mastery["w_"+w];return m&&m.ok>0;});
+  const sight=Object.keys(SIGHT).filter(w=>{const m=S.mastery["sw_"+w];return m&&m.ok>0;});
+  const sentDone=MISSIONS.filter(m=>m.type==="sentence"&&S.done[m.id]).length;
+  const sentTotal=MISSIONS.filter(m=>m.type==="sentence").length;
+  const power=["Hero 💪","Super Hero 💪💪","Mega Hero 💪💪💪"][heroOpts().muscle];
+  const lettersRow=taught.length? taught.map(g=>`<span class="pgem" style="background:${GEMCOLOR[g]||'#888'}">${g.toUpperCase()}</span>`).join(" ") : "<i>none yet</i>";
+  el.innerHTML=`
+    <div class="pgrid">
+      <div class="pcard"><div class="pnum">${doneN}/${totalN}</div><div class="plbl">Missions done</div></div>
+      <div class="pcard"><div class="pnum">${taught.length}/${ORDER.length}</div><div class="plbl">Letters learned</div></div>
+      <div class="pcard"><div class="pnum">${decoded.length}/${Object.keys(READWORDS).length}</div><div class="plbl">Words decoded</div></div>
+      <div class="pcard"><div class="pnum">${sight.length}/${Object.keys(SIGHT).length}</div><div class="plbl">Sight words</div></div>
+      <div class="pcard"><div class="pnum">${sentDone}/${sentTotal}</div><div class="plbl">Sentence levels read</div></div>
+      <div class="pcard"><div class="pnum">⚡${S.stars}</div><div class="plbl">${power}</div></div>
+    </div>
+    <div class="psec"><b>Letter gems learned</b><div class="pgems">${lettersRow}</div></div>
+    ${weak.length?`<div class="psec"><b>Best to practice next</b> <span class="pnote">(weakest right now)</span>
+      <div class="pgems">${weak.map(g=>`<span class="pgem warn">${g.toUpperCase()}</span> <span class="pnote">${progAcc(g)!=null?progAcc(g)+"%":"new"} ${strDots(g)}</span>`).join("<br>")}</div></div>`:""}
+    <div class="psec pnote">Reading direction so far: letter→sound (decode) via Read-It &amp; Story Gate; sound→letter (spell) via Forge &amp; patrols. Both grow as he plays. All data stays on this device.</div>`;
+};
+$("btnGear").onclick=()=>{ $("saveBox").value=JSON.stringify(S); $("vpStatus2").textContent=vpMsg(); window.renderProgress(); $("settingsPanel").classList.add("on"); };
 $("btnCloseSettings").onclick=()=>$("settingsPanel").classList.remove("on");
 $("btnVoiceTest").onclick=()=>{Aud.pick();Aud.play("test");};
 $("btnCopySave").onclick=()=>{$("saveBox").select();document.execCommand("copy");};

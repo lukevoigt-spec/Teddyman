@@ -182,6 +182,7 @@
       document.querySelectorAll(".tabbtn").forEach(x=>x.classList.toggle("on",x===b));
       document.querySelectorAll(".tabpane").forEach(p=>p.classList.toggle("on",p.id===b.dataset.tab));
       if(b.dataset.tab==="tabAudio")window.refreshAudioStudio();
+      if(b.dataset.tab==="tabProgress"&&window.renderProgress)window.renderProgress();
     });
     document.querySelectorAll(".chipbtn").forEach(b=>b.onclick=()=>{ audFilter=b.dataset.filter;
       document.querySelectorAll(".chipbtn").forEach(x=>x.classList.toggle("on",x===b)); build(); });
