@@ -388,9 +388,28 @@ function nextScan(){ if(scanIx>=ORDER.length){ S.scan=true; save();
     row.appendChild(t); });
 }
 
-/* ---------------- GLYPH CITY MAP ---------------- */
-const NODE_POS=[[420,1280],[230,1190],[520,1100],[300,1000],[560,900],[330,800],[170,700],[440,600],[300,480]];
-const BASE_POS=[470,1408];
+/* ---------------- STAR FORCE CITY MAP ----------------
+   The world map is data-driven. Each ZONE is one letter group with its own
+   painted-scene slot and its mission nodes. To add M2, append a zone (use
+   autoNodes() so positions needn't be hand-placed) — NODE_POS, BASE_POS and
+   the map height all derive from ZONES below. Group 1 keeps its hand-tuned
+   layout, so the current map is unchanged.                                   */
+const ZONES=[
+  { id:1, name:"STAR FORCE CITY", bg:"city",
+    letters:["s","a","t","p","i","n"],
+    base:[470,1408],
+    nodes:[[420,1280],[230,1190],[520,1100],[300,1000],[560,900],[330,800],[170,700],[440,600],[300,480]] }
+];
+/* Serpentine auto-layout for a new zone's nodes (bottom y0 going up). M2+ can
+   place a whole group with autoNodes(6,{y0:..}) instead of hand-tuning coords. */
+function autoNodes(count,{y0=1280,step=100,amp=195,cx=400,phase=0}={}){
+  const out=[]; for(let i=0;i<count;i++)
+    out.push([Math.round(cx+amp*Math.sin(i*0.8+phase)), y0-i*step]);
+  return out; }
+/* Derived: mission-indexed node positions, hero base, total map height. */
+const NODE_POS=ZONES.flatMap(z=>z.nodes);
+const BASE_POS=ZONES[0].base;
+const MAP_H=Math.max(BASE_POS[1], ...NODE_POS.map(p=>p[1]))+152;
 function trailPath(){ const pts=[BASE_POS,...NODE_POS,[420,370],[400,250]];
   let d="M "+pts[0][0]+" "+pts[0][1];
   for(let i=1;i<pts.length;i++){ const a=pts[i-1],b=pts[i];
@@ -428,7 +447,7 @@ function mapSVG(){
       </g></g>`;
   });
   const allDone=MISSIONS.every(m=>done(m.id));
-  return `<svg viewBox="0 0 800 1560">
+  return `<svg viewBox="0 0 800 ${MAP_H}">
   <defs>
     <linearGradient id="msky" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#0e0b26"/><stop offset=".35" stop-color="#2b2066"/>
@@ -441,7 +460,7 @@ function mapSVG(){
       <stop offset="0" stop-color="#fff6e3" stop-opacity=".8"/><stop offset="1" stop-color="#fff6e3" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  <rect width="800" height="1560" fill="url(#msky)"/>
+  <rect width="800" height="${MAP_H}" fill="url(#msky)"/>
   <circle cx="650" cy="150" r="130" fill="url(#moonG)"/>
   <circle cx="650" cy="150" r="50" fill="#fff1cf" stroke="#150f2e" stroke-width="5"/>
   <circle cx="632" cy="138" r="8" fill="#ead9b4"/><circle cx="664" cy="162" r="6" fill="#ead9b4"/>
@@ -566,7 +585,7 @@ function toMap(){ sessionTick(); show("scrMap");
   });
   /* auto-scroll to the hero's current node */
   let ix=0; for(let i=0;i<MISSIONS.length;i++){ if(!S.done[MISSIONS[i].id]){ix=i;break;} ix=i; }
-  const frac=Math.max(0,(NODE_POS[ix][1]-380)/1560);
+  const frac=Math.max(0,(NODE_POS[ix][1]-380)/MAP_H);
   requestAnimationFrame(()=>{ const sc=$("mapScroll");
     sc.scrollTop = frac * ($("mapSVGwrap").offsetHeight - sc.clientHeight + 80); });
   Aud.play("pick");
