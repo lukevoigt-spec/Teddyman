@@ -59,7 +59,20 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - The map is PER-ACT: zones carry `act`; geomFor(act) computes that act's map geometry; mapSVG /
   toMap render actMissions(currentAct()). S.act (default 1) tracks the current act. Adding an act =
   push to ACTS + add act-tagged zones/missions; the map machinery already scopes to the current act.
-- Mastery persists across acts (keyed by grapheme/word, act-agnostic).
+- Mastery persists across acts (keyed by grapheme/word, act-agnostic). Hero muscle is now
+  act-scoped (heroOpts counts current-act done missions) so a new act can RESET his power.
+- GOAL / end state: by the end of ACT 2, Teddy should reach ~2nd-grade reading proficiency aligned
+  to TEXAS standards (TEKS), ready to enter 3rd grade — then the app is "done." Skills ladder across
+  acts: Act 1 = letters→CVC→sight→sentences (done); Act 2 = digraphs/blends→long vowels→fluency.
+- ACT 2 (planned, teased at the Act-1 finale; NOT built): villain = a smooth-talking evil VIXEN
+  (Scarlett-Overkill-coded) who can morph into a DRAGON; her dragon army = Act-2 bosses. She kidnaps
+  Miss Kendall + friends JJ, Nora, Cal and escapes through a TIME PORTAL to the MEDIEVAL age — Teddy
+  follows and becomes a KNIGHT (new theme/outfit/weapons; the villain steals his powers so muscle/
+  gear reset — keeps it fresh, fights repetition). New adult hero ally = Uncle Noah. Real-person
+  descriptions/images TBD (parent will provide). Likely next rescue = Miss Kendall.
+- Possible mechanic for Act 2: mad-lib / scrambled-sentence WORD-ORDER + Maze/Cloze tasks (validate
+  against research for Teddy's profile first; sentence-building supports syntax/comprehension once
+  decoding is solid, sequenced AFTER word reading).
 
 ## World canon
 - City: Star Force City, powered by Letter Gems. Villain: LORD VEX (Vader-coded cyborg warlord)

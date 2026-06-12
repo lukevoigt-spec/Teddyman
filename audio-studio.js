@@ -8,7 +8,7 @@
 ========================================================= */
 (function(){
   const ROLES=[["A","Mentor / Narrator"],["B","Amelia (Heartguard)"],["C","Vex / robots"],
-    ["T","Archie (Tank)"],["F","Ellie (Flip)"],["W","William (Sunny)"]];
+    ["T","Archie (Tank)"],["F","Ellie (Flip)"],["W","William (Sunny)"],["V","Vixen (Act-2 villain)"]];
   let elKey="", audFilter="sounds";
   let mediaRec=null, recId=null, recChunks=[];
 

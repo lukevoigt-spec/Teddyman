@@ -327,8 +327,11 @@ const LINES={
   leighton1:{t:"You did it, Super Teddy! You READ your way to victory! Lord Vex is defeated!"},
   leighton2:{t:"Super Teddy! You found me! I always knew you could read! You're my hero!", v:"B"},
   leighton3:{t:"LEIGHTON, the Starlight Princess, is FREE! Star Force City is SAVED! The main story is complete — you are a true READER and a true HERO!"},
-  interlude1:{t:"But far away... a new shadow falls on a new city. And someone Teddy loves has just vanished..."},
-  interlude2:{t:"A NEW adventure is coming soon, Super Teddy. Rest now, champion. You've earned it."},
+  interlude1:{t:"Wait, Super Teddy — an urgent message is coming in! It's your Mom and Dad!"},
+  interlude2:{t:"Hero, we are SO proud of you. But there's no time to rest. A cunning new villain has appeared — and she has kidnapped Miss Kendall... and your friends JJ, Nora, and Cal!"},
+  interlude3:{t:"Hello, little hero. Such a shame to spoil your party. I'm whisking your precious friends far, far away — to a time long, long ago. Do try to catch up... if you can. Ta-ta!", v:"V"},
+  interlude4:{t:"She slipped through a shimmering time portal — to the age of KNIGHTS and DRAGONS! Your Uncle Noah is already suiting up to help you, hero."},
+  interlude5:{t:"Rest now, champion Super Teddy. A brand-new adventure begins soon, in a brand-new time. TO BE CONTINUED!"},
   free_tank:{t:"CAGE DESTROYED! You freed Archie! TANK has joined the Hero League... and he is ready to SMASH!"},
   free_flip:{t:"CAGE DESTROYED! You freed Ellie! FLIP has joined the league... backflips, cartwheels, and mid-air gem grabs!"},
   free_sunny:{t:"CAGE DESTROYED! You freed William! SUNNY has joined the league... and things are about to get silly!"},
@@ -473,7 +476,8 @@ document.addEventListener("click",e=>{
 
 /* ---------------- ART ----------------
    heroSVG lives in art.js (loaded first); heroOpts maps game state to it. */
-function heroOpts(){ const done=Object.keys(S.done).length;
+function heroOpts(){ /* muscle grows from THIS act's progress, so a new act can reset his power */
+  const done=actMissions(currentAct()).filter(m=>S.done[m.id]).length;
   return { muscle: done>=7?2:(done>=3?1:0),
            weapon: S.equip.weapon||"none",
            cape: S.equip.cape||"red",
@@ -610,7 +614,7 @@ function mapSVG(){
         <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="20" fill="${done(m.id)?"#9fe870":"#ffc93c"}" letter-spacing="1">${m.lbl.toUpperCase()}</text>
       </g></g>`;
   });
-  const allDone=ms.every(m=>done(m.id));
+  const vexDone=done(48);   /* Act-1 finale beaten */
   /* zone divider bands between groups within the act */
   let dividers="";
   for(let i=1;i<az.length;i++){
@@ -673,7 +677,7 @@ function mapSVG(){
     </g>
     <g transform="translate(0 100)">
       <rect x="-158" y="-21" width="316" height="42" rx="14" fill="rgba(21,15,46,.92)" stroke="#9fe870" stroke-width="2.5"/>
-      <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="23" fill="#9fe870" letter-spacing="1">${allDone?(info.villain+" AWAITS — COMING SOON!"):info.fortressLabel}</text>
+      <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="23" fill="#9fe870" letter-spacing="1">${vexDone?"VEX DEFEATED · LEIGHTON FREED!":info.fortressLabel}</text>
     </g>
   </g>
 
@@ -796,10 +800,6 @@ $("btnSkip").onclick=()=>{ Aud.stop(); const f=__cont; clearFlow(); if(f)f(); };
 
 /* ---------------- MISSION FLOW ---------------- */
 let CUR=null;
-/* Letters allowed as prompts/foils for a mission: only zones up to the
-   mission's own zone — never letters that haven't been taught yet. */
-function lettersFor(m){ const z=(m&&m.z)||1;
-  return ZONES.filter(zz=>zz.id<=z).flatMap(zz=>zz.letters); }
 /* Letters actually taught so far (gem rescued) — progress-accurate, so review
    never shows a letter that hasn't been introduced yet. */
 function taughtLetters(){ return ORDER.filter(g=>S.done[LETTER_MISSION[g]]); }
@@ -1166,7 +1166,7 @@ function showWin(firstTime){ show("scrWin");
   const gear=GEAR_AT[CUR.id];
   $("winGear").innerHTML=(firstTime&&gear)?`<div class="gearbadge">NEW GEAR: ⭐ ${gear}</div>`:"";
   let ids;
-  if(CUR.type==="fortress") ids=["leighton1","leighton2","leighton3","interlude1","interlude2"];
+  if(CUR.type==="fortress") ids=["leighton1","leighton2","leighton3","interlude1","interlude2","interlude3","interlude4","interlude5"];
   else if(CUR.rescue) ids=["free_heart1","free_heart2","m2_done"];
   else if(CUR.finale) ids = CUR.z===4 ? ["m4_letters"] : (CUR.z===3 ? ["m3_done"] : ["finale1","finale2","finale3"]);
   else if(firstTime&&gear) ids=["win_grow","win_gear",GEARLINE[gear]];

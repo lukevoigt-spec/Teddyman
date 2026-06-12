@@ -29,7 +29,7 @@ th,td{padding:7px 8px;border-bottom:1px solid #3a2d72;text-align:left;vertical-a
 td input[type=text]{font-size:14px;padding:6px 8px;}
 .tag{display:inline-block;padding:2px 8px;border-radius:8px;font-weight:800;font-size:12px;}
 .tagA{background:#2257c4;} .tagB{background:#b3486e;} .tagC{background:#5b2690;}
-.tagT{background:#b5651d;} .tagF{background:#1f8a70;} .tagW{background:#c9a227;color:#150f2e;}
+.tagT{background:#b5651d;} .tagF{background:#1f8a70;} .tagW{background:#c9a227;color:#150f2e;} .tagV{background:#7d2e6e;}
 .ok{color:#3ec97e;font-weight:800;} .err{color:#ef5348;font-weight:800;} .pend{color:#9b94c9;}
 #bar{height:14px;border-radius:7px;background:#171236;border:2px solid #3a2d72;overflow:hidden;}
 #barFill{height:100%;width:0%;background:linear-gradient(90deg,#ffd75e,#f0a82b);transition:width .3s;}
@@ -63,6 +63,7 @@ td input[type=text]{font-size:14px;padding:6px 8px;}
       <div><label>Voice T — Archie (Tank)</label><select id="vT"></select></div>
       <div><label>Voice F — Ellie (Flip)</label><select id="vF"></select></div>
       <div><label>Voice W — William (Sunny)</label><select id="vW"></select></div>
+      <div><label>Voice V — Vixen (Act-2 villain)</label><select id="vV"></select></div>
     </div>
   </div>
 
@@ -281,6 +282,9 @@ const LINES={
   leighton3:{t:"LEIGHTON, the Starlight Princess, is FREE! Star Force City is SAVED! The main story is complete — you are a true READER and a true HERO!",v:"A"},
   interlude1:{t:"But far away... a new shadow falls on a new city. And someone Teddy loves has just vanished...",v:"A"},
   interlude2:{t:"A NEW adventure is coming soon, Super Teddy. Rest now, champion. You've earned it.",v:"A"},
+  interlude3:{t:"Hello, little hero. Such a shame to spoil your party. I'm whisking your precious friends far, far away — to a time long, long ago. Do try to catch up... if you can. Ta-ta!",v:"V"},
+  interlude4:{t:"She slipped through a shimmering time portal — to the age of KNIGHTS and DRAGONS! Your Uncle Noah is already suiting up to help you, hero.",v:"A"},
+  interlude5:{t:"Rest now, champion Super Teddy. A brand-new adventure begins soon, in a brand-new time. TO BE CONTINUED!",v:"A"},
 };
 const PACK={};                 // id -> dataURI
 const $=id=>document.getElementById(id);
@@ -319,7 +323,7 @@ async function loadVoices(){
     const r=await fetch("https://api.elevenlabs.io/v1/voices",{headers:{"xi-api-key":key}});
     if(!r.ok)throw new Error(r.status);
     const d=await r.json();
-    ["vA","vB","vC","vT","vF","vW"].forEach(s=>{$(s).innerHTML="";
+    ["vA","vB","vC","vT","vF","vW","vV"].forEach(s=>{$(s).innerHTML="";
       d.voices.forEach(v=>{const o=document.createElement("option");o.value=v.voice_id;o.textContent=v.name;$(s).appendChild(o);});});
     setMsg("Voices loaded ("+d.voices.length+") — pick one per role. Suggestions: warm storyteller for A, bright young female for B, playful gravelly for C.");
   }catch(e){setMsg("Could not load voices: "+e.message+" — check the key and internet connection.",1);}
@@ -330,7 +334,7 @@ async function genLine(id){
   const L=LINES[id];
   if(L.rec){setMsg("That's a letter sound — record it with Upload. TTS can't make a pure phoneme (it just names the letter).",1);return false;}
   const key=$("apiKey").value.trim(); if(!key){setMsg("Enter your API key first.",1);return false;}
-  const voiceId=$( ({A:"vA",B:"vB",C:"vC",T:"vT",F:"vF",W:"vW"})[L.v]||"vA" ).value;
+  const voiceId=$( ({A:"vA",B:"vB",C:"vC",T:"vT",F:"vF",W:"vW",V:"vV"})[L.v]||"vA" ).value;
   if(!voiceId){setMsg("Load voices and pick one for role "+L.v+" first.",1);return false;}
   const text=document.querySelector(`input[data-id="${id}"]`).value;
   setStatus(id,"pend","generating…");
