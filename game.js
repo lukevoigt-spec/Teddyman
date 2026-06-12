@@ -165,24 +165,34 @@ const ZONES=[
     letters:[],   /* read whole sentences */
     nodes:autoNodes(3,{y0:-3490,step:114,phase:5.4}) }
 ];
-/* Derived geometry. The canvas grows UPWARD as zones are appended: the
-   viewBox top (VIEW_TOP) tracks the highest node, and Vex's fortress always
-   sits at the summit; the Heart Tower stands beside the rescue mission.    */
-const NODE_POS=ZONES.flatMap(z=>z.nodes);   /* all node coords (for map extents) */
-const BASE_POS=ZONES[0].base;
-/* Mission -> map position BY ZONE MEMBERSHIP, not flat id order. Each zone's
-   missions (in play order) drop onto that zone's nodes, so a new letter group
-   can sit in the LETTER phase with appended save-ids without moving anything. */
-const NODEBY={};
-ZONES.forEach(z=>{ MISSIONS.filter(m=>m.z===z.id).forEach((m,i)=>{ NODEBY[m.id]=z.nodes[i]||z.nodes[z.nodes.length-1]; }); });
-function nodeOf(id){ return NODEBY[id]||BASE_POS; }
-const MAP_H=Math.max(BASE_POS[1], ...NODE_POS.map(p=>p[1]))+152;
-const MIN_Y=Math.min(...NODE_POS.map(p=>p[1]));
-const FORT_POS=[400, MIN_Y-210];
-const VIEW_TOP=FORT_POS[1]-330;
-/* Heart Tower sits beside Amelia's rescue (mission 17). */
-const HEART_NODE=nodeOf(17);
-const HEART_POS=[HEART_NODE[0]>400 ? HEART_NODE[0]-265 : HEART_NODE[0]+265, HEART_NODE[1]-20];
+/* ---------------- ACTS / CAMPAIGN ----------------
+   The long game is a series of ACTS: each is a city with its own villain and a
+   captured friend to rescue (the act's finale). Act 1 = Star Force City / Lord
+   Vex / rescue Leighton = the MAIN STORY. Afterwards an interlude captures a new
+   friend and opens a new city (Act 2+), continuing the skills ladder.
+   Save-id ranges are RESERVED per act so ids never collide:
+     Act 1 = 0–99, Act 2 = 100–199, Act 3 = 200–299, ...  (idBase below). */
+const ACTS=[
+  { id:1, city:"STAR FORCE CITY", villain:"LORD VEX", rescue:"LEIGHTON",
+    fortressLabel:"VEX'S FORTRESS · RESCUE LEIGHTON", idBase:0 }
+];
+ZONES.forEach(z=>{ if(z.act===undefined)z.act=1; });   /* existing zones belong to Act 1 */
+function currentAct(){ return S.act||1; }
+function actInfo(a){ return ACTS.find(x=>x.id===a)||ACTS[0]; }
+function actZones(a){ return ZONES.filter(z=>(z.act||1)===a); }
+function actMissions(a){ const ids=new Set(actZones(a).map(z=>z.id)); return MISSIONS.filter(m=>ids.has(m.z)); }
+/* Per-act map geometry — each act is its own city/map, positioned by ZONE
+   membership (not flat id order) so groups slot in with appended save-ids. */
+function geomFor(a){
+  const zs=actZones(a), ms=actMissions(a), nodes=zs.flatMap(z=>z.nodes);
+  const base=(zs.find(z=>z.base)||{}).base||[470,1408];
+  const nodeby={}; zs.forEach(z=>{ ms.filter(m=>m.z===z.id).forEach((m,i)=>{ nodeby[m.id]=z.nodes[i]||z.nodes[z.nodes.length-1]; }); });
+  const maxY=Math.max(base[1], ...nodes.map(p=>p[1])), minY=Math.min(...nodes.map(p=>p[1]));
+  const fort=[400, minY-210];
+  return { act:a, zones:zs, missions:ms, base, nodeby, mapH:maxY+152, minY, fort, viewTop:fort[1]-330 }; }
+let GEO=geomFor(1);   /* S isn't defined yet at module load; toMap() recomputes for currentAct() */
+function setAct(a){ S.act=a; GEO=geomFor(a); save(); }
+function nodeOf(id){ return GEO.nodeby[id]||GEO.base; }
 
 /* ---------- VOICE LINE MANIFEST (ids shared with Voice Studio) ---------- */
 const LINES={
@@ -324,8 +334,8 @@ const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#
 /* ---------------- SAVE ---------------- */
 const KEY="heroTeddySave_v1";
 let S=load();
-function fresh(){return {v:1,intro:false,scan:false,done:{},mastery:{},stars:0,gear:[],equip:{weapon:"none",cape:"red"},session:{count:0,day:"",rest:false}};}
-function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.v===1){if(!d.session.day)d.session={count:0,day:"",rest:false};if(!d.equip)d.equip={weapon:"none",cape:"red"};return d;}}catch(e){}return fresh();}
+function fresh(){return {v:1,act:1,intro:false,scan:false,done:{},mastery:{},stars:0,gear:[],equip:{weapon:"none",cape:"red"},session:{count:0,day:"",rest:false}};}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.v===1){if(!d.session.day)d.session={count:0,day:"",rest:false};if(!d.equip)d.equip={weapon:"none",cape:"red"};if(d.act===undefined)d.act=1;return d;}}catch(e){}return fresh();}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 function today(){return new Date().toDateString();}
 function sessionTick(){ if(S.session.day!==today()){S.session={count:0,day:today(),rest:false};save();} }
@@ -525,7 +535,7 @@ function nextScan(){ if(scanIx>=SCAN_SET.length){ S.scan=true; save();
 }
 
 /* ---------------- STAR FORCE CITY MAP ---------------- */
-function trailPath(){ const pts=[BASE_POS,...MISSIONS.map(m=>nodeOf(m.id)),[FORT_POS[0],FORT_POS[1]+170]];
+function trailPath(){ const pts=[GEO.base,...actMissions(currentAct()).map(m=>nodeOf(m.id)),[GEO.fort[0],GEO.fort[1]+170]];
   let d="M "+pts[0][0]+" "+pts[0][1];
   for(let i=1;i<pts.length;i++){ const a=pts[i-1],b=pts[i];
     const mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2;
@@ -547,9 +557,12 @@ function gemDeco(x,y,c,sc=1){ return `<g transform="translate(${x} ${y}) scale($
   <circle cx="-4" cy="-8" r="2.4" fill="#fff" opacity=".9"/></g>`; }
 function mapSVG(){
   const done=id=>!!S.done[id];
-  const avail=i=> i===0 || done(MISSIONS[i-1].id);
+  const ms=actMissions(currentAct()), az=actZones(currentAct()), info=actInfo(currentAct());
+  const showHeart=ms.some(m=>m.id===17), hN=nodeOf(17);
+  const heartPos=[hN[0]>400?hN[0]-265:hN[0]+265, hN[1]-20];
+  const avail=i=> i===0 || done(ms[i-1].id);
   let nodes="";
-  MISSIONS.forEach((m,i)=>{
+  ms.forEach((m,i)=>{
     const [x,y]=nodeOf(m.id);
     const st=done(m.id)?"done":(avail(i)?"current":"locked");
     const fill=done(m.id)?"#3ec97e":(avail(i)?"#ffc93c":"#3b3360");
@@ -564,17 +577,17 @@ function mapSVG(){
         <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="20" fill="${done(m.id)?"#9fe870":"#ffc93c"}" letter-spacing="1">${m.lbl.toUpperCase()}</text>
       </g></g>`;
   });
-  const allDone=MISSIONS.every(m=>done(m.id));
-  /* zone divider bands between letter groups */
+  const allDone=ms.every(m=>done(m.id));
+  /* zone divider bands between groups within the act */
   let dividers="";
-  for(let i=1;i<ZONES.length;i++){
-    const dy=Math.round((Math.min(...ZONES[i-1].nodes.map(p=>p[1]))+Math.max(...ZONES[i].nodes.map(p=>p[1])))/2)+52;
+  for(let i=1;i<az.length;i++){
+    const dy=Math.round((Math.min(...az[i-1].nodes.map(p=>p[1]))+Math.max(...az[i].nodes.map(p=>p[1])))/2)+52;
     dividers+=`<g transform="translate(400 ${dy})">
       <line x1="-330" y1="0" x2="330" y2="0" stroke="#fff6e3" stroke-width="3" stroke-dasharray="10 14" opacity=".4"/>
       <rect x="-180" y="-21" width="360" height="42" rx="14" fill="rgba(21,15,46,.9)" stroke="#f2a9c4" stroke-width="2.5"/>
-      <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="22" fill="#f2a9c4" letter-spacing="2">⬆ ${ZONES[i].name} ⬆</text></g>`;
+      <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="22" fill="#f2a9c4" letter-spacing="2">⬆ ${az[i].name} ⬆</text></g>`;
   }
-  return `<svg viewBox="0 ${VIEW_TOP} 800 ${MAP_H-VIEW_TOP}">
+  return `<svg viewBox="0 ${GEO.viewTop} 800 ${GEO.mapH-GEO.viewTop}">
   <defs>
     <linearGradient id="msky" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#0e0b26"/><stop offset=".35" stop-color="#2b2066"/>
@@ -587,11 +600,11 @@ function mapSVG(){
       <stop offset="0" stop-color="#fff6e3" stop-opacity=".8"/><stop offset="1" stop-color="#fff6e3" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  <rect y="${VIEW_TOP}" width="800" height="${MAP_H-VIEW_TOP}" fill="url(#msky)"/>
-  <circle cx="650" cy="${VIEW_TOP+150}" r="130" fill="url(#moonG)"/>
-  <circle cx="650" cy="${VIEW_TOP+150}" r="50" fill="#fff1cf" stroke="#150f2e" stroke-width="5"/>
-  <circle cx="632" cy="${VIEW_TOP+138}" r="8" fill="#ead9b4"/><circle cx="664" cy="${VIEW_TOP+162}" r="6" fill="#ead9b4"/>
-  <g fill="#fff6e3">${[[120,90],[300,60],[520,110],[80,240],[730,300],[200,180],[420,40],[600,250]].map(([sx,sy])=>`<circle cx="${sx}" cy="${VIEW_TOP+sy}" r="2.5"/>`).join("")}</g>
+  <rect y="${GEO.viewTop}" width="800" height="${GEO.mapH-GEO.viewTop}" fill="url(#msky)"/>
+  <circle cx="650" cy="${GEO.viewTop+150}" r="130" fill="url(#moonG)"/>
+  <circle cx="650" cy="${GEO.viewTop+150}" r="50" fill="#fff1cf" stroke="#150f2e" stroke-width="5"/>
+  <circle cx="632" cy="${GEO.viewTop+138}" r="8" fill="#ead9b4"/><circle cx="664" cy="${GEO.viewTop+162}" r="6" fill="#ead9b4"/>
+  <g fill="#fff6e3">${[[120,90],[300,60],[520,110],[80,240],[730,300],[200,180],[420,40],[600,250]].map(([sx,sy])=>`<circle cx="${sx}" cy="${GEO.viewTop+sy}" r="2.5"/>`).join("")}</g>
   <g fill="#fff6e3"><circle cx="120" cy="90" r="3"/><circle cx="300" cy="60" r="2.4"/><circle cx="520" cy="110" r="2.6"/><circle cx="80" cy="240" r="2.2"/><circle cx="730" cy="300" r="2.4"/><circle cx="200" cy="180" r="2"/></g>
   <g class="mcloudB" fill="#4b3e96" stroke="#150f2e" stroke-width="4" opacity=".8">
     <path d="M140 210 q18 -34 54 -27 q12 -26 47 -20 q31 -9 43 16 q32 2 27 31 z"/>
@@ -601,9 +614,9 @@ function mapSVG(){
     <path d="M380 130 q13 -24 39 -19 q9 -18 33 -13 q22 -6 31 11 q22 2 18 21 z"/>
   </g>
 
-  ${skyline(MIN_Y+330,70,"#241b4d",.45,6)}
-  ${skyline(MIN_Y+560,95,"#2c2158",.65,8)}
-  ${windowsRow(MIN_Y+560,13)}
+  ${skyline(GEO.minY+330,70,"#241b4d",.45,6)}
+  ${skyline(GEO.minY+560,95,"#2c2158",.65,8)}
+  ${windowsRow(GEO.minY+560,13)}
   ${skyline(700,80,"#241b4d",.55,3)}
   ${skyline(980,110,"#2c2158",.8,5)}
   ${windowsRow(980,7)}
@@ -614,8 +627,8 @@ function mapSVG(){
   <ellipse cx="180" cy="1340" rx="180" ry="46" fill="#2f8f5b" opacity=".9"/>
   <ellipse cx="660" cy="1370" rx="200" ry="52" fill="#2a7d50" opacity=".9"/>
 
-  <!-- LORD VEX'S FORTRESS (always at the summit) -->
-  <g transform="translate(${FORT_POS[0]} ${FORT_POS[1]})">
+  <!-- The act's villain fortress (always at the summit) -->
+  <g transform="translate(${GEO.fort[0]} ${GEO.fort[1]})">
     <path d="M-96 64 L-96 -32 L-64 -64 L-64 -12 L-22 -12 L-22 -86 L0 -118 L22 -86 L22 -12 L64 -12 L64 -64 L96 -32 L96 64 Z"
       fill="#3c1763" stroke="#150f2e" stroke-width="6"/>
     <circle cx="0" cy="-112" r="10" fill="#9fe870"/>
@@ -627,12 +640,12 @@ function mapSVG(){
     </g>
     <g transform="translate(0 100)">
       <rect x="-158" y="-21" width="316" height="42" rx="14" fill="rgba(21,15,46,.92)" stroke="#9fe870" stroke-width="2.5"/>
-      <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="23" fill="#9fe870" letter-spacing="1">${allDone?"LORD VEX AWAITS — COMING SOON!":"VEX'S FORTRESS · RESCUE LEIGHTON"}</text>
+      <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="23" fill="#9fe870" letter-spacing="1">${allDone?(info.villain+" AWAITS — COMING SOON!"):info.fortressLabel}</text>
     </g>
   </g>
 
-  <!-- HEART TOWER (zone 2 landmark, beside the rescue mission) -->
-  <g transform="translate(${HEART_POS[0]} ${HEART_POS[1]})">
+  <!-- HEART TOWER (act-1 landmark, beside Amelia's rescue) -->
+  ${showHeart?`<g transform="translate(${heartPos[0]} ${heartPos[1]})">
     <rect x="-36" y="-90" width="72" height="170" rx="10" fill="#241b4d" stroke="#150f2e" stroke-width="5"/>
     <path d="M0 -122 q16 -20 32 -4 q14 14 -6 32 L0 -68 L-26 -94 q-20 -18 -6 -32 q16 -16 32 4z" fill="${done(17)?"#ff7d9c":"#e6453c"}" stroke="#150f2e" stroke-width="4"/>
     ${done(17)?'<g fill="#ffd75e" opacity=".95"><path d="M0 -168 L7 -150 L-7 -150Z"/><path d="M-46 -140 L-32 -132 L-42 -122Z"/><path d="M46 -140 L32 -132 L42 -122Z"/></g>':''}
@@ -641,7 +654,7 @@ function mapSVG(){
       <rect x="-128" y="-18" width="256" height="36" rx="12" fill="rgba(21,15,46,.92)" stroke="${done(17)?"#3ec97e":"#f2a9c4"}" stroke-width="2.5"/>
       <text x="0" y="8" text-anchor="middle" font-family="Bangers" font-size="20" fill="${done(17)?"#9fe870":"#f2a9c4"}" letter-spacing="1">${done(17)?"HEARTGUARD JOINS THE LEAGUE!":"HEART TOWER · SAVE AMELIA"}</text>
     </g>
-  </g>
+  </g>`:""}
   ${dividers}
 
   <!-- the golden trail -->
@@ -654,8 +667,8 @@ function mapSVG(){
 
   <!-- HERO BASE node -->
   <g class="mnode current" id="baseNode">
-    <ellipse cx="${BASE_POS[0]}" cy="${BASE_POS[1]+52}" rx="86" ry="14" fill="#150f2e" opacity=".35"/>
-    <g transform="translate(${BASE_POS[0]} ${BASE_POS[1]})">
+    <ellipse cx="${GEO.base[0]}" cy="${GEO.base[1]+52}" rx="86" ry="14" fill="#150f2e" opacity=".35"/>
+    <g transform="translate(${GEO.base[0]} ${GEO.base[1]})">
       <rect x="-70" y="-30" width="140" height="78" rx="10" fill="#2257c4" stroke="#150f2e" stroke-width="6"/>
       <path d="M-84 -26 L0 -82 L84 -26 Z" fill="#e6453c" stroke="#150f2e" stroke-width="6"/>
       <rect x="-18" y="6" width="36" height="42" rx="6" fill="#150f2e"/>
@@ -724,21 +737,22 @@ function allyTeasers(){
     } });
   return out;
 }
-function heroMarker(){ let ix=0;
-  for(let i=0;i<MISSIONS.length;i++){ if(!S.done[MISSIONS[i].id]){ix=i;break;} ix=i; }
-  const [x,y]=nodeOf(MISSIONS[ix].id);
+function heroMarker(){ const ms=actMissions(currentAct()); let ix=0;
+  for(let i=0;i<ms.length;i++){ if(!S.done[ms[i].id]){ix=i;break;} ix=i; }
+  const [x,y]=nodeOf(ms[ix].id);
   return `<g transform="translate(${x-44} ${y-186}) scale(.30)">${heroNow(250).replace(/<svg[^>]*>|<\/svg>/g,"")}</g>`;
 }
-function toMap(){ sessionTick(); show("scrMap");
-  $("hudTitle").textContent="STAR FORCE CITY";
+function toMap(){ sessionTick(); GEO=geomFor(currentAct()); show("scrMap");
+  $("hudTitle").textContent=actInfo(currentAct()).city;
   $("mapSVGwrap").innerHTML=mapSVG();
   document.querySelectorAll(".mnode").forEach(n=>{
     if(n.id==="baseNode"){ n.addEventListener("click",showBase); return; }
     n.addEventListener("click",()=>{ const m=MISSIONS.find(x=>x.id==n.dataset.mid); if(m)startMission(m); });
   });
   /* auto-scroll to the hero's current node */
-  let ix=0; for(let i=0;i<MISSIONS.length;i++){ if(!S.done[MISSIONS[i].id]){ix=i;break;} ix=i; }
-  const frac=Math.max(0,(nodeOf(MISSIONS[ix].id)[1]-VIEW_TOP-380)/(MAP_H-VIEW_TOP));
+  const ams=actMissions(currentAct()); let ix=0;
+  for(let i=0;i<ams.length;i++){ if(!S.done[ams[i].id]){ix=i;break;} ix=i; }
+  const frac=Math.max(0,(nodeOf(ams[ix].id)[1]-GEO.viewTop-380)/(GEO.mapH-GEO.viewTop));
   requestAnimationFrame(()=>{ const sc=$("mapScroll");
     sc.scrollTop = frac * ($("mapSVGwrap").offsetHeight - sc.clientHeight + 80); });
   Aud.play("pick");

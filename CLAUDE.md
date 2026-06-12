@@ -49,6 +49,18 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   scary-cool villains (Darth Vader), his sisters and friends. Plays Sneaky Sasquatch, so
   progressive systems (meters, inventories, objectives, light stealth) are within reach.
 
+## Campaign architecture (long-term: multiple cities/villains)
+- The game is a series of ACTS (ACTS[] in game.js). Each act = one city, one villain, one captured
+  friend to rescue (the act's finale). Act 1 = Star Force City / Lord Vex / rescue LEIGHTON = the
+  MAIN STORY. After Leighton's rescue, an interlude captures a new friend and opens a new city (Act
+  2+), continuing the skills ladder (digraphs → long vowels → fluency …).
+- Save-id ranges are RESERVED per act so ids never collide: Act 1 = 0–99, Act 2 = 100–199, etc.
+  (ACTS[].idBase). New missions always APPEND ids; never renumber (saves are keyed by mission id).
+- The map is PER-ACT: zones carry `act`; geomFor(act) computes that act's map geometry; mapSVG /
+  toMap render actMissions(currentAct()). S.act (default 1) tracks the current act. Adding an act =
+  push to ACTS + add act-tagged zones/missions; the map machinery already scopes to the current act.
+- Mastery persists across acts (keyed by grapheme/word, act-agnostic).
+
 ## World canon
 - City: Star Force City, powered by Letter Gems. Villain: LORD VEX (Vader-coded cyborg warlord)
   and his VEXBOT soldiers. Hero: Super Teddy (the child is "Teddy"; his hero identity is
