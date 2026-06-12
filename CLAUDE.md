@@ -1,0 +1,76 @@
+# CLAUDE.md — Hero Teddy (Gem City)
+
+## What this project is
+An iPad web game teaching a 7-year-old ("Teddy") with a ZMYM2-related neurodevelopmental
+disorder to read, via systematic synthetic phonics wrapped in a superhero adventure.
+Built and deployed from this repo via GitHub Pages. The parent is a non-developer:
+every commit to `main` goes live on the child's iPad within minutes. Never push broken code.
+
+## Repo layout
+- `index.html` — the entire game (currently single-file; refactor into modules is welcome,
+  but the deployed result must remain a static site that GitHub Pages serves with no build step,
+  or include the built output in the repo)
+- `voicepack.js` — studio-generated audio clips (`window.VOICEPACK = {lineId: dataURI}`).
+  NEVER regenerate, rename IDs, or delete; the parent produces this with a separate tool.
+  New narration = add new line IDs to the LINES manifest with TTS fallback text.
+- `teddy-reading-app-spec.md` — full design spec; read it before significant changes.
+
+## HARD CONSTRAINTS — never violate, even if asked casually
+1. NO timers as failure conditions. No countdowns on tasks. Personal-best flair only, if ever.
+2. NO harsh failure states: no "WRONG", no red X, no lives, no streak loss, no "you missed a day".
+   Wrong answer = gentle dim + replay the sound + retry; after 2 misses, softly pulse the correct answer.
+3. NO strobe, rapid flashing, or high-frequency flicker anywhere (seizure-safety stance).
+   Shakes/bursts fine; flashes are not. Respect prefers-reduced-motion.
+4. ANTI-GAMING RULE (critical pedagogy): sound-identification prompts must NEVER display the
+   target letter or its sound-spelling on screen. The displayed prompt is generic
+   ("Find the gem that makes the sound… 🔊"); only the AUDIO carries the target.
+   The child must process sound→letter, not match text→text.
+5. Mastery-paced, never grade/age-gated. Content sequencing: letter→sound→blend→sight words.
+   Never introduce material using letters not yet taught.
+6. Touch targets stay large (~96px+). Letters use Andika (literacy font). High contrast.
+7. Progress saves after EVERY answer (localStorage, schema-versioned, with export/restore in
+   Grown-Up Corner). Never ship a change that wipes or breaks existing saves — migrate.
+8. All instructions are audio-first (the player cannot read yet). Every prompt has a replay
+   button. Any flow that waits on audio MUST use the flow()/watchdog pattern so the game can
+   never hang — there is always a ⏭ skip and a Home button.
+
+## Child profile notes (shape, don't over-rotate)
+- ADHD front and center: busy, juicy, energetic screens HELP. Fast loops, lots of reward moments.
+  The learning content must stay the most salient thing, but the stage can be loud.
+- OCD presents as vocal tics, not compulsions — collections/routines are fine and motivating.
+- Possible dyslexia (assessment pending): keep Orton-Gillingham-style multi-sensory structure
+  (see it, hear it, trace it, find it), heavy varied repetition disguised as new missions.
+- Loves: Minecraft (gems/collection), superheroes, muscles, weapons (hammer/sword/cowboy),
+  scary-cool villains (Darth Vader), his sisters and friends. Plays Sneaky Sasquatch, so
+  progressive systems (meters, inventories, objectives, light stealth) are within reach.
+
+## World canon
+- City: Gem City, powered by Letter Gems. Villain: LORD VEX (Vader-coded cyborg warlord)
+  and his VEXBOT soldiers. Hero: Teddy, blue glasses = Gem Lenses, gold hex "T" emblem,
+  red cape, Word Forge gauntlet. Words forge weapons (Word Hammer, Gem Sword).
+- Hero visibly gains muscle as missions complete (3 stages). Hero Base = equip/collection hub.
+- Allies are real family/friends, freed from Vex's cages at milestone missions:
+  Tank (Archie), Flip (Ellie), Sunny (William, comic relief), Heartguard (Amelia, M2 rescue arc),
+  Leighton the Starlight Princess (final rescue at Vex's Fortress). Mentors = Mom & Dad.
+- Show only EARNED items in collections (gems, gear, league members) — never empty slots.
+
+## Curriculum state
+- Group 1 (live): s a t p i n — SATPIN synthetic phonics order. CVC blending live (at, sat, tap, pin, nap).
+- Group 2 (next): m d g o c k. Then: e u r h b f → l j v w x y z q → first 25 heart/sight words
+  → decodable sentences. Uppercase+lowercase paired, lowercase weighted; deliberate uppercase
+  rounds every 3rd rep.
+- Mastery model: per-grapheme strength scores recorded on every answer; patrols should
+  increasingly draw from weakest items (adaptive review is a TODO).
+
+## Voice/audio system
+- Aud.play(ids) plays voicepack clips, falls back to per-line TTS (LINES manifest: {t, r, v}).
+- Voice roles: A = Mentor/Narrator, B = Amelia, C = Vexbots/Lord Vex (robotic).
+- Letter-sound clips (snd_s … snd_n) are the most pedagogically critical audio; parent may
+  replace them with own recordings via the Voice Studio tool (NOT in this repo — it holds an
+  API key and must never be committed).
+
+## Working agreement
+- Small, reviewable commits with plain-English messages the parent can read.
+- After changes, sanity-check: fresh-save playthrough boot → intro → scan → mission 1, plus
+  a loaded-save boot. Verify no console errors and that audio flows can't hang.
+- When in doubt about a design tradeoff, optimize for: reading reps per minute, then delight.
