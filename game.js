@@ -416,8 +416,11 @@ function trailPath(){ const pts=[BASE_POS,...NODE_POS,[420,370],[400,250]];
     const mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2;
     d+=` Q ${a[0]} ${my} ${mx} ${my} T ${b[0]} ${b[1]}`; }
   return d; }
+/* positive modulo — JS % returns negatives for negative operands, which made
+   building widths negative and hung this loop (map-breaking bug for seed 9) */
+function pmod(v,m){ return ((v%m)+m)%m; }
 function skyline(y,h0,fill,op,seed){ let out="",x=-30;
-  while(x<840){ const w=44+((seed*(x+13)*7)%72), h=h0+((seed*(x+5)*13)%150);
+  while(x<840){ const w=44+pmod(seed*(x+13)*7,72), h=h0+pmod(seed*(x+5)*13,150);
     out+=`<rect x="${x}" y="${y-h}" width="${w}" height="${h}" fill="${fill}" opacity="${op}"/>`; x+=w+10; }
   return out; }
 function windowsRow(y,seed){ let out="",x=-10;
