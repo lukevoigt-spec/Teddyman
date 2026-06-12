@@ -12,7 +12,12 @@ body{
   -webkit-user-select:none;user-select:none;touch-action:manipulation;
 }
 #stage{width:100%;height:100dvh;max-width:1180px;position:relative;overflow:hidden;display:flex;flex-direction:column;}
-.screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:18px;gap:14px;}
+/* Painted scene layer — behind all screens. No image by default (transparent),
+   so the original gradient/SVG look is preserved until art files are added. */
+#bgLayer{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;
+  background-repeat:no-repeat;opacity:0;transition:opacity .45s ease;pointer-events:none;}
+#bgLayer.on{opacity:1;}
+.screen{position:absolute;inset:0;z-index:1;display:none;flex-direction:column;align-items:center;justify-content:center;padding:18px;gap:14px;}
 .screen.on{display:flex;}
 .comic{font-family:'Bangers',cursive;letter-spacing:.04em;}
 .read{font-family:'Andika',sans-serif;}

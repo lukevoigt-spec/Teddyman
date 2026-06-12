@@ -308,9 +308,29 @@ return `<svg viewBox="0 0 600 300">
 
 /* ---------------- SCREEN MGMT ---------------- */
 const $=id=>document.getElementById(id);
+/* Painted-scene slots: screen -> art/bg-<name>.* . Add an image to swap a scene;
+   if the file is missing the layer stays transparent and the original look shows.
+   Several screens intentionally share one scene (e.g. learn/trace, boss/forge). */
+const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrScan:"lab", scrMap:"city",
+  scrBase:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
+  scrBoss:"battle", scrForge:"battle", scrWin:"victory", scrRest:"rest" };
+const __bgCache={};
+function setBG(id){ const layer=$("bgLayer"); if(!layer)return;
+  const name=BG_MAP[id];
+  if(!name){ layer.classList.remove("on"); return; }
+  const url="art/bg-"+name+".jpg";
+  if(__bgCache[name]===false){ layer.classList.remove("on"); return; }
+  const apply=()=>{ layer.style.backgroundImage="url("+url+")"; layer.classList.add("on"); };
+  if(__bgCache[name]===true){ apply(); return; }
+  const img=new Image();
+  img.onload=()=>{ __bgCache[name]=true; if($(id).classList.contains("on"))apply(); };
+  img.onerror=()=>{ __bgCache[name]=false; layer.classList.remove("on"); };  /* graceful fallback */
+  img.src=url;
+}
 function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
   $(id).classList.add("on"); $(id).classList.add("fadein");
   setTimeout(()=>$(id).classList.remove("fadein"),600);
+  setBG(id);
   $("hud").style.display=(id==="scrTitle")?"none":"flex"; refreshHUD(); }
 function refreshHUD(){ $("hudStars").textContent="⚡ "+S.stars; }
 function burstAt(el,word){ const r=el.getBoundingClientRect(),st=$("stage").getBoundingClientRect();
