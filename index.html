@@ -142,14 +142,45 @@
   <div id="settingsPanel">
     <div class="comic" style="font-size:34px;color:var(--gold);">GROWN-UP CORNER</div>
     <div class="vpstatus" id="vpStatus2"></div>
-    <button class="btn ghost" id="btnVoiceTest">🔊 Test voice</button>
-    <div class="read" style="font-size:15px;max-width:600px;text-align:center;color:#cfc6f2;">Backup: copy this code somewhere safe. Paste it back and tap Restore to recover progress on any device.</div>
-    <textarea id="saveBox" spellcheck="false"></textarea>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
-      <button class="btn ghost" id="btnCopySave">Copy backup</button>
-      <button class="btn ghost" id="btnRestoreSave">Restore</button>
-      <button class="btn ghost" id="btnCloseSettings">Close</button>
+    <div class="tabbar">
+      <button class="tabbtn on" data-tab="tabBackup">💾 Backup</button>
+      <button class="tabbtn" data-tab="tabAudio">🎙️ Audio</button>
     </div>
+
+    <div id="tabBackup" class="tabpane on">
+      <button class="btn ghost" id="btnVoiceTest">🔊 Test voice</button>
+      <div class="read" style="font-size:15px;max-width:600px;text-align:center;color:#cfc6f2;">Backup: copy this code somewhere safe. Paste it back and tap Restore to recover progress on any device.</div>
+      <textarea id="saveBox" spellcheck="false"></textarea>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+        <button class="btn ghost" id="btnCopySave">Copy backup</button>
+        <button class="btn ghost" id="btnRestoreSave">Restore</button>
+      </div>
+    </div>
+
+    <div id="tabAudio" class="tabpane">
+      <div class="read" style="font-size:14px;max-width:640px;text-align:center;color:#cfc6f2;">
+        Record or generate the game's voices right here. Clips save to <b>this iPad</b> and play
+        immediately. Tap <b>Export</b> to make them permanent for every device.</div>
+      <div class="audrow">
+        <input id="elKey" type="password" placeholder="ElevenLabs API key (sk-…) — used now, never saved">
+        <button class="btn ghost sm" id="btnElLoad">Load voices</button>
+      </div>
+      <div id="elVoices" class="audrow" style="display:none;"></div>
+      <div class="audrow">
+        <button class="btn ghost sm" id="btnGenAll">⚡ Generate spoken lines</button>
+        <button class="btn ghost sm" id="btnExportVP">⬇️ Export voicepack.js</button>
+        <button class="btn ghost sm" id="btnImportVP">⬆️ Import</button>
+        <input id="vpFile" type="file" accept=".js,text/javascript,application/javascript" style="display:none">
+        <div class="audfilter">
+          <button class="chipbtn on" data-filter="sounds">Letter sounds</button>
+          <button class="chipbtn" data-filter="all">All lines</button>
+        </div>
+      </div>
+      <div id="audStatus" class="vpstatus"></div>
+      <div id="audList" class="audlist"></div>
+    </div>
+
+    <button class="btn ghost" id="btnCloseSettings">Close</button>
   </div>
 </div>
 
@@ -157,5 +188,6 @@
 <script src="voicepack.js" onerror="void(0)"></script>
 
 <script src="game.js"></script>
+<script src="audio-studio.js"></script>
 </body>
 </html>

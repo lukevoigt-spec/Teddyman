@@ -176,12 +176,43 @@ function sessionTick(){ if(S.session.day!==today()){S.session={count:0,day:today
 function mast(g){ if(!S.mastery[g])S.mastery[g]={seen:0,ok:0,str:0}; return S.mastery[g]; }
 function record(g,ok){ const m=mast(g); m.seen++; if(ok){m.ok++;m.str=Math.min(5,m.str+1);} else {m.str=Math.max(0,m.str-1);} save(); }
 
+/* ---------------- CUSTOM CLIP STORE ----------------
+   Parent-made clips (recorded or generated in the in-app Audio studio) live
+   in IndexedDB on THIS device, keyed by line id. CUSTOM mirrors them in
+   memory. Playback order is: CUSTOM clip -> shipped window.VOICEPACK -> TTS.
+   Nothing here ever overwrites a committed voicepack.js.                    */
+let CUSTOM={};
+const VStore={ db:null,
+  open(){ return new Promise(res=>{ try{
+      const r=indexedDB.open("superTeddyAudio",1);
+      r.onupgradeneeded=()=>{ if(!r.result.objectStoreNames.contains("clips"))r.result.createObjectStore("clips"); };
+      r.onsuccess=()=>{ this.db=r.result; res(this.db); };
+      r.onerror=()=>res(null);
+    }catch(e){ res(null); } }); },
+  all(){ return new Promise(res=>{ if(!this.db)return res({});
+    try{ const out={}, cur=this.db.transaction("clips").objectStore("clips").openCursor();
+      cur.onsuccess=e=>{ const c=e.target.result; if(c){ out[c.key]=c.value; c.continue(); } else res(out); };
+      cur.onerror=()=>res(out);
+    }catch(e){ res({}); } }); },
+  put(id,uri){ return new Promise(res=>{ if(!this.db)return res(false);
+    try{ const tx=this.db.transaction("clips","readwrite"); tx.objectStore("clips").put(uri,id);
+      tx.oncomplete=()=>res(true); tx.onerror=()=>res(false);
+    }catch(e){ res(false); } }); },
+  del(id){ return new Promise(res=>{ if(!this.db)return res(false);
+    try{ const tx=this.db.transaction("clips","readwrite"); tx.objectStore("clips").delete(id);
+      tx.oncomplete=()=>res(true); tx.onerror=()=>res(false);
+    }catch(e){ res(false); } }); }
+};
+VStore.open().then(()=>VStore.all()).then(m=>{ CUSTOM=m||{};
+  if(typeof refreshAudioStudio==="function")refreshAudioStudio(); });
+function clipFor(id){ return CUSTOM[id] || ((typeof VOICEPACK!=="undefined") && VOICEPACK[id]) || null; }
+
 /* ---------------- AUDIO ENGINE ----------------
-   Plays studio voicepack clips when present (window.VOICEPACK),
-   falls back to speech synthesis per line otherwise.            */
+   Plays a parent clip / studio voicepack clip when present, falls back to
+   speech synthesis per line otherwise.                                     */
 const Aud={
   voice:null, cur:null, token:0,
-  hasVP(id){ return (typeof VOICEPACK!=="undefined") && VOICEPACK[id]; },
+  hasVP(id){ return !!clipFor(id); },
   pick(){ const vs=speechSynthesis.getVoices().filter(v=>v.lang&&v.lang.startsWith("en"));
     this.voice = vs.find(v=>/samantha/i.test(v.name)) || vs.find(v=>/karen|ava|allison|female/i.test(v.name)) || vs[0]||null; },
   stop(){ this.token++; speechSynthesis.cancel(); if(this.cur){try{this.cur.pause();}catch(e){}this.cur=null;} },
@@ -191,9 +222,9 @@ const Aud={
     const core=new Promise(res=>{
       const next=()=>{ if(my!==this.token){res();return;}
         if(!seq.length){res();return;}
-        const id=seq.shift(); const L=LINES[id]||{t:id};
-        if(this.hasVP(id)){
-          const a=new Audio(VOICEPACK[id]); this.cur=a;
+        const id=seq.shift(); const L=LINES[id]||{t:id}; const src=clipFor(id);
+        if(src){
+          const a=new Audio(src); this.cur=a;
           a.onended=()=>{this.cur=null;next();}; a.onerror=()=>{this.cur=null;ttsOne();};
           a.play().catch(()=>ttsOne());
           function ttsOne(){ Aud._tts(L,my).then(next); }
@@ -419,7 +450,11 @@ function burstAt(el,word){ const r=el.getBoundingClientRect(),st=$("stage").getB
 /* ---------------- TITLE ---------------- */
 $("titleHero").innerHTML=heroNow(210);
 function vpMsg(){ const n=(typeof VOICEPACK!=="undefined")?Object.keys(VOICEPACK).length:0;
-  return n? "🎙️ Studio voices loaded ("+n+" lines)" : "Using built-in voice — add voicepack.js for studio voices"; }
+  const c=Object.keys(CUSTOM).length;
+  const parts=[];
+  if(c)parts.push("🎤 "+c+" voices recorded on this iPad");
+  if(n)parts.push("🎙️ "+n+" studio lines");
+  return parts.length? parts.join(" · ") : "Using built-in voice — record your own in Grown-Up Corner ▸ Audio"; }
 $("vpStatus").textContent=vpMsg();
 if(S.intro)$("btnContinue").style.display="inline-block";
 $("btnStart").onclick=()=>{ Aud.pick(); if(!S.intro)startIntro(); else {Aud.play("welcome"); toMap();} };

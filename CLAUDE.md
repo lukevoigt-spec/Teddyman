@@ -10,9 +10,14 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - `index.html` — the entire game (currently single-file; refactor into modules is welcome,
   but the deployed result must remain a static site that GitHub Pages serves with no build step,
   or include the built output in the repo)
-- `voicepack.js` — studio-generated audio clips (`window.VOICEPACK = {lineId: dataURI}`).
-  NEVER regenerate, rename IDs, or delete; the parent produces this with a separate tool.
-  New narration = add new line IDs to the LINES manifest with TTS fallback text.
+- `voicepack.js` — optional shipped audio clips (`window.VOICEPACK = {lineId: dataURI}`).
+  NEVER regenerate, rename IDs, or delete it. New narration = add new line IDs to the LINES
+  manifest with TTS fallback text (they appear in the in-app studio automatically).
+- `audio-studio.js` — the IN-APP audio studio (Grown-Up Corner ▸ Audio tab): record (mic) or
+  ElevenLabs-generate voices from inside the game. Clips save to the device in IndexedDB
+  (`VStore`/`CUSTOM` in game.js) and play immediately; Export writes a voicepack.js to make
+  them permanent across devices. Playback priority: CUSTOM (device) → window.VOICEPACK → TTS.
+  `voice-studio.html` is the older standalone version, now superseded by this.
 - `teddy-reading-app-spec.md` — full design spec; read it before significant changes.
 
 ## HARD CONSTRAINTS — never violate, even if asked casually
