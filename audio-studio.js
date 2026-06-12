@@ -141,6 +141,41 @@
     fr.readAsText(file);
   }
 
+  /* ---- publish voicepack.js straight to the repo's main branch ----
+     Uses a GitHub fine-grained token (Contents: write), entered per use and
+     never stored, via the Git Data API (handles multi-MB voicepacks). */
+  const GH={ owner:"lukevoigt-spec", repo:"Teddyman", branch:"main" };
+  async function ghApi(token,path,opts){
+    const r=await fetch("https://api.github.com/repos/"+GH.owner+"/"+GH.repo+path,
+      Object.assign({headers:{Authorization:"Bearer "+token,Accept:"application/vnd.github+json","Content-Type":"application/json"}},opts||{}));
+    if(!r.ok){ let d=""; try{d=(await r.json()).message||"";}catch(e){}
+      throw new Error(r.status+(d?" "+d:"")); }
+    return r.json();
+  }
+  async function publish(){
+    const token=($("ghToken").value||"").trim();
+    if(!token){ setMsg("Paste a GitHub fine-grained token (Contents: write) first.",1); return; }
+    const merged=Object.assign({}, (typeof VOICEPACK!=="undefined"?VOICEPACK:{}), CUSTOM);
+    const n=Object.keys(merged).length;
+    if(!n){ setMsg("Nothing to publish yet — record or generate some lines first.",1); return; }
+    const content="window.VOICEPACK="+JSON.stringify(merged)+";";
+    const btn=$("btnPublish"); if(btn)btn.disabled=true;
+    try{
+      setMsg("Publishing "+n+" lines to GitHub…");
+      const ref=await ghApi(token,"/git/ref/heads/"+GH.branch);
+      const head=ref.object.sha;
+      const headCommit=await ghApi(token,"/git/commits/"+head);
+      const blob=await ghApi(token,"/git/blobs",{method:"POST",body:JSON.stringify({content:content,encoding:"utf-8"})});
+      const tree=await ghApi(token,"/git/trees",{method:"POST",body:JSON.stringify({base_tree:headCommit.tree.sha,tree:[{path:"voicepack.js",mode:"100644",type:"blob",sha:blob.sha}]})});
+      const commit=await ghApi(token,"/git/commits",{method:"POST",body:JSON.stringify({message:"Update voicepack.js from in-app studio ("+n+" lines)",tree:tree.sha,parents:[head]})});
+      await ghApi(token,"/git/refs/heads/"+GH.branch,{method:"PATCH",body:JSON.stringify({sha:commit.sha})});
+      $("ghToken").value="";
+      setMsg("Published ✓ — voicepack.js is on main ("+n+" lines). Live on every device in a minute.");
+    }catch(e){ const m=String(e.message||e);
+      setMsg("Publish failed: "+(/^401/.test(m)?"token not accepted":/^403/.test(m)?"token lacks Contents: write on this repo":/^404/.test(m)?"repo/branch not found for this token":m),1);
+    } finally{ if(btn)btn.disabled=false; }
+  }
+
   /* ---- wiring ---- */
   function wire(){
     document.querySelectorAll(".tabbtn").forEach(b=>b.onclick=()=>{
@@ -153,6 +188,7 @@
     const on=(id,fn)=>{ const e=$(id); if(e)e.onclick=fn; };
     on("btnElLoad",elLoad); on("btnGenAll",genAll); on("btnExportVP",exportVP);
     on("btnImportVP",()=>$("vpFile").click());
+    on("btnPublish",publish);
     const vf=$("vpFile"); if(vf)vf.onchange=()=>{ if(vf.files[0]){ importVP(vf.files[0]); vf.value=""; } };
     const gear=$("btnGear"); if(gear)gear.addEventListener("click",()=>setTimeout(window.refreshAudioStudio,0));
   }

@@ -176,6 +176,14 @@
           <button class="chipbtn" data-filter="all">All lines</button>
         </div>
       </div>
+      <div class="audrow" style="border-top:2px solid #3a2d72;padding-top:12px;margin-top:2px;">
+        <input id="ghToken" type="password" placeholder="GitHub fine-grained token (Contents: write) — used now, never saved">
+        <button class="btn ghost sm" id="btnPublish">🚀 Publish to all devices</button>
+      </div>
+      <div class="read" style="font-size:12px;color:#9b94c9;max-width:640px;">
+        Publish writes your voices to the project so <b>every</b> device gets them. Make a token at
+        github.com ▸ Settings ▸ Developer settings ▸ Fine-grained tokens, scoped to this repo with
+        <b>Contents: Read and write</b>, short expiry. It is never saved.</div>
       <div id="audStatus" class="vpstatus"></div>
       <div id="audList" class="audlist"></div>
     </div>
