@@ -13,6 +13,10 @@
 <body>
 <div id="stage">
 
+  <!-- Painted scene layer. Sits behind every screen; shows art/bg-<name>.* when
+       present, otherwise stays transparent so the original look is unchanged. -->
+  <div id="bgLayer" aria-hidden="true"></div>
+
   <div class="hud" id="hud" style="display:none;">
     <div class="chip" id="hudTitle">STAR FORCE CITY</div>
     <div style="display:flex;gap:10px;align-items:center;">
