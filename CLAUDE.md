@@ -119,6 +119,10 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   sits between story(7) and fortress(8) by play order (map positions by zone, not id).
 - Distractors (find/boss/forge foils) now come from taughtLetters() — only already-taught letters,
   never not-yet-taught ones (so e.g. group-4 letters never show before they're learned).
+- CONFUSABLE support (dyslexia reversals): CONFUSE{} pairs (b↔d, p↔q, m↔n, n↔u, m↔w); pickFoils()
+  preferentially seeds the target's twin as a distractor in find/boss/fortress, so every review
+  round trains discrimination once both are taught. Learning a letter whose twin is already known
+  shows a side-by-side contrast cue (#letterCue, green✓ vs struck-out twin) + a cue_<letter> tip.
 - Uppercase+lowercase paired, lowercase weighted; deliberate uppercase rounds every 3rd rep (TODO
   beyond find's every-3rd-rep upper round).
 - DIRECTION NOTE (prime objective = reading): scan/find/boss/forge train sound→letter (ID + spell).

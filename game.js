@@ -332,6 +332,14 @@ const LINES={
   youdidit:{t:"You did it, Super Teddy!"},
   patrol_intro:{t:"Rooftop patrol! Letter Gems are hiding all over the city. Find them, hero!"},
   mastery_review:{t:"So close, hero! A few Letter Gems need more power before this rescue. Quick patrol to lock them in!"},
+  cue_b:{t:"Watch out, hero! b and d are mirror twins. b has its round belly in FRONT, after the tall line. Listen: buh — like ball!"},
+  cue_d:{t:"Careful! d and b are mirror twins. d has its round belly FIRST, before the tall line. Listen: duh — like dog!"},
+  cue_p:{t:"Watch out! p and q are mirror twins. p has its round belly in FRONT. Listen: puh — like pig!"},
+  cue_q:{t:"Careful! q and p are mirror twins. q has its round belly FIRST, with a tail. Listen: kwuh — like queen!"},
+  cue_n:{t:"Careful! n and m are alike. n has ONE bump. Listen: nnn — like nest!"},
+  cue_m:{t:"Watch out! m and n are alike. m has TWO bumps. Listen: mmm — like monkey!"},
+  cue_u:{t:"Careful! u and n are flips. u is a cup, open at the TOP. Listen: uh — like umbrella!"},
+  cue_w:{t:"Watch out! w and m are flips. w points UP like two valleys. Listen: wuh — like web!"},
   daily_goal:{t:"Daily training complete! You trained like a true champion today, Super Teddy!"},
   forge_intro1:{t:"The WORD FORGE is open!"},
   forge_intro2:{t:"Gems together make WORDS. And words forge the mightiest weapons!"},
@@ -922,6 +930,15 @@ function pickWeak(pool){ if(!pool.length)return null;
   let r=Math.random()*wt.reduce((a,b)=>a+b,0);
   for(let i=0;i<pool.length;i++){ if((r-=wt[i])<=0)return pool[i]; }
   return pool[pool.length-1]; }
+/* CONFUSABLE pairs (mirror/rotation) — the classic reversal traps. Foils
+   preferentially include the target's twin, so every review round quietly
+   trains b-vs-d (etc.) discrimination once both are taught. */
+const CONFUSE={ b:["d","p"], d:["b","p"], p:["q","b"], q:["p"], n:["m","u"], m:["n","w"], u:["n"], w:["m"] };
+function shuf(a){ return a.slice().sort(()=>Math.random()-.5); }
+function pickFoils(g, pool, n){ const cands=pool.filter(x=>x!==g);
+  const twin=(CONFUSE[g]||[]).find(p=>cands.includes(p));
+  const out = twin ? [twin].concat(shuf(cands.filter(x=>x!==twin)).slice(0,n-1)) : shuf(cands).slice(0,n);
+  return shuf(out); }
 function startMission(m){ clearFlow(); CUR=m; $("hudTitle").textContent=m.lbl.toUpperCase();
   if(m.type==="learn")startLearn(m);
   else if(m.type==="patrol")startPatrol(m.set);
@@ -960,7 +977,15 @@ function startLearn(m){ learnLetter=m.letter; const L=LETTERS[learnLetter];
   show("scrLetter");
   $("bigGlyph").textContent=learnLetter+" "+learnLetter.toUpperCase();
   $("kwIcon").textContent=L.icon;
-  narrate("letter",$("letterText"),["intro_"+learnLetter,"snd_"+learnLetter,"like_"+learnLetter]); }
+  /* confusable twins already taught? show a side-by-side contrast cue */
+  const cue=$("letterCue"); if(cue){
+    const twin=(CONFUSE[learnLetter]||[]).find(t=>S.done[LETTER_MISSION[t]]);
+    if(twin){ cue.innerHTML=`<span class="cueok read">${learnLetter}</span><span class="cuevs">not</span><span class="cuex read">${twin}</span>`; cue.style.display="flex"; }
+    else cue.style.display="none";
+  }
+  const ids=["intro_"+learnLetter,"snd_"+learnLetter,"like_"+learnLetter];
+  if(LINES["cue_"+learnLetter] && (CONFUSE[learnLetter]||[]).some(t=>S.done[LETTER_MISSION[t]])) ids.push("cue_"+learnLetter);
+  narrate("letter",$("letterText"),ids); }
 $("btnLetterGo").onclick=()=>startTrace(learnLetter);
 
 /* ---------------- TRACE ---------------- */
@@ -1011,7 +1036,7 @@ function nextFind(){
   narrate("find",$("findText"),["find_prompt","snd_"+g],"Find the gem that makes the sound\u2026 \ud83d\udd0a");
   /* patrol foils come only from letters already taught; learn-mission foils from the zone */
   const foilPool=patrolSet||taughtLetters();   /* only already-taught letters as distractors */
-  const foils=foilPool.filter(x=>x!==g).sort(()=>Math.random()-.5).slice(0,3);
+  const foils=pickFoils(g, foilPool, 3);       /* biases toward the confusable twin (b/d…) */
   const opts=[g,...foils].sort(()=>Math.random()-.5);
   const row=$("findTiles"); row.innerHTML="";
   opts.forEach(o=>{ const t=document.createElement("button"); t.className="tile read";
@@ -1035,7 +1060,7 @@ function startBoss(g){ show("scrBoss"); bossHP=3;
 function paintPips(id,hp,max){ const p=$(id); p.innerHTML="";
   for(let i=0;i<max;i++){const d=document.createElement("div");d.className="pip"+(i<hp?"":" off");p.appendChild(d);} }
 function bossRound(g){
-  const foils=taughtLetters().filter(x=>x!==g).sort(()=>Math.random()-.5).slice(0,2);
+  const foils=pickFoils(g, taughtLetters(), 2);   /* boss: include the confusable twin */
   const opts=[g,...foils].sort(()=>Math.random()-.5);
   const row=$("bossTiles"); row.innerHTML="";
   opts.forEach(o=>{ const t=document.createElement("button"); t.className="tile read"; t.textContent=o;
@@ -1232,7 +1257,7 @@ function fortMissHint(){ fMiss++; }
 function fortSound(){ const pool=taughtLetters(); const g=pickWeak(pool)||pool[0];
   narrate("fort",$("fortText"),["snd_"+g],"Blast the shield! Tap the gem that makes the sound… 🔊");
   $("fortWord").innerHTML="";
-  const foils=pool.filter(x=>x!==g).sort(()=>Math.random()-.5).slice(0,3);
+  const foils=pickFoils(g, pool, 3);   /* fortress shield: include the confusable twin */
   const row=$("fortChoices"); row.innerHTML="";
   [g,...foils].sort(()=>Math.random()-.5).forEach(o=>{ const t=document.createElement("button"); t.className="tile read"; t.dataset.g=o;
     t.textContent=(fRound%3===2)?o.toUpperCase():o;

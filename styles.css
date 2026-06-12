@@ -65,6 +65,13 @@ body{
   background:linear-gradient(180deg,#ffd75e,#f0a82b);color:var(--ink);box-shadow:0 6px 0 #9c6a12;}
 .tile.rletter:active{box-shadow:0 2px 0 #9c6a12;}
 .picktile{font-size:clamp(50px,10vw,82px);background:linear-gradient(180deg,#fff6e3,#e7dcc0);color:var(--ink);}
+/* confusable-letter contrast cue (b vs d) on the learn screen */
+#letterCue{align-items:center;gap:14px;}
+#letterCue .cueok,#letterCue .cuex{font-weight:700;font-size:clamp(44px,9vw,74px);width:clamp(64px,12vw,100px);height:clamp(64px,12vw,100px);border:5px solid var(--ink);border-radius:18px;display:flex;align-items:center;justify-content:center;}
+#letterCue .cueok{background:#3ec97e;color:#fff;box-shadow:0 5px 0 #137044;}
+#letterCue .cuex{background:#e7dcc0;color:#9c2f2f;position:relative;opacity:.85;}
+#letterCue .cuex::after{content:"";position:absolute;left:8%;top:46%;width:84%;height:6px;background:#e6453c;transform:rotate(-18deg);border-radius:3px;}
+#letterCue .cuevs{font-family:'Bangers',cursive;color:var(--gold);font-size:clamp(16px,3vw,24px);-webkit-text-stroke:3px var(--ink);paint-order:stroke;}
 /* Instant Spells: big heart-word + word-choice tiles. Heart letters glow gold with a ♥. */
 .spellbig{font-size:clamp(70px,15vw,128px);font-weight:700;color:var(--txt);letter-spacing:.06em;-webkit-text-stroke:5px var(--ink);paint-order:stroke;}
 .wordtile{width:auto;min-width:clamp(96px,18vw,150px);height:clamp(80px,13vw,120px);padding:0 18px;
