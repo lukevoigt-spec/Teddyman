@@ -10,9 +10,12 @@ const LETTERS={
   m:{kw:"monkey",icon:"🐵"}, d:{kw:"dog",icon:"🐶"}, g:{kw:"goat",icon:"🐐"},
   o:{kw:"octopus",icon:"🐙"}, c:{kw:"cat",icon:"🐱"}, k:{kw:"kite",icon:"🪁"},
   e:{kw:"egg",icon:"🥚"}, u:{kw:"umbrella",icon:"☂️"}, r:{kw:"rocket",icon:"🚀"},
-  h:{kw:"hat",icon:"🎩"}, b:{kw:"ball",icon:"⚽"}, f:{kw:"fish",icon:"🐟"}
+  h:{kw:"hat",icon:"🎩"}, b:{kw:"ball",icon:"⚽"}, f:{kw:"fish",icon:"🐟"},
+  l:{kw:"lion",icon:"🦁"}, j:{kw:"jar",icon:"🫙"}, v:{kw:"van",icon:"🚐"},
+  w:{kw:"web",icon:"🕸️"}, x:{kw:"fox",icon:"🦊"}, y:{kw:"yo-yo",icon:"🪀"},
+  z:{kw:"zebra",icon:"🦓"}, q:{kw:"queen",icon:"👑"}
 };
-const ORDER=["s","a","t","p","i","n","m","d","g","o","c","k","e","u","r","h","b","f"];
+const ORDER=["s","a","t","p","i","n","m","d","g","o","c","k","e","u","r","h","b","f","l","j","v","w","x","y","z","q"];
 /* z = letter-group zone. Foil pools and forge words only ever use letters from
    zones <= the mission's zone — material not yet taught never appears. */
 const MISSIONS=[
@@ -45,21 +48,35 @@ const MISSIONS=[
   {id:24,type:"learn",letter:"b",lbl:"Rescue Gem B",z:3},
   {id:25,type:"learn",letter:"f",lbl:"Rescue Gem F",z:3},
   {id:26,type:"forge",words:["fun","hen","bed","bug"],lbl:"Ridge Battle: Vex Captain",finale:true,z:3},
-  /* --- ZONE 4 · READING RALLY — DECODE: see the word, read it, tap what it means --- */
-  {id:27,type:"read",words:["cat","dog","sun","hat"],lbl:"Reading Rally I",z:4},
-  {id:28,type:"read",words:["pig","bug","bed","cup"],lbl:"Reading Rally II",z:4},
-  {id:29,type:"read",words:["hen","bus","bag","mug"],lbl:"Reading Rally III",z:4},
-  {id:30,type:"read",words:["fan","nut","pot","hug","cap","pan"],lbl:"Reading Champion",z:4},
-  /* --- ZONE 5 · SPELL TOWER — sight ("heart") words you just KNOW on sight --- */
-  {id:31,type:"spell",new:["I","a","the"],lbl:"Instant Spells I",z:5},
-  {id:32,type:"spell",new:["to","and","is"],lbl:"Instant Spells II",z:5},
-  {id:33,type:"spell",new:["you","said"],lbl:"Spell Tower: Master Caster",z:5},
-  /* --- ZONE 6 · STORY GATE — read whole decodable SENTENCES (the goal) --- */
-  {id:34,type:"sentence",sents:[0,1,2],lbl:"Story Gate I",z:6},
-  {id:35,type:"sentence",sents:[3,4,5],lbl:"Story Gate II",z:6},
-  {id:36,type:"sentence",sents:[6,7],lbl:"Story Gate: First Story",z:6}
+  /* --- ZONE 4 · PRISM PEAK (l j v w x y z q) — completes the alphabet ---
+     NOTE: appended ids (37+) but placed here in the LETTER phase via play
+     order; the map positions by zone membership so saves stay safe. --- */
+  {id:37,type:"learn",letter:"l",lbl:"Rescue Gem L",z:4},
+  {id:38,type:"learn",letter:"j",lbl:"Rescue Gem J",z:4},
+  {id:39,type:"patrol",set:["l","j","e","s"],lbl:"Prism Patrol",z:4},
+  {id:40,type:"learn",letter:"v",lbl:"Rescue Gem V",z:4},
+  {id:41,type:"learn",letter:"w",lbl:"Rescue Gem W",z:4},
+  {id:42,type:"forge",words:["let","jam","van"],lbl:"Word Forge: Prism Words",z:4},
+  {id:43,type:"learn",letter:"x",lbl:"Rescue Gem X",z:4},
+  {id:44,type:"learn",letter:"y",lbl:"Rescue Gem Y",z:4},
+  {id:45,type:"learn",letter:"z",lbl:"Rescue Gem Z",z:4},
+  {id:46,type:"learn",letter:"q",lbl:"Rescue Gem Q",z:4},
+  {id:47,type:"forge",words:["box","fox","zip","wax"],lbl:"Prism Peak: All 26 Gems!",finale:true,z:4},
+  /* --- ZONE 5 · READING RALLY — DECODE: see the word, read it, tap what it means --- */
+  {id:27,type:"read",words:["cat","dog","sun","hat"],lbl:"Reading Rally I",z:5},
+  {id:28,type:"read",words:["pig","bug","bed","cup"],lbl:"Reading Rally II",z:5},
+  {id:29,type:"read",words:["hen","bus","bag","mug"],lbl:"Reading Rally III",z:5},
+  {id:30,type:"read",words:["fan","nut","pot","hug","cap","pan"],lbl:"Reading Champion",z:5},
+  /* --- ZONE 6 · SPELL TOWER — sight ("heart") words you just KNOW on sight --- */
+  {id:31,type:"spell",new:["I","a","the"],lbl:"Instant Spells I",z:6},
+  {id:32,type:"spell",new:["to","and","is"],lbl:"Instant Spells II",z:6},
+  {id:33,type:"spell",new:["you","said"],lbl:"Spell Tower: Master Caster",z:6},
+  /* --- ZONE 7 · STORY GATE — read whole decodable SENTENCES (the goal) --- */
+  {id:34,type:"sentence",sents:[0,1,2],lbl:"Story Gate I",z:7},
+  {id:35,type:"sentence",sents:[3,4,5],lbl:"Story Gate II",z:7},
+  {id:36,type:"sentence",sents:[6,7],lbl:"Story Gate: First Story",z:7}
 ];
-const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield",22:"Gem Gauntlet",30:"Reading Crown",33:"Spell Tome",36:"Story Key"};
+const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield",22:"Gem Gauntlet",47:"Alphabet Star",30:"Reading Crown",33:"Spell Tome",36:"Story Key"};
 /* Decodable sentences: only taught CVC words + learned sight words. Each carries
    a picture (its meaning) and a foil that differs by the key word, so the child
    must actually READ it, not guess. The reading finish line. */
@@ -104,7 +121,15 @@ const TRACE={
   r:[[[112,96],[112,224]],[[112,150],[138,108],[180,112]]],
   h:[[[104,58],[104,224]],[[104,150],[130,106],[170,108],[188,150],[188,224]]],
   b:[[[110,58],[110,232]],[[110,150],[150,124],[192,152],[192,202],[150,230],[110,204]]],
-  f:[[[192,84],[156,60],[122,86],[120,150],[120,228]],[[90,138],[180,138]]]
+  f:[[[192,84],[156,60],[122,86],[120,150],[120,228]],[[90,138],[180,138]]],
+  l:[[[150,60],[150,228]]],
+  j:[[[172,104],[172,226],[150,260],[112,250]],[[172,62]]],
+  v:[[[100,100],[150,224],[200,100]]],
+  w:[[[88,100],[120,224],[150,150],[180,224],[212,100]]],
+  x:[[[104,104],[196,224]],[[196,104],[104,224]]],
+  y:[[[104,100],[150,196]],[[196,100],[150,196],[128,260],[98,254]]],
+  z:[[[104,108],[196,108],[104,224],[196,224]]],
+  q:[[[196,128],[150,96],[106,126],[100,176],[140,216],[192,200]],[[200,100],[200,234],[220,262]]]
 };
 
 /* ---------------- WORLD ZONES (drive the map) ----------------
@@ -127,28 +152,36 @@ const ZONES=[
   { id:3, name:"THUNDER RIDGE", bg:"ridge",
     letters:["e","u","r","h","b","f"],
     nodes:autoNodes(9,{y0:-570,step:104,phase:4.6}) },
-  { id:4, name:"READING RALLY", bg:"rally",
+  { id:4, name:"PRISM PEAK", bg:"prism",
+    letters:["l","j","v","w","x","y","z","q"],
+    nodes:autoNodes(11,{y0:-1500,step:104,phase:0.5}) },   /* group 4 — in the letter phase */
+  { id:5, name:"READING RALLY", bg:"rally",
     letters:[],   /* no new letters — this zone is decode/reading practice */
-    nodes:autoNodes(4,{y0:-1560,step:110,phase:1.2}) },
-  { id:5, name:"SPELL TOWER", bg:"spell",
+    nodes:autoNodes(4,{y0:-2680,step:110,phase:1.2}) },
+  { id:6, name:"SPELL TOWER", bg:"spell",
     letters:[],   /* sight-word recognition */
-    nodes:autoNodes(3,{y0:-2010,step:112,phase:3.1}) },
-  { id:6, name:"STORY GATE", bg:"story",
+    nodes:autoNodes(3,{y0:-3120,step:112,phase:3.1}) },
+  { id:7, name:"STORY GATE", bg:"story",
     letters:[],   /* read whole sentences */
-    nodes:autoNodes(3,{y0:-2380,step:114,phase:5.4}) }
+    nodes:autoNodes(3,{y0:-3490,step:114,phase:5.4}) }
 ];
 /* Derived geometry. The canvas grows UPWARD as zones are appended: the
    viewBox top (VIEW_TOP) tracks the highest node, and Vex's fortress always
    sits at the summit; the Heart Tower stands beside the rescue mission.    */
-const NODE_POS=ZONES.flatMap(z=>z.nodes);
+const NODE_POS=ZONES.flatMap(z=>z.nodes);   /* all node coords (for map extents) */
 const BASE_POS=ZONES[0].base;
+/* Mission -> map position BY ZONE MEMBERSHIP, not flat id order. Each zone's
+   missions (in play order) drop onto that zone's nodes, so a new letter group
+   can sit in the LETTER phase with appended save-ids without moving anything. */
+const NODEBY={};
+ZONES.forEach(z=>{ MISSIONS.filter(m=>m.z===z.id).forEach((m,i)=>{ NODEBY[m.id]=z.nodes[i]||z.nodes[z.nodes.length-1]; }); });
+function nodeOf(id){ return NODEBY[id]||BASE_POS; }
 const MAP_H=Math.max(BASE_POS[1], ...NODE_POS.map(p=>p[1]))+152;
 const MIN_Y=Math.min(...NODE_POS.map(p=>p[1]));
 const FORT_POS=[400, MIN_Y-210];
 const VIEW_TOP=FORT_POS[1]-330;
-/* Heart Tower sits beside Amelia's rescue (mission 17), not whatever the last
-   zone's final node is — so later zones don't drag it up the map. */
-const HEART_NODE=NODE_POS[17]||NODE_POS[NODE_POS.length-1];
+/* Heart Tower sits beside Amelia's rescue (mission 17). */
+const HEART_NODE=nodeOf(17);
 const HEART_POS=[HEART_NODE[0]>400 ? HEART_NODE[0]-265 : HEART_NODE[0]+265, HEART_NODE[1]-20];
 
 /* ---------- VOICE LINE MANIFEST (ids shared with Voice Studio) ---------- */
@@ -160,12 +193,16 @@ const LINES={
   snd_o:{t:"o",r:.7}, snd_c:{t:"kuh",r:.75}, snd_k:{t:"kuh",r:.75},
   snd_e:{t:"eh",r:.7}, snd_u:{t:"uh",r:.7}, snd_r:{t:"rrr",r:.7},
   snd_h:{t:"hh",r:.7}, snd_b:{t:"buh",r:.75}, snd_f:{t:"fff",r:.7},
+  snd_l:{t:"lll",r:.7}, snd_j:{t:"juh",r:.75}, snd_v:{t:"vvv",r:.7}, snd_w:{t:"wuh",r:.75},
+  snd_x:{t:"ks",r:.75}, snd_y:{t:"yuh",r:.75}, snd_z:{t:"zzz",r:.7}, snd_q:{t:"kwuh",r:.75},
   like_s:{t:"Like sun!"}, like_a:{t:"Like apple!"}, like_t:{t:"Like tiger!"},
   like_p:{t:"Like pig!"}, like_i:{t:"Like insect!"}, like_n:{t:"Like nest!"},
   like_m:{t:"Like monkey!"}, like_d:{t:"Like dog!"}, like_g:{t:"Like goat!"},
   like_o:{t:"Like octopus!"}, like_c:{t:"Like cat!"}, like_k:{t:"Like kite!"},
   like_e:{t:"Like egg!"}, like_u:{t:"Like umbrella!"}, like_r:{t:"Like rocket!"},
   like_h:{t:"Like hat!"}, like_b:{t:"Like ball!"}, like_f:{t:"Like fish!"},
+  like_l:{t:"Like lion!"}, like_j:{t:"Like jar!"}, like_v:{t:"Like van!"}, like_w:{t:"Like web!"},
+  like_x:{t:"Like fox!"}, like_y:{t:"Like yo-yo!"}, like_z:{t:"Like zebra!"}, like_q:{t:"Like queen!"},
   intro_s:{t:"Mission! A Vexbot trapped the Letter Gem S! This is S. It says..."},
   intro_a:{t:"Mission! A Vexbot trapped the Letter Gem A! This is A. It says..."},
   intro_t:{t:"Mission! A Vexbot trapped the Letter Gem T! This is T. It says..."},
@@ -184,6 +221,14 @@ const LINES={
   intro_h:{t:"Mission! A Vexbot trapped the Letter Gem H! This is H. It says..."},
   intro_b:{t:"Mission! A Vexbot trapped the Letter Gem B! This is B. It says..."},
   intro_f:{t:"Mission! A Vexbot trapped the Letter Gem F! This is F. It says..."},
+  intro_l:{t:"Mission! A Vexbot trapped the Letter Gem L! This is L. It says..."},
+  intro_j:{t:"Mission! A Vexbot trapped the Letter Gem J! This is J. It says..."},
+  intro_v:{t:"Mission! A Vexbot trapped the Letter Gem V! This is V. It says..."},
+  intro_w:{t:"Mission! A Vexbot trapped the Letter Gem W! This is W. It says..."},
+  intro_x:{t:"Mission! A Vexbot trapped the Letter Gem X! This is X. It says..."},
+  intro_y:{t:"Mission! A Vexbot trapped the Letter Gem Y! This is Y. It says..."},
+  intro_z:{t:"Mission! A Vexbot trapped the Letter Gem Z! This is Z. It says..."},
+  intro_q:{t:"Mission! A Vexbot trapped the Letter Gem Q! This is Q. It says..."},
   word_at:{t:"at!"}, word_sat:{t:"sat!"}, word_tap:{t:"tap!"}, word_pin:{t:"pin!"}, word_nap:{t:"nap!"},
   word_dad:{t:"dad!"}, word_mad:{t:"mad!"}, word_dig:{t:"dig!"},
   word_cat:{t:"cat!"}, word_dog:{t:"dog!"}, word_mom:{t:"mom!"}, word_kid:{t:"kid!"},
@@ -192,11 +237,14 @@ const LINES={
   word_sun:{t:"sun!"}, word_pig:{t:"pig!"}, word_hat:{t:"hat!"}, word_cup:{t:"cup!"}, word_bus:{t:"bus!"},
   word_bag:{t:"bag!"}, word_cap:{t:"cap!"}, word_pan:{t:"pan!"}, word_nut:{t:"nut!"}, word_fan:{t:"fan!"},
   word_mug:{t:"mug!"}, word_pot:{t:"pot!"}, word_hug:{t:"hug!"}, word_net:{t:"net!"}, word_bun:{t:"bun!"},
+  word_let:{t:"let!"}, word_jam:{t:"jam!"}, word_van:{t:"van!"}, word_box:{t:"box!"}, word_fox:{t:"fox!"}, word_zip:{t:"zip!"}, word_wax:{t:"wax!"},
+  m4_letters:{t:"You rescued ALL the Letter Gems! Every letter in Star Force City is FREE! Now... the road to reading, and to Lord Vex's Fortress!"},
   read_intro:{t:"READING RALLY! Now YOU read the words, hero. Sound them out, then tap the picture it means!"},
   read_prompt:{t:"Read the word... then tap what it means!"},
   read_yes:{t:"You READ it! Awesome!"},
   rally_champ:{t:"You are a READING CHAMPION, Super Teddy! You can read real words now!"},
   gear_crown:{t:"The READING CROWN! Only true readers can wear it!"},
+  gear_alphabet:{t:"The ALPHABET STAR! All 26 Letter Gems, rescued by you!"},
   sw_I:{t:"I"}, sw_a:{t:"a"}, sw_the:{t:"the"}, sw_to:{t:"to"}, sw_and:{t:"and"},
   sw_is:{t:"is"}, sw_you:{t:"you"}, sw_said:{t:"said"},
   spell_intro:{t:"INSTANT SPELLS! Some words are magic — you can't sound them all out. You just KNOW them. Heart words!"},
@@ -267,10 +315,11 @@ const LINES={
   rest2:{t:"Even heroes rest. Great work today, Super Teddy. The city is safer because of you!"},
   test:{t:"Hello Super Teddy! This is your mentor speaking. Star Force City needs you!"}
 };
-const GEARLINE={ "Power Belt":"gear_belt","Rocket Boots":"gear_boots","Word Hammer":"gear_hammer","Gem Sword":"gear_sword","Gem Shield":"gear_shield","Gem Gauntlet":"gear_gauntlet","Reading Crown":"gear_crown","Spell Tome":"gear_tome","Story Key":"gear_storykey" };
+const GEARLINE={ "Power Belt":"gear_belt","Rocket Boots":"gear_boots","Word Hammer":"gear_hammer","Gem Sword":"gear_sword","Gem Shield":"gear_shield","Gem Gauntlet":"gear_gauntlet","Reading Crown":"gear_crown","Spell Tome":"gear_tome","Story Key":"gear_storykey","Alphabet Star":"gear_alphabet" };
 const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#ffc93c",
   m:"#f06292",d:"#9c2f2f",g:"#1abc9c",o:"#5dade2",c:"#7d3c98",k:"#aab7c4",
-  e:"#27ae60",u:"#e67e22",r:"#ff5e57",h:"#5f6dff",b:"#3742fa",f:"#16a085"};
+  e:"#27ae60",u:"#e67e22",r:"#ff5e57",h:"#5f6dff",b:"#3742fa",f:"#16a085",
+  l:"#e84393",j:"#00b894",v:"#6c5ce7",w:"#0984e3",x:"#d63031",y:"#fdcb6e",z:"#636e72",q:"#a29bfe"};
 
 /* ---------------- SAVE ---------------- */
 const KEY="heroTeddySave_v1";
@@ -476,7 +525,7 @@ function nextScan(){ if(scanIx>=SCAN_SET.length){ S.scan=true; save();
 }
 
 /* ---------------- STAR FORCE CITY MAP ---------------- */
-function trailPath(){ const pts=[BASE_POS,...NODE_POS,[FORT_POS[0],FORT_POS[1]+170]];
+function trailPath(){ const pts=[BASE_POS,...MISSIONS.map(m=>nodeOf(m.id)),[FORT_POS[0],FORT_POS[1]+170]];
   let d="M "+pts[0][0]+" "+pts[0][1];
   for(let i=1;i<pts.length;i++){ const a=pts[i-1],b=pts[i];
     const mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2;
@@ -501,7 +550,7 @@ function mapSVG(){
   const avail=i=> i===0 || done(MISSIONS[i-1].id);
   let nodes="";
   MISSIONS.forEach((m,i)=>{
-    const [x,y]=NODE_POS[i];
+    const [x,y]=nodeOf(m.id);
     const st=done(m.id)?"done":(avail(i)?"current":"locked");
     const fill=done(m.id)?"#3ec97e":(avail(i)?"#ffc93c":"#3b3360");
     const side = x<400 ? 1 : -1;
@@ -627,7 +676,7 @@ function mapSVG(){
   </svg>`;
 }
 
-const CAGED=[{ix:3,kind:"tank",name:"TANK",real:"ARCHIE"},{ix:6,kind:"flip",name:"FLIP",real:"ELLIE"},{ix:8,kind:"sunny",name:"SUNNY",real:"WILLIAM"}];
+const CAGED=[{mid:3,kind:"tank",name:"TANK",real:"ARCHIE"},{mid:6,kind:"flip",name:"FLIP",real:"ELLIE"},{mid:8,kind:"sunny",name:"SUNNY",real:"WILLIAM"}];
 /* Hero League: each friend (a REAL person Teddy knows) owns one mission type and
    cheers him BY NAME during it, once freed. Amelia cheers on every win. */
 const ALLY={
@@ -637,7 +686,7 @@ const ALLY={
   heart:{real:"Amelia",  owns:"win",    lines:["heart_cheer1","heart_cheer2","heart_cheer3"]}
 };
 function allyMid(kind){ if(kind==="heart")return 17;
-  const c=CAGED.find(x=>x.kind===kind); return c?MISSIONS[c.ix].id:-1; }
+  const c=CAGED.find(x=>x.kind===kind); return c?c.mid:-1; }
 function allyFreed(kind){ return !!S.done[allyMid(kind)]; }
 function allyLine(kind){ const L=ALLY[kind].lines; return L[Math.floor(Math.random()*L.length)]; }
 /* brief celebratory pop of the friend's face + name; auto-removes, no flash */
@@ -648,12 +697,12 @@ function allyPop(kind){ const st=$("stage"); if(!st)return;
   st.appendChild(d); setTimeout(()=>d.remove(),2200); }
 /* Full league roster for the Hero Base shelf (mid = mission that frees them).
    real = the actual person Teddy knows; name = their hero alias. */
-const LEAGUE=[...CAGED.map(t=>({mid:MISSIONS[t.ix].id,kind:t.kind,name:t.name,real:t.real})),
+const LEAGUE=[...CAGED.map(t=>({mid:t.mid,kind:t.kind,name:t.name,real:t.real})),
   {mid:17,kind:"heart",name:"HEARTGUARD",real:"AMELIA"}];
 function allyTeasers(){
   let out="";
-  CAGED.forEach(t=>{ const [x,y]=NODE_POS[t.ix]; const side=x<400?1:-1;
-    const px=x+side*180; const freed=!!S.done[MISSIONS[t.ix].id];
+  CAGED.forEach(t=>{ const [x,y]=nodeOf(t.mid); const side=x<400?1:-1;
+    const px=x+side*180; const freed=!!S.done[t.mid];
     if(freed){
       out+=`<g transform="translate(${px} ${y-80})">
         <g fill="#ffc93c" opacity=".9"><path d="M0 -52 L6 -38 L-6 -38Z"/><path d="M-38 -34 L-26 -28 L-34 -20Z"/><path d="M38 -34 L26 -28 L34 -20Z"/></g>
@@ -677,7 +726,7 @@ function allyTeasers(){
 }
 function heroMarker(){ let ix=0;
   for(let i=0;i<MISSIONS.length;i++){ if(!S.done[MISSIONS[i].id]){ix=i;break;} ix=i; }
-  const [x,y]=NODE_POS[ix];
+  const [x,y]=nodeOf(MISSIONS[ix].id);
   return `<g transform="translate(${x-44} ${y-186}) scale(.30)">${heroNow(250).replace(/<svg[^>]*>|<\/svg>/g,"")}</g>`;
 }
 function toMap(){ sessionTick(); show("scrMap");
@@ -689,7 +738,7 @@ function toMap(){ sessionTick(); show("scrMap");
   });
   /* auto-scroll to the hero's current node */
   let ix=0; for(let i=0;i<MISSIONS.length;i++){ if(!S.done[MISSIONS[i].id]){ix=i;break;} ix=i; }
-  const frac=Math.max(0,(NODE_POS[ix][1]-VIEW_TOP-380)/(MAP_H-VIEW_TOP));
+  const frac=Math.max(0,(nodeOf(MISSIONS[ix].id)[1]-VIEW_TOP-380)/(MAP_H-VIEW_TOP));
   requestAnimationFrame(()=>{ const sc=$("mapScroll");
     sc.scrollTop = frac * ($("mapSVGwrap").offsetHeight - sc.clientHeight + 80); });
   Aud.play("pick");
@@ -786,7 +835,7 @@ function nextFind(){
   $("findProg").textContent="⭐ "+findRep+" / "+findGoal;
   narrate("find",$("findText"),["find_prompt","snd_"+g],"Find the gem that makes the sound\u2026 \ud83d\udd0a");
   /* patrol foils come only from letters already taught; learn-mission foils from the zone */
-  const foilPool=patrolSet||lettersFor(CUR);
+  const foilPool=patrolSet||taughtLetters();   /* only already-taught letters as distractors */
   const foils=foilPool.filter(x=>x!==g).sort(()=>Math.random()-.5).slice(0,3);
   const opts=[g,...foils].sort(()=>Math.random()-.5);
   const row=$("findTiles"); row.innerHTML="";
@@ -811,7 +860,7 @@ function startBoss(g){ show("scrBoss"); bossHP=3;
 function paintPips(id,hp,max){ const p=$(id); p.innerHTML="";
   for(let i=0;i<max;i++){const d=document.createElement("div");d.className="pip"+(i<hp?"":" off");p.appendChild(d);} }
 function bossRound(g){
-  const foils=lettersFor(CUR).filter(x=>x!==g).sort(()=>Math.random()-.5).slice(0,2);
+  const foils=taughtLetters().filter(x=>x!==g).sort(()=>Math.random()-.5).slice(0,2);
   const opts=[g,...foils].sort(()=>Math.random()-.5);
   const row=$("bossTiles"); row.innerHTML="";
   opts.forEach(o=>{ const t=document.createElement("button"); t.className="tile read"; t.textContent=o;
@@ -951,7 +1000,7 @@ function forgeWord(){
   narrate("forge",$("forgeText"),["forge_build",...w.split("").map(c=>"snd_"+c),"word_"+w],"Build the word! Listen\u2026 \ud83d\udd0a");
   const slots=$("forgeSlots"); slots.innerHTML="";
   w.split("").forEach(()=>{ const s=document.createElement("div"); s.className="slot read"; slots.appendChild(s); });
-  const pool=lettersFor(CUR).filter(x=>!w.includes(x));
+  const pool=taughtLetters().filter(x=>!w.includes(x));   /* forge distractor: taught letters only */
   const foil=pool[Math.floor(Math.random()*pool.length)];
   const choices=[...new Set(w.split(""))].concat(foil?[foil]:[]).sort(()=>Math.random()-.5);
   const row=$("forgeChoices"); row.innerHTML="";
@@ -980,7 +1029,7 @@ function showWin(firstTime){ show("scrWin");
   $("winGear").innerHTML=(firstTime&&gear)?`<div class="gearbadge">NEW GEAR: ⭐ ${gear}</div>`:"";
   let ids;
   if(CUR.rescue) ids=["free_heart1","free_heart2","m2_done"];
-  else if(CUR.finale) ids = CUR.z>=3 ? ["m3_done"] : ["finale1","finale2","finale3"];
+  else if(CUR.finale) ids = CUR.z===4 ? ["m4_letters"] : (CUR.z===3 ? ["m3_done"] : ["finale1","finale2","finale3"]);
   else if(firstTime&&gear) ids=["win_grow","win_gear",GEARLINE[gear]];
   else ids=["win_grow"];
   const FREE={3:"free_tank",6:"free_flip",8:"free_sunny"};
@@ -999,7 +1048,8 @@ function showRest(nextM){ show("scrRest");
   $("btnRestMore").onclick=()=>{ nextM?startMission(nextM):toMap(); }; }
 
 /* ---------------- HERO BASE ---------------- */
-const LETTER_MISSION={s:0,a:1,t:3,p:5,i:6,n:7,m:9,d:10,g:12,o:14,c:15,k:16,e:18,u:19,r:21,h:23,b:24,f:25};
+const LETTER_MISSION={s:0,a:1,t:3,p:5,i:6,n:7,m:9,d:10,g:12,o:14,c:15,k:16,e:18,u:19,r:21,h:23,b:24,f:25,
+  l:37,j:38,v:40,w:41,x:43,y:44,z:45,q:46};
 function showBase(){ clearFlow(); show("scrBase");
   $("hudTitle").textContent="HERO BASE";
   paintBase();

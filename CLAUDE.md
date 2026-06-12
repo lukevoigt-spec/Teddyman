@@ -76,9 +76,13 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - Story Gate (live, zone 6): decodable SENTENCES (the reading goal) — read the sentence, tap the
   picture it tells about (foil differs by a key word). SENTENCES[] use only taught words + sight
   words. Earns the Story Key; mission 36 declares "you can READ." This is the M4 reading payoff.
-- Group 4 (next): l j v w x y z q — NOTE: the map renders zones in ZONES-array order, which currently
-  must match mission-id order. To slot group 4 into the LETTER phase (not after the reading zones)
-  without breaking save ids, mapSVG node positioning needs decoupling from flat id order first.
+- Group 4 (live, "Prism Peak" zone): l j v w x y z q — completes the alphabet (26 letters), missions
+  37–47, forge words let/jam/van, box/fox/zip/wax; finale "All 26 Gems!" earns the Alphabet Star.
+  Placed in the LETTER phase (before the reading zones) via PLAY ORDER while keeping appended save
+  ids: the map positions each mission by ZONE MEMBERSHIP (NODEBY/nodeOf), not flat id order, so new
+  groups slot in anywhere without breaking saves. ZONES array order = play order (zone ids 1–7).
+- Distractors (find/boss/forge foils) now come from taughtLetters() — only already-taught letters,
+  never not-yet-taught ones (so e.g. group-4 letters never show before they're learned).
 - Uppercase+lowercase paired, lowercase weighted; deliberate uppercase rounds every 3rd rep (TODO
   beyond find's every-3rd-rep upper round).
 - DIRECTION NOTE (prime objective = reading): scan/find/boss/forge train sound→letter (ID + spell).
