@@ -94,6 +94,11 @@ body{
   font-family:'Andika',sans-serif;font-weight:700;font-size:clamp(48px,8vw,74px);
 }
 .slot.filled{border-style:solid;background:#3ec97e;color:var(--ink);animation:pop .45s ease;}
+/* word-sized slot (cloze blank / scramble slots hold whole words, not one letter) */
+.wordslot{min-width:clamp(90px,16vw,140px);width:auto;height:clamp(72px,12vw,108px);padding:0 14px;border-radius:18px;
+  border:5px dashed var(--ink);background:#ffe9a8;color:var(--ink);display:flex;align-items:center;justify-content:center;
+  font-family:'Andika',sans-serif;font-weight:700;font-size:clamp(30px,6vw,50px);}
+.wordslot.filled{border-style:solid;background:#3ec97e;color:var(--ink);animation:pop .45s ease;}
 
 .hud{position:absolute;top:env(safe-area-inset-top,8px);left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;pointer-events:none;z-index:5;}
 .hud>*{pointer-events:auto;}

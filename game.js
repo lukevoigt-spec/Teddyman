@@ -1188,7 +1188,7 @@ function nextCloze(){ if(clozeIx>=clozeGoal){ flow(Aud.play(["dojo_yes"]),missio
   $("clozeProg").textContent="📖 "+clozeIx+" / "+clozeGoal; $("clozePic").textContent=c.pic;
   narrate("cloze",$("clozeText"),["cloze_prompt"],"Read it… tap the word that fits the blank! 📖");
   const sw=$("clozeSent"); sw.innerHTML="";
-  c.t.forEach(w=>{ if(w==="_"){ const s=document.createElement("div"); s.className="slot read"; s.id="clozeBlank"; s.textContent="?"; sw.appendChild(s); }
+  c.t.forEach(w=>{ if(w==="_"){ const s=document.createElement("div"); s.className="wordslot read"; s.id="clozeBlank"; s.textContent="?"; sw.appendChild(s); }
     else { const t=document.createElement("button"); t.className="tile wordtile read"+(SIGHT[w]?" heartword":""); t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>Aud.play(wordAudio(w)); sw.appendChild(t); } });
   const done=c.t.map(w=>w==="_"?c.ans:w);
   const cr=$("clozeChoices"); cr.innerHTML="";
@@ -1211,7 +1211,7 @@ function nextScramble(){ if(scramIx>=scramGoal){ flow(Aud.play(["dojo_yes"]),mis
   $("scramProg").textContent="📖 "+scramIx+" / "+scramGoal; $("scramPic").textContent=s.pic;
   narrate("scram",$("scramText"),["scram_prompt",...scramAudio(s)],"Build the sentence! Tap the words in order. 🔊");
   const sl=$("scramSlots"); sl.innerHTML="";
-  s.words.forEach(()=>{ const d=document.createElement("div"); d.className="slot read"; d.style.minWidth="clamp(70px,12vw,110px)"; d.style.width="auto"; sl.appendChild(d); });
+  s.words.forEach(()=>{ const d=document.createElement("div"); d.className="wordslot read"; sl.appendChild(d); });
   const tr=$("scramTiles"); tr.innerHTML="";
   s.words.map((w,i)=>i).sort(()=>Math.random()-.5).forEach(i=>{ const w=s.words[i];
     const t=document.createElement("button"); t.className="tile wordtile read"+(SIGHT[w]?" heartword":""); t.innerHTML=SIGHT[w]?spellWordHTML(w):w;
