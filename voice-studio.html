@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hero Teddy — Voice Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#150f2e;--gold:#ffc93c;--blue:#3b82f0;--txt:#fff6e3;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Baloo 2',sans-serif;background:#171236;color:var(--txt);min-height:100vh;padding:20px;}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:16px;}
+h1{font-family:'Bangers',cursive;color:var(--gold);font-size:42px;letter-spacing:.05em;}
+.card{background:#241b4d;border:3px solid #3a2d72;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;}
+label{font-size:15px;color:#cfc6f2;}
+input[type=text],input[type=password],select{
+  width:100%;padding:10px 14px;border-radius:12px;border:2px solid #3a2d72;background:#171236;color:var(--txt);font-size:16px;font-family:inherit;}
+.row{display:flex;gap:12px;flex-wrap:wrap;}
+.row>div{flex:1;min-width:220px;}
+button{
+  font-family:'Bangers',cursive;font-size:22px;letter-spacing:.05em;color:var(--ink);
+  background:linear-gradient(180deg,#ffd75e,#f0a82b);border:3px solid var(--ink);border-radius:14px;
+  padding:10px 22px;cursor:pointer;}
+button.sm{font-size:15px;padding:5px 12px;font-family:'Baloo 2';font-weight:800;}
+button.blue{background:linear-gradient(180deg,#5ea0ff,#2257c4);color:#fff;}
+button:disabled{opacity:.4;pointer-events:none;}
+table{width:100%;border-collapse:collapse;font-size:14px;}
+th,td{padding:7px 8px;border-bottom:1px solid #3a2d72;text-align:left;vertical-align:middle;}
+td input[type=text]{font-size:14px;padding:6px 8px;}
+.tag{display:inline-block;padding:2px 8px;border-radius:8px;font-weight:800;font-size:12px;}
+.tagA{background:#2257c4;} .tagB{background:#b3486e;} .tagC{background:#5b2690;}
+.ok{color:#3ec97e;font-weight:800;} .err{color:#ef5348;font-weight:800;} .pend{color:#9b94c9;}
+#bar{height:14px;border-radius:7px;background:#171236;border:2px solid #3a2d72;overflow:hidden;}
+#barFill{height:100%;width:0%;background:linear-gradient(90deg,#ffd75e,#f0a82b);transition:width .3s;}
+.note{font-size:14px;color:#9b94c9;line-height:1.5;}
+.hl{color:var(--gold);font-weight:800;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>HERO TEDDY · VOICE STUDIO</h1>
+  <div class="note">This tool creates <span class="hl">voicepack.js</span> — the studio voices for the game. Two ways to fill a line: <span class="hl">Generate</span> with ElevenLabs, or <span class="hl">Upload</span> your own recording (voice memo .m4a/.mp3 works). Tip: the six <span class="hl">letter sounds</span> (snd_s … snd_n) are the most important lines in the whole game — recording those yourself in a quiet room gives the most accurate phonics. When done, tap Download, then upload <span class="hl">index.html + voicepack.js</span> together (as a zip) to your host.</div>
+
+  <div class="card" style="border-color:#ffc93c;">
+    <div id="statusMsg" class="note" style="color:#ffc93c;font-weight:800;">Studio loaded and ready. If tapping buttons does nothing, this file is being previewed without JavaScript — upload it briefly to Netlify Drop and open the link instead.</div>
+  </div>
+
+  <div class="card">
+    <label>ElevenLabs API key (from elevenlabs.io → Profile → API Keys). Only needed for Generate; uploads work without it. The key stays in your browser.</label>
+    <div class="row">
+      <div><input type="password" id="apiKey" value="sk_b5f51f4a8fe30a91850f7a39d50093e6b45b529fd9bdc063" placeholder="xi-..."></div>
+      <div style="flex:0;"><button class="blue" id="btnLoadVoices">Load voices</button></div>
+    </div>
+    <div class="row">
+      <div><label>Voice A — Mentor / Narrator</label><select id="vA"></select></div>
+      <div><label>Voice B — Amelia (Heartguard)</label><select id="vB"></select></div>
+      <div><label>Voice C — Vexbots / Lord Vex (robotic villain)</label><select id="vC"></select></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="align-items:center;">
+      <button id="btnGenAll">⚡ Generate all missing</button>
+      <button class="blue" id="btnDownload">⬇️ Download voicepack.js</button>
+      <div style="flex:1;"><div id="bar"><div id="barFill"></div></div></div>
+      <div id="count" class="note"></div>
+    </div>
+    <table id="tbl">
+      <thead><tr><th>Line</th><th>Voice</th><th>Text to speak (editable)</th><th>Status</th><th></th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+/* Line manifest — ids must match the game exactly. */
+const LINES={
+  snd_s:{t:"sss",v:"A",note:"pure hissing s — no 'uh'"},
+  snd_a:{t:"a, a, a",v:"A",note:"short a as in apple"},
+  snd_t:{t:"t, t, t",v:"A",note:"quick t — minimal 'uh'"},
+  snd_p:{t:"p, p, p",v:"A",note:"quick p — minimal 'uh'"},
+  snd_i:{t:"ih, ih",v:"A",note:"short i as in insect"},
+  snd_n:{t:"nnn",v:"A",note:"held n hum"},
+  like_s:{t:"Like sun!",v:"A"}, like_a:{t:"Like apple!",v:"A"}, like_t:{t:"Like tiger!",v:"A"},
+  like_p:{t:"Like pig!",v:"A"}, like_i:{t:"Like insect!",v:"A"}, like_n:{t:"Like nest!",v:"A"},
+  intro_s:{t:"Mission! A Vexbot trapped the Letter Gem S! This is S. It says...",v:"A"},
+  intro_a:{t:"Mission! A Vexbot trapped the Letter Gem A! This is A. It says...",v:"A"},
+  intro_t:{t:"Mission! A Vexbot trapped the Letter Gem T! This is T. It says...",v:"A"},
+  intro_p:{t:"Mission! A Vexbot trapped the Letter Gem P! This is P. It says...",v:"A"},
+  intro_i:{t:"Mission! A Vexbot trapped the Letter Gem I! This is I. It says...",v:"A"},
+  intro_n:{t:"Mission! A Vexbot trapped the Letter Gem N! This is N. It says...",v:"A"},
+  word_at:{t:"at!",v:"A"}, word_sat:{t:"sat!",v:"A"}, word_tap:{t:"tap!",v:"A"},
+  word_pin:{t:"pin!",v:"A"}, word_nap:{t:"nap!",v:"A"},
+  panel1:{t:"This is Gem City. A city powered by magical Letter Gems, words, and stories.",v:"A"},
+  panel2:{t:"But one night, LORD VEX and his Vexbot army attacked! They stole the Letter Gems and smashed every word into pieces. Now nobody can read. Not signs, not books, not even bedtime stories.",v:"A"},
+  panel3:{t:"The city needed a hero. The founders of the Hero League, your mom and dad, searched everywhere... and they chose YOU, Teddy.",v:"A"},
+  panel4:{t:"These are the Gem Lenses. Your glasses are superpowered! With them, you can see hidden Letter Gems nobody else can see.",v:"A"},
+  panel5:{t:"Rescue the gems. Rebuild the words. Save Gem City! Are you ready, hero Teddy?",v:"A"},
+  welcome:{t:"Welcome back, hero Teddy!",v:"A"},
+  pick:{t:"Pick your mission, Teddy!",v:"A"},
+  scan_intro:{t:"Lens calibration! Let's charge your Gem Lenses. There are no wrong answers. Every tap makes them stronger!",v:"A"},
+  scan_prompt:{t:"Tap the gem that says...",v:"A"},
+  scan_done:{t:"Lenses fully charged! Time for your first mission, hero!",v:"A"},
+  trace_prompt:{t:"Trace the gem to cut it free! Follow the glowing stars with your finger.",v:"A"},
+  freed:{t:"You cut the gem free!",v:"A"},
+  find_prompt:{t:"Find the gem that says...",v:"A"},
+  yes:{t:"Yes!",v:"A"},
+  almost:{t:"Almost! Listen again...",v:"A"},
+  boss_intro:{t:"A VEXBOT is attacking! Blast it! Tap the gem that says...",v:"A"},
+  hit_again:{t:"Direct hit! Again!",v:"A"},
+  dodge:{t:"He dodged! Listen...",v:"A"},
+  flee:{t:"SYSTEM FAILURE! VEXBOT RETREATING!",v:"C",note:"robotic villain voice"},
+  youdidit:{t:"You did it, Teddy!",v:"A"},
+  patrol_intro:{t:"Rooftop patrol! Letter Gems are hiding all over the city. Find them, hero!",v:"A"},
+  forge_intro1:{t:"The WORD FORGE is open!",v:"A"},
+  forge_intro2:{t:"Gems together make WORDS. And words forge the mightiest weapons!",v:"A"},
+  forge_build:{t:"Build the word! Listen...",v:"A"},
+  forge_next:{t:"Next sound...",v:"A"},
+  forge_listen:{t:"Listen for the next sound...",v:"A"},
+  blast:{t:"BLAST!",v:"A"},
+  forge_win1:{t:"The Vexbot is DESTROYED!",v:"A"},
+  forge_win2:{t:"You READ words, Teddy! You are a true hero!",v:"A"},
+  win_grow:{t:"Gem rescued! Your power grows, Teddy! Look at those muscles!",v:"A"},
+  win_gear:{t:"You earned new gear!",v:"A"},
+  gear_belt:{t:"The Power Belt!",v:"A"}, gear_boots:{t:"Rocket Boots!",v:"A"},
+  gear_hammer:{t:"The WORD HAMMER! Forged from your first words!",v:"A"}, gear_sword:{t:"The GEM SWORD! A true hero\u2019s blade!",v:"A"}, base1:{t:"Welcome to your Hero Base, Teddy! Gear up and look strong!",v:"A"},
+  finale1:{t:"Incoming message! ... Teddy! It's Amelia!",v:"B"},
+  finale2:{t:"Lord Vex trapped me in the Heart Tower! Come rescue me in your next adventure!",v:"B"},
+  finale3:{t:"To be continued, hero...",v:"A"},
+  rest1:{t:"The sun is setting over Gem City...",v:"A"},
+  rest2:{t:"Even heroes rest. Great work today, Teddy. The city is safer because of you!",v:"A"},
+  free_tank:{t:"CAGE DESTROYED! You freed Archie! TANK has joined the Hero League... and he is ready to SMASH!",v:"A"},
+  free_flip:{t:"CAGE DESTROYED! You freed Ellie! FLIP has joined the league... backflips, cartwheels, and mid-air gem grabs!",v:"A"},
+  free_sunny:{t:"CAGE DESTROYED! You freed William! SUNNY has joined the league... and things are about to get silly!",v:"A"},
+  test:{t:"Hello hero Teddy! This is your mentor speaking. Gem City needs you!",v:"A"}
+};
+const PACK={};                 // id -> dataURI
+const $=id=>document.getElementById(id);
+function setMsg(txt,bad){ const m=$("statusMsg"); m.textContent=txt; m.style.color=bad?"#ef5348":"#3ec97e"; }
+
+/* ---------- table ---------- */
+const tb=document.querySelector("#tbl tbody");
+Object.entries(LINES).forEach(([id,L])=>{
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td><b>${id}</b>${L.note?`<div class="note">${L.note}</div>`:""}</td>
+    <td><span class="tag tag${L.v}">${L.v}</span></td>
+    <td><input type="text" value="${L.t.replace(/"/g,"&quot;")}" data-id="${id}"></td>
+    <td class="pend" id="st_${id}">—</td>
+    <td style="white-space:nowrap;">
+      <button class="sm" data-gen="${id}">Gen</button>
+      <button class="sm" data-play="${id}" disabled>▶</button>
+      <button class="sm" data-up="${id}">Upload</button>
+      <input type="file" accept="audio/*" style="display:none" data-file="${id}">
+    </td>`;
+  tb.appendChild(tr);
+});
+function setStatus(id,cls,txt){ const el=$("st_"+id); el.className=cls; el.textContent=txt;
+  document.querySelector(`[data-play="${id}"]`).disabled=!PACK[id];
+  updateCount(); }
+function updateCount(){ const n=Object.keys(PACK).length,total=Object.keys(LINES).length;
+  $("count").textContent=n+" / "+total+" lines ready";
+  $("barFill").style.width=(100*n/total)+"%"; }
+updateCount();
+
+/* ---------- ElevenLabs ---------- */
+async function loadVoices(){
+  setMsg("Contacting ElevenLabs…");
+  const key=$("apiKey").value.trim(); if(!key){setMsg("Enter your API key first.",1);return;}
+  try{
+    const r=await fetch("https://api.elevenlabs.io/v1/voices",{headers:{"xi-api-key":key}});
+    if(!r.ok)throw new Error(r.status);
+    const d=await r.json();
+    ["vA","vB","vC"].forEach(s=>{$(s).innerHTML="";
+      d.voices.forEach(v=>{const o=document.createElement("option");o.value=v.voice_id;o.textContent=v.name;$(s).appendChild(o);});});
+    setMsg("Voices loaded ("+d.voices.length+") — pick one per role. Suggestions: warm storyteller for A, bright young female for B, playful gravelly for C.");
+  }catch(e){setMsg("Could not load voices: "+e.message+" — check the key and internet connection.",1);}
+}
+$("btnLoadVoices").onclick=loadVoices;
+
+async function genLine(id){
+  const key=$("apiKey").value.trim(); if(!key){setMsg("Enter your API key first.",1);return false;}
+  const L=LINES[id];
+  const voiceId=$( L.v==="B"?"vB":(L.v==="C"?"vC":"vA") ).value;
+  if(!voiceId){setMsg("Load voices and pick one for role "+L.v+" first.",1);return false;}
+  const text=document.querySelector(`input[data-id="${id}"]`).value;
+  setStatus(id,"pend","generating…");
+  try{
+    const r=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+voiceId,{
+      method:"POST",
+      headers:{"xi-api-key":key,"Content-Type":"application/json"},
+      body:JSON.stringify({text:text,model_id:"eleven_multilingual_v2",
+        voice_settings:{stability:0.55,similarity_boost:0.8,style:0.35}})
+    });
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    const blob=await r.blob();
+    PACK[id]=await blobToDataURI(blob);
+    setStatus(id,"ok","ready ✓"); return true;
+  }catch(e){ setStatus(id,"err","failed ("+e.message+")"); return false; }
+}
+function blobToDataURI(blob){ return new Promise((res,rej)=>{
+  const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=rej; fr.readAsDataURL(blob); }); }
+
+$("btnGenAll").onclick=async()=>{
+  $("btnGenAll").disabled=true;
+  for(const id of Object.keys(LINES)){
+    if(PACK[id])continue;
+    await genLine(id);
+    await new Promise(r=>setTimeout(r,350)); /* be gentle with rate limits */
+  }
+  $("btnGenAll").disabled=false;
+};
+
+/* ---------- per-line buttons ---------- */
+document.addEventListener("click",e=>{
+  const g=e.target.dataset.gen, p=e.target.dataset.play, u=e.target.dataset.up;
+  if(g)genLine(g);
+  if(p&&PACK[p]){ new Audio(PACK[p]).play(); }
+  if(u){ document.querySelector(`input[data-file="${u}"]`).click(); }
+});
+document.addEventListener("change",async e=>{
+  const id=e.target.dataset.file; if(!id||!e.target.files[0])return;
+  PACK[id]=await blobToDataURI(e.target.files[0]);
+  setStatus(id,"ok","ready ✓ (your recording)");
+});
+
+/* ---------- download ---------- */
+$("btnDownload").onclick=()=>{
+  if(!Object.keys(PACK).length){setMsg("No lines ready yet — generate or upload some first.",1);return;}
+  const js="window.VOICEPACK="+JSON.stringify(PACK)+";";
+  const blob=new Blob([js],{type:"text/javascript"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="voicepack.js"; a.click(); setMsg("voicepack.js downloaded with "+Object.keys(PACK).length+" lines! Zip it with index.html and upload to your host.");
+};
+</script>
+</body>
+</html>

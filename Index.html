@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hero Teddy">
+<title>Hero Teddy — Gem City</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Andika:wght@400;700&family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#150f2e; --panel:#fff6e3; --sky1:#171236; --sky2:#3a2d7d; --sky3:#7a4fb6;
+  --blue:#3b82f0; --blueD:#2257c4; --red:#e6453c; --gold:#ffc93c; --goldD:#f0a82b;
+  --green:#3ec97e; --purp:#6b2fa0; --txt:#fff6e3;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{
+  font-family:'Baloo 2',sans-serif;color:var(--txt);
+  background:linear-gradient(180deg,var(--sky1),var(--sky2) 60%,var(--sky3));
+  display:flex;align-items:center;justify-content:center;
+  -webkit-user-select:none;user-select:none;touch-action:manipulation;
+}
+#stage{width:100%;height:100dvh;max-width:1180px;position:relative;overflow:hidden;display:flex;flex-direction:column;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:18px;gap:14px;}
+.screen.on{display:flex;}
+.comic{font-family:'Bangers',cursive;letter-spacing:.04em;}
+.read{font-family:'Andika',sans-serif;}
+
+.btn{
+  font-family:'Bangers',cursive;font-size:clamp(26px,4.5vw,40px);letter-spacing:.06em;
+  color:var(--ink);background:linear-gradient(180deg,#ffd75e,#f0a82b);
+  border:5px solid var(--ink);border-radius:26px;padding:16px 38px;cursor:pointer;
+  box-shadow:0 8px 0 #9c6a12, 0 14px 24px rgba(0,0,0,.35);
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.btn:active{transform:translateY(6px);box-shadow:0 2px 0 #9c6a12;}
+.btn.blue{background:linear-gradient(180deg,#5ea0ff,#2257c4);color:#fff;box-shadow:0 8px 0 #143a85,0 14px 24px rgba(0,0,0,.35);}
+.btn.blue:active{box-shadow:0 2px 0 #143a85;}
+.btn.ghost{background:transparent;color:var(--txt);border-color:var(--txt);box-shadow:none;font-size:clamp(20px,3vw,26px);padding:10px 24px;}
+.btn:disabled{opacity:.4;pointer-events:none;}
+
+.bubble{
+  position:relative;background:var(--panel);color:var(--ink);border:5px solid var(--ink);
+  border-radius:24px;padding:16px 70px 16px 22px;max-width:min(720px,92vw);
+  font-family:'Andika',sans-serif;font-weight:700;font-size:clamp(19px,3vw,27px);line-height:1.35;
+}
+.bubble .ear{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  width:52px;height:52px;border-radius:50%;background:var(--blue);border:4px solid var(--ink);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:26px;
+}
+
+.tilerow{display:flex;gap:clamp(10px,2vw,22px);flex-wrap:wrap;justify-content:center;}
+.tile{
+  width:clamp(96px,16vw,150px);height:clamp(96px,16vw,150px);
+  background:linear-gradient(180deg,#5ea0ff,#2257c4);
+  border:6px solid var(--ink);border-radius:24px;color:#fff;
+  font-family:'Andika',sans-serif;font-weight:700;font-size:clamp(54px,9vw,84px);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;
+  box-shadow:0 8px 0 #143a85;transition:transform .12s,opacity .3s,filter .3s;
+}
+.tile:active{transform:translateY(5px);box-shadow:0 3px 0 #143a85;}
+.tile.dim{opacity:.32;filter:grayscale(.6);pointer-events:none;}
+.tile.hint{animation:hintpulse 1.6s ease-in-out infinite;}
+@keyframes hintpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.tile.win{background:linear-gradient(180deg,#5fe0a0,#23a35f);box-shadow:0 8px 0 #137044;animation:pop .5s ease;}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+.slot{
+  width:clamp(86px,14vw,130px);height:clamp(86px,14vw,130px);border-radius:22px;
+  border:6px dashed var(--ink);background:#ffe9a8;color:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Andika',sans-serif;font-weight:700;font-size:clamp(48px,8vw,74px);
+}
+.slot.filled{border-style:solid;background:#3ec97e;color:var(--ink);animation:pop .45s ease;}
+
+.hud{position:absolute;top:env(safe-area-inset-top,8px);left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;pointer-events:none;z-index:5;}
+.hud>*{pointer-events:auto;}
+.chip{background:rgba(21,15,46,.85);border:3px solid var(--txt);border-radius:18px;padding:6px 16px;font-family:'Bangers',cursive;font-size:clamp(17px,2.6vw,24px);color:var(--gold);letter-spacing:.06em;}
+.roundbtn{width:54px;height:54px;border-radius:50%;background:rgba(21,15,46,.85);border:3px solid var(--txt);color:var(--txt);font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.starsrow{font-size:clamp(20px,3vw,28px);color:var(--gold);}
+
+/* ------- CITY MAP ------- */
+#mapScroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
+#mapSVGwrap{width:100%;}
+#mapSVGwrap svg{display:block;width:100%;height:auto;}
+.mnode{cursor:pointer;}
+.mnode.locked{opacity:.45;pointer-events:none;}
+.mnode .ring{animation:none;}
+.mnode.current .ring{animation:mappulse 1.8s ease-in-out infinite;transform-origin:center;transform-box:fill-box;}
+@keyframes mappulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+#mapHud{position:absolute;top:calc(env(safe-area-inset-top,8px) + 64px);left:14px;right:14px;display:flex;justify-content:space-between;pointer-events:none;z-index:4;}
+
+#traceWrap{position:relative;width:min(64dvh,86vw);aspect-ratio:1;background:rgba(255,246,227,.08);border:5px solid var(--txt);border-radius:28px;}
+#traceSVG{width:100%;height:100%;touch-action:none;}
+.tdot{fill:var(--gold);stroke:var(--ink);stroke-width:3;}
+.tdot.next{animation:hintpulse 1.4s infinite;transform-origin:center;transform-box:fill-box;}
+.tdot.hit{fill:var(--green);}
+.guide{font-family:'Andika',sans-serif;font-weight:700;fill:rgba(255,246,227,.16);}
+
+.boss{width:clamp(170px,30vw,280px);transition:transform .35s ease;}
+.boss.hitfx{animation:shake .38s ease;}
+@keyframes shake{0%{transform:translate(0,0) rotate(0)}25%{transform:translate(-8px,3px) rotate(-3deg)}50%{transform:translate(7px,-3px) rotate(2deg)}75%{transform:translate(-5px,2px) rotate(-2deg)}100%{transform:translate(0,0)}}
+.boss.flee{transform:translateX(140%) rotate(14deg) scale(.7);opacity:0;transition:all .9s ease;}
+.pips{display:flex;gap:10px;justify-content:center;margin-bottom:6px;}
+.pip{width:24px;height:24px;border-radius:50%;background:#9fe870;border:3px solid var(--ink);}
+.pip.off{background:#3b3360;border-color:#9b94c9;}
+.burst{
+  position:absolute;width:140px;height:140px;border-radius:50%;pointer-events:none;z-index:9;
+  background:radial-gradient(circle,#fff3c4 0%,#ffc93c 45%,rgba(255,138,61,0) 70%);
+  animation:burst .55s ease-out forwards;
+}
+@keyframes burst{0%{transform:scale(.2);opacity:.95}100%{transform:scale(1.5);opacity:0}}
+.zapword{position:absolute;font-family:'Bangers',cursive;color:var(--gold);-webkit-text-stroke:6px var(--ink);paint-order:stroke;font-size:clamp(40px,8vw,72px);pointer-events:none;animation:zw .8s ease-out forwards;z-index:9;}
+@keyframes zw{0%{transform:scale(.4) rotate(-8deg);opacity:0}30%{opacity:1}100%{transform:scale(1.15) rotate(-8deg) translateY(-30px);opacity:0}}
+
+.panelart{width:min(600px,90vw);border:6px solid var(--ink);border-radius:24px;overflow:hidden;background:#241b4d;}
+.panelart svg{display:block;width:100%;height:auto;}
+
+.title-logo{font-size:clamp(54px,10vw,110px);color:var(--gold);-webkit-text-stroke:8px var(--ink);paint-order:stroke;text-align:center;line-height:.95;}
+.sub{font-size:clamp(20px,3.4vw,30px);color:#cfc6f2;text-align:center;}
+.heroimg{width:clamp(150px,26vw,260px);}
+.gearlist{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.gearbadge{background:rgba(21,15,46,.7);border:3px solid var(--gold);color:var(--gold);border-radius:16px;padding:8px 16px;font-family:'Bangers',cursive;font-size:20px;letter-spacing:.05em;}
+#settingsPanel{position:absolute;inset:0;background:rgba(10,8,24,.94);z-index:20;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;}
+#settingsPanel.on{display:flex;}
+#saveBox{width:min(640px,90vw);height:100px;border-radius:14px;border:3px solid var(--txt);background:#171236;color:var(--txt);font-size:12px;padding:8px;}
+.fadein{animation:fade .5s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.vpstatus{font-size:14px;color:#9b94c9;}
+.echip{font-family:'Bangers',cursive;font-size:20px;letter-spacing:.05em;padding:10px 18px;border-radius:16px;
+  border:4px solid var(--ink);background:#241b4d;color:var(--txt);cursor:pointer;}
+.echip.onsel{background:linear-gradient(180deg,#ffd75e,#f0a82b);color:var(--ink);}
+.echip.lockd{opacity:.4;pointer-events:none;}
+.equiprow{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.baselbl{font-family:'Bangers',cursive;color:#9b94c9;font-size:20px;letter-spacing:.1em;}
+.gemshelf{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;background:rgba(21,15,46,.6);
+  border:3px solid #3a2d72;border-radius:18px;padding:12px 18px;min-height:64px;}
+.mcloudA{animation:mdrift 90s linear infinite;}
+.mcloudB{animation:mdrift 140s linear infinite;}
+@keyframes mdrift{from{transform:translateX(0)}to{transform:translateX(-180px)}}
+@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important;}}
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <div class="hud" id="hud" style="display:none;">
+    <div class="chip" id="hudTitle">GEM CITY</div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <div class="chip starsrow" id="hudStars">⚡ 0</div>
+      <div class="roundbtn" id="btnHome" title="Map">🗺️</div>
+      <div class="roundbtn" id="btnGear" title="Settings">⚙️</div>
+    </div>
+  </div>
+
+  <div class="roundbtn" id="btnSkip" style="position:absolute;right:16px;bottom:16px;display:none;z-index:8;width:64px;height:64px;font-size:30px;">⏭</div>
+
+  <!-- TITLE -->
+  <div class="screen on" id="scrTitle">
+    <div class="comic title-logo">HERO TEDDY</div>
+    <div class="sub comic" style="letter-spacing:.12em;">THE POWER GEMS OF GEM CITY</div>
+    <div id="titleHero"></div>
+    <button class="btn" id="btnStart">START</button>
+    <button class="btn ghost" id="btnContinue" style="display:none;">CONTINUE MISSION</button>
+    <div class="vpstatus" id="vpStatus"></div>
+  </div>
+
+  <!-- INTRO -->
+  <div class="screen" id="scrIntro">
+    <div class="panelart" id="introArt"></div>
+    <div class="bubble" id="introText"><span></span><div class="ear" data-ear="intro">🔊</div></div>
+    <button class="btn blue" id="btnIntroNext">NEXT ➜</button>
+  </div>
+
+  <!-- SCAN -->
+  <div class="screen" id="scrScan">
+    <div class="bubble" id="scanText"><span></span><div class="ear" data-ear="scan">🔊</div></div>
+    <div class="tilerow" id="scanTiles"></div>
+    <div class="starsrow" id="scanProg"></div>
+  </div>
+
+  <!-- MAP -->
+  <div class="screen" id="scrMap" style="padding:0;">
+    <div id="mapScroll"><div id="mapSVGwrap"></div></div>
+  </div>
+
+  <!-- HERO BASE -->
+  <div class="screen" id="scrBase" style="gap:10px;">
+    <div class="comic" style="font-size:clamp(34px,6vw,56px);color:var(--gold);-webkit-text-stroke:6px var(--ink);paint-order:stroke;margin-top:50px;">HERO BASE</div>
+    <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;justify-content:center;">
+      <div id="baseHero"></div>
+      <div style="display:flex;flex-direction:column;gap:12px;max-width:420px;">
+        <div class="baselbl">POWER LEVEL: <span id="powerLbl" style="color:var(--gold);"></span></div>
+        <div class="baselbl">WEAPON</div>
+        <div class="equiprow" id="weaponRow"></div>
+        <div class="baselbl">CAPE</div>
+        <div class="equiprow" id="capeRow"></div>
+        <div class="baselbl">THE HERO LEAGUE</div>
+        <div class="gemshelf" id="leagueShelf"></div>
+        <div class="baselbl">GEM COLLECTION</div>
+        <div class="gemshelf" id="gemShelf"></div>
+      </div>
+    </div>
+    <button class="btn blue" id="btnBaseBack">CITY MAP ➜</button>
+  </div>
+
+  <!-- LEARN -->
+  <div class="screen" id="scrLetter">
+    <div id="bigGlyph" class="read" style="font-weight:700;font-size:clamp(120px,26vw,230px);line-height:1;color:var(--gold);-webkit-text-stroke:7px var(--ink);paint-order:stroke;"></div>
+    <div id="kwIcon" style="font-size:clamp(60px,12vw,110px);line-height:1;"></div>
+    <div class="bubble" id="letterText"><span></span><div class="ear" data-ear="letter">🔊</div></div>
+    <button class="btn blue" id="btnLetterGo">TRACE IT! ➜</button>
+  </div>
+
+  <!-- TRACE -->
+  <div class="screen" id="scrTrace">
+    <div class="bubble" id="traceText"><span>Trace the glyph! Follow the stars.</span><div class="ear" data-ear="trace">🔊</div></div>
+    <div id="traceWrap"><svg id="traceSVG" viewBox="0 0 300 300"></svg></div>
+  </div>
+
+  <!-- FIND -->
+  <div class="screen" id="scrFind">
+    <div class="bubble" id="findText"><span></span><div class="ear" data-ear="find">🔊</div></div>
+    <div class="tilerow" id="findTiles"></div>
+    <div class="starsrow" id="findProg"></div>
+  </div>
+
+  <!-- BOSS -->
+  <div class="screen" id="scrBoss">
+    <div class="pips" id="bossPips"></div>
+    <div id="bossArt"></div>
+    <div class="bubble" id="bossText"><span></span><div class="ear" data-ear="boss">🔊</div></div>
+    <div class="tilerow" id="bossTiles"></div>
+  </div>
+
+  <!-- FORGE -->
+  <div class="screen" id="scrForge">
+    <div class="pips" id="forgePips"></div>
+    <div id="forgeBoss"></div>
+    <div class="bubble" id="forgeText"><span></span><div class="ear" data-ear="forge">🔊</div></div>
+    <div class="tilerow" id="forgeSlots"></div>
+    <div class="tilerow" id="forgeChoices"></div>
+  </div>
+
+  <!-- WIN -->
+  <div class="screen" id="scrWin">
+    <div class="comic" style="font-size:clamp(50px,9vw,90px);color:var(--gold);-webkit-text-stroke:7px var(--ink);paint-order:stroke;">VICTORY!</div>
+    <div id="winHero"></div>
+    <div class="bubble" id="winText"><span></span><div class="ear" data-ear="win">🔊</div></div>
+    <div class="gearlist" id="winGear"></div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;">
+      <button class="btn blue" id="btnWinMap">CITY MAP</button>
+      <button class="btn" id="btnWinNext">NEXT MISSION ➜</button>
+    </div>
+  </div>
+
+  <!-- REST -->
+  <div class="screen" id="scrRest" style="background:linear-gradient(180deg,#2b2066,#a4538d 70%,#f0a82b);">
+    <div class="comic" style="font-size:clamp(40px,7vw,70px);color:var(--panel);-webkit-text-stroke:6px var(--ink);paint-order:stroke;">HERO RESTS</div>
+    <div id="restHero"></div>
+    <div class="bubble" id="restText"><span></span><div class="ear" data-ear="rest">🔊</div></div>
+    <div style="display:flex;gap:14px;">
+      <button class="btn" id="btnRestDone">REST 🌙</button>
+      <button class="btn ghost" id="btnRestMore">One more mission</button>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="settingsPanel">
+    <div class="comic" style="font-size:34px;color:var(--gold);">GROWN-UP CORNER</div>
+    <div class="vpstatus" id="vpStatus2"></div>
+    <button class="btn ghost" id="btnVoiceTest">🔊 Test voice</button>
+    <div class="read" style="font-size:15px;max-width:600px;text-align:center;color:#cfc6f2;">Backup: copy this code somewhere safe. Paste it back and tap Restore to recover progress on any device.</div>
+    <textarea id="saveBox" spellcheck="false"></textarea>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+      <button class="btn ghost" id="btnCopySave">Copy backup</button>
+      <button class="btn ghost" id="btnRestoreSave">Restore</button>
+      <button class="btn ghost" id="btnCloseSettings">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Optional studio-generated voicepack. Game works without it (TTS fallback). -->
+<script src="voicepack.js" onerror="void(0)"></script>
+
+<script>
+/* =========================================================
+   HERO TEDDY — v2.2 GEM CITY · CAGED ALLIES
+   New: voicepack audio engine (studio clips w/ TTS fallback)
+        + real scrollable Gem City map with landmarks.
+========================================================= */
+const NAME="Teddy";
+const LETTERS={
+  s:{kw:"sun",icon:"☀️"}, a:{kw:"apple",icon:"🍎"}, t:{kw:"tiger",icon:"🐯"},
+  p:{kw:"pig",icon:"🐷"}, i:{kw:"insect",icon:"🐜"}, n:{kw:"nest",icon:"🪺"}
+};
+const ORDER=["s","a","t","p","i","n"];
+const MISSIONS=[
+  {id:0,type:"learn",letter:"s",lbl:"Rescue Gem S"},
+  {id:1,type:"learn",letter:"a",lbl:"Rescue Gem A"},
+  {id:2,type:"patrol",set:["s","a"],lbl:"Rooftop Patrol"},
+  {id:3,type:"learn",letter:"t",lbl:"Rescue Gem T"},
+  {id:4,type:"forge",words:["at","sat"],lbl:"Word Forge: First Words"},
+  {id:5,type:"learn",letter:"p",lbl:"Rescue Gem P"},
+  {id:6,type:"learn",letter:"i",lbl:"Rescue Gem I"},
+  {id:7,type:"learn",letter:"n",lbl:"Rescue Gem N"},
+  {id:8,type:"forge",words:["tap","pin","nap","sat"],lbl:"Forge Battle: Save the Block",finale:true}
+];
+const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword"};
+const TRACE={
+  s:[[[205,80],[150,58],[102,86],[106,132],[160,152],[196,188],[172,236],[102,232]]],
+  a:[[[196,128],[150,96],[106,126],[100,176],[140,216],[192,200]],[[200,98],[200,234]]],
+  t:[[[150,58],[150,150],[156,228]],[[104,116],[200,116]]],
+  p:[[[108,94],[108,256]],[[108,122],[156,96],[196,132],[188,178],[142,196],[108,176]]],
+  i:[[[150,108],[150,224]],[[150,64]]],
+  n:[[[110,100],[110,224]],[[110,150],[136,104],[176,106],[192,148],[192,224]]]
+};
+
+/* ---------- VOICE LINE MANIFEST (ids shared with Voice Studio) ---------- */
+const LINES={
+  /* letter sounds — override these with your own recordings for perfect phonics */
+  snd_s:{t:"sss",r:.7}, snd_a:{t:"ahh",r:.7}, snd_t:{t:"tuh",r:.75},
+  snd_p:{t:"puh",r:.75}, snd_i:{t:"ih",r:.7}, snd_n:{t:"nnn",r:.7},
+  like_s:{t:"Like sun!"}, like_a:{t:"Like apple!"}, like_t:{t:"Like tiger!"},
+  like_p:{t:"Like pig!"}, like_i:{t:"Like insect!"}, like_n:{t:"Like nest!"},
+  intro_s:{t:"Mission! A Vexbot trapped the Letter Gem S! This is S. It says..."},
+  intro_a:{t:"Mission! A Vexbot trapped the Letter Gem A! This is A. It says..."},
+  intro_t:{t:"Mission! A Vexbot trapped the Letter Gem T! This is T. It says..."},
+  intro_p:{t:"Mission! A Vexbot trapped the Letter Gem P! This is P. It says..."},
+  intro_i:{t:"Mission! A Vexbot trapped the Letter Gem I! This is I. It says..."},
+  intro_n:{t:"Mission! A Vexbot trapped the Letter Gem N! This is N. It says..."},
+  word_at:{t:"at!"}, word_sat:{t:"sat!"}, word_tap:{t:"tap!"}, word_pin:{t:"pin!"}, word_nap:{t:"nap!"},
+  panel1:{t:"This is Gem City. A city powered by magical Letter Gems, words, and stories."},
+  panel2:{t:"But one night, LORD VEX and his Vexbot army attacked! They stole the Letter Gems and smashed every word into pieces. Now nobody can read. Not signs, not books, not even bedtime stories."},
+  panel3:{t:"The city needed a hero. The founders of the Hero League, your mom and dad, searched everywhere... and they chose YOU, Teddy."},
+  panel4:{t:"These are the Gem Lenses. Your glasses are superpowered! With them, you can see hidden Letter Gems nobody else can see."},
+  panel5:{t:"Rescue the gems. Rebuild the words. Save Gem City! Are you ready, hero Teddy?"},
+  welcome:{t:"Welcome back, hero Teddy!"},
+  pick:{t:"Pick your mission, Teddy!"},
+  scan_intro:{t:"Lens calibration! Let's charge your Gem Lenses. There are no wrong answers. Every tap makes them stronger!"},
+  scan_prompt:{t:"Tap the gem that says..."},
+  scan_done:{t:"Lenses fully charged! Time for your first mission, hero!"},
+  trace_prompt:{t:"Trace the gem to cut it free! Follow the glowing stars with your finger."},
+  freed:{t:"You cut the gem free!"},
+  find_prompt:{t:"Find the gem that says..."},
+  yes:{t:"Yes!"},
+  almost:{t:"Almost! Listen again..."},
+  boss_intro:{t:"A VEXBOT is attacking! Blast it! Tap the gem that says..."},
+  hit_again:{t:"Direct hit! Again!"},
+  dodge:{t:"He dodged! Listen..."},
+  flee:{t:"SYSTEM FAILURE! VEXBOT RETREATING!", v:"C"},
+  youdidit:{t:"You did it, Teddy!"},
+  patrol_intro:{t:"Rooftop patrol! Letter Gems are hiding all over the city. Find them, hero!"},
+  forge_intro1:{t:"The WORD FORGE is open!"},
+  forge_intro2:{t:"Gems together make WORDS. And words forge the mightiest weapons!"},
+  forge_build:{t:"Build the word! Listen..."},
+  forge_next:{t:"Next sound..."},
+  forge_listen:{t:"Listen for the next sound..."},
+  blast:{t:"BLAST!"},
+  forge_win1:{t:"The Vexbot is DESTROYED!"},
+  forge_win2:{t:"You READ words, Teddy! You are a true hero!"},
+  win_grow:{t:"Gem rescued! Your power grows, Teddy! Look at those muscles!"},
+  win_gear:{t:"You earned new gear!"},
+  gear_belt:{t:"The Power Belt!"}, gear_boots:{t:"Rocket Boots!"},
+  gear_hammer:{t:"The WORD HAMMER! Forged from your first words!"}, gear_sword:{t:"The GEM SWORD! A true hero's blade!"}, base1:{t:"Welcome to your Hero Base, Teddy! Gear up and look strong!"},
+  finale1:{t:"Incoming message! ... Teddy! It's Amelia!", v:"B"},
+  finale2:{t:"Lord Vex trapped me in the Heart Tower! Come rescue me in your next adventure!", v:"B"},
+  finale3:{t:"To be continued, hero..."},
+  free_tank:{t:"CAGE DESTROYED! You freed Archie! TANK has joined the Hero League... and he is ready to SMASH!"},
+  free_flip:{t:"CAGE DESTROYED! You freed Ellie! FLIP has joined the league... backflips, cartwheels, and mid-air gem grabs!"},
+  free_sunny:{t:"CAGE DESTROYED! You freed William! SUNNY has joined the league... and things are about to get silly!"},
+  rest1:{t:"The sun is setting over Gem City..."},
+  rest2:{t:"Even heroes rest. Great work today, Teddy. The city is safer because of you!"},
+  test:{t:"Hello hero Teddy! This is your mentor speaking. Gem City needs you!"}
+};
+const GEARLINE={ "Power Belt":"gear_belt","Rocket Boots":"gear_boots","Word Hammer":"gear_hammer","Gem Sword":"gear_sword" };
+const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#ffc93c"};
+
+/* ---------------- SAVE ---------------- */
+const KEY="heroTeddySave_v1";
+let S=load();
+function fresh(){return {v:1,intro:false,scan:false,done:{},mastery:{},stars:0,gear:[],equip:{weapon:"none",cape:"red"},session:{count:0,day:"",rest:false}};}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.v===1){if(!d.session.day)d.session={count:0,day:"",rest:false};if(!d.equip)d.equip={weapon:"none",cape:"red"};return d;}}catch(e){}return fresh();}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function today(){return new Date().toDateString();}
+function sessionTick(){ if(S.session.day!==today()){S.session={count:0,day:today(),rest:false};save();} }
+function mast(g){ if(!S.mastery[g])S.mastery[g]={seen:0,ok:0,str:0}; return S.mastery[g]; }
+function record(g,ok){ const m=mast(g); m.seen++; if(ok){m.ok++;m.str=Math.min(5,m.str+1);} else {m.str=Math.max(0,m.str-1);} save(); }
+
+/* ---------------- AUDIO ENGINE ----------------
+   Plays studio voicepack clips when present (window.VOICEPACK),
+   falls back to speech synthesis per line otherwise.            */
+const Aud={
+  voice:null, cur:null, token:0,
+  hasVP(id){ return (typeof VOICEPACK!=="undefined") && VOICEPACK[id]; },
+  pick(){ const vs=speechSynthesis.getVoices().filter(v=>v.lang&&v.lang.startsWith("en"));
+    this.voice = vs.find(v=>/samantha/i.test(v.name)) || vs.find(v=>/karen|ava|allison|female/i.test(v.name)) || vs[0]||null; },
+  stop(){ this.token++; speechSynthesis.cancel(); if(this.cur){try{this.cur.pause();}catch(e){}this.cur=null;} },
+  play(ids){ this.stop(); const my=this.token;
+    const seq=Array.isArray(ids)?ids.slice():[ids];
+    const cap=4000+2600*seq.length;
+    const core=new Promise(res=>{
+      const next=()=>{ if(my!==this.token){res();return;}
+        if(!seq.length){res();return;}
+        const id=seq.shift(); const L=LINES[id]||{t:id};
+        if(this.hasVP(id)){
+          const a=new Audio(VOICEPACK[id]); this.cur=a;
+          a.onended=()=>{this.cur=null;next();}; a.onerror=()=>{this.cur=null;ttsOne();};
+          a.play().catch(()=>ttsOne());
+          function ttsOne(){ Aud._tts(L,my).then(next); }
+        } else { this._tts(L,my).then(next); }
+      }; next();
+    });
+    return Promise.race([core,new Promise(r=>setTimeout(r,cap))]);
+  },
+  _tts(L,my){ return new Promise(res=>{
+      const guard=setTimeout(res,8000);
+      if(!("speechSynthesis" in window)){res();return;}
+      if(!this.voice)this.pick();
+      const u=new SpeechSynthesisUtterance(L.t);
+      if(this.voice)u.voice=this.voice;
+      u.rate=L.r||0.92; u.pitch=1.05;
+      u.onend=()=>{clearTimeout(guard);res();}; u.onerror=()=>{clearTimeout(guard);res();};
+      speechSynthesis.speak(u);
+  });},
+  ding(){ try{ const ctx=Aud.ctx||(Aud.ctx=new (window.AudioContext||window.webkitAudioContext)());
+    const o=ctx.createOscillator(),gn=ctx.createGain();
+    o.frequency.value=740;o.type="sine";
+    gn.gain.setValueAtTime(0.0001,ctx.currentTime);
+    gn.gain.exponentialRampToValueAtTime(0.18,ctx.currentTime+0.03);
+    gn.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.4);
+    o.connect(gn).connect(ctx.destination);o.start();o.stop(ctx.currentTime+0.42);
+  }catch(e){} }
+};
+if("speechSynthesis" in window){speechSynthesis.onvoiceschanged=()=>Aud.pick();
+  setInterval(()=>{try{if(speechSynthesis.speaking)speechSynthesis.resume();}catch(e){}},4000);}
+let lastSeq={};
+let __cont=null,__skipT=null;
+function flow(p,fn){ __cont=fn; clearTimeout(__skipT);
+  const sk=$("btnSkip"); sk.style.display="none";
+  __skipT=setTimeout(()=>{ if(__cont)sk.style.display="flex"; },2600);
+  p.then(()=>{ if(__cont===fn){ __cont=null; sk.style.display="none"; fn(); } });
+}
+function clearFlow(){ __cont=null; clearTimeout(__skipT); const sk=$("btnSkip"); if(sk)sk.style.display="none"; }
+function narrate(key,el,ids,display){ lastSeq[key]=ids;
+  const txt=(display!==undefined)?display:(Array.isArray(ids)?ids:[ids]).map(id=>(LINES[id]||{t:id}).t).join(" ");
+  el.querySelector("span").textContent=txt;
+  return Aud.play(ids);
+}
+document.addEventListener("click",e=>{
+  const ear=e.target.closest(".ear"); if(!ear)return;
+  const k=ear.dataset.ear; if(lastSeq[k])Aud.play(lastSeq[k]);
+});
+
+/* ---------------- ART ---------------- */
+let __huid=0;
+function heroOpts(){ const done=Object.keys(S.done).length;
+  return { muscle: done>=7?2:(done>=3?1:0),
+           weapon: S.equip.weapon||"none",
+           cape: S.equip.cape||"red",
+           belt2:S.gear.includes("Power Belt"), boots2:S.gear.includes("Rocket Boots") }; }
+function heroNow(w){ return heroSVG(w,heroOpts()); }
+function heroSVG(w=200,o={}){
+const u="h"+(__huid++);
+const m=o.muscle||0, sx=1+0.07*m;
+const capes={red:["#ef5348","#b92f33"],gold:["#ffd75e","#e08f1f"],purple:["#a06ae8","#6b2fa0"]};
+const cp=capes[o.cape||"red"]||capes.red;
+let weapon="";
+if(o.weapon==="hammer"){weapon=`<g transform="translate(196 6) rotate(16)" stroke="#150f2e" stroke-width="6" stroke-linejoin="round">
+<rect x="-8" y="36" width="16" height="130" rx="8" fill="#8a5a33"/>
+<rect x="-52" y="-14" width="104" height="56" rx="14" fill="url(#${u}gold)"/>
+<rect x="-52" y="-14" width="20" height="56" rx="10" fill="#fff0bd"/>
+<path d="M58 -22 l16 -10 l-6 14 l16 -2 l-14 12" fill="none" stroke="#ffd75e" stroke-width="5" stroke-linecap="round"/></g>`;}
+if(o.weapon==="sword"){weapon=`<g transform="translate(206 -8) rotate(10)" stroke="#150f2e" stroke-width="5" stroke-linejoin="round">
+<polygon points="0,-120 16,-96 16,60 -16,60 -16,-96" fill="#dfe9ff"/>
+<polygon points="0,-120 16,-96 0,-96" fill="#aebfe8"/>
+<rect x="-34" y="58" width="68" height="18" rx="8" fill="url(#${u}gold)"/>
+<rect x="-9" y="74" width="18" height="46" rx="8" fill="#8a5a33"/>
+<circle cx="0" cy="128" r="11" fill="url(#${u}gold)"/></g>`;}
+const biceps = m>=1 ? `<ellipse cx="38" cy="178" rx="${14+5*m}" ry="${11+4*m}" fill="#3b82f0" stroke="#150f2e" stroke-width="5"/>
+<ellipse cx="206" cy="${182}" rx="${14+5*m}" ry="${11+4*m}" fill="#3b82f0" stroke="#150f2e" stroke-width="5" opacity="${o.weapon&&o.weapon!=="none"?0:1}"/>` : "";
+const beltGlow=o.belt2?`<rect x="84" y="268" width="78" height="28" rx="10" fill="none" stroke="#fff3c4" stroke-width="5" opacity=".85"/>`:"";
+const bootFx=o.boots2?`<g stroke="#ff8a3d" stroke-width="5" stroke-linecap="round" opacity=".9">
+<path d="M86 472 q4 12 -2 22"/><path d="M104 472 q0 14 -4 24"/>
+<path d="M148 472 q4 12 -2 22"/><path d="M166 472 q0 14 -4 24"/></g>`:"";
+return `<svg viewBox="-30 -150 310 660" width="${w}" aria-hidden="true">
+<defs><linearGradient id="${u}suit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b82f0"/><stop offset="1" stop-color="#2257c4"/></linearGradient>
+<linearGradient id="${u}cape" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${cp[0]}"/><stop offset="1" stop-color="${cp[1]}"/></linearGradient>
+<linearGradient id="${u}gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd75e"/><stop offset="1" stop-color="#f0a82b"/></linearGradient></defs>
+${o.weapon==="hammer"||o.weapon==="sword"?weapon:""}
+<path d="M62 122 Q38 220 30 350 Q28 406 50 448 Q90 426 124 436 Q170 424 200 446 Q224 402 218 346 Q210 218 184 122 Q122 104 62 122Z" fill="url(#${u}cape)" stroke="#150f2e" stroke-width="6"/>
+<g stroke="#150f2e" stroke-width="6" stroke-linejoin="round">
+<path d="M96 288 L90 372 L86 412 L118 412 L124 310Z" fill="url(#${u}suit)"/>
+<path d="M150 288 L158 372 L162 412 L130 412 L126 310Z" fill="url(#${u}suit)"/>
+<path d="M84 412 L120 412 L120 450 Q120 466 100 466 L70 466 Q60 466 62 454 Q64 440 84 434Z" fill="url(#${u}cape)"/>
+<path d="M162 412 L126 412 L126 450 Q126 466 146 466 L176 466 Q186 466 184 454 Q182 440 162 434Z" fill="url(#${u}cape)"/>
+<path d="M84 412 L120 412 L120 424 L82 424Z" fill="#ffd75e" stroke-width="4"/>
+<path d="M126 412 L162 412 L164 424 L126 424Z" fill="#ffd75e" stroke-width="4"/></g>
+${bootFx}
+<g transform="translate(123 0) scale(${sx} 1) translate(-123 0)">
+<path d="M64 142 Q123 120 182 142 L174 238 Q170 272 152 284 L96 284 Q76 272 72 238Z" fill="url(#${u}suit)" stroke="#150f2e" stroke-width="6"/>
+<path d="M74 150 Q96 136 122 134 L120 170 Q96 172 80 184Z" fill="#6ea4f7" opacity=".55"/>
+${m>=1?'<path d="M92 168 Q123 152 154 168" stroke="#173f8f" stroke-width="5" fill="none" stroke-linecap="round"/>':''}
+${m>=2?'<path d="M100 206 Q123 196 146 206 M104 232 Q123 224 142 232" stroke="#173f8f" stroke-width="4.5" fill="none" stroke-linecap="round"/>':''}
+</g>
+<g stroke="#150f2e" stroke-width="6" stroke-linejoin="round">
+<path d="M66 152 Q34 170 28 212 Q34 242 62 252 L84 264 L92 244 L72 232 Q58 220 60 198 Q66 172 78 162Z" fill="url(#${u}suit)"/>
+<path d="M180 152 Q212 170 218 212 Q214 230 202 240 L196 220 Q200 208 192 192 Q184 172 170 162Z" fill="url(#${u}suit)"/>
+<path d="M202 208 Q216 226 196 252 L168 266 L158 246 L184 232 Q192 222 190 212Z" fill="url(#${u}gold)"/>
+<circle cx="90" cy="260" r="15" fill="#e6453c"/><circle cx="158" cy="260" r="15" fill="url(#${u}gold)"/></g>
+${biceps}
+<path d="M88 272 L158 272 L154 294 L92 294Z" fill="url(#${u}gold)" stroke="#150f2e" stroke-width="5"/>
+${beltGlow}
+<g transform="translate(123 198)"><path d="M0 -32 L29 -16 L29 16 L0 32 L-29 16 L-29 -16Z" fill="url(#${u}gold)" stroke="#150f2e" stroke-width="5"/>
+<path d="M-15 -15 L15 -15 L15 -6 L5 -6 L5 17 L-5 17 L-5 -6 L-15 -6Z" fill="#d23a31" stroke="#150f2e" stroke-width="3"/></g>
+<rect x="111" y="112" width="26" height="24" fill="#ffd9b8" stroke="#150f2e" stroke-width="5"/>
+<circle cx="124" cy="66" r="54" fill="#ffd9b8" stroke="#150f2e" stroke-width="6"/>
+<circle cx="71" cy="70" r="11" fill="#ffd9b8" stroke="#150f2e" stroke-width="5"/>
+<path d="M70 48 Q66 4 116 -2 Q176 -8 184 44 Q186 56 180 66 Q178 42 164 34 Q172 22 156 16 Q160 6 142 8 Q146 -2 126 2 Q104 0 102 14 Q84 12 84 26 Q72 30 74 48Z" fill="#d8b572" stroke="#150f2e" stroke-width="5"/>
+<path d="M96 16 Q120 6 144 14 Q166 22 170 36 Q150 30 138 34 Q150 42 148 52 Q132 38 112 40 Q96 40 88 48 Q86 28 96 16Z" fill="#e8cb8e" stroke="#150f2e" stroke-width="5"/>
+<path d="M150 34 Q166 26 176 36 Q170 48 158 52 Q162 42 150 34Z" fill="#f2dfae" stroke="#150f2e" stroke-width="4"/>
+<g stroke="#1d4fb8" stroke-width="7" fill="#cfe6ff" fill-opacity=".4" stroke-linejoin="round">
+<rect x="84" y="52" width="36" height="30" rx="8"/><rect x="130" y="52" width="36" height="30" rx="8"/><line x1="120" y1="64" x2="130" y2="64"/></g>
+<circle cx="103" cy="68" r="7" fill="#fff"/><circle cx="148" cy="68" r="7" fill="#fff"/>
+<circle cx="104" cy="69" r="4.4" fill="#6fa8d8"/><circle cx="149" cy="69" r="4.4" fill="#6fa8d8"/>
+<circle cx="104" cy="69" r="2" fill="#150f2e"/><circle cx="149" cy="69" r="2" fill="#150f2e"/>
+<g fill="#d99a6c" opacity=".85"><circle cx="98" cy="86" r="2"/><circle cx="106" cy="90" r="2"/><circle cx="92" cy="92" r="1.8"/><circle cx="142" cy="90" r="2"/><circle cx="150" cy="86" r="2"/><circle cx="156" cy="92" r="1.8"/></g>
+<path d="M98 98 Q124 120 152 97 Q150 114 136 120 Q124 124 112 120 Q100 114 98 98Z" fill="#7c3a3a" stroke="#150f2e" stroke-width="4"/>
+<path d="M101 99 Q124 114 149 98 L148 104 Q124 116 102 105Z" fill="#fff"/>
+</svg>`;}
+function inkblotSVG(w=240){
+return `<svg viewBox="-70 -130 320 360" width="${w}" aria-hidden="true">
+<defs>
+<linearGradient id="vxm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a4f6e"/><stop offset="1" stop-color="#23263b"/></linearGradient>
+<linearGradient id="vxd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b2f47"/><stop offset="1" stop-color="#15172a"/></linearGradient>
+<radialGradient id="vxr" cx=".5" cy=".5" r=".6"><stop offset="0" stop-color="#ff6b5e"/><stop offset=".6" stop-color="#e62e2e"/><stop offset="1" stop-color="#7a1010"/></radialGradient>
+</defs>
+<path d="M10 -20 Q-40 60 -28 170 L-6 150 L6 176 L26 150 L40 178 L58 150 L74 172 L96 148 Q132 60 132 -16 Q72 -52 10 -20Z" fill="#1a1030" stroke="#150f2e" stroke-width="6"/>
+<ellipse cx="72" cy="208" rx="58" ry="13" fill="#9fe870" opacity=".5"/>
+<ellipse cx="72" cy="204" rx="34" ry="8" fill="#d2ffb0" opacity=".8"/>
+<path d="M40 150 L104 150 L96 196 L48 196 Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="6"/>
+<rect x="52" y="160" width="40" height="10" rx="4" fill="#9fe870" opacity=".75"/>
+<path d="M16 30 L128 30 L142 70 L128 150 L16 150 L2 70 Z" fill="url(#vxm)" stroke="#150f2e" stroke-width="7"/>
+<path d="M16 30 L72 30 L72 150 L16 150 L2 70Z" fill="#150f2e" opacity=".22"/>
+<path d="M30 44 L114 44 L122 66 L112 86 L32 86 L22 66Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="5"/>
+<circle cx="72" cy="112" r="20" fill="url(#vxr)" stroke="#150f2e" stroke-width="6"/>
+<circle cx="72" cy="112" r="8" fill="#ffd2c9"/>
+<path d="M72 88 L72 70 M52 100 L36 92 M92 100 L108 92" stroke="#e62e2e" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+<path d="M16 30 L-22 6 L10 2 L26 26Z" fill="url(#vxm)" stroke="#150f2e" stroke-width="6"/>
+<path d="M128 30 L166 6 L134 2 L118 26Z" fill="url(#vxm)" stroke="#150f2e" stroke-width="6"/>
+<path d="M8 56 Q-34 78 -38 122 Q-36 142 -20 148 L-10 128 Q-22 118 -18 102 Q-12 80 12 70Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="6"/>
+<g stroke="#150f2e" stroke-width="5" fill="#6e7494"><path d="M-22 144 L-38 168 L-26 166 L-30 184 L-14 164 L-8 178 L-2 150Z"/></g>
+<path d="M136 56 Q178 78 182 122 Q180 142 164 148 L154 128 Q166 118 162 102 Q156 80 132 70Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="6"/>
+<g stroke="#150f2e" stroke-width="5" fill="#6e7494"><path d="M166 144 L182 168 L170 166 L174 184 L158 164 L152 178 L146 150Z"/></g>
+<path d="M38 -64 L106 -64 L118 -36 L114 14 L100 30 L44 30 L30 14 L26 -36Z" fill="url(#vxm)" stroke="#150f2e" stroke-width="7"/>
+<path d="M38 -64 L72 -64 L72 30 L44 30 L30 14 L26 -36Z" fill="#150f2e" opacity=".22"/>
+<path d="M40 -62 L22 -102 L52 -72Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="5"/>
+<path d="M104 -62 L122 -102 L92 -72Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="5"/>
+<path d="M34 -22 L110 -22 L106 -6 L38 -6Z" fill="#e62e2e" stroke="#150f2e" stroke-width="5"/>
+<rect x="42" y="-19" width="26" height="9" rx="4" fill="#ff9d8f"/>
+<g stroke="#150f2e" stroke-width="4"><line x1="56" y1="8" x2="56" y2="22"/><line x1="72" y1="8" x2="72" y2="22"/><line x1="88" y1="8" x2="88" y2="22"/></g>
+<g font-family="Andika,sans-serif" font-weight="700" fill="#9fe870">
+<text x="-52" y="-40" font-size="32" transform="rotate(-18 -52 -40)">k</text>
+<text x="150" y="-48" font-size="30" transform="rotate(14 150 -48)">w</text>
+<text x="176" y="96" font-size="28" transform="rotate(-8 176 96)">z</text>
+</g>
+</svg>`;}
+function mentorChips(w=120){
+return `<svg viewBox="0 0 130 70" width="${w}" aria-hidden="true">
+<circle cx="35" cy="35" r="30" fill="#ffd9b8" stroke="#fff6e3" stroke-width="4"/>
+<path d="M10 24 Q14 4 36 4 Q58 4 60 24 Q50 12 36 14 Q20 14 10 24Z" fill="#6b4a2b" stroke="#150f2e" stroke-width="3"/>
+<path d="M22 48 Q35 56 48 47" stroke="#150f2e" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<circle cx="27" cy="34" r="3" fill="#150f2e"/><circle cx="44" cy="34" r="3" fill="#150f2e"/>
+<path d="M20 52 Q35 60 50 51 L48 58 Q35 64 22 58Z" fill="#7a5a3a" opacity=".5"/>
+<circle cx="95" cy="35" r="30" fill="#ffd9b8" stroke="#fff6e3" stroke-width="4"/>
+<path d="M68 28 Q70 4 96 4 Q122 6 122 30 Q112 14 96 16 Q78 16 68 28Z" fill="#d8b572" stroke="#150f2e" stroke-width="3"/>
+<circle cx="87" cy="34" r="3" fill="#150f2e"/><circle cx="104" cy="34" r="3" fill="#150f2e"/>
+<path d="M82 48 Q95 56 108 47" stroke="#150f2e" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<g fill="#f2a9c4"><circle cx="78" cy="58" r="3.4"/><circle cx="86" cy="61" r="3.4"/><circle cx="95" cy="62" r="3.4"/><circle cx="104" cy="61" r="3.4"/><circle cx="112" cy="58" r="3.4"/></g>
+</svg>`;}
+function citySVG(){
+return `<svg viewBox="0 0 600 300">
+<defs><linearGradient id="cs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#171236"/><stop offset="1" stop-color="#7a4fb6"/></linearGradient></defs>
+<rect width="600" height="300" fill="url(#cs)"/>
+<circle cx="500" cy="60" r="34" fill="#fff1cf" stroke="#150f2e" stroke-width="4"/>
+<g fill="#2c2158"><rect x="20" y="140" width="60" height="160"/><rect x="95" y="100" width="55" height="200"/><rect x="165" y="150" width="70" height="150"/><rect x="420" y="120" width="62" height="180"/><rect x="495" y="150" width="80" height="150"/><polygon points="300,300 300,90 330,60 360,90 360,300"/></g>
+<g fill="#ffc93c" opacity=".85"><rect x="32" y="160" width="11" height="14"/><rect x="56" y="190" width="11" height="14"/><rect x="106" y="120" width="11" height="14"/><rect x="128" y="160" width="11" height="14"/><rect x="436" y="140" width="11" height="14"/><rect x="510" y="170" width="11" height="14"/><rect x="540" y="200" width="11" height="14"/></g>
+<g font-family="Andika,sans-serif" font-weight="700" fill="#9fe870" opacity=".9">
+<text x="200" y="60" font-size="30" transform="rotate(-14 200 60)">b</text>
+<text x="120" y="80" font-size="24" transform="rotate(10 120 80)">e</text>
+<text x="400" y="50" font-size="28" transform="rotate(8 400 50)">m</text>
+<text x="540" y="110" font-size="24" transform="rotate(-10 540 110)">r</text></g>
+</svg>`;}
+
+/* ---------------- SCREEN MGMT ---------------- */
+const $=id=>document.getElementById(id);
+function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
+  $(id).classList.add("on"); $(id).classList.add("fadein");
+  setTimeout(()=>$(id).classList.remove("fadein"),600);
+  $("hud").style.display=(id==="scrTitle")?"none":"flex"; refreshHUD(); }
+function refreshHUD(){ $("hudStars").textContent="⚡ "+S.stars; }
+function burstAt(el,word){ const r=el.getBoundingClientRect(),st=$("stage").getBoundingClientRect();
+  const b=document.createElement("div"); b.className="burst";
+  b.style.left=(r.left-st.left+r.width/2-70)+"px"; b.style.top=(r.top-st.top+r.height/2-70)+"px";
+  $("stage").appendChild(b); setTimeout(()=>b.remove(),600);
+  if(word){ const z=document.createElement("div"); z.className="zapword"; z.textContent=word;
+    z.style.left=(r.left-st.left+r.width/2-60)+"px"; z.style.top=(r.top-st.top-40)+"px";
+    $("stage").appendChild(z); setTimeout(()=>z.remove(),900); } }
+
+/* ---------------- TITLE ---------------- */
+$("titleHero").innerHTML=heroNow(210);
+function vpMsg(){ const n=(typeof VOICEPACK!=="undefined")?Object.keys(VOICEPACK).length:0;
+  return n? "🎙️ Studio voices loaded ("+n+" lines)" : "Using built-in voice — add voicepack.js for studio voices"; }
+$("vpStatus").textContent=vpMsg();
+if(S.intro)$("btnContinue").style.display="inline-block";
+$("btnStart").onclick=()=>{ Aud.pick(); if(!S.intro)startIntro(); else {Aud.play("welcome"); toMap();} };
+$("btnContinue").onclick=()=>{ Aud.pick(); Aud.play("welcome"); toMap(); };
+
+/* ---------------- INTRO ---------------- */
+const INTRO=[
+ {art:citySVG(), id:"panel1"},
+ {art:inkblotSVG(300), id:"panel2"},
+ {art:`<div style="display:flex;justify-content:center;padding:24px;">${mentorChips(280)}</div>`, id:"panel3"},
+ {art:`<div style="display:flex;justify-content:center;padding:20px;"><svg viewBox="0 0 200 90" width="300"><g stroke="#1d4fb8" stroke-width="9" fill="#cfe6ff" fill-opacity=".4" stroke-linejoin="round"><rect x="20" y="20" width="62" height="50" rx="12"/><rect x="116" y="20" width="62" height="50" rx="12"/><line x1="82" y1="42" x2="116" y2="42"/></g></svg></div>`, id:"panel4"},
+ {art:`<div style="display:flex;justify-content:center;">${heroNow(220)}</div>`, id:"panel5"}
+];
+let introIx=0;
+function startIntro(){ introIx=0; show("scrIntro"); paintIntro(); }
+function paintIntro(){ const p=INTRO[introIx]; $("introArt").innerHTML=p.art;
+  narrate("intro",$("introText"),[p.id]);
+  $("btnIntroNext").textContent = introIx<INTRO.length-1?"NEXT ➜":"I'M READY!"; }
+$("btnIntroNext").onclick=()=>{ introIx++;
+  if(introIx<INTRO.length)paintIntro();
+  else { S.intro=true; save(); startScan(); } };
+
+/* ---------------- POWER SCAN ---------------- */
+let scanIx=0;
+function startScan(){ if(S.scan){toMap();return;}
+  show("scrScan"); scanIx=0;
+  flow(narrate("scan",$("scanText"),["scan_intro"]),()=>nextScan()); }
+function nextScan(){ if(scanIx>=ORDER.length){ S.scan=true; save();
+    flow(narrate("scan",$("scanText"),["scan_done"]),()=>toMap()); return; }
+  const target=ORDER[scanIx];
+  const foils=ORDER.filter(x=>x!==target).sort(()=>Math.random()-.5).slice(0,2);
+  const opts=[target,...foils].sort(()=>Math.random()-.5);
+  $("scanProg").textContent="🔍 "+(scanIx+1)+" / "+ORDER.length;
+  narrate("scan",$("scanText"),["scan_prompt","snd_"+target],"Tap the gem that makes the sound\u2026 \ud83d\udd0a");
+  const row=$("scanTiles"); row.innerHTML="";
+  opts.forEach(g=>{ const t=document.createElement("button"); t.className="tile read"; t.textContent=g;
+    t.onclick=()=>{ const ok=(g===target);
+      mast(target).str=ok?2:0; mast(target).seen++; if(ok)mast(target).ok++; save();
+      Aud.ding(); t.classList.add("win"); burstAt(t);
+      scanIx++; setTimeout(nextScan,650); };
+    row.appendChild(t); });
+}
+
+/* ---------------- GLYPH CITY MAP ---------------- */
+const NODE_POS=[[420,1280],[230,1190],[520,1100],[300,1000],[560,900],[330,800],[170,700],[440,600],[300,480]];
+const BASE_POS=[470,1408];
+function trailPath(){ const pts=[BASE_POS,...NODE_POS,[420,370],[400,250]];
+  let d="M "+pts[0][0]+" "+pts[0][1];
+  for(let i=1;i<pts.length;i++){ const a=pts[i-1],b=pts[i];
+    const mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2;
+    d+=` Q ${a[0]} ${my} ${mx} ${my} T ${b[0]} ${b[1]}`; }
+  return d; }
+function skyline(y,h0,fill,op,seed){ let out="",x=-30;
+  while(x<840){ const w=44+((seed*(x+13)*7)%72), h=h0+((seed*(x+5)*13)%150);
+    out+=`<rect x="${x}" y="${y-h}" width="${w}" height="${h}" fill="${fill}" opacity="${op}"/>`; x+=w+10; }
+  return out; }
+function windowsRow(y,seed){ let out="",x=-10;
+  while(x<820){ if(((x*seed)|0)%4!==0) out+=`<rect x="${x}" y="${y-((x*seed)%160)-20}" width="9" height="12" fill="#ffc93c" opacity=".8"/>`; x+=34; }
+  return out; }
+function gemDeco(x,y,c,sc=1){ return `<g transform="translate(${x} ${y}) scale(${sc})">
+  <polygon points="0,-16 13,-5 8,14 -8,14 -13,-5" fill="${c}" stroke="#150f2e" stroke-width="3.4"/>
+  <polyline points="-13,-5 0,-2 13,-5 M0,-2 0,14" fill="none" stroke="#150f2e" stroke-width="2" opacity=".5"/>
+  <circle cx="-4" cy="-8" r="2.4" fill="#fff" opacity=".9"/></g>`; }
+function mapSVG(){
+  const done=id=>!!S.done[id];
+  const avail=i=> i===0 || done(MISSIONS[i-1].id);
+  let nodes="";
+  MISSIONS.forEach((m,i)=>{
+    const [x,y]=NODE_POS[i];
+    const st=done(m.id)?"done":(avail(i)?"current":"locked");
+    const fill=done(m.id)?"#3ec97e":(avail(i)?"#ffc93c":"#3b3360");
+    const side = x<400 ? 1 : -1;
+    nodes+=`<g class="mnode ${st}" data-mid="${m.id}">
+      <ellipse cx="${x}" cy="${y+34}" rx="40" ry="10" fill="#150f2e" opacity=".35"/>
+      <circle class="ring" cx="${x}" cy="${y}" r="40" fill="${fill}" stroke="#150f2e" stroke-width="7"/>
+      <circle cx="${x}" cy="${y-12}" r="22" fill="#ffffff" opacity=".18"/>
+      <text x="${x}" y="${y+13}" text-anchor="middle" font-family="Bangers" font-size="38" fill="#150f2e">${done(m.id)?"✓":(avail(i)?i+1:"🔒")}</text>
+      <g transform="translate(${x+side*150},${y})">
+        <rect x="-118" y="-20" width="236" height="40" rx="14" fill="rgba(21,15,46,.88)" stroke="#fff6e3" stroke-width="2.5"/>
+        <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="20" fill="${done(m.id)?"#9fe870":"#ffc93c"}" letter-spacing="1">${m.lbl.toUpperCase()}</text>
+      </g></g>`;
+  });
+  const allDone=MISSIONS.every(m=>done(m.id));
+  return `<svg viewBox="0 0 800 1560">
+  <defs>
+    <linearGradient id="msky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0e0b26"/><stop offset=".35" stop-color="#2b2066"/>
+      <stop offset=".7" stop-color="#5c3a8f"/><stop offset="1" stop-color="#a4538d"/>
+    </linearGradient>
+    <linearGradient id="trailG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffd75e"/><stop offset="1" stop-color="#f0a82b"/>
+    </linearGradient>
+    <radialGradient id="moonG" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#fff6e3" stop-opacity=".8"/><stop offset="1" stop-color="#fff6e3" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="1560" fill="url(#msky)"/>
+  <circle cx="650" cy="150" r="130" fill="url(#moonG)"/>
+  <circle cx="650" cy="150" r="50" fill="#fff1cf" stroke="#150f2e" stroke-width="5"/>
+  <circle cx="632" cy="138" r="8" fill="#ead9b4"/><circle cx="664" cy="162" r="6" fill="#ead9b4"/>
+  <g fill="#fff6e3"><circle cx="120" cy="90" r="3"/><circle cx="300" cy="60" r="2.4"/><circle cx="520" cy="110" r="2.6"/><circle cx="80" cy="240" r="2.2"/><circle cx="730" cy="300" r="2.4"/><circle cx="200" cy="180" r="2"/></g>
+  <g class="mcloudB" fill="#4b3e96" stroke="#150f2e" stroke-width="4" opacity=".8">
+    <path d="M140 210 q18 -34 54 -27 q12 -26 47 -20 q31 -9 43 16 q32 2 27 31 z"/>
+    <path d="M560 320 q15 -28 45 -22 q10 -22 40 -16 q26 -8 36 13 q27 2 23 25 z"/>
+  </g>
+  <g class="mcloudA" fill="#5a4aa6" stroke="#150f2e" stroke-width="3.4" opacity=".55">
+    <path d="M380 130 q13 -24 39 -19 q9 -18 33 -13 q22 -6 31 11 q22 2 18 21 z"/>
+  </g>
+
+  ${skyline(700,80,"#241b4d",.55,3)}
+  ${skyline(980,110,"#2c2158",.8,5)}
+  ${windowsRow(980,7)}
+  <rect x="0" y="660" width="800" height="50" fill="#7a5aa8" opacity=".25"/>
+  ${skyline(1290,130,"#332a66",1,9)}
+  ${windowsRow(1290,11)}
+  <rect x="0" y="1290" width="800" height="270" fill="#3a2f6e"/>
+  <ellipse cx="180" cy="1340" rx="180" ry="46" fill="#2f8f5b" opacity=".9"/>
+  <ellipse cx="660" cy="1370" rx="200" ry="52" fill="#2a7d50" opacity=".9"/>
+
+  <!-- LORD VEX'S FORTRESS -->
+  <g transform="translate(400 220)">
+    <path d="M-96 64 L-96 -32 L-64 -64 L-64 -12 L-22 -12 L-22 -86 L0 -118 L22 -86 L22 -12 L64 -12 L64 -64 L96 -32 L96 64 Z"
+      fill="#3c1763" stroke="#150f2e" stroke-width="6"/>
+    <circle cx="0" cy="-112" r="10" fill="#9fe870"/>
+    <rect x="-15" y="8" width="30" height="44" rx="6" fill="#150f2e"/>
+    <g transform="translate(0 -156)">
+      <circle r="23" fill="#bfe3ff" stroke="#150f2e" stroke-width="4"/>
+      <path d="M-9 -2 Q0 -16 9 -2 Q14 8 0 14 Q-14 8 -9 -2Z" fill="#5ea0ff" stroke="#150f2e" stroke-width="3"/>
+      <circle cx="0" cy="-4" r="7" fill="#ffd9b8" stroke="#150f2e" stroke-width="2.5"/>
+    </g>
+    <g transform="translate(0 100)">
+      <rect x="-158" y="-21" width="316" height="42" rx="14" fill="rgba(21,15,46,.92)" stroke="#9fe870" stroke-width="2.5"/>
+      <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="23" fill="#9fe870" letter-spacing="1">${allDone?"LORD VEX AWAITS — COMING SOON!":"VEX'S FORTRESS · RESCUE LEIGHTON"}</text>
+    </g>
+  </g>
+
+  <!-- HEART TOWER -->
+  <g transform="translate(660 560)">
+    <rect x="-36" y="-90" width="72" height="170" rx="10" fill="#241b4d" stroke="#150f2e" stroke-width="5"/>
+    <path d="M0 -122 q16 -20 32 -4 q14 14 -6 32 L0 -68 L-26 -94 q-20 -18 -6 -32 q16 -16 32 4z" fill="#e6453c" stroke="#150f2e" stroke-width="4"/>
+    <g fill="#ffc93c" opacity=".85"><rect x="-22" y="-66" width="12" height="15"/><rect x="10" y="-30" width="12" height="15"/><rect x="-22" y="6" width="12" height="15"/></g>
+    <g transform="translate(-30 116)">
+      <rect x="-120" y="-18" width="240" height="36" rx="12" fill="rgba(21,15,46,.92)" stroke="#f2a9c4" stroke-width="2.5"/>
+      <text x="0" y="8" text-anchor="middle" font-family="Bangers" font-size="20" fill="#f2a9c4" letter-spacing="1">HEART TOWER · SAVE AMELIA</text>
+    </g>
+  </g>
+
+  <!-- the golden trail -->
+  <path d="${trailPath()}" fill="none" stroke="#150f2e" stroke-width="44" stroke-linecap="round" opacity=".92"/>
+  <path d="${trailPath()}" fill="none" stroke="url(#trailG)" stroke-width="30" stroke-linecap="round"/>
+  <path d="${trailPath()}" fill="none" stroke="#fff6e3" stroke-width="5" stroke-linecap="round" stroke-dasharray="16 24" opacity=".85"/>
+
+  ${gemDeco(120,1090,"#3b82f0",1.2)} ${gemDeco(640,1010,"#3ec97e",1)} ${gemDeco(90,860,"#a06ae8",1.1)}
+  ${gemDeco(700,760,"#ff8a3d",1)} ${gemDeco(620,470,"#7fd9ff",1.2)} ${gemDeco(150,540,"#ffc93c",1)}
+
+  <!-- HERO BASE node -->
+  <g class="mnode current" id="baseNode">
+    <ellipse cx="${BASE_POS[0]}" cy="${BASE_POS[1]+52}" rx="86" ry="14" fill="#150f2e" opacity=".35"/>
+    <g transform="translate(${BASE_POS[0]} ${BASE_POS[1]})">
+      <rect x="-70" y="-30" width="140" height="78" rx="10" fill="#2257c4" stroke="#150f2e" stroke-width="6"/>
+      <path d="M-84 -26 L0 -82 L84 -26 Z" fill="#e6453c" stroke="#150f2e" stroke-width="6"/>
+      <rect x="-18" y="6" width="36" height="42" rx="6" fill="#150f2e"/>
+      <rect x="-54" y="-12" width="24" height="22" rx="4" fill="#ffc93c"/>
+      <rect x="30" y="-12" width="24" height="22" rx="4" fill="#ffc93c"/>
+      <g transform="translate(0 -50)"><path d="M0 -14 L13 -7 L13 7 L0 14 L-13 7 L-13 -7Z" fill="#ffd75e" stroke="#150f2e" stroke-width="3.4"/><text y="6" text-anchor="middle" font-family="Bangers" font-size="15" fill="#150f2e">T</text></g>
+      <text x="0" y="86" text-anchor="middle" font-family="Bangers" font-size="24" fill="#ffc93c" letter-spacing="2">HERO BASE</text>
+    </g>
+  </g>
+
+  ${allyTeasers()}
+  ${heroMarker()}
+  ${nodes}
+  <g transform="translate(400 30)">
+    <rect x="-200" y="0" width="400" height="52" rx="16" fill="rgba(21,15,46,.85)" stroke="#fff6e3" stroke-width="3"/>
+    <text x="0" y="36" text-anchor="middle" font-family="Bangers" font-size="28" fill="#ffc93c" letter-spacing="2">⚡ ${S.stars} · TEDDY'S GEM CITY</text>
+  </g>
+  </svg>`;
+}
+function allyFace(kind){
+  if(kind==="tank")return `<circle r="26" fill="#ffd9b8" stroke="#150f2e" stroke-width="4"/><path d="M-24 -8 Q-26 -30 0 -30 Q26 -30 24 -6 Q20 -22 6 -18 Q14 -10 4 -6 Q-8 -16 -18 -10 Q-24 -6 -24 -8Z" fill="#d8b572" stroke="#150f2e" stroke-width="3"/><circle cx="-8" cy="0" r="3" fill="#150f2e"/><circle cx="9" cy="0" r="3" fill="#150f2e"/><path d="M-8 12 Q1 18 10 11" stroke="#150f2e" stroke-width="3.4" fill="none" stroke-linecap="round"/>`;
+  if(kind==="flip")return `<circle r="26" fill="#ffd9b8" stroke="#150f2e" stroke-width="4"/><circle cx="0" cy="-26" r="10" fill="#9a7448" stroke="#150f2e" stroke-width="3"/><path d="M-24 -10 Q-20 -26 0 -26 Q20 -26 24 -10 Q12 -18 0 -16 Q-12 -18 -24 -10Z" fill="#9a7448" stroke="#150f2e" stroke-width="3"/><circle cx="-8" cy="0" r="3" fill="#150f2e"/><circle cx="9" cy="0" r="3" fill="#150f2e"/><path d="M-8 12 Q1 18 10 11" stroke="#150f2e" stroke-width="3.4" fill="none" stroke-linecap="round"/>`;
+  return `<circle r="26" fill="#ffd9b8" stroke="#150f2e" stroke-width="4"/><path d="M-24 -6 Q-24 -30 0 -30 Q24 -30 24 -4 Q16 -20 2 -16 Q-12 -22 -20 -8Z" fill="#f2dfae" stroke="#150f2e" stroke-width="3"/><circle cx="-8" cy="0" r="3" fill="#150f2e"/><circle cx="9" cy="0" r="3" fill="#150f2e"/><path d="M-9 10 Q1 19 11 9" stroke="#150f2e" stroke-width="3.4" fill="none" stroke-linecap="round"/>`;
+}
+const CAGED=[{ix:3,kind:"tank",name:"TANK"},{ix:6,kind:"flip",name:"FLIP"},{ix:8,kind:"sunny",name:"SUNNY"}];
+function allyTeasers(){
+  let out="";
+  CAGED.forEach(t=>{ const [x,y]=NODE_POS[t.ix]; const side=x<400?1:-1;
+    const px=x+side*180; const freed=!!S.done[MISSIONS[t.ix].id];
+    if(freed){
+      out+=`<g transform="translate(${px} ${y-80})">
+        <g fill="#ffc93c" opacity=".9"><path d="M0 -52 L6 -38 L-6 -38Z"/><path d="M-38 -34 L-26 -28 L-34 -20Z"/><path d="M38 -34 L26 -28 L34 -20Z"/></g>
+        <g>${allyFace(t.kind)}</g>
+        <rect x="-72" y="34" width="144" height="30" rx="10" fill="rgba(21,15,46,.88)" stroke="#3ec97e" stroke-width="2.5"/>
+        <text x="0" y="55" text-anchor="middle" font-family="Bangers" font-size="16" fill="#9fe870" letter-spacing="1">${t.name} FREED!</text></g>`;
+    } else {
+      out+=`<g transform="translate(${px} ${y-86})">
+        <line x1="0" y1="-66" x2="0" y2="-46" stroke="#23263b" stroke-width="6"/>
+        <rect x="-42" y="-46" width="84" height="86" rx="14" fill="rgba(21,15,46,.45)" stroke="#23263b" stroke-width="7"/>
+        <g transform="translate(0 -2)">${allyFace(t.kind)}</g>
+        <g stroke="#3a3f5e" stroke-width="6"><line x1="-26" y1="-44" x2="-26" y2="38"/><line x1="-9" y1="-44" x2="-9" y2="38"/><line x1="9" y1="-44" x2="9" y2="38"/><line x1="26" y1="-44" x2="26" y2="38"/></g>
+        <rect x="-42" y="-46" width="84" height="86" rx="14" fill="none" stroke="#150f2e" stroke-width="4"/>
+        <circle cx="0" cy="42" r="9" fill="#e62e2e" stroke="#150f2e" stroke-width="3"/>
+        <rect x="-78" y="56" width="156" height="30" rx="10" fill="rgba(21,15,46,.88)" stroke="#e62e2e" stroke-width="2.5"/>
+        <text x="0" y="77" text-anchor="middle" font-family="Bangers" font-size="16" fill="#ff9d8f" letter-spacing="1">FREE ${t.name}!</text></g>`;
+    } });
+  return out;
+}
+function heroMarker(){ let ix=0;
+  for(let i=0;i<MISSIONS.length;i++){ if(!S.done[MISSIONS[i].id]){ix=i;break;} ix=i; }
+  const [x,y]=NODE_POS[ix];
+  return `<g transform="translate(${x-44} ${y-186}) scale(.30)">${heroNow(250).replace(/<svg[^>]*>|<\/svg>/g,"")}</g>`;
+}
+function toMap(){ sessionTick(); show("scrMap");
+  $("hudTitle").textContent="GEM CITY";
+  $("mapSVGwrap").innerHTML=mapSVG();
+  document.querySelectorAll(".mnode").forEach(n=>{
+    if(n.id==="baseNode"){ n.addEventListener("click",showBase); return; }
+    n.addEventListener("click",()=>{ const m=MISSIONS.find(x=>x.id==n.dataset.mid); if(m)startMission(m); });
+  });
+  /* auto-scroll to the hero's current node */
+  let ix=0; for(let i=0;i<MISSIONS.length;i++){ if(!S.done[MISSIONS[i].id]){ix=i;break;} ix=i; }
+  const frac=Math.max(0,(NODE_POS[ix][1]-380)/1560);
+  requestAnimationFrame(()=>{ const sc=$("mapScroll");
+    sc.scrollTop = frac * ($("mapSVGwrap").offsetHeight - sc.clientHeight + 80); });
+  Aud.play("pick");
+}
+$("btnHome").onclick=()=>{Aud.stop();clearFlow();toMap();};
+$("btnSkip").onclick=()=>{ Aud.stop(); const f=__cont; clearFlow(); if(f)f(); };
+
+/* ---------------- MISSION FLOW ---------------- */
+let CUR=null;
+function startMission(m){ clearFlow(); CUR=m; $("hudTitle").textContent=m.lbl.toUpperCase();
+  if(m.type==="learn")startLearn(m);
+  else if(m.type==="patrol")startPatrol(m.set);
+  else startForge(m); }
+function missionComplete(){
+  const firstTime=!S.done[CUR.id];
+  S.done[CUR.id]=true;
+  if(firstTime){ S.stars+=3; S.session.count++;
+    const gear=GEAR_AT[CUR.id];
+    if(gear&&!S.gear.includes(gear))S.gear.push(gear); }
+  save(); showWin(firstTime);
+}
+
+/* ---------------- LEARN ---------------- */
+let learnLetter=null;
+function startLearn(m){ learnLetter=m.letter; const L=LETTERS[learnLetter];
+  show("scrLetter");
+  $("bigGlyph").textContent=learnLetter+" "+learnLetter.toUpperCase();
+  $("kwIcon").textContent=L.icon;
+  narrate("letter",$("letterText"),["intro_"+learnLetter,"snd_"+learnLetter,"like_"+learnLetter]); }
+$("btnLetterGo").onclick=()=>startTrace(learnLetter);
+
+/* ---------------- TRACE ---------------- */
+let strokes,strokeIx,dotIx,trail;
+function startTrace(g){ show("scrTrace");
+  narrate("trace",$("traceText"),["trace_prompt"]);
+  strokes=TRACE[g].map(s=>s.slice()); strokeIx=0; dotIx=0; trail=[];
+  const svg=$("traceSVG");
+  svg.innerHTML=`<text class="guide" x="150" y="232" text-anchor="middle" font-size="260">${g}</text><polyline id="trailLine" fill="none" stroke="#ffc93c" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>`;
+  paintDots();
+  svg.onpointerdown=svg.onpointermove=ev=>{ if(ev.buttons===0&&ev.type==="pointermove")return; handleTracePoint(ev); }; }
+function paintDots(){ const svg=$("traceSVG");
+  svg.querySelectorAll(".tdot").forEach(d=>d.remove());
+  strokes.forEach((st,si)=>st.forEach((p,pi)=>{
+    if(si<strokeIx)return; if(si===strokeIx&&pi<dotIx)return;
+    const c=document.createElementNS("http://www.w3.org/2000/svg","circle");
+    c.setAttribute("cx",p[0]);c.setAttribute("cy",p[1]);
+    c.setAttribute("r",si===strokeIx&&pi===dotIx?16:11);
+    c.setAttribute("class","tdot"+(si===strokeIx&&pi===dotIx?" next":""));
+    svg.appendChild(c); })); }
+function handleTracePoint(ev){ const svg=$("traceSVG"),r=svg.getBoundingClientRect();
+  const x=(ev.clientX-r.left)/r.width*300, y=(ev.clientY-r.top)/r.height*300;
+  trail.push(x+","+y); if(trail.length>400)trail.shift();
+  const tl=$("trailLine"); if(tl)tl.setAttribute("points",trail.join(" "));
+  const target=strokes[strokeIx][dotIx];
+  if(Math.hypot(x-target[0],y-target[1])<46){
+    dotIx++; Aud.ding();
+    if(dotIx>=strokes[strokeIx].length){ strokeIx++; dotIx=0; trail=[];
+      if(strokeIx>=strokes.length){traceDone();return;} }
+    paintDots(); } }
+function traceDone(){ const svg=$("traceSVG");
+  svg.onpointerdown=svg.onpointermove=null;
+  svg.querySelectorAll(".tdot").forEach(d=>d.classList.add("hit"));
+  burstAt($("traceWrap"),learnLetter.toUpperCase()+"!");
+  flow(Aud.play(["freed","snd_"+learnLetter]),()=>startFind(learnLetter)); }
+
+/* ---------------- FIND ---------------- */
+let findTarget,findRep,findGoal,findMiss,patrolSet=null,afterFind=null;
+function startFind(g,reps=5,set=null,next=null){ show("scrFind");
+  findTarget=g; findRep=0; findGoal=reps; patrolSet=set; afterFind=next; nextFind(); }
+function nextFind(){
+  if(findRep>=findGoal){ (afterFind||(()=>startBoss(findTarget)))(); return; }
+  const g = patrolSet? patrolSet[Math.floor(Math.random()*patrolSet.length)] : findTarget;
+  findTarget=g; findMiss=0;
+  $("findProg").textContent="⭐ "+findRep+" / "+findGoal;
+  narrate("find",$("findText"),["find_prompt","snd_"+g],"Find the gem that makes the sound\u2026 \ud83d\udd0a");
+  const foils=ORDER.filter(x=>x!==g).sort(()=>Math.random()-.5).slice(0,3);
+  const opts=[g,...foils].sort(()=>Math.random()-.5);
+  const row=$("findTiles"); row.innerHTML="";
+  opts.forEach(o=>{ const t=document.createElement("button"); t.className="tile read";
+    const upperRound=(findRep%3===2); t.textContent=upperRound?o.toUpperCase():o; t.dataset.g=o;
+    t.onclick=()=>{ if(o===g){ record(g,true); t.classList.add("win"); burstAt(t); Aud.ding();
+        findRep++; flow(Aud.play(["yes","snd_"+g]),()=>setTimeout(nextFind,160)); }
+      else { record(g,false); findMiss++; t.classList.add("dim");
+        if(findMiss>=2){ row.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===g)x.classList.add("hint");}); }
+        Aud.play(["almost","snd_"+g]); } };
+    row.appendChild(t); }); }
+
+/* ---------------- BOSS ---------------- */
+let bossHP;
+function startBoss(g){ show("scrBoss"); bossHP=3;
+  $("bossArt").innerHTML=`<div class="boss" id="bossSprite">${inkblotSVG(240)}</div>`;
+  paintPips("bossPips",bossHP,3);
+  narrate("boss",$("bossText"),["boss_intro","snd_"+g],"Blast the Vexbot! Tap the gem that makes the sound\u2026 \ud83d\udd0a");
+  bossRound(g); }
+function paintPips(id,hp,max){ const p=$(id); p.innerHTML="";
+  for(let i=0;i<max;i++){const d=document.createElement("div");d.className="pip"+(i<hp?"":" off");p.appendChild(d);} }
+function bossRound(g){
+  const foils=ORDER.filter(x=>x!==g).sort(()=>Math.random()-.5).slice(0,2);
+  const opts=[g,...foils].sort(()=>Math.random()-.5);
+  const row=$("bossTiles"); row.innerHTML="";
+  opts.forEach(o=>{ const t=document.createElement("button"); t.className="tile read"; t.textContent=o;
+    t.onclick=()=>{ if(o===g){ record(g,true); bossHP--; paintPips("bossPips",bossHP,3);
+        const bs=$("bossSprite"); bs.classList.add("hitfx"); setTimeout(()=>bs.classList.remove("hitfx"),380);
+        burstAt(bs,"ZAP!"); Aud.ding();
+        if(bossHP<=0){ bs.classList.add("flee");
+          flow(Aud.play(["flee","youdidit"]),missionComplete); }
+        else flow(Aud.play(["hit_again","snd_"+g]),()=>bossRound(g)); }
+      else { record(g,false); t.classList.add("dim"); Aud.play(["dodge","snd_"+g]); } };
+    row.appendChild(t); }); }
+
+/* ---------------- PATROL ---------------- */
+function startPatrol(set){ Aud.play("patrol_intro");
+  startFind(set[0],8,set,()=>missionComplete()); }
+
+/* ---------------- FORGE ---------------- */
+let forgeWords,forgeWordIx,forgeSlotIx,forgeHP;
+function startForge(m){ show("scrForge");
+  forgeWords=m.words.slice(); forgeWordIx=0; forgeHP=forgeWords.length;
+  $("forgeBoss").innerHTML=`<div class="boss" id="forgeSprite" style="width:clamp(130px,22vw,200px)">${inkblotSVG(200)}</div>`;
+  paintPips("forgePips",forgeHP,forgeWords.length);
+  flow(narrate("forge",$("forgeText"),["forge_intro1","forge_intro2"]),()=>forgeWord()); }
+function forgeWord(){
+  if(forgeWordIx>=forgeWords.length){
+    const fs=$("forgeSprite"); if(fs)fs.classList.add("flee");
+    flow(Aud.play(["forge_win1","forge_win2"]),missionComplete); return; }
+  const w=forgeWords[forgeWordIx]; forgeSlotIx=0;
+  narrate("forge",$("forgeText"),["forge_build",...w.split("").map(c=>"snd_"+c),"word_"+w],"Build the word! Listen\u2026 \ud83d\udd0a");
+  const slots=$("forgeSlots"); slots.innerHTML="";
+  w.split("").forEach(()=>{ const s=document.createElement("div"); s.className="slot read"; slots.appendChild(s); });
+  const pool=ORDER.filter(x=>!w.includes(x));
+  const foil=pool[Math.floor(Math.random()*pool.length)];
+  const choices=[...new Set(w.split(""))].concat(foil?[foil]:[]).sort(()=>Math.random()-.5);
+  const row=$("forgeChoices"); row.innerHTML="";
+  choices.forEach(c=>{ const t=document.createElement("button"); t.className="tile read"; t.textContent=c;
+    t.style.width=t.style.height="clamp(80px,13vw,120px)"; t.style.fontSize="clamp(44px,7vw,66px)";
+    t.onclick=()=>{ const need=w[forgeSlotIx];
+      if(c===need){ record(c,true);
+        const slot=slots.children[forgeSlotIx]; slot.textContent=c; slot.classList.add("filled");
+        Aud.ding(); forgeSlotIx++;
+        if(forgeSlotIx>=w.length){
+          forgeHP--; paintPips("forgePips",forgeHP,forgeWords.length);
+          const fs=$("forgeSprite"); fs.classList.add("hitfx"); setTimeout(()=>fs.classList.remove("hitfx"),380);
+          burstAt(fs,w.toUpperCase()+"!");
+          flow(Aud.play([...w.split("").map(x=>"snd_"+x),"word_"+w,"blast"]),()=>{forgeWordIx++;setTimeout(forgeWord,350);});
+        } else Aud.play(["snd_"+c,"forge_next"]); }
+      else { record(need,false); t.classList.add("dim");
+        Aud.play(["forge_listen","snd_"+need]);
+        setTimeout(()=>t.classList.remove("dim"),2400); } };
+    row.appendChild(t); }); }
+
+/* ---------------- WIN / REST ---------------- */
+function showWin(firstTime){ show("scrWin");
+  $("winHero").innerHTML=heroNow(170);
+  const gear=GEAR_AT[CUR.id];
+  $("winGear").innerHTML=(firstTime&&gear)?`<div class="gearbadge">NEW GEAR: ⭐ ${gear}</div>`:"";
+  let ids;
+  if(CUR.finale) ids=["finale1","finale2","finale3"];
+  else if(firstTime&&gear) ids=["win_grow","win_gear",GEARLINE[gear]];
+  else ids=["win_grow"];
+  const FREE={3:"free_tank",6:"free_flip",8:"free_sunny"};
+  if(firstTime&&FREE[CUR.id])ids.unshift(FREE[CUR.id]);
+  narrate("win",$("winText"),ids);
+  const ix=MISSIONS.findIndex(x=>x.id===CUR.id);
+  $("btnWinNext").style.display=(ix<MISSIONS.length-1)?"inline-block":"none";
+  $("btnWinNext").onclick=()=>{ if(S.session.count>=3&&!S.session.rest){S.session.rest=true;save();showRest(MISSIONS[ix+1]);} else startMission(MISSIONS[ix+1]); };
+  $("btnWinMap").onclick=()=>{ if(S.session.count>=3&&!S.session.rest){S.session.rest=true;save();showRest(null);} else toMap(); }; }
+function showRest(nextM){ show("scrRest");
+  $("restHero").innerHTML=heroNow(160);
+  narrate("rest",$("restText"),["rest1","rest2"]);
+  $("btnRestDone").onclick=()=>{Aud.stop();show("scrTitle");};
+  $("btnRestMore").onclick=()=>{ nextM?startMission(nextM):toMap(); }; }
+
+/* ---------------- HERO BASE ---------------- */
+const LETTER_MISSION={s:0,a:1,t:3,p:5,i:6,n:7};
+function showBase(){ clearFlow(); show("scrBase");
+  $("hudTitle").textContent="HERO BASE";
+  paintBase();
+  Aud.play("base1");
+}
+function paintBase(){
+  $("baseHero").innerHTML=heroNow(Math.min(260,window.innerWidth*0.34));
+  const o=heroOpts();
+  $("powerLbl").textContent=["HERO 💪","SUPER HERO 💪💪","MEGA HERO 💪💪💪"][o.muscle];
+  /* weapons */
+  const wrow=$("weaponRow"); wrow.innerHTML="";
+  const weapons=[["none","HANDS"]];
+  if(S.gear.includes("Word Hammer"))weapons.push(["hammer","WORD HAMMER 🔨"]);
+  if(S.gear.includes("Gem Sword"))weapons.push(["sword","GEM SWORD ⚔️"]);
+  weapons.forEach(([k,lbl])=>{ const b=document.createElement("button");
+    b.className="echip"+(S.equip.weapon===k?" onsel":""); b.textContent=lbl;
+    b.onclick=()=>{S.equip.weapon=k;save();Aud.ding();paintBase();};
+    wrow.appendChild(b); });
+  if(weapons.length===1){ const hint=document.createElement("div"); hint.className="baselbl";
+    hint.style.fontSize="15px"; hint.textContent="Forge words to earn weapons!"; wrow.appendChild(hint); }
+  /* capes */
+  const crow=$("capeRow"); crow.innerHTML="";
+  const capes=[["red","RED",0],["gold","GOLD",15],["purple","PURPLE",27]];
+  capes.forEach(([k,lbl,need])=>{ const locked=S.stars<need;
+    const b=document.createElement("button");
+    b.className="echip"+(S.equip.cape===k?" onsel":"")+(locked?" lockd":"");
+    b.textContent=locked?(lbl+" 🔒 ⚡"+need):lbl;
+    b.onclick=()=>{S.equip.cape=k;save();Aud.ding();paintBase();};
+    crow.appendChild(b); });
+  /* gem shelf: earned letters only */
+  const shelf=$("gemShelf"); shelf.innerHTML="";
+  let any=false;
+  ORDER.forEach(g=>{ if(S.done[LETTER_MISSION[g]]){ any=true;
+    shelf.innerHTML+=`<svg viewBox="-20 -22 40 44" width="46"><polygon points="0,-16 13,-5 8,14 -8,14 -13,-5" fill="${GEMCOLOR[g]}" stroke="#150f2e" stroke-width="3"/><circle cx="-4" cy="-8" r="2.4" fill="#fff" opacity=".9"/><text y="9" text-anchor="middle" font-family="Andika" font-weight="700" font-size="17" fill="#150f2e">${g}</text></svg>`; } });
+  if(!any)shelf.innerHTML='<div class="baselbl" style="font-size:15px;">Rescue gems on missions to fill your shelf!</div>';
+  /* league */
+  const lg=$("leagueShelf"); lg.innerHTML="";
+  let anyL=false;
+  CAGED.forEach(t=>{ if(S.done[MISSIONS[t.ix].id]){ anyL=true;
+    lg.innerHTML+=`<svg viewBox="-32 -36 64 76" width="52"><g>${allyFace(t.kind)}</g><text y="42" text-anchor="middle" font-family="Bangers" font-size="13" fill="#ffc93c">${t.name}</text></svg>`; } });
+  if(!anyL)lg.innerHTML='<div class="baselbl" style="font-size:15px;">Smash Vex\u2019s cages to free your friends!</div>';
+}
+$("btnBaseBack").onclick=()=>{Aud.stop();toMap();};
+
+/* ---------------- SETTINGS ---------------- */
+$("btnGear").onclick=()=>{ $("saveBox").value=JSON.stringify(S); $("vpStatus2").textContent=vpMsg(); $("settingsPanel").classList.add("on"); };
+$("btnCloseSettings").onclick=()=>$("settingsPanel").classList.remove("on");
+$("btnVoiceTest").onclick=()=>{Aud.pick();Aud.play("test");};
+$("btnCopySave").onclick=()=>{$("saveBox").select();document.execCommand("copy");};
+$("btnRestoreSave").onclick=()=>{ try{const d=JSON.parse($("saveBox").value);
+  if(d&&d.v===1){S=d;save();$("settingsPanel").classList.remove("on");toMap();}}catch(e){alert("That backup code didn't work — double-check it and try again.");} };
+</script>
+</body>
+</html>
