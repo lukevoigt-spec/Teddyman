@@ -74,6 +74,11 @@ body{
 /* Story Gate: sentence word tiles wrap; sight words get a soft gold tint */
 #sentWords{flex-wrap:wrap;max-width:min(900px,96vw);}
 .wordtile.heartword{background:linear-gradient(180deg,#fff3c4,#ffe08a);}
+/* Vex's Fortress finale boss */
+#fortBanner{font-size:clamp(24px,5vw,40px);color:var(--gold);-webkit-text-stroke:5px var(--ink);paint-order:stroke;text-align:center;}
+.forthp{width:min(560px,90vw);height:26px;border-radius:14px;border:4px solid var(--ink);background:#3b1a1a;overflow:hidden;box-shadow:0 4px 0 #1a0c0c;}
+#fortHPfill{height:100%;width:100%;background:linear-gradient(180deg,#ff6b5e,#c4302b);transition:width .35s ease;}
+#fortVex .boss{width:clamp(140px,24vw,230px);}
 @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
 .slot{
   width:clamp(86px,14vw,130px);height:clamp(86px,14vw,130px);border-radius:22px;

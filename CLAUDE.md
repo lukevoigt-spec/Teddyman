@@ -123,6 +123,15 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   replace them with own recordings via the Voice Studio tool (NOT in this repo — it holds an
   API key and must never be committed).
 
+## Act 1 finale (live)
+- Vex's Fortress (zone 8, mission 48, type "fortress", finale+climax): a long 4-phase boss
+  (FORTRESS[]) — sound shield → word-locks (decode) → spells (sight) → READ sentences → free
+  Leighton. ~19 rounds, big HP bar, Vex taunts (role C). Gated on letter mastery (the gentle
+  power-up patrol) so reaching the win = proven proficiency; the sentence phase makes him READ to
+  win. Frees LEIGHTON (joins the league, kind "leighton") and plays the Act-2 interlude hook
+  (interlude1/2 — a new friend, likely Miss Kendall, vanishes → next city). Sentence-reading mastery
+  is currently picture-match; research upgrade = Maze/Cloze (read sentence, pick the word that fits).
+
 ## Working agreement
 - Small, reviewable commits with plain-English messages the parent can read.
 - After changes, sanity-check: fresh-save playthrough boot → intro → scan → mission 1, plus

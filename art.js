@@ -149,6 +149,14 @@ function allyEyes(){ return `<circle cx="-8" cy="0" r="3.6" fill="#fff"/><circle
   `<circle cx="-7" cy="-1.1" r="1" fill="#fff"/><circle cx="10" cy="-1.1" r="1" fill="#fff"/>`; }
 function allyFace(kind){
   const head=`<circle r="26" fill="#ffd9b8" stroke="#150f2e" stroke-width="4"/>`;
+  if(kind==="leighton")return head+
+    `<path d="M-26 -2 Q-28 -30 0 -30 Q28 -30 26 -2 Q24 8 18 16 L16 -8 Q14 -22 0 -20 Q-14 -22 -16 -8 L-18 16 Q-24 8 -26 -2Z" fill="#b98a5a" stroke="#150f2e" stroke-width="3"/>`+
+    `<path d="M-18 14 Q-22 24 -16 30 M18 14 Q22 24 16 30" stroke="#caa06a" stroke-width="6" fill="none" stroke-linecap="round"/>`+
+    `<path d="M-13 -20 Q0 -30 13 -20 Q6 -16 0 -17 Q-6 -16 -13 -20Z" fill="#9ec9ff" stroke="#150f2e" stroke-width="2"/>`+
+    `<g fill="#ffd75e" stroke="#150f2e" stroke-width="1.4"><path d="M0 -34 l3 6 l6 0 l-5 4 l2 6 l-6 -4 l-6 4 l2 -6 l-5 -4 l6 0z"/></g>`+
+    allyEyes()+
+    `<g stroke="none" fill="#d99a6c" opacity=".8"><circle cx="-7" cy="9" r="1.4"/><circle cx="0" cy="11" r="1.4"/><circle cx="7" cy="9" r="1.4"/></g>`+
+    `<path d="M-8 12 Q1 19 10 11" stroke="#150f2e" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
   if(kind==="heart")return head+
     `<path d="M-24 -4 Q-26 -30 0 -30 Q26 -30 24 -4 Q14 -22 0 -20 Q-14 -22 -24 -4Z" fill="#e8a87c" stroke="#150f2e" stroke-width="3"/>`+
     allyEyes()+

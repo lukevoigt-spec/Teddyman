@@ -74,7 +74,10 @@ const MISSIONS=[
   /* --- ZONE 7 · STORY GATE — read whole decodable SENTENCES (the goal) --- */
   {id:34,type:"sentence",sents:[0,1,2],lbl:"Story Gate I",z:7},
   {id:35,type:"sentence",sents:[3,4,5],lbl:"Story Gate II",z:7},
-  {id:36,type:"sentence",sents:[6,7],lbl:"Story Gate: First Story",z:7}
+  {id:36,type:"sentence",sents:[6,7],lbl:"Story Gate: First Story",z:7},
+  /* --- ZONE 8 · VEX'S FORTRESS — Act 1 FINALE: a long multi-phase boss that
+     makes Teddy prove letter sounds AND reading to free Leighton --- */
+  {id:48,type:"fortress",lbl:"Vex's Fortress: Free Leighton!",finale:true,climax:true,z:8}
 ];
 const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield",22:"Gem Gauntlet",47:"Alphabet Star",30:"Reading Crown",33:"Spell Tome",36:"Story Key"};
 /* Decodable sentences: only taught CVC words + learned sight words. Each carries
@@ -163,7 +166,10 @@ const ZONES=[
     nodes:autoNodes(3,{y0:-3120,step:112,phase:3.1}) },
   { id:7, name:"STORY GATE", bg:"story",
     letters:[],   /* read whole sentences */
-    nodes:autoNodes(3,{y0:-3490,step:114,phase:5.4}) }
+    nodes:autoNodes(3,{y0:-3490,step:114,phase:5.4}) },
+  { id:8, name:"VEX'S FORTRESS", bg:"fortress",
+    letters:[],   /* the Act-1 finale boss */
+    nodes:[[400,-3960]] }
 ];
 /* ---------------- ACTS / CAMPAIGN ----------------
    The long game is a series of ACTS: each is a city with its own villain and a
@@ -307,6 +313,22 @@ const LINES={
   finale1:{t:"Incoming message! ... Super Teddy! It's Amelia!", v:"B"},
   finale2:{t:"Lord Vex trapped me in the Heart Tower! Come rescue me in your next adventure!", v:"B"},
   finale3:{t:"To be continued, hero..."},
+  fort_intro:{t:"THIS IS IT, Super Teddy! Lord Vex's Fortress! Leighton is locked inside. Use EVERYTHING you've learned — bring him down!"},
+  fort_t1:{t:"FOOLISH HERO! My gem shield is UNBREAKABLE!", v:"C"},
+  fort_t2:{t:"You cannot read my word-locks! NOBODY can!", v:"C"},
+  fort_t3:{t:"Impossible! How do you know these spells?!", v:"C"},
+  fort_t4:{t:"NO! Not the sentences! My power is FADING!", v:"C"},
+  fort_p1:{t:"PHASE ONE — blast the GEM SHIELD! Tap the gem that makes the sound…"},
+  fort_p2:{t:"PHASE TWO — smash the WORD-LOCKS! Read each word, tap what it means!"},
+  fort_p3:{t:"PHASE THREE — cast your INSTANT SPELLS! Tap the word you hear!"},
+  fort_p4:{t:"FINAL PHASE — READ to free Leighton! Read the sentence, tap the picture!"},
+  fort_hit:{t:"DIRECT HIT!"},
+  fort_win1:{t:"VEX'S ARMOR SHATTERS! SYSTEM FAILURE!", v:"C"},
+  leighton1:{t:"You did it, Super Teddy! You READ your way to victory! Lord Vex is defeated!"},
+  leighton2:{t:"Super Teddy! You found me! I always knew you could read! You're my hero!", v:"B"},
+  leighton3:{t:"LEIGHTON, the Starlight Princess, is FREE! Star Force City is SAVED! The main story is complete — you are a true READER and a true HERO!"},
+  interlude1:{t:"But far away... a new shadow falls on a new city. And someone Teddy loves has just vanished..."},
+  interlude2:{t:"A NEW adventure is coming soon, Super Teddy. Rest now, champion. You've earned it."},
   free_tank:{t:"CAGE DESTROYED! You freed Archie! TANK has joined the Hero League... and he is ready to SMASH!"},
   free_flip:{t:"CAGE DESTROYED! You freed Ellie! FLIP has joined the league... backflips, cartwheels, and mid-air gem grabs!"},
   free_sunny:{t:"CAGE DESTROYED! You freed William! SUNNY has joined the league... and things are about to get silly!"},
@@ -462,7 +484,7 @@ const $=id=>document.getElementById(id);
 /* Painted-scene slots: screen -> art/bg-<name>.* . Add an image to swap a scene;
    if the file is missing the layer stays transparent and the original look shows.
    Several screens intentionally share one scene (e.g. learn/trace, boss/forge). */
-const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrScan:"lab", scrMap:"city", scrRead:"learn", scrSpell:"learn", scrSent:"learn",
+const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrScan:"lab", scrMap:"city", scrRead:"learn", scrSpell:"learn", scrSent:"learn", scrFortress:"battle",
   scrBase:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
   scrBoss:"battle", scrForge:"battle", scrWin:"victory", scrRest:"rest" };
 const __bgCache={};
@@ -722,7 +744,8 @@ function allyPop(kind){ const st=$("stage"); if(!st)return;
 /* Full league roster for the Hero Base shelf (mid = mission that frees them).
    real = the actual person Teddy knows; name = their hero alias. */
 const LEAGUE=[...CAGED.map(t=>({mid:t.mid,kind:t.kind,name:t.name,real:t.real})),
-  {mid:17,kind:"heart",name:"HEARTGUARD",real:"AMELIA"}];
+  {mid:17,kind:"heart",name:"HEARTGUARD",real:"AMELIA"},
+  {mid:48,kind:"leighton",name:"STARLIGHT PRINCESS",real:"LEIGHTON"}];
 function allyTeasers(){
   let out="";
   CAGED.forEach(t=>{ const [x,y]=nodeOf(t.mid); const side=x<400?1:-1;
@@ -794,6 +817,7 @@ function startMission(m){ clearFlow(); CUR=m; $("hudTitle").textContent=m.lbl.to
   else if(m.type==="read")startRead(m);
   else if(m.type==="spell")startSpell(m);
   else if(m.type==="sentence")startSentence(m);
+  else if(m.type==="fortress")startFortress(m);
   else startForge(m); }
 function missionComplete(){
   /* MASTERY GATE: a milestone only counts once its core items are truly mastered.
@@ -1014,6 +1038,82 @@ function nextSentence(){
         Aud.play(sentenceAudio(s)); } };
     cr.appendChild(b); }); }
 
+/* ---------------- VEX'S FORTRESS (Act-1 finale boss) ----------------
+   A long, chaotic, COMPREHENSIVE fight: 4 phases that make Teddy prove letter
+   sounds (shield), decoding (word-locks), sight words (spells) and SENTENCE
+   READING (free Leighton). Reuses every mechanic; juicy HP bar + Vex taunts. */
+const FORTRESS=[
+  {kind:"sound",   n:6, banner:"BREAK THE GEM SHIELD!",  prompt:"fort_p1", taunt:"fort_t1"},
+  {kind:"read",    n:5, banner:"SMASH THE WORD-LOCKS!",  prompt:"fort_p2", taunt:"fort_t2"},
+  {kind:"spell",   n:4, banner:"CAST YOUR SPELLS!",      prompt:"fort_p3", taunt:"fort_t3"},
+  {kind:"sentence",n:4, banner:"READ TO FREE LEIGHTON!", prompt:"fort_p4", taunt:"fort_t4"}
+];
+let fPhase,fRound,fHP,fHPmax,fMiss;
+function fortHPset(){ const el=$("fortHPfill"); if(el)el.style.width=Math.max(0,100*fHP/fHPmax)+"%"; }
+function startFortress(m){ show("scrFortress");
+  fHPmax=FORTRESS.reduce((s,p)=>s+p.n,0); fHP=fHPmax;
+  $("fortVex").innerHTML=`<div class="boss" id="fortVexSprite">${inkblotSVG(220)}</div>`;
+  $("fortBanner").textContent="VEX'S FORTRESS"; fortHPset();
+  $("fortWord").innerHTML=""; $("fortChoices").innerHTML="";
+  flow(narrate("fort",$("fortText"),["fort_intro"]),()=>fortPhase(0)); }
+function fortPhase(i){ if(i>=FORTRESS.length){ fortWin(); return; }
+  fPhase=i; fRound=0; const ph=FORTRESS[i];
+  $("fortBanner").textContent=ph.banner; $("fortWord").innerHTML=""; $("fortChoices").innerHTML="";
+  flow(Aud.play([ph.taunt,ph.prompt]),()=>fortRound()); }
+function fortHit(label){ fHP--; fortHPset();
+  const bs=$("fortVexSprite"); if(bs){ bs.classList.add("hitfx"); setTimeout(()=>bs.classList.remove("hitfx"),360); burstAt(bs,label||"ZAP!"); }
+  Aud.ding(); if(allyFreed("tank")&&Math.random()<0.4)allyPop("tank");
+  fRound++; flow(Aud.play(["fort_hit"]),()=>fortRound()); }
+function fortRound(){ const ph=FORTRESS[fPhase];
+  if(fRound>=ph.n){ fortPhase(fPhase+1); return; }
+  fMiss=0;
+  ({sound:fortSound,read:fortRead,spell:fortSpell,sentence:fortSentence})[ph.kind](); }
+function fortMissHint(){ fMiss++; }
+function fortSound(){ const pool=taughtLetters(); const g=pickWeak(pool)||pool[0];
+  narrate("fort",$("fortText"),["snd_"+g],"Blast the shield! Tap the gem that makes the sound… 🔊");
+  $("fortWord").innerHTML="";
+  const foils=pool.filter(x=>x!==g).sort(()=>Math.random()-.5).slice(0,3);
+  const row=$("fortChoices"); row.innerHTML="";
+  [g,...foils].sort(()=>Math.random()-.5).forEach(o=>{ const t=document.createElement("button"); t.className="tile read"; t.dataset.g=o;
+    t.textContent=(fRound%3===2)?o.toUpperCase():o;
+    t.onclick=()=>{ if(o===g){ record(g,true); t.classList.add("win"); fortHit("ZAP!"); }
+      else { record(g,false); fortMissHint(); t.classList.add("dim");
+        if(fMiss>=2)row.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===g)x.classList.add("hint");}); Aud.play(["snd_"+g]); } };
+    row.appendChild(t); }); }
+function fortRead(){ const ws=Object.keys(READWORDS); const w=ws[Math.floor(Math.random()*ws.length)];
+  narrate("fort",$("fortText"),["read_prompt"],"Read the word-lock… tap what it means! 📖");
+  const wr=$("fortWord"); wr.innerHTML="";
+  w.split("").forEach(c=>{ const t=document.createElement("button"); t.className="tile read rletter"; t.textContent=c; t.onclick=()=>Aud.play("snd_"+c); wr.appendChild(t); });
+  const foils=ws.filter(x=>x!==w).sort(()=>Math.random()-.5).slice(0,2);
+  const row=$("fortChoices"); row.innerHTML="";
+  [w,...foils].sort(()=>Math.random()-.5).forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.textContent=READWORDS[o]; b.dataset.w=o;
+    b.onclick=()=>{ if(o===w){ record("w_"+w,true); b.classList.add("win"); fortHit(w.toUpperCase()+"!"); }
+      else { record("w_"+w,false); fortMissHint(); b.classList.add("dim");
+        if(fMiss>=2)row.querySelectorAll(".picktile").forEach(x=>{if(x.dataset.w===w)x.classList.add("hint");}); readSoundOut(w); } };
+    row.appendChild(b); }); }
+function fortSpell(){ const pool=taughtSight().length?taughtSight():["the","a","I"]; const w=pool[Math.floor(Math.random()*pool.length)];
+  narrate("fort",$("fortText"),["spell_prompt","sw_"+w],"Cast the spell you hear! ✨");
+  $("fortWord").innerHTML="";
+  const foils=pool.filter(x=>x!==w).sort(()=>Math.random()-.5).slice(0,2);
+  const row=$("fortChoices"); row.innerHTML="";
+  [w,...foils].sort(()=>Math.random()-.5).forEach(o=>{ const b=document.createElement("button"); b.className="tile wordtile read"; b.dataset.w=o; b.innerHTML=spellWordHTML(o);
+    b.onclick=()=>{ if(o===w){ record("sw_"+w,true); b.classList.add("win"); fortHit("✨"); }
+      else { record("sw_"+w,false); fortMissHint(); b.classList.add("dim");
+        if(fMiss>=2)row.querySelectorAll(".wordtile").forEach(x=>{if(x.dataset.w===w)x.classList.add("hint");}); Aud.play(["sw_"+w]); } };
+    row.appendChild(b); }); }
+function fortSentence(){ const s=SENTENCES[Math.floor(Math.random()*SENTENCES.length)];
+  narrate("fort",$("fortText"),["sent_prompt"],"Read it to free Leighton… tap the picture! 📖");
+  const wr=$("fortWord"); wr.innerHTML="";
+  s.t.forEach(w=>{ const t=document.createElement("button"); t.className="tile wordtile read"+(SIGHT[w]?" heartword":""); t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>Aud.play(wordAudio(w)); wr.appendChild(t); });
+  const row=$("fortChoices"); row.innerHTML="";
+  [{e:s.pic,ok:1},{e:s.foil,ok:0}].sort(()=>Math.random()-.5).forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.textContent=o.e;
+    b.onclick=()=>{ if(o.ok){ record("sent_fort",true); b.classList.add("win"); fortHit("READ!"); }
+      else { record("sent_fort",false); fortMissHint(); b.classList.add("dim");
+        if(fMiss>=2)row.querySelectorAll(".picktile").forEach(x=>{if(x.textContent===s.pic)x.classList.add("hint");}); Aud.play(sentenceAudio(s)); } };
+    row.appendChild(b); }); }
+function fortWin(){ const bs=$("fortVexSprite"); if(bs)bs.classList.add("flee");
+  $("fortBanner").textContent="VICTORY!"; flow(Aud.play(["fort_win1"]),missionComplete); }
+
 /* ---------------- PATROL ---------------- */
 function startPatrol(set){ Aud.play("patrol_intro");
   /* adaptive review: span everything taught so far, weighted to weakest items;
@@ -1060,12 +1160,14 @@ function forgeWord(){
 
 /* ---------------- WIN / REST ---------------- */
 function showWin(firstTime){ show("scrWin");
+  const ally=CUR.rescue?"heart":(CUR.type==="fortress"?"leighton":null);
   $("winHero").innerHTML=heroNow(170)+
-    (CUR.rescue?`<svg viewBox="-32 -36 64 76" width="92" style="vertical-align:bottom;">${allyFace("heart")}<text y="42" text-anchor="middle" font-family="Bangers" font-size="13" fill="#ffc93c">HEARTGUARD</text></svg>`:"");
+    (ally?`<svg viewBox="-32 -36 64 80" width="98" style="vertical-align:bottom;">${allyFace(ally)}<text y="42" text-anchor="middle" font-family="Bangers" font-size="12" fill="#ffc93c">${ally==="leighton"?"LEIGHTON":"HEARTGUARD"}</text></svg>`:"");
   const gear=GEAR_AT[CUR.id];
   $("winGear").innerHTML=(firstTime&&gear)?`<div class="gearbadge">NEW GEAR: ⭐ ${gear}</div>`:"";
   let ids;
-  if(CUR.rescue) ids=["free_heart1","free_heart2","m2_done"];
+  if(CUR.type==="fortress") ids=["leighton1","leighton2","leighton3","interlude1","interlude2"];
+  else if(CUR.rescue) ids=["free_heart1","free_heart2","m2_done"];
   else if(CUR.finale) ids = CUR.z===4 ? ["m4_letters"] : (CUR.z===3 ? ["m3_done"] : ["finale1","finale2","finale3"]);
   else if(firstTime&&gear) ids=["win_grow","win_gear",GEARLINE[gear]];
   else ids=["win_grow"];
