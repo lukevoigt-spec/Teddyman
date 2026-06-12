@@ -34,7 +34,10 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
    Never introduce material using letters not yet taught.
 6. Touch targets stay large (~96px+). Letters use Andika (literacy font). High contrast.
 7. Progress saves after EVERY answer (localStorage, schema-versioned, with export/restore in
-   Grown-Up Corner). Never ship a change that wipes or breaks existing saves — migrate.
+   Grown-Up Corner). Never ship a change that wipes or breaks existing saves — migrate. OPTIONAL
+   cloud sync: if a Cloudflare Worker URL is set, save() also debounce-pushes to it and boot pulls
+   the newer of {cloud,device} (S.ts timestamp, newer-wins) so the same URL on any device continues
+   his progress. Device-first/offline-safe; never blocks play. Worker code = cloud/worker.js.
 8. All instructions are audio-first (the player cannot read yet). Every prompt has a replay
    button. Any flow that waits on audio MUST use the flow()/watchdog pattern so the game can
    never hang — there is always a ⏭ skip and a Home button.

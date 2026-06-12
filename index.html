@@ -189,7 +189,18 @@
 
     <div id="tabBackup" class="tabpane on">
       <button class="btn ghost" id="btnVoiceTest">🔊 Test voice</button>
-      <div class="read" style="font-size:15px;max-width:600px;text-align:center;color:#cfc6f2;">Backup: copy this code somewhere safe. Paste it back and tap Restore to recover progress on any device.</div>
+
+      <div class="audrow" style="flex-direction:column;border:2px solid #3a2d72;border-radius:14px;padding:12px;width:min(640px,94vw);">
+        <div class="read" style="font-size:14px;color:#cfc6f2;text-align:center;">☁️ <b>Cloud sync</b> — his progress follows him to any device. Paste your Cloudflare Worker URL here once; the <i>same URL</i> on another iPad continues right where he left off. (Setup: see <b>cloud/README.md</b>.)</div>
+        <input id="cloudURL" type="text" placeholder="https://teddy-save.your-name.workers.dev" style="width:100%;padding:9px 12px;border-radius:12px;border:2px solid #3a2d72;background:#171236;color:var(--txt);font-size:14px;">
+        <div style="display:flex;gap:10px;justify-content:center;">
+          <button class="btn ghost sm" id="btnCloudConnect">Connect / Sync now</button>
+          <button class="btn ghost sm" id="btnCloudOff">Turn off</button>
+        </div>
+        <div id="cloudState" class="vpstatus" style="text-align:center;">Cloud sync off (saved on this device)</div>
+      </div>
+
+      <div class="read" style="font-size:14px;max-width:600px;text-align:center;color:#cfc6f2;">Manual backup: copy this code somewhere safe. Paste it back and tap Restore to recover progress on any device.</div>
       <textarea id="saveBox" spellcheck="false"></textarea>
       <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
         <button class="btn ghost" id="btnCopySave">Copy backup</button>

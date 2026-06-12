@@ -360,9 +360,37 @@ const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#
 /* ---------------- SAVE ---------------- */
 const KEY="heroTeddySave_v1";
 let S=load();
-function fresh(){return {v:1,act:1,intro:false,scan:false,done:{},mastery:{},stars:0,gear:[],equip:{weapon:"none",cape:"red"},session:{count:0,day:"",rest:false}};}
-function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.v===1){if(!d.session.day)d.session={count:0,day:"",rest:false};if(!d.equip)d.equip={weapon:"none",cape:"red"};if(d.act===undefined)d.act=1;return d;}}catch(e){}return fresh();}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function fresh(){return {v:1,act:1,ts:0,intro:false,scan:false,done:{},mastery:{},stars:0,gear:[],equip:{weapon:"none",cape:"red"},session:{count:0,day:"",rest:false}};}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.v===1){if(!d.session.day)d.session={count:0,day:"",rest:false};if(!d.equip)d.equip={weapon:"none",cape:"red"};if(d.act===undefined)d.act=1;if(d.ts===undefined)d.ts=0;return d;}}catch(e){}return fresh();}
+function save(){ S.ts=Date.now(); try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} cloudPush(); }
+/* ---------------- CLOUD SAVE (optional, low-maintenance) ----------------
+   Progress lives in localStorage (instant, offline). If a Cloudflare Worker
+   URL is set in Grown-Up Corner, every save also debounce-syncs to the cloud,
+   and on boot the newer of {cloud, device} wins — so the SAME url on any
+   device just continues his progress. Fixed key, so the only thing to paste
+   is the URL. Never blocks play; failures fall back to device-only.          */
+let cloudURL=""; try{ cloudURL=localStorage.getItem("teddyCloudURL")||""; }catch(e){}
+function cloudEndpoint(){ return cloudURL ? cloudURL.replace(/\/+$/,"")+"?k=teddy" : null; }
+function cloudStatus(s){ const el=document.getElementById("cloudState"); if(el)el.textContent=s; }
+let __cloudT=null;
+function cloudPush(){ const u=cloudEndpoint(); if(!u)return; clearTimeout(__cloudT);
+  __cloudT=setTimeout(()=>{ cloudStatus("Saving to cloud…");
+    fetch(u,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(S)})
+      .then(r=>cloudStatus(r.ok?"Synced to cloud ✓":"Cloud error — saved on device"))
+      .catch(()=>cloudStatus("Offline — saved on device")); },2500); }
+async function cloudPull(){ const u=cloudEndpoint(); if(!u)return false;
+  try{ const r=await fetch(u); if(!r.ok)return false; const t=(await r.text()).trim(); if(!t)return false;
+    const d=JSON.parse(t);
+    if(d&&d.v===1&&(d.ts||0)>(S.ts||0)){ S=d; if(d.act===undefined)S.act=1; if(d.ts===undefined)S.ts=0;
+      try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} return true; } }
+  catch(e){} return false; }
+function cloudConnect(url){ cloudURL=(url||"").trim();
+  try{ localStorage.setItem("teddyCloudURL",cloudURL); }catch(e){}
+  if(!cloudURL){ cloudStatus("Cloud sync off (device only)"); return; }
+  cloudStatus("Connecting…");
+  cloudPull().then(changed=>{ if(changed){ GEO=geomFor(currentAct()); if(S.intro){const c=document.getElementById("btnContinue"); if(c)c.style.display="inline-block";} }
+    cloudStatus(changed?"Connected ✓ — restored his cloud progress":"Connected ✓ — this device now backs up to the cloud");
+    cloudPush(); }); }
 function today(){return new Date().toDateString();}
 function sessionTick(){ if(S.session.day!==today()){S.session={count:0,day:today(),rest:false};save();} }
 function mast(g){ if(!S.mastery[g])S.mastery[g]={seen:0,ok:0,str:0}; return S.mastery[g]; }
@@ -530,6 +558,10 @@ $("vpStatus").textContent=vpMsg();
 if(S.intro)$("btnContinue").style.display="inline-block";
 $("btnStart").onclick=()=>{ Aud.pick(); if(!S.intro)startIntro(); else {Aud.play("welcome"); toMap();} };
 $("btnContinue").onclick=()=>{ Aud.pick(); Aud.play("welcome"); toMap(); };
+/* on boot, restore newer cloud progress (if a Worker URL is configured) */
+cloudPull().then(changed=>{ if(changed){ GEO=geomFor(currentAct());
+  if(S.intro)$("btnContinue").style.display="inline-block"; $("vpStatus").textContent=vpMsg();
+  cloudStatus("Restored his latest progress from the cloud ✓"); } });
 
 /* ---------------- INTRO ---------------- */
 const INTRO=[
@@ -1264,7 +1296,11 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
       <div class="pgems">${weak.map(g=>`<span class="pgem warn">${g.toUpperCase()}</span> <span class="pnote">${progAcc(g)!=null?progAcc(g)+"%":"new"} ${strDots(g)}</span>`).join("<br>")}</div></div>`:""}
     <div class="psec pnote">Reading direction so far: letter→sound (decode) via Read-It &amp; Story Gate; sound→letter (spell) via Forge &amp; patrols. Both grow as he plays. All data stays on this device.</div>`;
 };
-$("btnGear").onclick=()=>{ $("saveBox").value=JSON.stringify(S); $("vpStatus2").textContent=vpMsg(); window.renderProgress(); $("settingsPanel").classList.add("on"); };
+$("btnGear").onclick=()=>{ $("saveBox").value=JSON.stringify(S); $("vpStatus2").textContent=vpMsg(); window.renderProgress();
+  $("cloudURL").value=cloudURL; cloudStatus(cloudURL?"Cloud sync ON ☁️ — same URL on any device continues his progress":"Cloud sync off (saved on this device)");
+  $("settingsPanel").classList.add("on"); };
+$("btnCloudConnect").onclick=()=>cloudConnect($("cloudURL").value);
+$("btnCloudOff").onclick=()=>{ cloudURL=""; try{localStorage.removeItem("teddyCloudURL");}catch(e){} $("cloudURL").value=""; cloudStatus("Cloud sync off (saved on this device)"); };
 $("btnCloseSettings").onclick=()=>$("settingsPanel").classList.remove("on");
 $("btnVoiceTest").onclick=()=>{Aud.pick();Aud.play("test");};
 $("btnCopySave").onclick=()=>{$("saveBox").select();document.execCommand("copy");};
