@@ -68,8 +68,9 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - Group 3 (next): e u r h b f. Then: l j v w x y z q → first 25 heart/sight words
   → decodable sentences. Uppercase+lowercase paired, lowercase weighted; deliberate uppercase
   rounds every 3rd rep.
-- Mastery model: per-grapheme strength scores recorded on every answer; patrols should
-  increasingly draw from weakest items (adaptive review is a TODO).
+- Mastery model: per-grapheme strength scores recorded on every answer. Patrols are ADAPTIVE
+  (pickWeak/taughtLetters): they span everything taught so far, weighted toward the weakest items
+  (unseen > failing > mastered), and only ever show already-taught letters as distractors.
 
 ## Voice/audio system
 - Aud.play(ids) plays voicepack clips, falls back to per-line TTS (LINES manifest: {t, r, v}).

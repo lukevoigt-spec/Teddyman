@@ -596,6 +596,17 @@ let CUR=null;
    mission's own zone — never letters that haven't been taught yet. */
 function lettersFor(m){ const z=(m&&m.z)||1;
   return ZONES.filter(zz=>zz.id<=z).flatMap(zz=>zz.letters); }
+/* Letters actually taught so far (gem rescued) — progress-accurate, so review
+   never shows a letter that hasn't been introduced yet. */
+function taughtLetters(){ return ORDER.filter(g=>S.done[LETTER_MISSION[g]]); }
+/* Adaptive pick: weight toward the child's weakest graphemes (low strength /
+   low accuracy / fewest reps) so patrols self-target what needs work. */
+function pickWeak(pool){ if(!pool.length)return null;
+  const wt=pool.map(g=>{ const m=mast(g); const acc=m.seen?m.ok/m.seen:0;
+    return 1 + (5-(m.str||0))*1.4 + (1-acc)*1.2 + (m.seen<3?1.5:0); });
+  let r=Math.random()*wt.reduce((a,b)=>a+b,0);
+  for(let i=0;i<pool.length;i++){ if((r-=wt[i])<=0)return pool[i]; }
+  return pool[pool.length-1]; }
 function startMission(m){ clearFlow(); CUR=m; $("hudTitle").textContent=m.lbl.toUpperCase();
   if(m.type==="learn")startLearn(m);
   else if(m.type==="patrol")startPatrol(m.set);
@@ -660,11 +671,13 @@ function startFind(g,reps=5,set=null,next=null){ show("scrFind");
   findTarget=g; findRep=0; findGoal=reps; patrolSet=set; afterFind=next; nextFind(); }
 function nextFind(){
   if(findRep>=findGoal){ (afterFind||(()=>startBoss(findTarget)))(); return; }
-  const g = patrolSet? patrolSet[Math.floor(Math.random()*patrolSet.length)] : findTarget;
+  const g = patrolSet? (pickWeak(patrolSet)||patrolSet[0]) : findTarget;
   findTarget=g; findMiss=0;
   $("findProg").textContent="⭐ "+findRep+" / "+findGoal;
   narrate("find",$("findText"),["find_prompt","snd_"+g],"Find the gem that makes the sound\u2026 \ud83d\udd0a");
-  const foils=lettersFor(CUR).filter(x=>x!==g).sort(()=>Math.random()-.5).slice(0,3);
+  /* patrol foils come only from letters already taught; learn-mission foils from the zone */
+  const foilPool=patrolSet||lettersFor(CUR);
+  const foils=foilPool.filter(x=>x!==g).sort(()=>Math.random()-.5).slice(0,3);
   const opts=[g,...foils].sort(()=>Math.random()-.5);
   const row=$("findTiles"); row.innerHTML="";
   opts.forEach(o=>{ const t=document.createElement("button"); t.className="tile read";
@@ -705,7 +718,11 @@ function bossRound(g){
 
 /* ---------------- PATROL ---------------- */
 function startPatrol(set){ Aud.play("patrol_intro");
-  startFind(set[0],8,set,()=>missionComplete()); }
+  /* adaptive review: span everything taught so far, weighted to weakest items;
+     fall back to the mission's authored set if little is taught yet */
+  const taught=taughtLetters();
+  const pool=taught.length>=2 ? taught : (set||["s","a"]);
+  startFind(pool[0],8,pool,()=>missionComplete()); }
 
 /* ---------------- FORGE ---------------- */
 let forgeWords,forgeWordIx,forgeSlotIx,forgeHP;

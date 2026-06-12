@@ -58,5 +58,40 @@ original look** — so you can add scenes one at a time, with zero risk.
 > mood implied by light and shadow only — no robots or figures drawn. Centre
 > kept clear for action.
 
-I'll write the remaining prompts (base, learn, lab, victory, intro, rest) as we
-lock the look from these first few.
+**`bg-intro.jpg`** — preamble +
+> Cinematic wide storybook backdrop: a dramatic deep indigo-to-violet sky over
+> the distant glittering gem-city skyline at night, a few sweeping searchlight
+> beams and drifting energy motes, slightly tense but still hopeful. Neutral and
+> uncluttered so comic story panels read on top.
+
+**`bg-lab.jpg`** — preamble +
+> A bright, friendly hero-tech calibration chamber: softly glowing lens rings
+> and gentle scanner arches, floating holographic gem outlines, warm teal and
+> gold light, clean and inviting (think a kid-safe lab). Calm, not clinical.
+> Large open centre for floating gems.
+
+**`bg-learn.jpg`** — preamble +
+> A serene magical training sanctum where one enormous crystal gem floats and
+> glows, casting soft warm light; smooth uncluttered surfaces, gentle particles,
+> a focused spotlight pool in the middle. Big empty central space for a huge
+> letter to sit. Warm, encouraging, low-distraction.
+
+**`bg-base.jpg`** — preamble +
+> The interior of a cosy superhero headquarters / gear room: shelves of glowing
+> crystal gems, a weapon rack (a glowing hammer and sword), trophy lights, a big
+> friendly window onto the gem-city skyline, warm golden lamplight. Collectible,
+> homey, proud. Centre-floor kept open for the hero to stand.
+
+**`bg-victory.jpg`** — preamble +
+> Triumphant sunburst sky over the gem-city: radiant warm-gold light rays,
+> drifting sparkles and confetti of light (soft, NO harsh flashing), a rainbow
+> of gem glints, jubilant and celebratory. Centre kept open for the hero.
+
+**`bg-rest.jpg`** — preamble +
+> Peaceful dusk over Star Force City winding down: soft lavender-and-amber sunset,
+> first stars appearing, gem-lights glowing gently warm in the towers, a calm
+> hush. Soothing bedtime mood. Low contrast, restful.
+
+> **Note on the map:** the City Map screen draws its own illustrated scene in
+> code, so it doesn't use a `bg-*` file. `bg-city.jpg` shows on the gem-finding
+> ("patrol/find") screens. The zone-2 `heights` scene isn't wired to a slot yet.
