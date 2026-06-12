@@ -71,6 +71,9 @@ body{
   font-size:clamp(34px,6vw,54px);font-weight:700;background:linear-gradient(180deg,#fff6e3,#e7dcc0);color:var(--ink);letter-spacing:.04em;}
 .heartl{color:var(--gold);position:relative;}
 .heartl::after{content:"♥";position:absolute;top:-.7em;left:50%;transform:translateX(-50%);font-size:.42em;color:var(--red);-webkit-text-stroke:0;}
+/* Story Gate: sentence word tiles wrap; sight words get a soft gold tint */
+#sentWords{flex-wrap:wrap;max-width:min(900px,96vw);}
+.wordtile.heartword{background:linear-gradient(180deg,#fff3c4,#ffe08a);}
 @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
 .slot{
   width:clamp(86px,14vw,130px);height:clamp(86px,14vw,130px);border-radius:22px;

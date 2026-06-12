@@ -73,8 +73,14 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - Spell Tower (live, zone 5): Instant Spells — sight ("heart") words (I a the to and is you said),
   SIGHT{} with heart-letter indices. Intro flags the tricky letters with a ♥; practice = hear the
   word, tap the matching written word (recognition). Earns the Spell Tome. taughtSight() is cumulative.
-- Group 4 (next): l j v w x y z q. Then decodable sentences ("The cat sat."). Uppercase+lowercase
-  paired, lowercase weighted; deliberate uppercase rounds every 3rd rep.
+- Story Gate (live, zone 6): decodable SENTENCES (the reading goal) — read the sentence, tap the
+  picture it tells about (foil differs by a key word). SENTENCES[] use only taught words + sight
+  words. Earns the Story Key; mission 36 declares "you can READ." This is the M4 reading payoff.
+- Group 4 (next): l j v w x y z q — NOTE: the map renders zones in ZONES-array order, which currently
+  must match mission-id order. To slot group 4 into the LETTER phase (not after the reading zones)
+  without breaking save ids, mapSVG node positioning needs decoupling from flat id order first.
+- Uppercase+lowercase paired, lowercase weighted; deliberate uppercase rounds every 3rd rep (TODO
+  beyond find's every-3rd-rep upper round).
 - DIRECTION NOTE (prime objective = reading): scan/find/boss/forge train sound→letter (ID + spell).
   "Read It" adds letter→sound (decode). Keep growing the decode side (sight words, sentences).
 - Mastery model: per-grapheme strength scores recorded on every answer. Patrols are ADAPTIVE

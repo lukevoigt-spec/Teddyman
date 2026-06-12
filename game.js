@@ -53,9 +53,26 @@ const MISSIONS=[
   /* --- ZONE 5 · SPELL TOWER — sight ("heart") words you just KNOW on sight --- */
   {id:31,type:"spell",new:["I","a","the"],lbl:"Instant Spells I",z:5},
   {id:32,type:"spell",new:["to","and","is"],lbl:"Instant Spells II",z:5},
-  {id:33,type:"spell",new:["you","said"],lbl:"Spell Tower: Master Caster",z:5}
+  {id:33,type:"spell",new:["you","said"],lbl:"Spell Tower: Master Caster",z:5},
+  /* --- ZONE 6 · STORY GATE — read whole decodable SENTENCES (the goal) --- */
+  {id:34,type:"sentence",sents:[0,1,2],lbl:"Story Gate I",z:6},
+  {id:35,type:"sentence",sents:[3,4,5],lbl:"Story Gate II",z:6},
+  {id:36,type:"sentence",sents:[6,7],lbl:"Story Gate: First Story",z:6}
 ];
-const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield",22:"Gem Gauntlet",30:"Reading Crown",33:"Spell Tome"};
+const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield",22:"Gem Gauntlet",30:"Reading Crown",33:"Spell Tome",36:"Story Key"};
+/* Decodable sentences: only taught CVC words + learned sight words. Each carries
+   a picture (its meaning) and a foil that differs by the key word, so the child
+   must actually READ it, not guess. The reading finish line. */
+const SENTENCES=[
+  {t:["the","cat","sat"],        pic:"🐱", foil:"🐶"},
+  {t:["a","dog","ran"],          pic:"🐶", foil:"🐱"},
+  {t:["the","sun","is","hot"],   pic:"☀️", foil:"🛏️"},
+  {t:["the","pig","is","big"],   pic:"🐷", foil:"🐔"},
+  {t:["the","hen","ran"],        pic:"🐔", foil:"🐛"},
+  {t:["the","bug","is","red"],   pic:"🐛", foil:"🐱"},
+  {t:["you","can","run"],        pic:"🏃", foil:"😴"},
+  {t:["I","had","a","nap"],      pic:"😴", foil:"🏃"}
+];
 /* Sight ("heart") words — not fully decodable; learned as wholes. h = indices
    of the "heart"/tricky letters that don't say their usual sound. */
 const SIGHT={
@@ -115,7 +132,10 @@ const ZONES=[
     nodes:autoNodes(4,{y0:-1560,step:110,phase:1.2}) },
   { id:5, name:"SPELL TOWER", bg:"spell",
     letters:[],   /* sight-word recognition */
-    nodes:autoNodes(3,{y0:-2010,step:112,phase:3.1}) }
+    nodes:autoNodes(3,{y0:-2010,step:112,phase:3.1}) },
+  { id:6, name:"STORY GATE", bg:"story",
+    letters:[],   /* read whole sentences */
+    nodes:autoNodes(3,{y0:-2380,step:114,phase:5.4}) }
 ];
 /* Derived geometry. The canvas grows UPWARD as zones are appended: the
    viewBox top (VIEW_TOP) tracks the highest node, and Vex's fortress always
@@ -185,6 +205,12 @@ const LINES={
   spell_yes:{t:"Spell cast! You knew it!"},
   spell_done:{t:"You are a MASTER SPELL CASTER, Super Teddy! Heart words: mastered!"},
   gear_tome:{t:"The SPELL TOME! It holds every heart word you know!"},
+  word_ran:{t:"ran!"}, word_hot:{t:"hot!"}, word_big:{t:"big!"}, word_can:{t:"can!"}, word_had:{t:"had!"},
+  sent_intro:{t:"THE STORY GATE! This is real reading, hero. Tap each word to read it, then tap the picture the sentence tells about!"},
+  sent_prompt:{t:"Read the whole sentence... then tap the picture it tells about!"},
+  sent_yes:{t:"YES! You READ a whole sentence, Super Teddy!"},
+  sent_champ:{t:"You did it! You can READ, Super Teddy! Real sentences! The Story Gate is OPEN — Lord Vex's Fortress is next!"},
+  gear_storykey:{t:"The STORY KEY! It unlocks every story in Star Force City!"},
   panel1:{t:"This is Star Force City. A city powered by magical Letter Gems, words, and stories."},
   panel2:{t:"But one night, LORD VEX and his Vexbot army attacked! They stole the Letter Gems and smashed every word into pieces. Now nobody can read. Not signs, not books, not even bedtime stories."},
   panel3:{t:"The city needed a hero. The founders of the Hero League, your mom and dad, searched everywhere... and they chose YOU, Super Teddy."},
@@ -241,7 +267,7 @@ const LINES={
   rest2:{t:"Even heroes rest. Great work today, Super Teddy. The city is safer because of you!"},
   test:{t:"Hello Super Teddy! This is your mentor speaking. Star Force City needs you!"}
 };
-const GEARLINE={ "Power Belt":"gear_belt","Rocket Boots":"gear_boots","Word Hammer":"gear_hammer","Gem Sword":"gear_sword","Gem Shield":"gear_shield","Gem Gauntlet":"gear_gauntlet","Reading Crown":"gear_crown","Spell Tome":"gear_tome" };
+const GEARLINE={ "Power Belt":"gear_belt","Rocket Boots":"gear_boots","Word Hammer":"gear_hammer","Gem Sword":"gear_sword","Gem Shield":"gear_shield","Gem Gauntlet":"gear_gauntlet","Reading Crown":"gear_crown","Spell Tome":"gear_tome","Story Key":"gear_storykey" };
 const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#ffc93c",
   m:"#f06292",d:"#9c2f2f",g:"#1abc9c",o:"#5dade2",c:"#7d3c98",k:"#aab7c4",
   e:"#27ae60",u:"#e67e22",r:"#ff5e57",h:"#5f6dff",b:"#3742fa",f:"#16a085"};
@@ -366,7 +392,7 @@ const $=id=>document.getElementById(id);
 /* Painted-scene slots: screen -> art/bg-<name>.* . Add an image to swap a scene;
    if the file is missing the layer stays transparent and the original look shows.
    Several screens intentionally share one scene (e.g. learn/trace, boss/forge). */
-const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrScan:"lab", scrMap:"city", scrRead:"learn", scrSpell:"learn",
+const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrScan:"lab", scrMap:"city", scrRead:"learn", scrSpell:"learn", scrSent:"learn",
   scrBase:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
   scrBoss:"battle", scrForge:"battle", scrWin:"victory", scrRest:"rest" };
 const __bgCache={};
@@ -693,6 +719,7 @@ function startMission(m){ clearFlow(); CUR=m; $("hudTitle").textContent=m.lbl.to
   else if(m.type==="patrol")startPatrol(m.set);
   else if(m.type==="read")startRead(m);
   else if(m.type==="spell")startSpell(m);
+  else if(m.type==="sentence")startSentence(m);
   else startForge(m); }
 function missionComplete(){
   const firstTime=!S.done[CUR.id];
@@ -868,6 +895,37 @@ function practiceSpell(){
       else { record("sw_"+w,false); spellMiss++; b.classList.add("dim");
         if(spellMiss>=2)cr.querySelectorAll(".wordtile").forEach(x=>{ if(x.dataset.w===w)x.classList.add("hint"); });
         Aud.play(["almost","sw_"+w]); } };
+    cr.appendChild(b); }); }
+
+/* ---------------- STORY GATE (decodable sentences) ----------------
+   The reading goal: read a whole sentence, then tap the picture it tells about
+   (foil differs by a key word, so guessing fails). Each word is tappable to
+   hear it; a Read-it-all button plays the whole sentence as scaffold. */
+function wordAudio(w){ return LINES["word_"+w]?["word_"+w]
+  : (LINES["sw_"+w]?["sw_"+w] : [...w.split("").map(c=>"snd_"+c),"word_"+w]); }
+function sentenceAudio(s){ return s.t.flatMap(w=>wordAudio(w)); }
+let sentList,sentIx,sentGoal,sentMiss,sentCur,sentMission;
+function startSentence(m){ show("scrSent"); sentMission=m; sentList=m.sents.slice(); sentIx=0; sentGoal=sentList.length;
+  $("sentChoices").innerHTML=""; $("sentWords").innerHTML="";
+  flow(narrate("sent",$("sentText"),["sent_intro"]),()=>nextSentence()); }
+function nextSentence(){
+  if(sentIx>=sentGoal){ const champ=sentMission && sentMission.id===36;
+    flow(Aud.play(champ?["sent_champ"]:["sent_yes"]),missionComplete); return; }
+  const s=SENTENCES[sentList[sentIx]]; sentCur=s; sentMiss=0;
+  $("sentProg").textContent="📖 "+sentIx+" / "+sentGoal;
+  narrate("sent",$("sentText"),["sent_prompt"],"Read the sentence… then tap the picture! 📖");
+  const wr=$("sentWords"); wr.innerHTML="";
+  s.t.forEach(w=>{ const t=document.createElement("button");
+    t.className="tile wordtile read"+(SIGHT[w]?" heartword":"");
+    t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>Aud.play(wordAudio(w)); wr.appendChild(t); });
+  const opts=[{e:s.pic,ok:true},{e:s.foil,ok:false}].sort(()=>Math.random()-.5);
+  const cr=$("sentChoices"); cr.innerHTML="";
+  opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.textContent=o.e;
+    b.onclick=()=>{ if(o.ok){ record("sent_"+sentIx,true); b.classList.add("win"); burstAt(b); Aud.ding(); sentIx++;
+        flow(Aud.play([...sentenceAudio(s),"sent_yes"]),()=>setTimeout(nextSentence,200)); }
+      else { record("sent_"+sentIx,false); sentMiss++; b.classList.add("dim");
+        if(sentMiss>=2)cr.querySelectorAll(".picktile").forEach(x=>{ if(x.textContent===s.pic)x.classList.add("hint"); });
+        Aud.play(sentenceAudio(s)); } };
     cr.appendChild(b); }); }
 
 /* ---------------- PATROL ---------------- */
