@@ -6,44 +6,106 @@
 const NAME="Super Teddy";
 const LETTERS={
   s:{kw:"sun",icon:"☀️"}, a:{kw:"apple",icon:"🍎"}, t:{kw:"tiger",icon:"🐯"},
-  p:{kw:"pig",icon:"🐷"}, i:{kw:"insect",icon:"🐜"}, n:{kw:"nest",icon:"🪺"}
+  p:{kw:"pig",icon:"🐷"}, i:{kw:"insect",icon:"🐜"}, n:{kw:"nest",icon:"🪺"},
+  m:{kw:"monkey",icon:"🐵"}, d:{kw:"dog",icon:"🐶"}, g:{kw:"goat",icon:"🐐"},
+  o:{kw:"octopus",icon:"🐙"}, c:{kw:"cat",icon:"🐱"}, k:{kw:"kite",icon:"🪁"}
 };
-const ORDER=["s","a","t","p","i","n"];
+const ORDER=["s","a","t","p","i","n","m","d","g","o","c","k"];
+/* z = letter-group zone. Foil pools and forge words only ever use letters from
+   zones <= the mission's zone — material not yet taught never appears. */
 const MISSIONS=[
-  {id:0,type:"learn",letter:"s",lbl:"Rescue Gem S"},
-  {id:1,type:"learn",letter:"a",lbl:"Rescue Gem A"},
-  {id:2,type:"patrol",set:["s","a"],lbl:"Rooftop Patrol"},
-  {id:3,type:"learn",letter:"t",lbl:"Rescue Gem T"},
-  {id:4,type:"forge",words:["at","sat"],lbl:"Word Forge: First Words"},
-  {id:5,type:"learn",letter:"p",lbl:"Rescue Gem P"},
-  {id:6,type:"learn",letter:"i",lbl:"Rescue Gem I"},
-  {id:7,type:"learn",letter:"n",lbl:"Rescue Gem N"},
-  {id:8,type:"forge",words:["tap","pin","nap","sat"],lbl:"Forge Battle: Save the Block",finale:true}
+  {id:0,type:"learn",letter:"s",lbl:"Rescue Gem S",z:1},
+  {id:1,type:"learn",letter:"a",lbl:"Rescue Gem A",z:1},
+  {id:2,type:"patrol",set:["s","a"],lbl:"Rooftop Patrol",z:1},
+  {id:3,type:"learn",letter:"t",lbl:"Rescue Gem T",z:1},
+  {id:4,type:"forge",words:["at","sat"],lbl:"Word Forge: First Words",z:1},
+  {id:5,type:"learn",letter:"p",lbl:"Rescue Gem P",z:1},
+  {id:6,type:"learn",letter:"i",lbl:"Rescue Gem I",z:1},
+  {id:7,type:"learn",letter:"n",lbl:"Rescue Gem N",z:1},
+  {id:8,type:"forge",words:["tap","pin","nap","sat"],lbl:"Forge Battle: Save the Block",finale:true,z:1},
+  /* --- ZONE 2 · HEART HEIGHTS (m d g o c k) — Heartguard rescue arc --- */
+  {id:9, type:"learn",letter:"m",lbl:"Rescue Gem M",z:2},
+  {id:10,type:"learn",letter:"d",lbl:"Rescue Gem D",z:2},
+  {id:11,type:"patrol",set:["m","d","s","a"],lbl:"Skyway Patrol",z:2},
+  {id:12,type:"learn",letter:"g",lbl:"Rescue Gem G",z:2},
+  {id:13,type:"forge",words:["dad","mad","dig"],lbl:"Word Forge: Power Words",z:2},
+  {id:14,type:"learn",letter:"o",lbl:"Rescue Gem O",z:2},
+  {id:15,type:"learn",letter:"c",lbl:"Rescue Gem C",z:2},
+  {id:16,type:"learn",letter:"k",lbl:"Rescue Gem K",z:2},
+  {id:17,type:"forge",words:["cat","dog","mom","kid"],lbl:"Heart Tower: Save Amelia",rescue:true,z:2}
 ];
-const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword"};
+const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield"};
 const TRACE={
   s:[[[205,80],[150,58],[102,86],[106,132],[160,152],[196,188],[172,236],[102,232]]],
   a:[[[196,128],[150,96],[106,126],[100,176],[140,216],[192,200]],[[200,98],[200,234]]],
   t:[[[150,58],[150,150],[156,228]],[[104,116],[200,116]]],
   p:[[[108,94],[108,256]],[[108,122],[156,96],[196,132],[188,178],[142,196],[108,176]]],
   i:[[[150,108],[150,224]],[[150,64]]],
-  n:[[[110,100],[110,224]],[[110,150],[136,104],[176,106],[192,148],[192,224]]]
+  n:[[[110,100],[110,224]],[[110,150],[136,104],[176,106],[192,148],[192,224]]],
+  m:[[[80,104],[80,224]],[[80,148],[100,108],[128,112],[140,150],[140,224]],[[140,150],[160,108],[188,112],[200,150],[200,224]]],
+  d:[[[196,128],[150,96],[106,126],[100,176],[140,216],[192,200]],[[200,62],[200,234]]],
+  g:[[[196,128],[150,96],[106,126],[100,176],[140,216],[192,200]],[[200,100],[200,232],[182,262],[140,258]]],
+  o:[[[150,92],[106,118],[94,170],[126,214],[178,212],[206,164],[194,116],[150,92]]],
+  c:[[[200,110],[150,88],[104,120],[96,172],[140,216],[200,196]]],
+  k:[[[105,62],[105,240]],[[185,115],[108,176]],[[122,166],[190,240]]]
 };
+
+/* ---------------- WORLD ZONES (drive the map) ----------------
+   Each ZONE is one letter group with its own painted-scene slot and its
+   mission nodes. To add a group, append a zone (autoNodes() lays out the
+   trail) — node positions, hero base, map extents and landmark positions
+   all derive from this array. Zone 1 keeps its hand-tuned layout.         */
+function autoNodes(count,{y0=1280,step=100,amp=195,cx=400,phase=0}={}){
+  const out=[]; for(let i=0;i<count;i++)
+    out.push([Math.round(cx+amp*Math.sin(i*0.8+phase)), y0-i*step]);
+  return out; }
+const ZONES=[
+  { id:1, name:"STAR FORCE CITY", bg:"city",
+    letters:["s","a","t","p","i","n"],
+    base:[470,1408],
+    nodes:[[420,1280],[230,1190],[520,1100],[300,1000],[560,900],[330,800],[170,700],[440,600],[300,480]] },
+  { id:2, name:"HEART HEIGHTS", bg:"heights",
+    letters:["m","d","g","o","c","k"],
+    nodes:autoNodes(9,{y0:370,step:104,phase:2.2}) }
+];
+/* Derived geometry. The canvas grows UPWARD as zones are appended: the
+   viewBox top (VIEW_TOP) tracks the highest node, and Vex's fortress always
+   sits at the summit; the Heart Tower stands beside the rescue mission.    */
+const NODE_POS=ZONES.flatMap(z=>z.nodes);
+const BASE_POS=ZONES[0].base;
+const MAP_H=Math.max(BASE_POS[1], ...NODE_POS.map(p=>p[1]))+152;
+const MIN_Y=Math.min(...NODE_POS.map(p=>p[1]));
+const FORT_POS=[400, MIN_Y-210];
+const VIEW_TOP=FORT_POS[1]-330;
+const LAST_NODE=NODE_POS[NODE_POS.length-1];
+const HEART_POS=[LAST_NODE[0]>400 ? LAST_NODE[0]-265 : LAST_NODE[0]+265, LAST_NODE[1]-20];
 
 /* ---------- VOICE LINE MANIFEST (ids shared with Voice Studio) ---------- */
 const LINES={
   /* letter sounds — override these with your own recordings for perfect phonics */
   snd_s:{t:"sss",r:.7}, snd_a:{t:"ahh",r:.7}, snd_t:{t:"tuh",r:.75},
   snd_p:{t:"puh",r:.75}, snd_i:{t:"ih",r:.7}, snd_n:{t:"nnn",r:.7},
+  snd_m:{t:"mmm",r:.7}, snd_d:{t:"duh",r:.75}, snd_g:{t:"guh",r:.75},
+  snd_o:{t:"o",r:.7}, snd_c:{t:"kuh",r:.75}, snd_k:{t:"kuh",r:.75},
   like_s:{t:"Like sun!"}, like_a:{t:"Like apple!"}, like_t:{t:"Like tiger!"},
   like_p:{t:"Like pig!"}, like_i:{t:"Like insect!"}, like_n:{t:"Like nest!"},
+  like_m:{t:"Like monkey!"}, like_d:{t:"Like dog!"}, like_g:{t:"Like goat!"},
+  like_o:{t:"Like octopus!"}, like_c:{t:"Like cat!"}, like_k:{t:"Like kite!"},
   intro_s:{t:"Mission! A Vexbot trapped the Letter Gem S! This is S. It says..."},
   intro_a:{t:"Mission! A Vexbot trapped the Letter Gem A! This is A. It says..."},
   intro_t:{t:"Mission! A Vexbot trapped the Letter Gem T! This is T. It says..."},
   intro_p:{t:"Mission! A Vexbot trapped the Letter Gem P! This is P. It says..."},
   intro_i:{t:"Mission! A Vexbot trapped the Letter Gem I! This is I. It says..."},
   intro_n:{t:"Mission! A Vexbot trapped the Letter Gem N! This is N. It says..."},
+  intro_m:{t:"Mission! A Vexbot trapped the Letter Gem M! This is M. It says..."},
+  intro_d:{t:"Mission! A Vexbot trapped the Letter Gem D! This is D. It says..."},
+  intro_g:{t:"Mission! A Vexbot trapped the Letter Gem G! This is G. It says..."},
+  intro_o:{t:"Mission! A Vexbot trapped the Letter Gem O! This is O. It says..."},
+  intro_c:{t:"Mission! A Vexbot trapped the Letter Gem C! This is C. It says..."},
+  intro_k:{t:"Mission! A Vexbot trapped the Letter Gem K! This is K. It says..."},
   word_at:{t:"at!"}, word_sat:{t:"sat!"}, word_tap:{t:"tap!"}, word_pin:{t:"pin!"}, word_nap:{t:"nap!"},
+  word_dad:{t:"dad!"}, word_mad:{t:"mad!"}, word_dig:{t:"dig!"},
+  word_cat:{t:"cat!"}, word_dog:{t:"dog!"}, word_mom:{t:"mom!"}, word_kid:{t:"kid!"},
   panel1:{t:"This is Star Force City. A city powered by magical Letter Gems, words, and stories."},
   panel2:{t:"But one night, LORD VEX and his Vexbot army attacked! They stole the Letter Gems and smashed every word into pieces. Now nobody can read. Not signs, not books, not even bedtime stories."},
   panel3:{t:"The city needed a hero. The founders of the Hero League, your mom and dad, searched everywhere... and they chose YOU, Super Teddy."},
@@ -75,7 +137,7 @@ const LINES={
   forge_win2:{t:"You READ words, Super Teddy! You are a true hero!"},
   win_grow:{t:"Gem rescued! Your power grows, Super Teddy! Look at those muscles!"},
   win_gear:{t:"You earned new gear!"},
-  gear_belt:{t:"The Power Belt!"}, gear_boots:{t:"Rocket Boots!"},
+  gear_belt:{t:"The Power Belt!"}, gear_boots:{t:"Rocket Boots!"}, gear_shield:{t:"The GEM SHIELD! Forged from power words!"},
   gear_hammer:{t:"The WORD HAMMER! Forged from your first words!"}, gear_sword:{t:"The GEM SWORD! A true hero's blade!"}, base1:{t:"Welcome to your Hero Base, Super Teddy! Gear up and look strong!"},
   finale1:{t:"Incoming message! ... Super Teddy! It's Amelia!", v:"B"},
   finale2:{t:"Lord Vex trapped me in the Heart Tower! Come rescue me in your next adventure!", v:"B"},
@@ -83,12 +145,19 @@ const LINES={
   free_tank:{t:"CAGE DESTROYED! You freed Archie! TANK has joined the Hero League... and he is ready to SMASH!"},
   free_flip:{t:"CAGE DESTROYED! You freed Ellie! FLIP has joined the league... backflips, cartwheels, and mid-air gem grabs!"},
   free_sunny:{t:"CAGE DESTROYED! You freed William! SUNNY has joined the league... and things are about to get silly!"},
+  free_heart1:{t:"TOWER UNLOCKED! You read your way to the top of Heart Tower!"},
+  free_heart2:{t:"Super Teddy! You saved me! I KNEW you could read those words! Heartguard is on the team, little hero!", v:"B"},
+  m2_done:{t:"HEARTGUARD has joined the Hero League! Lord Vex is furious... and Star Force City shines brighter than ever!"},
+  heart_cheer1:{t:"Amazing reading, Super Teddy!", v:"B"},
+  heart_cheer2:{t:"That's my little brother, everyone!", v:"B"},
+  heart_cheer3:{t:"Heartguard is SO proud of you!", v:"B"},
   rest1:{t:"The sun is setting over Star Force City..."},
   rest2:{t:"Even heroes rest. Great work today, Super Teddy. The city is safer because of you!"},
   test:{t:"Hello Super Teddy! This is your mentor speaking. Star Force City needs you!"}
 };
-const GEARLINE={ "Power Belt":"gear_belt","Rocket Boots":"gear_boots","Word Hammer":"gear_hammer","Gem Sword":"gear_sword" };
-const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#ffc93c"};
+const GEARLINE={ "Power Belt":"gear_belt","Rocket Boots":"gear_boots","Word Hammer":"gear_hammer","Gem Sword":"gear_sword","Gem Shield":"gear_shield" };
+const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#ffc93c",
+  m:"#f06292",d:"#9c2f2f",g:"#1abc9c",o:"#5dade2",c:"#7d3c98",k:"#aab7c4"};
 
 /* ---------------- SAVE ---------------- */
 const KEY="heroTeddySave_v1";
@@ -367,17 +436,19 @@ $("btnIntroNext").onclick=()=>{ introIx++;
   if(introIx<INTRO.length)paintIntro();
   else { S.intro=true; save(); startScan(); } };
 
-/* ---------------- POWER SCAN ---------------- */
+/* ---------------- POWER SCAN ----------------
+   One-time baseline, zone-1 letters only (new zones are met in missions). */
+const SCAN_SET=ZONES[0].letters;
 let scanIx=0;
 function startScan(){ if(S.scan){toMap();return;}
   show("scrScan"); scanIx=0;
   flow(narrate("scan",$("scanText"),["scan_intro"]),()=>nextScan()); }
-function nextScan(){ if(scanIx>=ORDER.length){ S.scan=true; save();
+function nextScan(){ if(scanIx>=SCAN_SET.length){ S.scan=true; save();
     flow(narrate("scan",$("scanText"),["scan_done"]),()=>toMap()); return; }
-  const target=ORDER[scanIx];
-  const foils=ORDER.filter(x=>x!==target).sort(()=>Math.random()-.5).slice(0,2);
+  const target=SCAN_SET[scanIx];
+  const foils=SCAN_SET.filter(x=>x!==target).sort(()=>Math.random()-.5).slice(0,2);
   const opts=[target,...foils].sort(()=>Math.random()-.5);
-  $("scanProg").textContent="🔍 "+(scanIx+1)+" / "+ORDER.length;
+  $("scanProg").textContent="🔍 "+(scanIx+1)+" / "+SCAN_SET.length;
   narrate("scan",$("scanText"),["scan_prompt","snd_"+target],"Tap the gem that makes the sound\u2026 \ud83d\udd0a");
   const row=$("scanTiles"); row.innerHTML="";
   opts.forEach(g=>{ const t=document.createElement("button"); t.className="tile read"; t.textContent=g;
@@ -388,36 +459,18 @@ function nextScan(){ if(scanIx>=ORDER.length){ S.scan=true; save();
     row.appendChild(t); });
 }
 
-/* ---------------- STAR FORCE CITY MAP ----------------
-   The world map is data-driven. Each ZONE is one letter group with its own
-   painted-scene slot and its mission nodes. To add M2, append a zone (use
-   autoNodes() so positions needn't be hand-placed) — NODE_POS, BASE_POS and
-   the map height all derive from ZONES below. Group 1 keeps its hand-tuned
-   layout, so the current map is unchanged.                                   */
-const ZONES=[
-  { id:1, name:"STAR FORCE CITY", bg:"city",
-    letters:["s","a","t","p","i","n"],
-    base:[470,1408],
-    nodes:[[420,1280],[230,1190],[520,1100],[300,1000],[560,900],[330,800],[170,700],[440,600],[300,480]] }
-];
-/* Serpentine auto-layout for a new zone's nodes (bottom y0 going up). M2+ can
-   place a whole group with autoNodes(6,{y0:..}) instead of hand-tuning coords. */
-function autoNodes(count,{y0=1280,step=100,amp=195,cx=400,phase=0}={}){
-  const out=[]; for(let i=0;i<count;i++)
-    out.push([Math.round(cx+amp*Math.sin(i*0.8+phase)), y0-i*step]);
-  return out; }
-/* Derived: mission-indexed node positions, hero base, total map height. */
-const NODE_POS=ZONES.flatMap(z=>z.nodes);
-const BASE_POS=ZONES[0].base;
-const MAP_H=Math.max(BASE_POS[1], ...NODE_POS.map(p=>p[1]))+152;
-function trailPath(){ const pts=[BASE_POS,...NODE_POS,[420,370],[400,250]];
+/* ---------------- STAR FORCE CITY MAP ---------------- */
+function trailPath(){ const pts=[BASE_POS,...NODE_POS,[FORT_POS[0],FORT_POS[1]+170]];
   let d="M "+pts[0][0]+" "+pts[0][1];
   for(let i=1;i<pts.length;i++){ const a=pts[i-1],b=pts[i];
     const mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2;
     d+=` Q ${a[0]} ${my} ${mx} ${my} T ${b[0]} ${b[1]}`; }
   return d; }
+/* positive modulo — JS % returns negatives for negative operands, which made
+   building widths negative and hung this loop (map-breaking bug for seed 9) */
+function pmod(v,m){ return ((v%m)+m)%m; }
 function skyline(y,h0,fill,op,seed){ let out="",x=-30;
-  while(x<840){ const w=44+((seed*(x+13)*7)%72), h=h0+((seed*(x+5)*13)%150);
+  while(x<840){ const w=44+pmod(seed*(x+13)*7,72), h=h0+pmod(seed*(x+5)*13,150);
     out+=`<rect x="${x}" y="${y-h}" width="${w}" height="${h}" fill="${fill}" opacity="${op}"/>`; x+=w+10; }
   return out; }
 function windowsRow(y,seed){ let out="",x=-10;
@@ -447,7 +500,16 @@ function mapSVG(){
       </g></g>`;
   });
   const allDone=MISSIONS.every(m=>done(m.id));
-  return `<svg viewBox="0 0 800 ${MAP_H}">
+  /* zone divider bands between letter groups */
+  let dividers="";
+  for(let i=1;i<ZONES.length;i++){
+    const dy=Math.round((Math.min(...ZONES[i-1].nodes.map(p=>p[1]))+Math.max(...ZONES[i].nodes.map(p=>p[1])))/2)+52;
+    dividers+=`<g transform="translate(400 ${dy})">
+      <line x1="-330" y1="0" x2="330" y2="0" stroke="#fff6e3" stroke-width="3" stroke-dasharray="10 14" opacity=".4"/>
+      <rect x="-180" y="-21" width="360" height="42" rx="14" fill="rgba(21,15,46,.9)" stroke="#f2a9c4" stroke-width="2.5"/>
+      <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="22" fill="#f2a9c4" letter-spacing="2">⬆ ${ZONES[i].name} ⬆</text></g>`;
+  }
+  return `<svg viewBox="0 ${VIEW_TOP} 800 ${MAP_H-VIEW_TOP}">
   <defs>
     <linearGradient id="msky" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#0e0b26"/><stop offset=".35" stop-color="#2b2066"/>
@@ -460,10 +522,11 @@ function mapSVG(){
       <stop offset="0" stop-color="#fff6e3" stop-opacity=".8"/><stop offset="1" stop-color="#fff6e3" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  <rect width="800" height="${MAP_H}" fill="url(#msky)"/>
-  <circle cx="650" cy="150" r="130" fill="url(#moonG)"/>
-  <circle cx="650" cy="150" r="50" fill="#fff1cf" stroke="#150f2e" stroke-width="5"/>
-  <circle cx="632" cy="138" r="8" fill="#ead9b4"/><circle cx="664" cy="162" r="6" fill="#ead9b4"/>
+  <rect y="${VIEW_TOP}" width="800" height="${MAP_H-VIEW_TOP}" fill="url(#msky)"/>
+  <circle cx="650" cy="${VIEW_TOP+150}" r="130" fill="url(#moonG)"/>
+  <circle cx="650" cy="${VIEW_TOP+150}" r="50" fill="#fff1cf" stroke="#150f2e" stroke-width="5"/>
+  <circle cx="632" cy="${VIEW_TOP+138}" r="8" fill="#ead9b4"/><circle cx="664" cy="${VIEW_TOP+162}" r="6" fill="#ead9b4"/>
+  <g fill="#fff6e3">${[[120,90],[300,60],[520,110],[80,240],[730,300],[200,180],[420,40],[600,250]].map(([sx,sy])=>`<circle cx="${sx}" cy="${VIEW_TOP+sy}" r="2.5"/>`).join("")}</g>
   <g fill="#fff6e3"><circle cx="120" cy="90" r="3"/><circle cx="300" cy="60" r="2.4"/><circle cx="520" cy="110" r="2.6"/><circle cx="80" cy="240" r="2.2"/><circle cx="730" cy="300" r="2.4"/><circle cx="200" cy="180" r="2"/></g>
   <g class="mcloudB" fill="#4b3e96" stroke="#150f2e" stroke-width="4" opacity=".8">
     <path d="M140 210 q18 -34 54 -27 q12 -26 47 -20 q31 -9 43 16 q32 2 27 31 z"/>
@@ -473,6 +536,9 @@ function mapSVG(){
     <path d="M380 130 q13 -24 39 -19 q9 -18 33 -13 q22 -6 31 11 q22 2 18 21 z"/>
   </g>
 
+  ${skyline(MIN_Y+330,70,"#241b4d",.45,6)}
+  ${skyline(MIN_Y+560,95,"#2c2158",.65,8)}
+  ${windowsRow(MIN_Y+560,13)}
   ${skyline(700,80,"#241b4d",.55,3)}
   ${skyline(980,110,"#2c2158",.8,5)}
   ${windowsRow(980,7)}
@@ -483,8 +549,8 @@ function mapSVG(){
   <ellipse cx="180" cy="1340" rx="180" ry="46" fill="#2f8f5b" opacity=".9"/>
   <ellipse cx="660" cy="1370" rx="200" ry="52" fill="#2a7d50" opacity=".9"/>
 
-  <!-- LORD VEX'S FORTRESS -->
-  <g transform="translate(400 220)">
+  <!-- LORD VEX'S FORTRESS (always at the summit) -->
+  <g transform="translate(${FORT_POS[0]} ${FORT_POS[1]})">
     <path d="M-96 64 L-96 -32 L-64 -64 L-64 -12 L-22 -12 L-22 -86 L0 -118 L22 -86 L22 -12 L64 -12 L64 -64 L96 -32 L96 64 Z"
       fill="#3c1763" stroke="#150f2e" stroke-width="6"/>
     <circle cx="0" cy="-112" r="10" fill="#9fe870"/>
@@ -500,16 +566,18 @@ function mapSVG(){
     </g>
   </g>
 
-  <!-- HEART TOWER -->
-  <g transform="translate(660 560)">
+  <!-- HEART TOWER (zone 2 landmark, beside the rescue mission) -->
+  <g transform="translate(${HEART_POS[0]} ${HEART_POS[1]})">
     <rect x="-36" y="-90" width="72" height="170" rx="10" fill="#241b4d" stroke="#150f2e" stroke-width="5"/>
-    <path d="M0 -122 q16 -20 32 -4 q14 14 -6 32 L0 -68 L-26 -94 q-20 -18 -6 -32 q16 -16 32 4z" fill="#e6453c" stroke="#150f2e" stroke-width="4"/>
+    <path d="M0 -122 q16 -20 32 -4 q14 14 -6 32 L0 -68 L-26 -94 q-20 -18 -6 -32 q16 -16 32 4z" fill="${done(17)?"#ff7d9c":"#e6453c"}" stroke="#150f2e" stroke-width="4"/>
+    ${done(17)?'<g fill="#ffd75e" opacity=".95"><path d="M0 -168 L7 -150 L-7 -150Z"/><path d="M-46 -140 L-32 -132 L-42 -122Z"/><path d="M46 -140 L32 -132 L42 -122Z"/></g>':''}
     <g fill="#ffc93c" opacity=".85"><rect x="-22" y="-66" width="12" height="15"/><rect x="10" y="-30" width="12" height="15"/><rect x="-22" y="6" width="12" height="15"/></g>
-    <g transform="translate(-30 116)">
-      <rect x="-120" y="-18" width="240" height="36" rx="12" fill="rgba(21,15,46,.92)" stroke="#f2a9c4" stroke-width="2.5"/>
-      <text x="0" y="8" text-anchor="middle" font-family="Bangers" font-size="20" fill="#f2a9c4" letter-spacing="1">HEART TOWER · SAVE AMELIA</text>
+    <g transform="translate(0 116)">
+      <rect x="-128" y="-18" width="256" height="36" rx="12" fill="rgba(21,15,46,.92)" stroke="${done(17)?"#3ec97e":"#f2a9c4"}" stroke-width="2.5"/>
+      <text x="0" y="8" text-anchor="middle" font-family="Bangers" font-size="20" fill="${done(17)?"#9fe870":"#f2a9c4"}" letter-spacing="1">${done(17)?"HEARTGUARD JOINS THE LEAGUE!":"HEART TOWER · SAVE AMELIA"}</text>
     </g>
   </g>
+  ${dividers}
 
   <!-- the golden trail -->
   <path d="${trailPath()}" fill="none" stroke="#150f2e" stroke-width="44" stroke-linecap="round" opacity=".92"/>
@@ -543,11 +611,15 @@ function mapSVG(){
   </svg>`;
 }
 function allyFace(kind){
+  if(kind==="heart")return `<circle r="26" fill="#ffd9b8" stroke="#150f2e" stroke-width="4"/><path d="M-24 -4 Q-26 -30 0 -30 Q26 -30 24 -4 Q14 -22 0 -20 Q-14 -22 -24 -4Z" fill="#e8a87c" stroke="#150f2e" stroke-width="3"/><circle cx="-8" cy="0" r="3" fill="#150f2e"/><circle cx="9" cy="0" r="3" fill="#150f2e"/><path d="M-9 10 Q1 18 11 9" stroke="#150f2e" stroke-width="3.4" fill="none" stroke-linecap="round"/><path d="M-6 13 L8 12" stroke="#dfe9ff" stroke-width="2" stroke-linecap="round"/><path d="M0 22 q3 -4 6 -1 q3 3 -1 6 l-5 4 -5 -4 q-4 -3 -1 -6 q3 -3 6 1z" fill="#e6453c" stroke="#150f2e" stroke-width="1.6"/>`;
   if(kind==="tank")return `<circle r="26" fill="#ffd9b8" stroke="#150f2e" stroke-width="4"/><path d="M-24 -8 Q-26 -30 0 -30 Q26 -30 24 -6 Q20 -22 6 -18 Q14 -10 4 -6 Q-8 -16 -18 -10 Q-24 -6 -24 -8Z" fill="#d8b572" stroke="#150f2e" stroke-width="3"/><circle cx="-8" cy="0" r="3" fill="#150f2e"/><circle cx="9" cy="0" r="3" fill="#150f2e"/><path d="M-8 12 Q1 18 10 11" stroke="#150f2e" stroke-width="3.4" fill="none" stroke-linecap="round"/>`;
   if(kind==="flip")return `<circle r="26" fill="#ffd9b8" stroke="#150f2e" stroke-width="4"/><circle cx="0" cy="-26" r="10" fill="#9a7448" stroke="#150f2e" stroke-width="3"/><path d="M-24 -10 Q-20 -26 0 -26 Q20 -26 24 -10 Q12 -18 0 -16 Q-12 -18 -24 -10Z" fill="#9a7448" stroke="#150f2e" stroke-width="3"/><circle cx="-8" cy="0" r="3" fill="#150f2e"/><circle cx="9" cy="0" r="3" fill="#150f2e"/><path d="M-8 12 Q1 18 10 11" stroke="#150f2e" stroke-width="3.4" fill="none" stroke-linecap="round"/>`;
   return `<circle r="26" fill="#ffd9b8" stroke="#150f2e" stroke-width="4"/><path d="M-24 -6 Q-24 -30 0 -30 Q24 -30 24 -4 Q16 -20 2 -16 Q-12 -22 -20 -8Z" fill="#f2dfae" stroke="#150f2e" stroke-width="3"/><circle cx="-8" cy="0" r="3" fill="#150f2e"/><circle cx="9" cy="0" r="3" fill="#150f2e"/><path d="M-9 10 Q1 19 11 9" stroke="#150f2e" stroke-width="3.4" fill="none" stroke-linecap="round"/>`;
 }
 const CAGED=[{ix:3,kind:"tank",name:"TANK"},{ix:6,kind:"flip",name:"FLIP"},{ix:8,kind:"sunny",name:"SUNNY"}];
+/* Full league roster for the Hero Base shelf (mid = mission that frees them) */
+const LEAGUE=[...CAGED.map(t=>({mid:MISSIONS[t.ix].id,kind:t.kind,name:t.name})),
+  {mid:17,kind:"heart",name:"HEARTGUARD"}];
 function allyTeasers(){
   let out="";
   CAGED.forEach(t=>{ const [x,y]=NODE_POS[t.ix]; const side=x<400?1:-1;
@@ -585,7 +657,7 @@ function toMap(){ sessionTick(); show("scrMap");
   });
   /* auto-scroll to the hero's current node */
   let ix=0; for(let i=0;i<MISSIONS.length;i++){ if(!S.done[MISSIONS[i].id]){ix=i;break;} ix=i; }
-  const frac=Math.max(0,(NODE_POS[ix][1]-380)/MAP_H);
+  const frac=Math.max(0,(NODE_POS[ix][1]-VIEW_TOP-380)/(MAP_H-VIEW_TOP));
   requestAnimationFrame(()=>{ const sc=$("mapScroll");
     sc.scrollTop = frac * ($("mapSVGwrap").offsetHeight - sc.clientHeight + 80); });
   Aud.play("pick");
@@ -595,6 +667,10 @@ $("btnSkip").onclick=()=>{ Aud.stop(); const f=__cont; clearFlow(); if(f)f(); };
 
 /* ---------------- MISSION FLOW ---------------- */
 let CUR=null;
+/* Letters allowed as prompts/foils for a mission: only zones up to the
+   mission's own zone — never letters that haven't been taught yet. */
+function lettersFor(m){ const z=(m&&m.z)||1;
+  return ZONES.filter(zz=>zz.id<=z).flatMap(zz=>zz.letters); }
 function startMission(m){ clearFlow(); CUR=m; $("hudTitle").textContent=m.lbl.toUpperCase();
   if(m.type==="learn")startLearn(m);
   else if(m.type==="patrol")startPatrol(m.set);
@@ -661,7 +737,7 @@ function nextFind(){
   findTarget=g; findMiss=0;
   $("findProg").textContent="⭐ "+findRep+" / "+findGoal;
   narrate("find",$("findText"),["find_prompt","snd_"+g],"Find the gem that makes the sound\u2026 \ud83d\udd0a");
-  const foils=ORDER.filter(x=>x!==g).sort(()=>Math.random()-.5).slice(0,3);
+  const foils=lettersFor(CUR).filter(x=>x!==g).sort(()=>Math.random()-.5).slice(0,3);
   const opts=[g,...foils].sort(()=>Math.random()-.5);
   const row=$("findTiles"); row.innerHTML="";
   opts.forEach(o=>{ const t=document.createElement("button"); t.className="tile read";
@@ -683,7 +759,7 @@ function startBoss(g){ show("scrBoss"); bossHP=3;
 function paintPips(id,hp,max){ const p=$(id); p.innerHTML="";
   for(let i=0;i<max;i++){const d=document.createElement("div");d.className="pip"+(i<hp?"":" off");p.appendChild(d);} }
 function bossRound(g){
-  const foils=ORDER.filter(x=>x!==g).sort(()=>Math.random()-.5).slice(0,2);
+  const foils=lettersFor(CUR).filter(x=>x!==g).sort(()=>Math.random()-.5).slice(0,2);
   const opts=[g,...foils].sort(()=>Math.random()-.5);
   const row=$("bossTiles"); row.innerHTML="";
   opts.forEach(o=>{ const t=document.createElement("button"); t.className="tile read"; t.textContent=o;
@@ -715,7 +791,7 @@ function forgeWord(){
   narrate("forge",$("forgeText"),["forge_build",...w.split("").map(c=>"snd_"+c),"word_"+w],"Build the word! Listen\u2026 \ud83d\udd0a");
   const slots=$("forgeSlots"); slots.innerHTML="";
   w.split("").forEach(()=>{ const s=document.createElement("div"); s.className="slot read"; slots.appendChild(s); });
-  const pool=ORDER.filter(x=>!w.includes(x));
+  const pool=lettersFor(CUR).filter(x=>!w.includes(x));
   const foil=pool[Math.floor(Math.random()*pool.length)];
   const choices=[...new Set(w.split(""))].concat(foil?[foil]:[]).sort(()=>Math.random()-.5);
   const row=$("forgeChoices"); row.innerHTML="";
@@ -738,15 +814,19 @@ function forgeWord(){
 
 /* ---------------- WIN / REST ---------------- */
 function showWin(firstTime){ show("scrWin");
-  $("winHero").innerHTML=heroNow(170);
+  $("winHero").innerHTML=heroNow(170)+
+    (CUR.rescue?`<svg viewBox="-32 -36 64 76" width="92" style="vertical-align:bottom;">${allyFace("heart")}<text y="42" text-anchor="middle" font-family="Bangers" font-size="13" fill="#ffc93c">HEARTGUARD</text></svg>`:"");
   const gear=GEAR_AT[CUR.id];
   $("winGear").innerHTML=(firstTime&&gear)?`<div class="gearbadge">NEW GEAR: ⭐ ${gear}</div>`:"";
   let ids;
-  if(CUR.finale) ids=["finale1","finale2","finale3"];
+  if(CUR.rescue) ids=["free_heart1","free_heart2","m2_done"];
+  else if(CUR.finale) ids=["finale1","finale2","finale3"];
   else if(firstTime&&gear) ids=["win_grow","win_gear",GEARLINE[gear]];
   else ids=["win_grow"];
   const FREE={3:"free_tank",6:"free_flip",8:"free_sunny"};
   if(firstTime&&FREE[CUR.id])ids.unshift(FREE[CUR.id]);
+  /* Heartguard, once rescued, is the league's cheerleader on every win */
+  if(S.done[17]&&!CUR.rescue)ids.push("heart_cheer"+(1+(S.stars%3)));
   narrate("win",$("winText"),ids);
   const ix=MISSIONS.findIndex(x=>x.id===CUR.id);
   $("btnWinNext").style.display=(ix<MISSIONS.length-1)?"inline-block":"none";
@@ -759,7 +839,7 @@ function showRest(nextM){ show("scrRest");
   $("btnRestMore").onclick=()=>{ nextM?startMission(nextM):toMap(); }; }
 
 /* ---------------- HERO BASE ---------------- */
-const LETTER_MISSION={s:0,a:1,t:3,p:5,i:6,n:7};
+const LETTER_MISSION={s:0,a:1,t:3,p:5,i:6,n:7,m:9,d:10,g:12,o:14,c:15,k:16};
 function showBase(){ clearFlow(); show("scrBase");
   $("hudTitle").textContent="HERO BASE";
   paintBase();
@@ -798,8 +878,8 @@ function paintBase(){
   /* league */
   const lg=$("leagueShelf"); lg.innerHTML="";
   let anyL=false;
-  CAGED.forEach(t=>{ if(S.done[MISSIONS[t.ix].id]){ anyL=true;
-    lg.innerHTML+=`<svg viewBox="-32 -36 64 76" width="52"><g>${allyFace(t.kind)}</g><text y="42" text-anchor="middle" font-family="Bangers" font-size="13" fill="#ffc93c">${t.name}</text></svg>`; } });
+  LEAGUE.forEach(t=>{ if(S.done[t.mid]){ anyL=true;
+    lg.innerHTML+=`<svg viewBox="-32 -36 64 76" width="52"><g>${allyFace(t.kind)}</g><text y="42" text-anchor="middle" font-family="Bangers" font-size="11.5" fill="#ffc93c">${t.name}</text></svg>`; } });
   if(!anyL)lg.innerHTML='<div class="baselbl" style="font-size:15px;">Smash Vex\u2019s cages to free your friends!</div>';
 }
 $("btnBaseBack").onclick=()=>{Aud.stop();toMap();};
