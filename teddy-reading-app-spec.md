@@ -202,3 +202,33 @@ has been deleted at ElevenLabs, and the file has been **de-keyed** — the API k
 the browser at runtime and never stored in the repo. With no secret committed, the keyless studio
 may live in the repo (it's the tool the parent uses to generate `voicepack.js`). The old key still
 exists in git history; the parent has accepted this since the key is fully revoked.
+
+---
+
+## 13. ADDENDUM — v2.4 · the reading arc (M3 + M4 core)
+
+The curriculum now spans the full ladder from letters to **reading whole sentences**. Six map zones,
+six mission mechanics, 37 missions, all save-safe (append-only ids), all headless-verified.
+
+**Zones / phases (bottom → top of the map, toward Vex's Fortress):**
+1. **Star Force City** — s a t p i n (letters/sounds, CVC forge)
+2. **Heart Heights** — m d g o c k → Heartguard (Amelia) rescue
+3. **Thunder Ridge** — e u r h b f → Vex Captain
+4. **Reading Rally** — *Read It* (DECODE): see word → sound it out → tap the picture it means
+5. **Spell Tower** — *Instant Spells*: sight/heart words (I a the to and is you said)
+6. **Story Gate** — *decodable sentences*: read the sentence → tap the picture it tells about
+
+**The key insight driving this (prime objective = get Teddy reading):** the original loop trained
+only **sound→letter** (identify the gem for a sound) and **spelling** (forge: hear word → build it).
+That builds phonemic awareness but is NOT reading. Reading is **letter→sound→blend**. Read It,
+Instant Spells and Story Gate add that decode direction, verified audio-first / picture-match (no mic
+needed) and compatible with the anti-gaming rule (that rule governs sound-ID, not reading).
+
+**Also added:** adaptive weakest-item patrols (unseen>failing>mastered, taught-only distractors);
+in-app Audio studio (record/generate voices on-device → IndexedDB; Export/Publish voicepack.js to
+GitHub); a parent **Progress tab** (letters/words/sight/sentences mastered + weakest items).
+
+**Open / next:** Group 4 letters (l j v w x y z q) — appending needs the map to position nodes by
+zone membership rather than flat id order so the new letters slot into the LETTER phase, not after
+the reading zones. Then: more sentences/short stories, background music, b/d minimal-pair support,
+a "Mission of the Day" guided daily loop, clean parent-recorded letter sounds (#1 audio priority).
