@@ -65,9 +65,10 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - Group 2 (live, "Heart Heights" zone): m d g o c k — ends in the Heartguard/Amelia rescue at
   Heart Tower (missions 9–17; CVC: dad, mad, dig, cat, dog, mom, kid). Foil pools only draw
   from zones <= the mission's zone (lettersFor()).
-- Group 3 (next): e u r h b f. Then: l j v w x y z q → first 25 heart/sight words
-  → decodable sentences. Uppercase+lowercase paired, lowercase weighted; deliberate uppercase
-  rounds every 3rd rep.
+- Group 3 (live, "Thunder Ridge" zone): e u r h b f — missions 18–26, forge words red/run/rub,
+  fun/hen/bed/bug; finale = Vex Captain (no ally rescue; the road to the Fortress). Earns Gem Gauntlet.
+- Group 4 (next): l j v w x y z q. Then: first ~25 heart/sight words ("Instant Spells") → decodable
+  sentences. Uppercase+lowercase paired, lowercase weighted; deliberate uppercase rounds every 3rd rep.
 - Mastery model: per-grapheme strength scores recorded on every answer. Patrols are ADAPTIVE
   (pickWeak/taughtLetters): they span everything taught so far, weighted toward the weakest items
   (unseen > failing > mastered), and only ever show already-taught letters as distractors.

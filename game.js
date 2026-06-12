@@ -8,9 +8,11 @@ const LETTERS={
   s:{kw:"sun",icon:"☀️"}, a:{kw:"apple",icon:"🍎"}, t:{kw:"tiger",icon:"🐯"},
   p:{kw:"pig",icon:"🐷"}, i:{kw:"insect",icon:"🐜"}, n:{kw:"nest",icon:"🪺"},
   m:{kw:"monkey",icon:"🐵"}, d:{kw:"dog",icon:"🐶"}, g:{kw:"goat",icon:"🐐"},
-  o:{kw:"octopus",icon:"🐙"}, c:{kw:"cat",icon:"🐱"}, k:{kw:"kite",icon:"🪁"}
+  o:{kw:"octopus",icon:"🐙"}, c:{kw:"cat",icon:"🐱"}, k:{kw:"kite",icon:"🪁"},
+  e:{kw:"egg",icon:"🥚"}, u:{kw:"umbrella",icon:"☂️"}, r:{kw:"rocket",icon:"🚀"},
+  h:{kw:"hat",icon:"🎩"}, b:{kw:"ball",icon:"⚽"}, f:{kw:"fish",icon:"🐟"}
 };
-const ORDER=["s","a","t","p","i","n","m","d","g","o","c","k"];
+const ORDER=["s","a","t","p","i","n","m","d","g","o","c","k","e","u","r","h","b","f"];
 /* z = letter-group zone. Foil pools and forge words only ever use letters from
    zones <= the mission's zone — material not yet taught never appears. */
 const MISSIONS=[
@@ -32,9 +34,19 @@ const MISSIONS=[
   {id:14,type:"learn",letter:"o",lbl:"Rescue Gem O",z:2},
   {id:15,type:"learn",letter:"c",lbl:"Rescue Gem C",z:2},
   {id:16,type:"learn",letter:"k",lbl:"Rescue Gem K",z:2},
-  {id:17,type:"forge",words:["cat","dog","mom","kid"],lbl:"Heart Tower: Save Amelia",rescue:true,z:2}
+  {id:17,type:"forge",words:["cat","dog","mom","kid"],lbl:"Heart Tower: Save Amelia",rescue:true,z:2},
+  /* --- ZONE 3 · THUNDER RIDGE (e u r h b f) — the road to Vex's Fortress --- */
+  {id:18,type:"learn",letter:"e",lbl:"Rescue Gem E",z:3},
+  {id:19,type:"learn",letter:"u",lbl:"Rescue Gem U",z:3},
+  {id:20,type:"patrol",set:["e","u","m","s"],lbl:"Ridge Patrol",z:3},
+  {id:21,type:"learn",letter:"r",lbl:"Rescue Gem R",z:3},
+  {id:22,type:"forge",words:["red","run","rub"],lbl:"Word Forge: Rocket Words",z:3},
+  {id:23,type:"learn",letter:"h",lbl:"Rescue Gem H",z:3},
+  {id:24,type:"learn",letter:"b",lbl:"Rescue Gem B",z:3},
+  {id:25,type:"learn",letter:"f",lbl:"Rescue Gem F",z:3},
+  {id:26,type:"forge",words:["fun","hen","bed","bug"],lbl:"Ridge Battle: Vex Captain",finale:true,z:3}
 ];
-const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield"};
+const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield",22:"Gem Gauntlet"};
 const TRACE={
   s:[[[205,80],[150,58],[102,86],[106,132],[160,152],[196,188],[172,236],[102,232]]],
   a:[[[196,128],[150,96],[106,126],[100,176],[140,216],[192,200]],[[200,98],[200,234]]],
@@ -47,7 +59,13 @@ const TRACE={
   g:[[[196,128],[150,96],[106,126],[100,176],[140,216],[192,200]],[[200,100],[200,232],[182,262],[140,258]]],
   o:[[[150,92],[106,118],[94,170],[126,214],[178,212],[206,164],[194,116],[150,92]]],
   c:[[[200,110],[150,88],[104,120],[96,172],[140,216],[200,196]]],
-  k:[[[105,62],[105,240]],[[185,115],[108,176]],[[122,166],[190,240]]]
+  k:[[[105,62],[105,240]],[[185,115],[108,176]],[[122,166],[190,240]]],
+  e:[[[108,150],[192,150],[194,118],[162,92],[120,98],[98,134],[100,178],[134,214],[184,200]]],
+  u:[[[104,92],[104,176],[126,210],[164,210],[194,178]],[[194,92],[194,232]]],
+  r:[[[112,96],[112,224]],[[112,150],[138,108],[180,112]]],
+  h:[[[104,58],[104,224]],[[104,150],[130,106],[170,108],[188,150],[188,224]]],
+  b:[[[110,58],[110,232]],[[110,150],[150,124],[192,152],[192,202],[150,230],[110,204]]],
+  f:[[[192,84],[156,60],[122,86],[120,150],[120,228]],[[90,138],[180,138]]]
 };
 
 /* ---------------- WORLD ZONES (drive the map) ----------------
@@ -66,7 +84,10 @@ const ZONES=[
     nodes:[[420,1280],[230,1190],[520,1100],[300,1000],[560,900],[330,800],[170,700],[440,600],[300,480]] },
   { id:2, name:"HEART HEIGHTS", bg:"heights",
     letters:["m","d","g","o","c","k"],
-    nodes:autoNodes(9,{y0:370,step:104,phase:2.2}) }
+    nodes:autoNodes(9,{y0:370,step:104,phase:2.2}) },
+  { id:3, name:"THUNDER RIDGE", bg:"ridge",
+    letters:["e","u","r","h","b","f"],
+    nodes:autoNodes(9,{y0:-570,step:104,phase:4.6}) }
 ];
 /* Derived geometry. The canvas grows UPWARD as zones are appended: the
    viewBox top (VIEW_TOP) tracks the highest node, and Vex's fortress always
@@ -77,8 +98,10 @@ const MAP_H=Math.max(BASE_POS[1], ...NODE_POS.map(p=>p[1]))+152;
 const MIN_Y=Math.min(...NODE_POS.map(p=>p[1]));
 const FORT_POS=[400, MIN_Y-210];
 const VIEW_TOP=FORT_POS[1]-330;
-const LAST_NODE=NODE_POS[NODE_POS.length-1];
-const HEART_POS=[LAST_NODE[0]>400 ? LAST_NODE[0]-265 : LAST_NODE[0]+265, LAST_NODE[1]-20];
+/* Heart Tower sits beside Amelia's rescue (mission 17), not whatever the last
+   zone's final node is — so later zones don't drag it up the map. */
+const HEART_NODE=NODE_POS[17]||NODE_POS[NODE_POS.length-1];
+const HEART_POS=[HEART_NODE[0]>400 ? HEART_NODE[0]-265 : HEART_NODE[0]+265, HEART_NODE[1]-20];
 
 /* ---------- VOICE LINE MANIFEST (ids shared with Voice Studio) ---------- */
 const LINES={
@@ -87,10 +110,14 @@ const LINES={
   snd_p:{t:"puh",r:.75}, snd_i:{t:"ih",r:.7}, snd_n:{t:"nnn",r:.7},
   snd_m:{t:"mmm",r:.7}, snd_d:{t:"duh",r:.75}, snd_g:{t:"guh",r:.75},
   snd_o:{t:"o",r:.7}, snd_c:{t:"kuh",r:.75}, snd_k:{t:"kuh",r:.75},
+  snd_e:{t:"eh",r:.7}, snd_u:{t:"uh",r:.7}, snd_r:{t:"rrr",r:.7},
+  snd_h:{t:"hh",r:.7}, snd_b:{t:"buh",r:.75}, snd_f:{t:"fff",r:.7},
   like_s:{t:"Like sun!"}, like_a:{t:"Like apple!"}, like_t:{t:"Like tiger!"},
   like_p:{t:"Like pig!"}, like_i:{t:"Like insect!"}, like_n:{t:"Like nest!"},
   like_m:{t:"Like monkey!"}, like_d:{t:"Like dog!"}, like_g:{t:"Like goat!"},
   like_o:{t:"Like octopus!"}, like_c:{t:"Like cat!"}, like_k:{t:"Like kite!"},
+  like_e:{t:"Like egg!"}, like_u:{t:"Like umbrella!"}, like_r:{t:"Like rocket!"},
+  like_h:{t:"Like hat!"}, like_b:{t:"Like ball!"}, like_f:{t:"Like fish!"},
   intro_s:{t:"Mission! A Vexbot trapped the Letter Gem S! This is S. It says..."},
   intro_a:{t:"Mission! A Vexbot trapped the Letter Gem A! This is A. It says..."},
   intro_t:{t:"Mission! A Vexbot trapped the Letter Gem T! This is T. It says..."},
@@ -103,9 +130,17 @@ const LINES={
   intro_o:{t:"Mission! A Vexbot trapped the Letter Gem O! This is O. It says..."},
   intro_c:{t:"Mission! A Vexbot trapped the Letter Gem C! This is C. It says..."},
   intro_k:{t:"Mission! A Vexbot trapped the Letter Gem K! This is K. It says..."},
+  intro_e:{t:"Mission! A Vexbot trapped the Letter Gem E! This is E. It says..."},
+  intro_u:{t:"Mission! A Vexbot trapped the Letter Gem U! This is U. It says..."},
+  intro_r:{t:"Mission! A Vexbot trapped the Letter Gem R! This is R. It says..."},
+  intro_h:{t:"Mission! A Vexbot trapped the Letter Gem H! This is H. It says..."},
+  intro_b:{t:"Mission! A Vexbot trapped the Letter Gem B! This is B. It says..."},
+  intro_f:{t:"Mission! A Vexbot trapped the Letter Gem F! This is F. It says..."},
   word_at:{t:"at!"}, word_sat:{t:"sat!"}, word_tap:{t:"tap!"}, word_pin:{t:"pin!"}, word_nap:{t:"nap!"},
   word_dad:{t:"dad!"}, word_mad:{t:"mad!"}, word_dig:{t:"dig!"},
   word_cat:{t:"cat!"}, word_dog:{t:"dog!"}, word_mom:{t:"mom!"}, word_kid:{t:"kid!"},
+  word_red:{t:"red!"}, word_run:{t:"run!"}, word_rub:{t:"rub!"},
+  word_fun:{t:"fun!"}, word_hen:{t:"hen!"}, word_bed:{t:"bed!"}, word_bug:{t:"bug!"},
   panel1:{t:"This is Star Force City. A city powered by magical Letter Gems, words, and stories."},
   panel2:{t:"But one night, LORD VEX and his Vexbot army attacked! They stole the Letter Gems and smashed every word into pieces. Now nobody can read. Not signs, not books, not even bedtime stories."},
   panel3:{t:"The city needed a hero. The founders of the Hero League, your mom and dad, searched everywhere... and they chose YOU, Super Teddy."},
@@ -137,7 +172,8 @@ const LINES={
   forge_win2:{t:"You READ words, Super Teddy! You are a true hero!"},
   win_grow:{t:"Gem rescued! Your power grows, Super Teddy! Look at those muscles!"},
   win_gear:{t:"You earned new gear!"},
-  gear_belt:{t:"The Power Belt!"}, gear_boots:{t:"Rocket Boots!"}, gear_shield:{t:"The GEM SHIELD! Forged from power words!"},
+  gear_belt:{t:"The Power Belt!"}, gear_boots:{t:"Rocket Boots!"}, gear_shield:{t:"The GEM SHIELD! Forged from power words!"}, gear_gauntlet:{t:"The GEM GAUNTLET! Now your word power is unstoppable!"},
+  m3_done:{t:"You crushed the Vex Captain and conquered Thunder Ridge! Lord Vex's Fortress is just ahead, Super Teddy..."},
   gear_hammer:{t:"The WORD HAMMER! Forged from your first words!"}, gear_sword:{t:"The GEM SWORD! A true hero's blade!"}, base1:{t:"Welcome to your Hero Base, Super Teddy! Gear up and look strong!"},
   finale1:{t:"Incoming message! ... Super Teddy! It's Amelia!", v:"B"},
   finale2:{t:"Lord Vex trapped me in the Heart Tower! Come rescue me in your next adventure!", v:"B"},
@@ -161,9 +197,10 @@ const LINES={
   rest2:{t:"Even heroes rest. Great work today, Super Teddy. The city is safer because of you!"},
   test:{t:"Hello Super Teddy! This is your mentor speaking. Star Force City needs you!"}
 };
-const GEARLINE={ "Power Belt":"gear_belt","Rocket Boots":"gear_boots","Word Hammer":"gear_hammer","Gem Sword":"gear_sword","Gem Shield":"gear_shield" };
+const GEARLINE={ "Power Belt":"gear_belt","Rocket Boots":"gear_boots","Word Hammer":"gear_hammer","Gem Sword":"gear_sword","Gem Shield":"gear_shield","Gem Gauntlet":"gear_gauntlet" };
 const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#ffc93c",
-  m:"#f06292",d:"#9c2f2f",g:"#1abc9c",o:"#5dade2",c:"#7d3c98",k:"#aab7c4"};
+  m:"#f06292",d:"#9c2f2f",g:"#1abc9c",o:"#5dade2",c:"#7d3c98",k:"#aab7c4",
+  e:"#27ae60",u:"#e67e22",r:"#ff5e57",h:"#5f6dff",b:"#3742fa",f:"#16a085"};
 
 /* ---------------- SAVE ---------------- */
 const KEY="heroTeddySave_v1";
@@ -768,7 +805,7 @@ function showWin(firstTime){ show("scrWin");
   $("winGear").innerHTML=(firstTime&&gear)?`<div class="gearbadge">NEW GEAR: ⭐ ${gear}</div>`:"";
   let ids;
   if(CUR.rescue) ids=["free_heart1","free_heart2","m2_done"];
-  else if(CUR.finale) ids=["finale1","finale2","finale3"];
+  else if(CUR.finale) ids = CUR.z>=3 ? ["m3_done"] : ["finale1","finale2","finale3"];
   else if(firstTime&&gear) ids=["win_grow","win_gear",GEARLINE[gear]];
   else ids=["win_grow"];
   const FREE={3:"free_tank",6:"free_flip",8:"free_sunny"};
@@ -787,7 +824,7 @@ function showRest(nextM){ show("scrRest");
   $("btnRestMore").onclick=()=>{ nextM?startMission(nextM):toMap(); }; }
 
 /* ---------------- HERO BASE ---------------- */
-const LETTER_MISSION={s:0,a:1,t:3,p:5,i:6,n:7,m:9,d:10,g:12,o:14,c:15,k:16};
+const LETTER_MISSION={s:0,a:1,t:3,p:5,i:6,n:7,m:9,d:10,g:12,o:14,c:15,k:16,e:18,u:19,r:21,h:23,b:24,f:25};
 function showBase(){ clearFlow(); show("scrBase");
   $("hudTitle").textContent="HERO BASE";
   paintBase();
