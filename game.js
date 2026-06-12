@@ -49,9 +49,19 @@ const MISSIONS=[
   {id:27,type:"read",words:["cat","dog","sun","hat"],lbl:"Reading Rally I",z:4},
   {id:28,type:"read",words:["pig","bug","bed","cup"],lbl:"Reading Rally II",z:4},
   {id:29,type:"read",words:["hen","bus","bag","mug"],lbl:"Reading Rally III",z:4},
-  {id:30,type:"read",words:["fan","nut","pot","hug","cap","pan"],lbl:"Reading Champion",z:4}
+  {id:30,type:"read",words:["fan","nut","pot","hug","cap","pan"],lbl:"Reading Champion",z:4},
+  /* --- ZONE 5 · SPELL TOWER — sight ("heart") words you just KNOW on sight --- */
+  {id:31,type:"spell",new:["I","a","the"],lbl:"Instant Spells I",z:5},
+  {id:32,type:"spell",new:["to","and","is"],lbl:"Instant Spells II",z:5},
+  {id:33,type:"spell",new:["you","said"],lbl:"Spell Tower: Master Caster",z:5}
 ];
-const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield",22:"Gem Gauntlet",30:"Reading Crown"};
+const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield",22:"Gem Gauntlet",30:"Reading Crown",33:"Spell Tome"};
+/* Sight ("heart") words — not fully decodable; learned as wholes. h = indices
+   of the "heart"/tricky letters that don't say their usual sound. */
+const SIGHT={
+  I:{h:[0]}, a:{h:[0]}, the:{h:[2]}, to:{h:[1]}, and:{h:[]},
+  is:{h:[1]}, you:{h:[0,1,2]}, said:{h:[1,2]}
+};
 /* Decodable words for Read-It (DECODE direction): every word uses only taught
    letters and has a clear picture, so reading is checked by meaning, audio-first. */
 const READWORDS={
@@ -102,7 +112,10 @@ const ZONES=[
     nodes:autoNodes(9,{y0:-570,step:104,phase:4.6}) },
   { id:4, name:"READING RALLY", bg:"rally",
     letters:[],   /* no new letters — this zone is decode/reading practice */
-    nodes:autoNodes(4,{y0:-1560,step:110,phase:1.2}) }
+    nodes:autoNodes(4,{y0:-1560,step:110,phase:1.2}) },
+  { id:5, name:"SPELL TOWER", bg:"spell",
+    letters:[],   /* sight-word recognition */
+    nodes:autoNodes(3,{y0:-2010,step:112,phase:3.1}) }
 ];
 /* Derived geometry. The canvas grows UPWARD as zones are appended: the
    viewBox top (VIEW_TOP) tracks the highest node, and Vex's fortress always
@@ -164,6 +177,14 @@ const LINES={
   read_yes:{t:"You READ it! Awesome!"},
   rally_champ:{t:"You are a READING CHAMPION, Super Teddy! You can read real words now!"},
   gear_crown:{t:"The READING CROWN! Only true readers can wear it!"},
+  sw_I:{t:"I"}, sw_a:{t:"a"}, sw_the:{t:"the"}, sw_to:{t:"to"}, sw_and:{t:"and"},
+  sw_is:{t:"is"}, sw_you:{t:"you"}, sw_said:{t:"said"},
+  spell_intro:{t:"INSTANT SPELLS! Some words are magic — you can't sound them all out. You just KNOW them. Heart words!"},
+  spell_new:{t:"Heart word! This word says..."},
+  spell_prompt:{t:"Cast the Instant Spell that says..."},
+  spell_yes:{t:"Spell cast! You knew it!"},
+  spell_done:{t:"You are a MASTER SPELL CASTER, Super Teddy! Heart words: mastered!"},
+  gear_tome:{t:"The SPELL TOME! It holds every heart word you know!"},
   panel1:{t:"This is Star Force City. A city powered by magical Letter Gems, words, and stories."},
   panel2:{t:"But one night, LORD VEX and his Vexbot army attacked! They stole the Letter Gems and smashed every word into pieces. Now nobody can read. Not signs, not books, not even bedtime stories."},
   panel3:{t:"The city needed a hero. The founders of the Hero League, your mom and dad, searched everywhere... and they chose YOU, Super Teddy."},
@@ -220,7 +241,7 @@ const LINES={
   rest2:{t:"Even heroes rest. Great work today, Super Teddy. The city is safer because of you!"},
   test:{t:"Hello Super Teddy! This is your mentor speaking. Star Force City needs you!"}
 };
-const GEARLINE={ "Power Belt":"gear_belt","Rocket Boots":"gear_boots","Word Hammer":"gear_hammer","Gem Sword":"gear_sword","Gem Shield":"gear_shield","Gem Gauntlet":"gear_gauntlet","Reading Crown":"gear_crown" };
+const GEARLINE={ "Power Belt":"gear_belt","Rocket Boots":"gear_boots","Word Hammer":"gear_hammer","Gem Sword":"gear_sword","Gem Shield":"gear_shield","Gem Gauntlet":"gear_gauntlet","Reading Crown":"gear_crown","Spell Tome":"gear_tome" };
 const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#ffc93c",
   m:"#f06292",d:"#9c2f2f",g:"#1abc9c",o:"#5dade2",c:"#7d3c98",k:"#aab7c4",
   e:"#27ae60",u:"#e67e22",r:"#ff5e57",h:"#5f6dff",b:"#3742fa",f:"#16a085"};
@@ -345,7 +366,7 @@ const $=id=>document.getElementById(id);
 /* Painted-scene slots: screen -> art/bg-<name>.* . Add an image to swap a scene;
    if the file is missing the layer stays transparent and the original look shows.
    Several screens intentionally share one scene (e.g. learn/trace, boss/forge). */
-const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrScan:"lab", scrMap:"city", scrRead:"learn",
+const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrScan:"lab", scrMap:"city", scrRead:"learn", scrSpell:"learn",
   scrBase:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
   scrBoss:"battle", scrForge:"battle", scrWin:"victory", scrRest:"rest" };
 const __bgCache={};
@@ -671,6 +692,7 @@ function startMission(m){ clearFlow(); CUR=m; $("hudTitle").textContent=m.lbl.to
   if(m.type==="learn")startLearn(m);
   else if(m.type==="patrol")startPatrol(m.set);
   else if(m.type==="read")startRead(m);
+  else if(m.type==="spell")startSpell(m);
   else startForge(m); }
 function missionComplete(){
   const firstTime=!S.done[CUR.id];
@@ -810,6 +832,43 @@ function nextRead(){
         readSoundOut(w); } };
     cr.appendChild(b); }); }
 $("btnReadSound").onclick=()=>{ const w=readWords&&readWords[readIx]; if(w)readSoundOut(w); };
+
+/* ---------------- INSTANT SPELLS (sight words) ----------------
+   Heart-word method: introduce a word (flag the tricky "heart" letters), then
+   recognise it on sight — hear the word, tap the matching written word. Builds
+   the orthographic word-form that sentence reading depends on. */
+function taughtSight(){ const out=[]; MISSIONS.forEach(m=>{ if(m.type==="spell"&&S.done[m.id])(m.new||[]).forEach(w=>out.push(w)); }); return out; }
+function spellWordHTML(w){ return w.split("").map((c,i)=>
+  ((SIGHT[w]&&SIGHT[w].h)||[]).includes(i) ? `<span class="heartl">${c}</span>` : c).join(""); }
+let spellNew,spellPool,spellIx,spellGoal,spellMiss,spellMission;
+function startSpell(m){ show("scrSpell"); spellMission=m; spellNew=(m.new||[]).slice();
+  spellPool=[...new Set([...taughtSight(), ...spellNew])];
+  $("spellChoices").innerHTML=""; $("spellProg").textContent="";
+  flow(narrate("spell",$("spellText"),["spell_intro"]),()=>introSpell(0)); }
+function introSpell(i){
+  if(i>=spellNew.length){ $("spellWord").innerHTML=""; spellIx=0;
+    spellGoal=Math.max(5,spellPool.length+2); practiceSpell(); return; }
+  const w=spellNew[i]; $("spellChoices").innerHTML="";
+  $("spellWord").innerHTML=`<div class="spellbig read">${spellWordHTML(w)}</div>`;
+  flow(narrate("spell",$("spellText"),["spell_new","sw_"+w],"Heart word! Just know it…"),
+    ()=>setTimeout(()=>introSpell(i+1),650)); }
+function practiceSpell(){
+  if(spellIx>=spellGoal){ const champ=spellMission.id===33;
+    flow(Aud.play(champ?["spell_done"]:["spell_yes"]),missionComplete); return; }
+  const w=spellPool[Math.floor(Math.random()*spellPool.length)]; spellMiss=0;
+  $("spellProg").textContent="✨ "+spellIx+" / "+spellGoal;
+  narrate("spell",$("spellText"),["spell_prompt","sw_"+w],"Cast the Instant Spell that says… ✨");
+  const foils=spellPool.filter(x=>x!==w).sort(()=>Math.random()-.5).slice(0,2);
+  const opts=[w,...foils].sort(()=>Math.random()-.5);
+  const cr=$("spellChoices"); cr.innerHTML="";
+  opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile wordtile read"; b.dataset.w=o;
+    b.innerHTML=spellWordHTML(o);
+    b.onclick=()=>{ if(o===w){ record("sw_"+w,true); b.classList.add("win"); burstAt(b); Aud.ding(); spellIx++;
+        flow(Aud.play(["spell_yes","sw_"+w]),()=>setTimeout(practiceSpell,160)); }
+      else { record("sw_"+w,false); spellMiss++; b.classList.add("dim");
+        if(spellMiss>=2)cr.querySelectorAll(".wordtile").forEach(x=>{ if(x.dataset.w===w)x.classList.add("hint"); });
+        Aud.play(["almost","sw_"+w]); } };
+    cr.appendChild(b); }); }
 
 /* ---------------- PATROL ---------------- */
 function startPatrol(set){ Aud.play("patrol_intro");

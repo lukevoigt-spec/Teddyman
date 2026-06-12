@@ -70,8 +70,11 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - Reading Rally (live, zone 4): DECODE direction — "Read It" missions (27–30) show a word, child
   sounds it out and taps the picture it means (READWORDS, picture-match, audio-first). This is the
   letter→sound→blend READING skill the sound-ID/forge tasks don't cover. Earns the Reading Crown.
-- Group 4 (next): l j v w x y z q. Then: first ~25 heart/sight words ("Instant Spells") → decodable
-  sentences. Uppercase+lowercase paired, lowercase weighted; deliberate uppercase rounds every 3rd rep.
+- Spell Tower (live, zone 5): Instant Spells — sight ("heart") words (I a the to and is you said),
+  SIGHT{} with heart-letter indices. Intro flags the tricky letters with a ♥; practice = hear the
+  word, tap the matching written word (recognition). Earns the Spell Tome. taughtSight() is cumulative.
+- Group 4 (next): l j v w x y z q. Then decodable sentences ("The cat sat."). Uppercase+lowercase
+  paired, lowercase weighted; deliberate uppercase rounds every 3rd rep.
 - DIRECTION NOTE (prime objective = reading): scan/find/boss/forge train sound→letter (ID + spell).
   "Read It" adds letter→sound (decode). Keep growing the decode side (sight words, sentences).
 - Mastery model: per-grapheme strength scores recorded on every answer. Patrols are ADAPTIVE
