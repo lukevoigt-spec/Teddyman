@@ -75,12 +75,12 @@ td input[type=text]{font-size:14px;padding:6px 8px;}
 <script>
 /* Line manifest — ids must match the game exactly. */
 const LINES={
-  snd_s:{t:"sss",v:"A",note:"pure hissing s — no 'uh'"},
-  snd_a:{t:"a, a, a",v:"A",note:"short a as in apple"},
-  snd_t:{t:"t, t, t",v:"A",note:"quick t — minimal 'uh'"},
-  snd_p:{t:"p, p, p",v:"A",note:"quick p — minimal 'uh'"},
-  snd_i:{t:"ih, ih",v:"A",note:"short i as in insect"},
-  snd_n:{t:"nnn",v:"A",note:"held n hum"},
+  snd_s:{t:"sss",v:"A",rec:true,note:"RECORD THIS — pure hissing s, no 'uh'. TTS can't make real letter sounds."},
+  snd_a:{t:"a, a, a",v:"A",rec:true,note:"RECORD THIS — short a as in apple, no 'uh'."},
+  snd_t:{t:"t, t, t",v:"A",rec:true,note:"RECORD THIS — quick t, as little 'uh' as possible."},
+  snd_p:{t:"p, p, p",v:"A",rec:true,note:"RECORD THIS — quick p, as little 'uh' as possible."},
+  snd_i:{t:"ih, ih",v:"A",rec:true,note:"RECORD THIS — short i as in insect, no 'uh'."},
+  snd_n:{t:"nnn",v:"A",rec:true,note:"RECORD THIS — held n hum, no 'uh'."},
   like_s:{t:"Like sun!",v:"A"}, like_a:{t:"Like apple!",v:"A"}, like_t:{t:"Like tiger!",v:"A"},
   like_p:{t:"Like pig!",v:"A"}, like_i:{t:"Like insect!",v:"A"}, like_n:{t:"Like nest!",v:"A"},
   intro_s:{t:"Mission! A Vexbot trapped the Letter Gem S! This is S. It says...",v:"A"},
@@ -142,14 +142,15 @@ function setMsg(txt,bad){ const m=$("statusMsg"); m.textContent=txt; m.style.col
 const tb=document.querySelector("#tbl tbody");
 Object.entries(LINES).forEach(([id,L])=>{
   const tr=document.createElement("tr");
-  tr.innerHTML=`<td><b>${id}</b>${L.note?`<div class="note">${L.note}</div>`:""}</td>
+  if(L.rec)tr.style.background="#3a1d2e";  /* record-only rows stand out */
+  tr.innerHTML=`<td><b>${id}</b>${L.rec?' <span class="tag" style="background:#b3486e;">🎤 record</span>':''}${L.note?`<div class="note">${L.note}</div>`:""}</td>
     <td><span class="tag tag${L.v}">${L.v}</span></td>
     <td><input type="text" value="${L.t.replace(/"/g,"&quot;")}" data-id="${id}"></td>
     <td class="pend" id="st_${id}">—</td>
     <td style="white-space:nowrap;">
-      <button class="sm" data-gen="${id}">Gen</button>
+      ${L.rec?'<span class="note" style="margin-right:4px;">record →</span>':`<button class="sm" data-gen="${id}">Gen</button>`}
       <button class="sm" data-play="${id}" disabled>▶</button>
-      <button class="sm" data-up="${id}">Upload</button>
+      <button class="sm${L.rec?' blue':''}" data-up="${id}">Upload</button>
       <input type="file" accept="audio/*" style="display:none" data-file="${id}">
     </td>`;
   tb.appendChild(tr);
@@ -178,8 +179,9 @@ async function loadVoices(){
 $("btnLoadVoices").onclick=loadVoices;
 
 async function genLine(id){
-  const key=$("apiKey").value.trim(); if(!key){setMsg("Enter your API key first.",1);return false;}
   const L=LINES[id];
+  if(L.rec){setMsg("That's a letter sound — record it with Upload. TTS can't make a pure phoneme (it just names the letter).",1);return false;}
+  const key=$("apiKey").value.trim(); if(!key){setMsg("Enter your API key first.",1);return false;}
   const voiceId=$( L.v==="B"?"vB":(L.v==="C"?"vC":"vA") ).value;
   if(!voiceId){setMsg("Load voices and pick one for role "+L.v+" first.",1);return false;}
   const text=document.querySelector(`input[data-id="${id}"]`).value;
@@ -203,7 +205,7 @@ function blobToDataURI(blob){ return new Promise((res,rej)=>{
 $("btnGenAll").onclick=async()=>{
   $("btnGenAll").disabled=true;
   for(const id of Object.keys(LINES)){
-    if(PACK[id])continue;
+    if(PACK[id]||LINES[id].rec)continue;  /* never auto-generate the record-only letter sounds */
     await genLine(id);
     await new Promise(r=>setTimeout(r,350)); /* be gentle with rate limits */
   }
