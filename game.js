@@ -290,6 +290,7 @@ const LINES={
   flee:{t:"SYSTEM FAILURE! VEXBOT RETREATING!", v:"C"},
   youdidit:{t:"You did it, Super Teddy!"},
   patrol_intro:{t:"Rooftop patrol! Letter Gems are hiding all over the city. Find them, hero!"},
+  mastery_review:{t:"So close, hero! A few Letter Gems need more power before this rescue. Quick patrol to lock them in!"},
   forge_intro1:{t:"The WORD FORGE is open!"},
   forge_intro2:{t:"Gems together make WORDS. And words forge the mightiest weapons!"},
   forge_build:{t:"Build the word! Listen..."},
@@ -341,6 +342,16 @@ function today(){return new Date().toDateString();}
 function sessionTick(){ if(S.session.day!==today()){S.session={count:0,day:today(),rest:false};save();} }
 function mast(g){ if(!S.mastery[g])S.mastery[g]={seen:0,ok:0,str:0}; return S.mastery[g]; }
 function record(g,ok){ const m=mast(g); m.seen++; if(ok){m.ok++;m.str=Math.min(5,m.str+1);} else {m.str=Math.max(0,m.str-1);} save(); }
+/* ---- MASTERY (proficiency, not just completion) ----
+   An item is MASTERED when it's strong, well-seen, and accurate. Milestones
+   (ally rescues / zone finales) are GATED on real mastery so "rescued X" truly
+   means "proficient" — enforced gently via extra adaptive review, never failure. */
+const MASTER_STR=4, MASTER_SEEN=4, MASTER_ACC=0.75;
+function masteredItem(key){ const m=S.mastery[key];
+  return !!(m && m.str>=MASTER_STR && m.seen>=MASTER_SEEN && (m.ok/m.seen)>=MASTER_ACC); }
+function letterMastered(g){ return masteredItem(g); }
+/* what a milestone certifies = every letter taught so far must be mastered */
+function coreWeak(m){ return (m&&(m.finale||m.rescue)) ? taughtLetters().filter(g=>!letterMastered(g)) : []; }
 
 /* ---------------- CUSTOM CLIP STORE ----------------
    Parent-made clips (recorded or generated in the in-app Audio studio) live
@@ -785,12 +796,24 @@ function startMission(m){ clearFlow(); CUR=m; $("hudTitle").textContent=m.lbl.to
   else if(m.type==="sentence")startSentence(m);
   else startForge(m); }
 function missionComplete(){
+  /* MASTERY GATE: a milestone only counts once its core items are truly mastered.
+     If not, run a supportive targeted review (no failure) and re-check. */
+  if((CUR.finale||CUR.rescue) && !S.done[CUR.id]){
+    const weak=coreWeak(CUR);
+    if(weak.length){ masteryReview(weak); return; }
+  }
   const firstTime=!S.done[CUR.id];
   S.done[CUR.id]=true;
   if(firstTime){ S.stars+=3; S.session.count++;
     const gear=GEAR_AT[CUR.id];
     if(gear&&!S.gear.includes(gear))S.gear.push(gear); }
   save(); showWin(firstTime);
+}
+/* Gentle, mastery-locking review: a focused adaptive patrol of the weak items,
+   then back to the milestone check. Loops (a few short rounds) until mastered. */
+function masteryReview(weak){ $("hudTitle").textContent="POWER-UP PATROL";
+  flow(Aud.play("mastery_review"),
+    ()=> startFind(weak[0], Math.max(6, weak.length*3), weak.slice(), ()=>missionComplete()) );
 }
 
 /* ---------------- LEARN ---------------- */
@@ -1132,6 +1155,9 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
       <div class="pcard"><div class="pnum">⚡${S.stars}</div><div class="plbl">${power}</div></div>
     </div>
     <div class="psec"><b>Letter gems learned</b><div class="pgems">${lettersRow}</div></div>
+    <div class="psec"><b>Mastered for milestones</b> <span class="pnote">(★ = mastered; rescues are gated on these)</span>
+      <div class="pgems">${taught.length? taught.map(g=>`<span class="pgem" style="background:${letterMastered(g)?'#27ae60':'#7a6f4a'}">${g.toUpperCase()}${letterMastered(g)?'★':''}</span>`).join(" ") : "<i>none yet</i>"}</div>
+      <div class="pnote">${taught.filter(letterMastered).length} / ${taught.length} letters mastered. A rescue can't be earned until every letter so far is mastered — so an ally freed = real proficiency.</div></div>
     ${weak.length?`<div class="psec"><b>Best to practice next</b> <span class="pnote">(weakest right now)</span>
       <div class="pgems">${weak.map(g=>`<span class="pgem warn">${g.toUpperCase()}</span> <span class="pnote">${progAcc(g)!=null?progAcc(g)+"%":"new"} ${strDots(g)}</span>`).join("<br>")}</div></div>`:""}
     <div class="psec pnote">Reading direction so far: letter→sound (decode) via Read-It &amp; Story Gate; sound→letter (spell) via Forge &amp; patrols. Both grow as he plays. All data stays on this device.</div>`;

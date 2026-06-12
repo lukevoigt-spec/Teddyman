@@ -102,6 +102,13 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - Mastery model: per-grapheme strength scores recorded on every answer. Patrols are ADAPTIVE
   (pickWeak/taughtLetters): they span everything taught so far, weighted toward the weakest items
   (unseen > failing > mastered), and only ever show already-taught letters as distractors.
+- MASTERY GATE (proficiency, not just completion): masteredItem(key) = str>=4 & seen>=4 & acc>=0.75.
+  Milestone missions (finale/rescue) are GATED in missionComplete(): if any taught letter isn't
+  mastered (coreWeak), it runs masteryReview() — a gentle, focused adaptive patrol of just the weak
+  items — and re-checks, looping until mastered. So "rescued an ally / freed Leighton" provably
+  means proficiency, with NO failure state (it's framed as a "power-up patrol"). The Progress tab
+  shows mastered-for-milestones (★). The future Fortress finale will gate Leighton on full READING
+  mastery (decode + sight + sentence), not just letters.
 
 ## Voice/audio system
 - Aud.play(ids) plays voicepack clips, falls back to per-line TTS (LINES manifest: {t, r, v}).
