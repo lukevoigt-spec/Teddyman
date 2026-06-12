@@ -1,9 +1,9 @@
 /* =========================================================
-   HERO TEDDY — v2.2 GEM CITY · CAGED ALLIES
+   SUPER TEDDY — v2.2 STAR FORCE CITY · CAGED ALLIES
    New: voicepack audio engine (studio clips w/ TTS fallback)
-        + real scrollable Gem City map with landmarks.
+        + real scrollable Star Force City map with landmarks.
 ========================================================= */
-const NAME="Teddy";
+const NAME="Super Teddy";
 const LETTERS={
   s:{kw:"sun",icon:"☀️"}, a:{kw:"apple",icon:"🍎"}, t:{kw:"tiger",icon:"🐯"},
   p:{kw:"pig",icon:"🐷"}, i:{kw:"insect",icon:"🐜"}, n:{kw:"nest",icon:"🪺"}
@@ -44,13 +44,13 @@ const LINES={
   intro_i:{t:"Mission! A Vexbot trapped the Letter Gem I! This is I. It says..."},
   intro_n:{t:"Mission! A Vexbot trapped the Letter Gem N! This is N. It says..."},
   word_at:{t:"at!"}, word_sat:{t:"sat!"}, word_tap:{t:"tap!"}, word_pin:{t:"pin!"}, word_nap:{t:"nap!"},
-  panel1:{t:"This is Gem City. A city powered by magical Letter Gems, words, and stories."},
+  panel1:{t:"This is Star Force City. A city powered by magical Letter Gems, words, and stories."},
   panel2:{t:"But one night, LORD VEX and his Vexbot army attacked! They stole the Letter Gems and smashed every word into pieces. Now nobody can read. Not signs, not books, not even bedtime stories."},
-  panel3:{t:"The city needed a hero. The founders of the Hero League, your mom and dad, searched everywhere... and they chose YOU, Teddy."},
+  panel3:{t:"The city needed a hero. The founders of the Hero League, your mom and dad, searched everywhere... and they chose YOU, Super Teddy."},
   panel4:{t:"These are the Gem Lenses. Your glasses are superpowered! With them, you can see hidden Letter Gems nobody else can see."},
-  panel5:{t:"Rescue the gems. Rebuild the words. Save Gem City! Are you ready, hero Teddy?"},
-  welcome:{t:"Welcome back, hero Teddy!"},
-  pick:{t:"Pick your mission, Teddy!"},
+  panel5:{t:"Rescue the gems. Rebuild the words. Save Star Force City! Are you ready, Super Teddy?"},
+  welcome:{t:"Welcome back, Super Teddy!"},
+  pick:{t:"Pick your mission, Super Teddy!"},
   scan_intro:{t:"Lens calibration! Let's charge your Gem Lenses. There are no wrong answers. Every tap makes them stronger!"},
   scan_prompt:{t:"Tap the gem that says..."},
   scan_done:{t:"Lenses fully charged! Time for your first mission, hero!"},
@@ -63,7 +63,7 @@ const LINES={
   hit_again:{t:"Direct hit! Again!"},
   dodge:{t:"He dodged! Listen..."},
   flee:{t:"SYSTEM FAILURE! VEXBOT RETREATING!", v:"C"},
-  youdidit:{t:"You did it, Teddy!"},
+  youdidit:{t:"You did it, Super Teddy!"},
   patrol_intro:{t:"Rooftop patrol! Letter Gems are hiding all over the city. Find them, hero!"},
   forge_intro1:{t:"The WORD FORGE is open!"},
   forge_intro2:{t:"Gems together make WORDS. And words forge the mightiest weapons!"},
@@ -72,20 +72,20 @@ const LINES={
   forge_listen:{t:"Listen for the next sound..."},
   blast:{t:"BLAST!"},
   forge_win1:{t:"The Vexbot is DESTROYED!"},
-  forge_win2:{t:"You READ words, Teddy! You are a true hero!"},
-  win_grow:{t:"Gem rescued! Your power grows, Teddy! Look at those muscles!"},
+  forge_win2:{t:"You READ words, Super Teddy! You are a true hero!"},
+  win_grow:{t:"Gem rescued! Your power grows, Super Teddy! Look at those muscles!"},
   win_gear:{t:"You earned new gear!"},
   gear_belt:{t:"The Power Belt!"}, gear_boots:{t:"Rocket Boots!"},
-  gear_hammer:{t:"The WORD HAMMER! Forged from your first words!"}, gear_sword:{t:"The GEM SWORD! A true hero's blade!"}, base1:{t:"Welcome to your Hero Base, Teddy! Gear up and look strong!"},
-  finale1:{t:"Incoming message! ... Teddy! It's Amelia!", v:"B"},
+  gear_hammer:{t:"The WORD HAMMER! Forged from your first words!"}, gear_sword:{t:"The GEM SWORD! A true hero's blade!"}, base1:{t:"Welcome to your Hero Base, Super Teddy! Gear up and look strong!"},
+  finale1:{t:"Incoming message! ... Super Teddy! It's Amelia!", v:"B"},
   finale2:{t:"Lord Vex trapped me in the Heart Tower! Come rescue me in your next adventure!", v:"B"},
   finale3:{t:"To be continued, hero..."},
   free_tank:{t:"CAGE DESTROYED! You freed Archie! TANK has joined the Hero League... and he is ready to SMASH!"},
   free_flip:{t:"CAGE DESTROYED! You freed Ellie! FLIP has joined the league... backflips, cartwheels, and mid-air gem grabs!"},
   free_sunny:{t:"CAGE DESTROYED! You freed William! SUNNY has joined the league... and things are about to get silly!"},
-  rest1:{t:"The sun is setting over Gem City..."},
-  rest2:{t:"Even heroes rest. Great work today, Teddy. The city is safer because of you!"},
-  test:{t:"Hello hero Teddy! This is your mentor speaking. Gem City needs you!"}
+  rest1:{t:"The sun is setting over Star Force City..."},
+  rest2:{t:"Even heroes rest. Great work today, Super Teddy. The city is safer because of you!"},
+  test:{t:"Hello Super Teddy! This is your mentor speaking. Star Force City needs you!"}
 };
 const GEARLINE={ "Power Belt":"gear_belt","Rocket Boots":"gear_boots","Word Hammer":"gear_hammer","Gem Sword":"gear_sword" };
 const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#ffc93c"};
@@ -499,7 +499,7 @@ function mapSVG(){
   ${nodes}
   <g transform="translate(400 30)">
     <rect x="-200" y="0" width="400" height="52" rx="16" fill="rgba(21,15,46,.85)" stroke="#fff6e3" stroke-width="3"/>
-    <text x="0" y="36" text-anchor="middle" font-family="Bangers" font-size="28" fill="#ffc93c" letter-spacing="2">⚡ ${S.stars} · TEDDY'S GEM CITY</text>
+    <text x="0" y="36" text-anchor="middle" font-family="Bangers" font-size="28" fill="#ffc93c" letter-spacing="2">⚡ ${S.stars} · SUPER TEDDY'S CITY</text>
   </g>
   </svg>`;
 }
@@ -538,7 +538,7 @@ function heroMarker(){ let ix=0;
   return `<g transform="translate(${x-44} ${y-186}) scale(.30)">${heroNow(250).replace(/<svg[^>]*>|<\/svg>/g,"")}</g>`;
 }
 function toMap(){ sessionTick(); show("scrMap");
-  $("hudTitle").textContent="GEM CITY";
+  $("hudTitle").textContent="STAR FORCE CITY";
   $("mapSVGwrap").innerHTML=mapSVG();
   document.querySelectorAll(".mnode").forEach(n=>{
     if(n.id==="baseNode"){ n.addEventListener("click",showBase); return; }
