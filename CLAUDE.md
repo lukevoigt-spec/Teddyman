@@ -112,6 +112,11 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   Placed in the LETTER phase (before the reading zones) via PLAY ORDER while keeping appended save
   ids: the map positions each mission by ZONE MEMBERSHIP (NODEBY/nodeOf), not flat id order, so new
   groups slot in anywhere without breaking saves. ZONES array order = play order (zone ids 1–7).
+- Reading Dojo (live, zone 9, plays AFTER Story Gate / BEFORE the Fortress): FLUENCY — Cloze
+  (picture-anchored "pick the word that fits the blank", research-backed Maze format) + Scramble
+  (hear the sentence, tap the scrambled words into order = syntax/word-order, the reading-safe
+  "mad-lib"). CLOZE[]/SCRAMBLE[] use only decodable+sight words. Earns the Fluency Badge. Zone id 9
+  sits between story(7) and fortress(8) by play order (map positions by zone, not id).
 - Distractors (find/boss/forge foils) now come from taughtLetters() — only already-taught letters,
   never not-yet-taught ones (so e.g. group-4 letters never show before they're learned).
 - Uppercase+lowercase paired, lowercase weighted; deliberate uppercase rounds every 3rd rep (TODO

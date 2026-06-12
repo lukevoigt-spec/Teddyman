@@ -75,11 +75,36 @@ const MISSIONS=[
   {id:34,type:"sentence",sents:[0,1,2],lbl:"Story Gate I",z:7},
   {id:35,type:"sentence",sents:[3,4,5],lbl:"Story Gate II",z:7},
   {id:36,type:"sentence",sents:[6,7],lbl:"Story Gate: First Story",z:7},
+  /* --- ZONE 9 · READING DOJO — fluency: Cloze (pick the word that fits) +
+     scrambled-sentence ordering. Played AFTER Story Gate, BEFORE the Fortress
+     (ids appended; placed here by play order — map positions by zone). --- */
+  {id:49,type:"cloze",items:[0,1,2],lbl:"Reading Dojo: Fill the Word",z:9},
+  {id:50,type:"scramble",items:[0,1,2],lbl:"Reading Dojo: Build a Sentence",z:9},
+  {id:51,type:"cloze",items:[3,4,5],lbl:"Reading Dojo: Fill the Word II",z:9},
+  {id:52,type:"scramble",items:[3,4,5],lbl:"Reading Dojo: Sentence Master",z:9},
   /* --- ZONE 8 · VEX'S FORTRESS — Act 1 FINALE: a long multi-phase boss that
      makes Teddy prove letter sounds AND reading to free Leighton --- */
   {id:48,type:"fortress",lbl:"Vex's Fortress: Free Leighton!",finale:true,climax:true,z:8}
 ];
-const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield",22:"Gem Gauntlet",47:"Alphabet Star",30:"Reading Crown",33:"Spell Tome",36:"Story Key"};
+const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield",22:"Gem Gauntlet",47:"Alphabet Star",30:"Reading Crown",33:"Spell Tome",36:"Story Key",52:"Fluency Badge"};
+/* Cloze (read the sentence, pick the word that fits the blank — picture-anchored,
+   research-backed CBM Maze format) and Scramble (arrange words into a sentence). */
+const CLOZE=[
+  {t:["the","cat","_"],     ans:"sat", foils:["ran","dig"], pic:"🐱"},
+  {t:["the","_","is","hot"],ans:"sun", foils:["bug","pig"], pic:"☀️"},
+  {t:["you","can","_"],     ans:"run", foils:["nap","hop"], pic:"🏃"},
+  {t:["the","pig","is","_"],ans:"big", foils:["red","wet"], pic:"🐷"},
+  {t:["the","_","ran"],     ans:"hen", foils:["bed","mug"], pic:"🐔"},
+  {t:["the","bug","is","_"],ans:"red", foils:["hot","bun"], pic:"🐛"}
+];
+const SCRAMBLE=[
+  {words:["the","cat","sat"],      pic:"🐱"},
+  {words:["a","dog","ran"],        pic:"🐶"},
+  {words:["the","sun","is","hot"], pic:"☀️"},
+  {words:["you","can","run"],      pic:"🏃"},
+  {words:["the","pig","is","big"], pic:"🐷"},
+  {words:["I","had","a","nap"],    pic:"😴"}
+];
 /* Decodable sentences: only taught CVC words + learned sight words. Each carries
    a picture (its meaning) and a foil that differs by the key word, so the child
    must actually READ it, not guess. The reading finish line. */
@@ -167,9 +192,12 @@ const ZONES=[
   { id:7, name:"STORY GATE", bg:"story",
     letters:[],   /* read whole sentences */
     nodes:autoNodes(3,{y0:-3490,step:114,phase:5.4}) },
+  { id:9, name:"READING DOJO", bg:"dojo",
+    letters:[],   /* fluency: cloze + scrambled sentences (before the finale) */
+    nodes:autoNodes(4,{y0:-3860,step:112,phase:2.0}) },
   { id:8, name:"VEX'S FORTRESS", bg:"fortress",
     letters:[],   /* the Act-1 finale boss */
-    nodes:[[400,-3960]] }
+    nodes:[[400,-4400]] }
 ];
 /* ---------------- ACTS / CAMPAIGN ----------------
    The long game is a series of ACTS: each is a city with its own villain and a
@@ -254,6 +282,13 @@ const LINES={
   word_bag:{t:"bag!"}, word_cap:{t:"cap!"}, word_pan:{t:"pan!"}, word_nut:{t:"nut!"}, word_fan:{t:"fan!"},
   word_mug:{t:"mug!"}, word_pot:{t:"pot!"}, word_hug:{t:"hug!"}, word_net:{t:"net!"}, word_bun:{t:"bun!"},
   word_let:{t:"let!"}, word_jam:{t:"jam!"}, word_van:{t:"van!"}, word_box:{t:"box!"}, word_fox:{t:"fox!"}, word_zip:{t:"zip!"}, word_wax:{t:"wax!"},
+  word_hop:{t:"hop!"}, word_wet:{t:"wet!"},
+  cloze_intro:{t:"READING DOJO! Read the whole sentence, then tap the word that fits the blank!"},
+  cloze_prompt:{t:"Which word fits? Read it and tap!"},
+  scram_intro:{t:"Sentence building! Listen to the sentence, then tap the words in the right order!"},
+  scram_prompt:{t:"Build the sentence! Tap the words in order."},
+  dojo_yes:{t:"Perfect reading, Super Teddy!"},
+  gear_fluency:{t:"The FLUENCY BADGE! You read like a real reader now!"},
   m4_letters:{t:"You rescued ALL the Letter Gems! Every letter in Star Force City is FREE! Now... the road to reading, and to Lord Vex's Fortress!"},
   read_intro:{t:"READING RALLY! Now YOU read the words, hero. Sound them out, then tap the picture it means!"},
   read_prompt:{t:"Read the word... then tap what it means!"},
@@ -352,7 +387,7 @@ const LINES={
   rest2:{t:"Even heroes rest. Great work today, Super Teddy. The city is safer because of you!"},
   test:{t:"Hello Super Teddy! This is your mentor speaking. Star Force City needs you!"}
 };
-const GEARLINE={ "Power Belt":"gear_belt","Rocket Boots":"gear_boots","Word Hammer":"gear_hammer","Gem Sword":"gear_sword","Gem Shield":"gear_shield","Gem Gauntlet":"gear_gauntlet","Reading Crown":"gear_crown","Spell Tome":"gear_tome","Story Key":"gear_storykey","Alphabet Star":"gear_alphabet" };
+const GEARLINE={ "Power Belt":"gear_belt","Rocket Boots":"gear_boots","Word Hammer":"gear_hammer","Gem Sword":"gear_sword","Gem Shield":"gear_shield","Gem Gauntlet":"gear_gauntlet","Reading Crown":"gear_crown","Spell Tome":"gear_tome","Story Key":"gear_storykey","Alphabet Star":"gear_alphabet","Fluency Badge":"gear_fluency" };
 const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#ffc93c",
   m:"#f06292",d:"#9c2f2f",g:"#1abc9c",o:"#5dade2",c:"#7d3c98",k:"#aab7c4",
   e:"#27ae60",u:"#e67e22",r:"#ff5e57",h:"#5f6dff",b:"#3742fa",f:"#16a085",
@@ -559,7 +594,7 @@ const $=id=>document.getElementById(id);
 /* Painted-scene slots: screen -> art/bg-<name>.* . Add an image to swap a scene;
    if the file is missing the layer stays transparent and the original look shows.
    Several screens intentionally share one scene (e.g. learn/trace, boss/forge). */
-const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrScan:"lab", scrMap:"city", scrRead:"learn", scrSpell:"learn", scrSent:"learn", scrFortress:"battle",
+const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrScan:"lab", scrMap:"city", scrRead:"learn", scrSpell:"learn", scrSent:"learn", scrCloze:"learn", scrScramble:"learn", scrFortress:"battle",
   scrBase:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
   scrBoss:"battle", scrForge:"battle", scrWin:"victory", scrRest:"rest" };
 const __bgCache={};
@@ -893,6 +928,8 @@ function startMission(m){ clearFlow(); CUR=m; $("hudTitle").textContent=m.lbl.to
   else if(m.type==="read")startRead(m);
   else if(m.type==="spell")startSpell(m);
   else if(m.type==="sentence")startSentence(m);
+  else if(m.type==="cloze")startCloze(m);
+  else if(m.type==="scramble")startScramble(m);
   else if(m.type==="fortress")startFortress(m);
   else startForge(m); }
 function missionComplete(){
@@ -1114,6 +1151,52 @@ function nextSentence(){
         if(sentMiss>=2)cr.querySelectorAll(".picktile").forEach(x=>{ if(x.textContent===s.pic)x.classList.add("hint"); });
         Aud.play(sentenceAudio(s)); } };
     cr.appendChild(b); }); }
+
+/* ---------------- READING DOJO · CLOZE (fill the word that fits) ----------------
+   Read the sentence (picture-anchored), pick the word for the blank. Research-
+   backed Maze format; reading for meaning + decoding the choices. */
+let clozeList,clozeIx,clozeGoal,clozeMiss;
+function startCloze(m){ show("scrCloze"); clozeList=m.items.slice(); clozeIx=0; clozeGoal=clozeList.length;
+  $("clozeChoices").innerHTML=""; flow(narrate("cloze",$("clozeText"),["cloze_intro"]),()=>nextCloze()); }
+function nextCloze(){ if(clozeIx>=clozeGoal){ flow(Aud.play(["dojo_yes"]),missionComplete); return; }
+  const c=CLOZE[clozeList[clozeIx]]; clozeMiss=0;
+  $("clozeProg").textContent="📖 "+clozeIx+" / "+clozeGoal; $("clozePic").textContent=c.pic;
+  narrate("cloze",$("clozeText"),["cloze_prompt"],"Read it… tap the word that fits the blank! 📖");
+  const sw=$("clozeSent"); sw.innerHTML="";
+  c.t.forEach(w=>{ if(w==="_"){ const s=document.createElement("div"); s.className="slot read"; s.id="clozeBlank"; s.textContent="?"; sw.appendChild(s); }
+    else { const t=document.createElement("button"); t.className="tile wordtile read"+(SIGHT[w]?" heartword":""); t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>Aud.play(wordAudio(w)); sw.appendChild(t); } });
+  const done=c.t.map(w=>w==="_"?c.ans:w);
+  const cr=$("clozeChoices"); cr.innerHTML="";
+  [c.ans,...c.foils].sort(()=>Math.random()-.5).forEach(o=>{ const b=document.createElement("button"); b.className="tile wordtile read"; b.dataset.w=o; b.innerHTML=o;
+    b.onclick=()=>{ if(o===c.ans){ record("cz",true); const bl=$("clozeBlank"); if(bl){bl.textContent=o;bl.classList.add("filled");} b.classList.add("win"); burstAt(b); Aud.ding(); clozeIx++;
+        flow(Aud.play([...done.flatMap(wordAudio),"dojo_yes"]),()=>setTimeout(nextCloze,250)); }
+      else { record("cz",false); clozeMiss++; b.classList.add("dim");
+        if(clozeMiss>=2)cr.querySelectorAll(".wordtile").forEach(x=>{if(x.dataset.w===c.ans)x.classList.add("hint");}); Aud.play(["almost",...done.flatMap(wordAudio)]); } };
+    cr.appendChild(b); }); }
+
+/* ---------------- READING DOJO · SCRAMBLE (build the sentence) ----------------
+   Hear the sentence, then tap the scrambled words into order — syntax/word-order
+   awareness on decodable words (the reading version of mad-libs). */
+let scramList,scramIx,scramGoal,scramCur,scramPos,scramMiss;
+function scramAudio(s){ return s.words.flatMap(wordAudio); }
+function startScramble(m){ show("scrScramble"); scramList=m.items.slice(); scramIx=0; scramGoal=scramList.length;
+  $("scramTiles").innerHTML=""; $("scramSlots").innerHTML=""; flow(narrate("scram",$("scramText"),["scram_intro"]),()=>nextScramble()); }
+function nextScramble(){ if(scramIx>=scramGoal){ flow(Aud.play(["dojo_yes"]),missionComplete); return; }
+  const s=SCRAMBLE[scramList[scramIx]]; scramCur=s; scramPos=0; scramMiss=0;
+  $("scramProg").textContent="📖 "+scramIx+" / "+scramGoal; $("scramPic").textContent=s.pic;
+  narrate("scram",$("scramText"),["scram_prompt",...scramAudio(s)],"Build the sentence! Tap the words in order. 🔊");
+  const sl=$("scramSlots"); sl.innerHTML="";
+  s.words.forEach(()=>{ const d=document.createElement("div"); d.className="slot read"; d.style.minWidth="clamp(70px,12vw,110px)"; d.style.width="auto"; sl.appendChild(d); });
+  const tr=$("scramTiles"); tr.innerHTML="";
+  s.words.map((w,i)=>i).sort(()=>Math.random()-.5).forEach(i=>{ const w=s.words[i];
+    const t=document.createElement("button"); t.className="tile wordtile read"+(SIGHT[w]?" heartword":""); t.innerHTML=SIGHT[w]?spellWordHTML(w):w;
+    t.onclick=()=>{ if(t.disabled)return; const need=s.words[scramPos];
+      if(w===need){ const slot=sl.children[scramPos]; slot.innerHTML=t.innerHTML; slot.classList.add("filled"); t.classList.add("dim"); t.disabled=true; Aud.ding(); scramPos++;
+        if(scramPos>=s.words.length){ scramIx++; flow(Aud.play([...scramAudio(s),"dojo_yes"]),()=>setTimeout(nextScramble,300)); }
+        else Aud.play(wordAudio(w)); }
+      else { scramMiss++; t.classList.add("dim"); setTimeout(()=>{if(!t.disabled)t.classList.remove("dim");},700); Aud.play(["almost",...scramAudio(s)]); } };
+    tr.appendChild(t); }); }
+$("btnScramHear").onclick=()=>{ if(scramCur)Aud.play(scramAudio(scramCur)); };
 
 /* ---------------- VEX'S FORTRESS (Act-1 finale boss) ----------------
    A long, chaotic, COMPREHENSIVE fight: 4 phases that make Teddy prove letter
