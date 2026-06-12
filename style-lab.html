@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Super Teddy — Style Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Baloo+2:wght@600;800&family=Andika:wght@700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Baloo 2',sans-serif;color:#fff6e3;min-height:100vh;padding:24px 16px 60px;
+  background:linear-gradient(180deg,#171236,#3a2d7d 60%,#7a4fb6);text-align:center;}
+h1{font-family:'Bangers',cursive;font-size:clamp(34px,7vw,64px);color:#ffc93c;-webkit-text-stroke:5px #150f2e;paint-order:stroke;letter-spacing:.04em;}
+.sub{color:#cfc6f2;font-size:clamp(15px,2.6vw,20px);margin:6px 0 26px;max-width:680px;display:inline-block;}
+.grid{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;align-items:stretch;}
+.card{background:rgba(21,15,46,.55);border:4px solid #150f2e;border-radius:24px;padding:16px 14px 20px;
+  width:min(330px,92vw);display:flex;flex-direction:column;align-items:center;gap:10px;
+  box-shadow:0 12px 30px rgba(0,0,0,.35);}
+.card svg{width:100%;height:auto;max-height:48vh;}
+.tag{font-family:'Bangers',cursive;font-size:26px;letter-spacing:.05em;color:#150f2e;
+  background:linear-gradient(180deg,#ffd75e,#f0a82b);border:4px solid #150f2e;border-radius:16px;padding:6px 18px;}
+.blurb{font-size:14px;color:#cfc6f2;line-height:1.4;min-height:54px;}
+.foot{margin-top:30px;color:#cfc6f2;font-size:14px;max-width:620px;display:inline-block;line-height:1.5;}
+.stage{width:100%;aspect-ratio:.62;border-radius:16px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;}
+</style>
+</head>
+<body>
+  <h1>SUPER TEDDY · STYLE LAB</h1>
+  <div class="sub">Same hero — sandy-blonde swoop, freckles, blue Gem-Lens glasses, gold&nbsp;T, red cape — drawn three ways. Pick the one that feels right (or mix-and-match) and I'll build the cast in it.</div>
+
+  <div class="grid">
+
+    <!-- ========== A · MODERN ANIMATED-FILM ========== -->
+    <div class="card">
+      <div class="stage" style="background:radial-gradient(circle at 50% 38%,#5a4aa6,#2b2066);">
+      <svg viewBox="0 0 260 430" aria-label="Modern animated-film Super Teddy">
+        <defs>
+          <linearGradient id="aSuit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5aa0ff"/><stop offset="1" stop-color="#2257c4"/></linearGradient>
+          <linearGradient id="aCape" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6a5c"/><stop offset="1" stop-color="#c4302b"/></linearGradient>
+          <radialGradient id="aSkin" cx=".5" cy=".4" r=".7"><stop offset="0" stop-color="#ffe2c4"/><stop offset="1" stop-color="#f3c39a"/></radialGradient>
+          <linearGradient id="aGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe07a"/><stop offset="1" stop-color="#f0a82b"/></linearGradient>
+          <linearGradient id="aHair" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3d489"/><stop offset="1" stop-color="#d8a94f"/></linearGradient>
+        </defs>
+        <g stroke="#2a2350" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+          <!-- cape -->
+          <path d="M86 150 Q40 250 60 360 Q100 340 130 350 Q160 340 200 360 Q220 250 174 150 Z" fill="url(#aCape)"/>
+          <path d="M86 150 Q70 250 96 348 Q86 250 100 160Z" fill="#b9302c" stroke="none" opacity=".5"/>
+          <!-- legs -->
+          <path d="M104 300 L96 386 Q95 400 110 400 L122 400 L126 306Z" fill="url(#aSuit)"/>
+          <path d="M156 300 L164 386 Q165 400 150 400 L138 400 L134 306Z" fill="url(#aSuit)"/>
+          <path d="M90 396 Q88 414 112 414 L126 414 L126 396Z" fill="url(#aCape)"/>
+          <path d="M170 396 Q172 414 148 414 L134 414 L134 396Z" fill="url(#aCape)"/>
+          <!-- torso -->
+          <path d="M88 168 Q130 150 172 168 L166 286 Q130 304 94 286Z" fill="url(#aSuit)"/>
+          <path d="M88 168 Q108 162 118 164 L112 280 Q100 284 94 286Z" fill="#7ab2ff" stroke="none" opacity=".45"/>
+          <!-- belt -->
+          <path d="M92 280 L168 280 L164 300 L96 300Z" fill="url(#aGold)"/>
+          <!-- arms -->
+          <path d="M90 176 Q60 196 56 248 Q66 262 84 256 L92 236 Q80 226 86 200Z" fill="url(#aSuit)"/>
+          <path d="M170 176 Q200 196 204 248 Q194 262 176 256 L168 236 Q180 226 174 200Z" fill="url(#aSuit)"/>
+          <circle cx="70" cy="256" r="15" fill="url(#aSkin)"/>
+          <circle cx="190" cy="256" r="15" fill="url(#aSkin)"/>
+          <!-- chest emblem -->
+          <path d="M130 196 L156 210 L156 238 L130 252 L104 238 L104 210Z" fill="url(#aGold)"/>
+          <path d="M119 212 L141 212 L141 220 L134 220 L134 240 L126 240 L126 220 L119 220Z" fill="#e6453c"/>
+          <!-- neck + head -->
+          <rect x="118" y="120" width="24" height="22" rx="8" fill="url(#aSkin)"/>
+          <circle cx="130" cy="86" r="44" fill="url(#aSkin)"/>
+          <!-- hair swoop -->
+          <path d="M86 78 Q80 30 130 26 Q184 24 178 74 Q168 50 150 50 Q166 36 138 38 Q146 26 120 34 Q98 34 96 54 Q84 58 86 78Z" fill="url(#aHair)"/>
+          <path d="M150 50 Q176 40 178 70 Q170 56 150 58Z" fill="#e9c878" stroke="none"/>
+          <!-- glasses (Gem Lenses) -->
+          <g fill="#bfe0ff" fill-opacity=".5" stroke="#2a6fd0" stroke-width="4">
+            <rect x="96" y="76" width="34" height="28" rx="9"/><rect x="138" y="76" width="34" height="28" rx="9"/>
+            <path d="M130 86 L138 86" stroke-width="4"/></g>
+          <!-- eyes -->
+          <g stroke="none"><circle cx="113" cy="90" r="8" fill="#fff"/><circle cx="155" cy="90" r="8" fill="#fff"/>
+            <circle cx="115" cy="91" r="4.6" fill="#6a98c9"/><circle cx="157" cy="91" r="4.6" fill="#6a98c9"/>
+            <circle cx="115" cy="91" r="2.3" fill="#1a1230"/><circle cx="157" cy="91" r="2.3" fill="#1a1230"/>
+            <circle cx="117" cy="89" r="1.6" fill="#fff"/><circle cx="159" cy="89" r="1.6" fill="#fff"/></g>
+          <!-- freckles + cheeks -->
+          <g stroke="none" opacity=".55" fill="#e08a6a"><circle cx="104" cy="104" r="6"/><circle cx="156" cy="104" r="6"/></g>
+          <g stroke="none" fill="#d98a5e" opacity=".8"><circle cx="120" cy="106" r="1.6"/><circle cx="128" cy="109" r="1.6"/><circle cx="140" cy="109" r="1.6"/><circle cx="148" cy="106" r="1.6"/></g>
+          <!-- big grin -->
+          <path d="M112 112 Q130 130 150 112 Q146 124 130 126 Q116 124 112 112Z" fill="#7c3a3a" stroke-width="2.5"/>
+          <path d="M116 114 Q130 122 146 114 Q132 118 116 114Z" fill="#fff" stroke="none"/>
+          <!-- thumbs up hand pose accent -->
+          <circle cx="70" cy="248" r="5" fill="#ffe2c4" stroke-width="2.5"/>
+        </g>
+      </svg>
+      </div>
+      <div class="tag">A · Animated Film</div>
+      <div class="blurb">Soft gradient shading, rounded friendly shapes, big sparkly eyes. Premium &amp; warm; reads great at small sizes and animates smoothly.</div>
+    </div>
+
+    <!-- ========== B · COMIC-BOOK INK ========== -->
+    <div class="card">
+      <div class="stage" style="background:radial-gradient(circle at 50% 40%,#ffd75e,#f0a82b);">
+      <svg viewBox="0 0 260 430" aria-label="Comic-book ink Super Teddy">
+        <defs>
+          <pattern id="bHalf" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.4" fill="#1a1230" opacity=".22"/></pattern>
+          <radialGradient id="bBurst" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff7d6"/><stop offset="1" stop-color="#ffd75e" stop-opacity="0"/></radialGradient>
+        </defs>
+        <!-- action burst -->
+        <g fill="#fff3b0" opacity=".7"><path d="M130 215 L150 70 L162 200 L210 110 L176 210 L246 178 L180 224 L240 300 L172 240 L196 360 L150 252 L120 380 L116 250 L70 350 L104 232 L26 286 L100 216 L20 168 L106 206 L60 92 L122 198Z"/></g>
+        <circle cx="130" cy="225" r="150" fill="url(#bBurst)"/>
+        <g stroke="#1a1230" stroke-linejoin="round" stroke-linecap="round">
+          <!-- cape (dynamic) -->
+          <path d="M92 152 Q24 210 36 320 Q80 300 120 318 Q120 250 96 168Z" fill="#e6453c" stroke-width="7"/>
+          <path d="M92 152 Q44 210 52 304 Q84 290 110 304 Q100 240 96 168Z" fill="#b9302c" stroke="none"/>
+          <!-- legs, action stance -->
+          <path d="M108 296 L86 384 Q84 398 100 400 L116 398 L128 300Z" fill="#2257c4" stroke-width="7"/>
+          <path d="M150 296 L176 380 Q180 396 162 398 L148 396 L132 300Z" fill="#2257c4" stroke-width="7"/>
+          <path d="M88 326 L120 318 L124 360 L96 372Z" fill="#173f8f" stroke="none"/>
+          <path d="M80 392 Q78 412 104 410 L118 406 L114 392Z" fill="#e6453c" stroke-width="6"/>
+          <path d="M178 388 Q182 408 156 408 L144 402 L150 388Z" fill="#e6453c" stroke-width="6"/>
+          <!-- torso -->
+          <path d="M86 166 Q130 148 174 168 L168 290 Q128 308 92 288Z" fill="#2257c4" stroke-width="7"/>
+          <path d="M130 158 L168 168 L168 290 Q150 300 130 300Z" fill="#173f8f" stroke="none"/>
+          <rect x="86" y="148" width="88" height="160" fill="url(#bHalf)" stroke="none" opacity=".5"/>
+          <!-- belt -->
+          <path d="M90 284 L170 284 L164 304 L96 304Z" fill="#ffc93c" stroke-width="6"/>
+          <!-- left arm down fist -->
+          <path d="M88 178 Q54 210 58 262 L80 270 L90 248 Q72 226 92 200Z" fill="#2257c4" stroke-width="7"/>
+          <circle cx="70" cy="276" r="17" fill="#ffd9b8" stroke-width="7"/>
+          <!-- right arm RAISED fist -->
+          <path d="M172 176 Q210 150 214 96 L190 90 L182 116 Q198 140 176 176Z" fill="#2257c4" stroke-width="7"/>
+          <circle cx="196" cy="78" r="18" fill="#ffd9b8" stroke-width="7"/>
+          <path d="M188 70 L204 70 M188 78 L204 78" stroke-width="3"/>
+          <!-- emblem -->
+          <path d="M130 196 L158 210 L158 240 L130 254 L102 240 L102 210Z" fill="#ffd75e" stroke-width="6"/>
+          <path d="M118 214 L142 214 L142 222 L134 222 L134 244 L126 244 L126 222 L118 222Z" fill="#e6453c" stroke-width="4"/>
+          <!-- head -->
+          <rect x="118" y="118" width="24" height="22" rx="6" fill="#ffd9b8" stroke-width="6"/>
+          <circle cx="130" cy="84" r="44" fill="#ffd9b8" stroke-width="7"/>
+          <!-- hair, inky chunky -->
+          <path d="M84 80 Q76 26 132 24 Q186 24 180 78 Q166 48 144 50 Q160 32 132 36 Q140 24 112 34 Q90 38 92 58 Q80 60 84 80Z" fill="#d8a94f" stroke-width="6"/>
+          <path d="M132 36 Q110 38 96 58 Q108 44 132 46Z" fill="#b9863a" stroke="none"/>
+          <!-- glasses -->
+          <g fill="#bfe0ff" fill-opacity=".35" stroke="#1a1230" stroke-width="6"><rect x="92" y="72" width="38" height="30" rx="7"/><rect x="138" y="72" width="38" height="30" rx="7"/><path d="M130 84 L138 84"/></g>
+          <g stroke="none"><circle cx="111" cy="88" r="4.5" fill="#1a1230"/><circle cx="157" cy="88" r="4.5" fill="#1a1230"/></g>
+          <g stroke="none" fill="#c25b3a"><circle cx="104" cy="104" r="2"/><circle cx="112" cy="107" r="2"/><circle cx="148" cy="107" r="2"/><circle cx="156" cy="104" r="2"/></g>
+          <path d="M108 110 Q130 132 152 110 Q148 126 130 128 Q112 126 108 110Z" fill="#7c2f2f" stroke-width="5"/>
+          <path d="M114 113 Q130 122 146 113 Q132 117 114 113Z" fill="#fff" stroke="none"/>
+        </g>
+      </svg>
+      </div>
+      <div class="tag">B · Comic Ink</div>
+      <div class="blurb">Heavy black outlines, cel shadows, halftone dots and a dynamic fist-up pose with an action burst. Bold, energetic, true comic-book.</div>
+    </div>
+
+    <!-- ========== C · REFINED CURRENT ========== -->
+    <div class="card">
+      <div class="stage" style="background:radial-gradient(circle at 50% 40%,#4b3e96,#241b4d);">
+      <svg viewBox="0 0 260 430" aria-label="Refined current-style Super Teddy">
+        <g stroke="#150f2e" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+          <path d="M88 150 Q48 250 66 356 Q104 340 130 348 Q156 340 194 356 Q212 250 172 150Z" fill="#e6453c"/>
+          <path d="M106 300 L100 388 Q99 400 112 400 L124 400 L126 306Z" fill="#3b82f0"/>
+          <path d="M154 300 L160 388 Q161 400 148 400 L136 400 L134 306Z" fill="#3b82f0"/>
+          <path d="M96 396 L124 396 L124 412 Q124 418 110 418 L96 418Z" fill="#e6453c"/>
+          <path d="M164 396 L136 396 L136 412 Q136 418 150 418 L164 418Z" fill="#e6453c"/>
+          <path d="M90 168 Q130 152 170 168 L164 288 Q130 302 96 288Z" fill="#3b82f0"/>
+          <path d="M90 176 Q62 196 60 246 L82 254 L90 234 Q78 210 94 196Z" fill="#3b82f0"/>
+          <path d="M170 176 Q198 196 200 246 L178 254 L170 234 Q182 210 166 196Z" fill="#3b82f0"/>
+          <circle cx="72" cy="256" r="14" fill="#ffd9b8"/><circle cx="188" cy="256" r="14" fill="#ffd9b8"/>
+          <path d="M92 282 L168 282 L164 300 L96 300Z" fill="#ffc93c"/>
+          <path d="M130 198 L156 212 L156 240 L130 254 L104 240 L104 212Z" fill="#ffc93c"/>
+          <path d="M120 216 L140 216 L140 224 L134 224 L134 242 L126 242 L126 224 L120 224Z" fill="#e6453c" stroke-width="3"/>
+          <rect x="119" y="120" width="22" height="22" rx="6" fill="#ffd9b8"/>
+          <circle cx="130" cy="86" r="44" fill="#ffd9b8"/>
+          <path d="M86 80 Q78 30 132 26 Q184 26 178 76 Q166 50 146 52 Q162 36 132 40 Q140 28 114 36 Q92 40 94 58 Q82 62 86 80Z" fill="#d8b572"/>
+          <g fill="#cfe6ff" fill-opacity=".4" stroke="#1d4fb8" stroke-width="6"><rect x="94" y="74" width="36" height="28" rx="8"/><rect x="138" y="74" width="36" height="28" rx="8"/><path d="M130 86 L138 86"/></g>
+          <g stroke="none"><circle cx="112" cy="88" r="7" fill="#fff"/><circle cx="156" cy="88" r="7" fill="#fff"/>
+            <circle cx="113" cy="89" r="4" fill="#6fa8d8"/><circle cx="157" cy="89" r="4" fill="#6fa8d8"/>
+            <circle cx="113" cy="89" r="2" fill="#150f2e"/><circle cx="157" cy="89" r="2" fill="#150f2e"/></g>
+          <g stroke="none" fill="#d99a6c" opacity=".85"><circle cx="106" cy="104" r="1.8"/><circle cx="114" cy="107" r="1.8"/><circle cx="146" cy="107" r="1.8"/><circle cx="154" cy="104" r="1.8"/></g>
+          <path d="M110 110 Q130 130 150 110 Q146 124 130 126 Q114 124 110 110Z" fill="#7c3a3a" stroke-width="3"/>
+          <path d="M113 112 Q130 121 147 112 Q132 116 113 112Z" fill="#fff" stroke="none"/>
+        </g>
+      </svg>
+      </div>
+      <div class="tag">C · Refined Current</div>
+      <div class="blurb">The game's existing flat-vector look, cleaned up — uniform inky outlines, flat fills, clear silhouette. Lowest-risk; ships fastest.</div>
+    </div>
+
+  </div>
+
+  <div class="foot">These are quick SVG style-frames, not the final art — just to choose a <b>direction</b>. Tell me a letter (or “A's shading + B's pose”, etc.) and whether to push it further, and I'll lock the hero, then build Lord Vex and the friends to match. The chosen style also guides the painted backgrounds.</div>
+</body>
+</html>
