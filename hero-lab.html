@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Super Teddy — Hero Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Baloo 2',sans-serif;color:#fff6e3;min-height:100vh;padding:22px 14px 60px;
+  background:linear-gradient(180deg,#171236,#3a2d7d 60%,#7a4fb6);text-align:center;}
+h1{font-family:'Bangers',cursive;font-size:clamp(30px,6vw,56px);color:#ffc93c;-webkit-text-stroke:5px #150f2e;paint-order:stroke;letter-spacing:.04em;}
+.sub{color:#cfc6f2;font-size:15px;margin:6px 0 22px;max-width:640px;display:inline-block;}
+.grid{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:flex-end;}
+.card{background:rgba(21,15,46,.5);border:3px solid #150f2e;border-radius:18px;padding:10px 8px 12px;width:170px;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.card svg{width:100%;height:240px;}
+.lbl{font-family:'Bangers',cursive;font-size:17px;letter-spacing:.04em;color:#ffc93c;}
+h2{font-family:'Bangers',cursive;color:#9fe870;font-size:24px;margin:26px 0 4px;letter-spacing:.05em;}
+</style>
+</head>
+<body>
+  <h1>SUPER TEDDY · HERO LAB</h1>
+  <div class="sub">Refined "Style C" hero across every in-game state (muscle stages, weapons, capes, gear). This is the real <code>art.js</code> renderer — what ships.</div>
+
+  <h2>MUSCLE STAGES</h2>
+  <div class="grid" id="gMuscle"></div>
+  <h2>WEAPONS (forged)</h2>
+  <div class="grid" id="gWeapon"></div>
+  <h2>CAPES (star-gated)</h2>
+  <div class="grid" id="gCape"></div>
+  <h2>GEAR FX</h2>
+  <div class="grid" id="gGear"></div>
+
+<script src="art.js"></script>
+<script>
+function card(parent,label,opts){ const d=document.createElement("div"); d.className="card";
+  d.innerHTML=heroSVG(150,opts)+`<div class="lbl">${label}</div>`; document.getElementById(parent).appendChild(d); }
+card("gMuscle","Stage 1 · Hero",{muscle:0});
+card("gMuscle","Stage 2 · Super",{muscle:1});
+card("gMuscle","Stage 3 · Mega",{muscle:2});
+card("gWeapon","Hands",{muscle:2,weapon:"none"});
+card("gWeapon","Word Hammer 🔨",{muscle:2,weapon:"hammer"});
+card("gWeapon","Gem Sword ⚔️",{muscle:2,weapon:"sword"});
+card("gCape","Red",{muscle:1,cape:"red"});
+card("gCape","Gold",{muscle:1,cape:"gold"});
+card("gCape","Purple",{muscle:1,cape:"purple"});
+card("gGear","Power Belt",{muscle:1,belt2:true});
+card("gGear","Rocket Boots",{muscle:1,boots2:true});
+card("gGear","Full kit",{muscle:2,weapon:"hammer",cape:"gold",belt2:true,boots2:true});
+</script>
+</body>
+</html>
