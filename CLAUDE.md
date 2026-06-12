@@ -1,4 +1,4 @@
-# CLAUDE.md — Hero Teddy (Gem City)
+# CLAUDE.md — Super Teddy (Star Force City)
 
 ## What this project is
 An iPad web game teaching a 7-year-old ("Teddy") with a ZMYM2-related neurodevelopmental
@@ -45,8 +45,9 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   progressive systems (meters, inventories, objectives, light stealth) are within reach.
 
 ## World canon
-- City: Gem City, powered by Letter Gems. Villain: LORD VEX (Vader-coded cyborg warlord)
-  and his VEXBOT soldiers. Hero: Teddy, blue glasses = Gem Lenses, gold hex "T" emblem,
+- City: Star Force City, powered by Letter Gems. Villain: LORD VEX (Vader-coded cyborg warlord)
+  and his VEXBOT soldiers. Hero: Super Teddy (the child is "Teddy"; his hero identity is
+  "Super Teddy"), blue glasses = Gem Lenses, gold hex "T" emblem,
   red cape, Word Forge gauntlet. Words forge weapons (Word Hammer, Gem Sword).
 - Hero visibly gains muscle as missions complete (3 stages). Hero Base = equip/collection hub.
 - Allies are real family/friends, freed from Vex's cages at milestone missions:

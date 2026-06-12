@@ -1,297 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Hero Teddy">
-<title>Hero Teddy — Gem City</title>
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Andika:wght@400;700&family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
-<style>
-:root{
-  --ink:#150f2e; --panel:#fff6e3; --sky1:#171236; --sky2:#3a2d7d; --sky3:#7a4fb6;
-  --blue:#3b82f0; --blueD:#2257c4; --red:#e6453c; --gold:#ffc93c; --goldD:#f0a82b;
-  --green:#3ec97e; --purp:#6b2fa0; --txt:#fff6e3;
-}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;overflow:hidden;}
-body{
-  font-family:'Baloo 2',sans-serif;color:var(--txt);
-  background:linear-gradient(180deg,var(--sky1),var(--sky2) 60%,var(--sky3));
-  display:flex;align-items:center;justify-content:center;
-  -webkit-user-select:none;user-select:none;touch-action:manipulation;
-}
-#stage{width:100%;height:100dvh;max-width:1180px;position:relative;overflow:hidden;display:flex;flex-direction:column;}
-.screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:18px;gap:14px;}
-.screen.on{display:flex;}
-.comic{font-family:'Bangers',cursive;letter-spacing:.04em;}
-.read{font-family:'Andika',sans-serif;}
-
-.btn{
-  font-family:'Bangers',cursive;font-size:clamp(26px,4.5vw,40px);letter-spacing:.06em;
-  color:var(--ink);background:linear-gradient(180deg,#ffd75e,#f0a82b);
-  border:5px solid var(--ink);border-radius:26px;padding:16px 38px;cursor:pointer;
-  box-shadow:0 8px 0 #9c6a12, 0 14px 24px rgba(0,0,0,.35);
-  transition:transform .12s ease, box-shadow .12s ease;
-}
-.btn:active{transform:translateY(6px);box-shadow:0 2px 0 #9c6a12;}
-.btn.blue{background:linear-gradient(180deg,#5ea0ff,#2257c4);color:#fff;box-shadow:0 8px 0 #143a85,0 14px 24px rgba(0,0,0,.35);}
-.btn.blue:active{box-shadow:0 2px 0 #143a85;}
-.btn.ghost{background:transparent;color:var(--txt);border-color:var(--txt);box-shadow:none;font-size:clamp(20px,3vw,26px);padding:10px 24px;}
-.btn:disabled{opacity:.4;pointer-events:none;}
-
-.bubble{
-  position:relative;background:var(--panel);color:var(--ink);border:5px solid var(--ink);
-  border-radius:24px;padding:16px 70px 16px 22px;max-width:min(720px,92vw);
-  font-family:'Andika',sans-serif;font-weight:700;font-size:clamp(19px,3vw,27px);line-height:1.35;
-}
-.bubble .ear{
-  position:absolute;right:12px;top:50%;transform:translateY(-50%);
-  width:52px;height:52px;border-radius:50%;background:var(--blue);border:4px solid var(--ink);
-  display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:26px;
-}
-
-.tilerow{display:flex;gap:clamp(10px,2vw,22px);flex-wrap:wrap;justify-content:center;}
-.tile{
-  width:clamp(96px,16vw,150px);height:clamp(96px,16vw,150px);
-  background:linear-gradient(180deg,#5ea0ff,#2257c4);
-  border:6px solid var(--ink);border-radius:24px;color:#fff;
-  font-family:'Andika',sans-serif;font-weight:700;font-size:clamp(54px,9vw,84px);
-  display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;
-  box-shadow:0 8px 0 #143a85;transition:transform .12s,opacity .3s,filter .3s;
-}
-.tile:active{transform:translateY(5px);box-shadow:0 3px 0 #143a85;}
-.tile.dim{opacity:.32;filter:grayscale(.6);pointer-events:none;}
-.tile.hint{animation:hintpulse 1.6s ease-in-out infinite;}
-@keyframes hintpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-.tile.win{background:linear-gradient(180deg,#5fe0a0,#23a35f);box-shadow:0 8px 0 #137044;animation:pop .5s ease;}
-@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
-.slot{
-  width:clamp(86px,14vw,130px);height:clamp(86px,14vw,130px);border-radius:22px;
-  border:6px dashed var(--ink);background:#ffe9a8;color:var(--ink);
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Andika',sans-serif;font-weight:700;font-size:clamp(48px,8vw,74px);
-}
-.slot.filled{border-style:solid;background:#3ec97e;color:var(--ink);animation:pop .45s ease;}
-
-.hud{position:absolute;top:env(safe-area-inset-top,8px);left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;pointer-events:none;z-index:5;}
-.hud>*{pointer-events:auto;}
-.chip{background:rgba(21,15,46,.85);border:3px solid var(--txt);border-radius:18px;padding:6px 16px;font-family:'Bangers',cursive;font-size:clamp(17px,2.6vw,24px);color:var(--gold);letter-spacing:.06em;}
-.roundbtn{width:54px;height:54px;border-radius:50%;background:rgba(21,15,46,.85);border:3px solid var(--txt);color:var(--txt);font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-.starsrow{font-size:clamp(20px,3vw,28px);color:var(--gold);}
-
-/* ------- CITY MAP ------- */
-#mapScroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
-#mapSVGwrap{width:100%;}
-#mapSVGwrap svg{display:block;width:100%;height:auto;}
-.mnode{cursor:pointer;}
-.mnode.locked{opacity:.45;pointer-events:none;}
-.mnode .ring{animation:none;}
-.mnode.current .ring{animation:mappulse 1.8s ease-in-out infinite;transform-origin:center;transform-box:fill-box;}
-@keyframes mappulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
-#mapHud{position:absolute;top:calc(env(safe-area-inset-top,8px) + 64px);left:14px;right:14px;display:flex;justify-content:space-between;pointer-events:none;z-index:4;}
-
-#traceWrap{position:relative;width:min(64dvh,86vw);aspect-ratio:1;background:rgba(255,246,227,.08);border:5px solid var(--txt);border-radius:28px;}
-#traceSVG{width:100%;height:100%;touch-action:none;}
-.tdot{fill:var(--gold);stroke:var(--ink);stroke-width:3;}
-.tdot.next{animation:hintpulse 1.4s infinite;transform-origin:center;transform-box:fill-box;}
-.tdot.hit{fill:var(--green);}
-.guide{font-family:'Andika',sans-serif;font-weight:700;fill:rgba(255,246,227,.16);}
-
-.boss{width:clamp(170px,30vw,280px);transition:transform .35s ease;}
-.boss.hitfx{animation:shake .38s ease;}
-@keyframes shake{0%{transform:translate(0,0) rotate(0)}25%{transform:translate(-8px,3px) rotate(-3deg)}50%{transform:translate(7px,-3px) rotate(2deg)}75%{transform:translate(-5px,2px) rotate(-2deg)}100%{transform:translate(0,0)}}
-.boss.flee{transform:translateX(140%) rotate(14deg) scale(.7);opacity:0;transition:all .9s ease;}
-.pips{display:flex;gap:10px;justify-content:center;margin-bottom:6px;}
-.pip{width:24px;height:24px;border-radius:50%;background:#9fe870;border:3px solid var(--ink);}
-.pip.off{background:#3b3360;border-color:#9b94c9;}
-.burst{
-  position:absolute;width:140px;height:140px;border-radius:50%;pointer-events:none;z-index:9;
-  background:radial-gradient(circle,#fff3c4 0%,#ffc93c 45%,rgba(255,138,61,0) 70%);
-  animation:burst .55s ease-out forwards;
-}
-@keyframes burst{0%{transform:scale(.2);opacity:.95}100%{transform:scale(1.5);opacity:0}}
-.zapword{position:absolute;font-family:'Bangers',cursive;color:var(--gold);-webkit-text-stroke:6px var(--ink);paint-order:stroke;font-size:clamp(40px,8vw,72px);pointer-events:none;animation:zw .8s ease-out forwards;z-index:9;}
-@keyframes zw{0%{transform:scale(.4) rotate(-8deg);opacity:0}30%{opacity:1}100%{transform:scale(1.15) rotate(-8deg) translateY(-30px);opacity:0}}
-
-.panelart{width:min(600px,90vw);border:6px solid var(--ink);border-radius:24px;overflow:hidden;background:#241b4d;}
-.panelart svg{display:block;width:100%;height:auto;}
-
-.title-logo{font-size:clamp(54px,10vw,110px);color:var(--gold);-webkit-text-stroke:8px var(--ink);paint-order:stroke;text-align:center;line-height:.95;}
-.sub{font-size:clamp(20px,3.4vw,30px);color:#cfc6f2;text-align:center;}
-.heroimg{width:clamp(150px,26vw,260px);}
-.gearlist{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
-.gearbadge{background:rgba(21,15,46,.7);border:3px solid var(--gold);color:var(--gold);border-radius:16px;padding:8px 16px;font-family:'Bangers',cursive;font-size:20px;letter-spacing:.05em;}
-#settingsPanel{position:absolute;inset:0;background:rgba(10,8,24,.94);z-index:20;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;}
-#settingsPanel.on{display:flex;}
-#saveBox{width:min(640px,90vw);height:100px;border-radius:14px;border:3px solid var(--txt);background:#171236;color:var(--txt);font-size:12px;padding:8px;}
-.fadein{animation:fade .5s ease;}
-@keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-.vpstatus{font-size:14px;color:#9b94c9;}
-.echip{font-family:'Bangers',cursive;font-size:20px;letter-spacing:.05em;padding:10px 18px;border-radius:16px;
-  border:4px solid var(--ink);background:#241b4d;color:var(--txt);cursor:pointer;}
-.echip.onsel{background:linear-gradient(180deg,#ffd75e,#f0a82b);color:var(--ink);}
-.echip.lockd{opacity:.4;pointer-events:none;}
-.equiprow{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
-.baselbl{font-family:'Bangers',cursive;color:#9b94c9;font-size:20px;letter-spacing:.1em;}
-.gemshelf{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;background:rgba(21,15,46,.6);
-  border:3px solid #3a2d72;border-radius:18px;padding:12px 18px;min-height:64px;}
-.mcloudA{animation:mdrift 90s linear infinite;}
-.mcloudB{animation:mdrift 140s linear infinite;}
-@keyframes mdrift{from{transform:translateX(0)}to{transform:translateX(-180px)}}
-@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important;}}
-</style>
-</head>
-<body>
-<div id="stage">
-
-  <div class="hud" id="hud" style="display:none;">
-    <div class="chip" id="hudTitle">GEM CITY</div>
-    <div style="display:flex;gap:10px;align-items:center;">
-      <div class="chip starsrow" id="hudStars">⚡ 0</div>
-      <div class="roundbtn" id="btnHome" title="Map">🗺️</div>
-      <div class="roundbtn" id="btnGear" title="Settings">⚙️</div>
-    </div>
-  </div>
-
-  <div class="roundbtn" id="btnSkip" style="position:absolute;right:16px;bottom:16px;display:none;z-index:8;width:64px;height:64px;font-size:30px;">⏭</div>
-
-  <!-- TITLE -->
-  <div class="screen on" id="scrTitle">
-    <div class="comic title-logo">HERO TEDDY</div>
-    <div class="sub comic" style="letter-spacing:.12em;">THE POWER GEMS OF GEM CITY</div>
-    <div id="titleHero"></div>
-    <button class="btn" id="btnStart">START</button>
-    <button class="btn ghost" id="btnContinue" style="display:none;">CONTINUE MISSION</button>
-    <div class="vpstatus" id="vpStatus"></div>
-  </div>
-
-  <!-- INTRO -->
-  <div class="screen" id="scrIntro">
-    <div class="panelart" id="introArt"></div>
-    <div class="bubble" id="introText"><span></span><div class="ear" data-ear="intro">🔊</div></div>
-    <button class="btn blue" id="btnIntroNext">NEXT ➜</button>
-  </div>
-
-  <!-- SCAN -->
-  <div class="screen" id="scrScan">
-    <div class="bubble" id="scanText"><span></span><div class="ear" data-ear="scan">🔊</div></div>
-    <div class="tilerow" id="scanTiles"></div>
-    <div class="starsrow" id="scanProg"></div>
-  </div>
-
-  <!-- MAP -->
-  <div class="screen" id="scrMap" style="padding:0;">
-    <div id="mapScroll"><div id="mapSVGwrap"></div></div>
-  </div>
-
-  <!-- HERO BASE -->
-  <div class="screen" id="scrBase" style="gap:10px;">
-    <div class="comic" style="font-size:clamp(34px,6vw,56px);color:var(--gold);-webkit-text-stroke:6px var(--ink);paint-order:stroke;margin-top:50px;">HERO BASE</div>
-    <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;justify-content:center;">
-      <div id="baseHero"></div>
-      <div style="display:flex;flex-direction:column;gap:12px;max-width:420px;">
-        <div class="baselbl">POWER LEVEL: <span id="powerLbl" style="color:var(--gold);"></span></div>
-        <div class="baselbl">WEAPON</div>
-        <div class="equiprow" id="weaponRow"></div>
-        <div class="baselbl">CAPE</div>
-        <div class="equiprow" id="capeRow"></div>
-        <div class="baselbl">THE HERO LEAGUE</div>
-        <div class="gemshelf" id="leagueShelf"></div>
-        <div class="baselbl">GEM COLLECTION</div>
-        <div class="gemshelf" id="gemShelf"></div>
-      </div>
-    </div>
-    <button class="btn blue" id="btnBaseBack">CITY MAP ➜</button>
-  </div>
-
-  <!-- LEARN -->
-  <div class="screen" id="scrLetter">
-    <div id="bigGlyph" class="read" style="font-weight:700;font-size:clamp(120px,26vw,230px);line-height:1;color:var(--gold);-webkit-text-stroke:7px var(--ink);paint-order:stroke;"></div>
-    <div id="kwIcon" style="font-size:clamp(60px,12vw,110px);line-height:1;"></div>
-    <div class="bubble" id="letterText"><span></span><div class="ear" data-ear="letter">🔊</div></div>
-    <button class="btn blue" id="btnLetterGo">TRACE IT! ➜</button>
-  </div>
-
-  <!-- TRACE -->
-  <div class="screen" id="scrTrace">
-    <div class="bubble" id="traceText"><span>Trace the glyph! Follow the stars.</span><div class="ear" data-ear="trace">🔊</div></div>
-    <div id="traceWrap"><svg id="traceSVG" viewBox="0 0 300 300"></svg></div>
-  </div>
-
-  <!-- FIND -->
-  <div class="screen" id="scrFind">
-    <div class="bubble" id="findText"><span></span><div class="ear" data-ear="find">🔊</div></div>
-    <div class="tilerow" id="findTiles"></div>
-    <div class="starsrow" id="findProg"></div>
-  </div>
-
-  <!-- BOSS -->
-  <div class="screen" id="scrBoss">
-    <div class="pips" id="bossPips"></div>
-    <div id="bossArt"></div>
-    <div class="bubble" id="bossText"><span></span><div class="ear" data-ear="boss">🔊</div></div>
-    <div class="tilerow" id="bossTiles"></div>
-  </div>
-
-  <!-- FORGE -->
-  <div class="screen" id="scrForge">
-    <div class="pips" id="forgePips"></div>
-    <div id="forgeBoss"></div>
-    <div class="bubble" id="forgeText"><span></span><div class="ear" data-ear="forge">🔊</div></div>
-    <div class="tilerow" id="forgeSlots"></div>
-    <div class="tilerow" id="forgeChoices"></div>
-  </div>
-
-  <!-- WIN -->
-  <div class="screen" id="scrWin">
-    <div class="comic" style="font-size:clamp(50px,9vw,90px);color:var(--gold);-webkit-text-stroke:7px var(--ink);paint-order:stroke;">VICTORY!</div>
-    <div id="winHero"></div>
-    <div class="bubble" id="winText"><span></span><div class="ear" data-ear="win">🔊</div></div>
-    <div class="gearlist" id="winGear"></div>
-    <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;">
-      <button class="btn blue" id="btnWinMap">CITY MAP</button>
-      <button class="btn" id="btnWinNext">NEXT MISSION ➜</button>
-    </div>
-  </div>
-
-  <!-- REST -->
-  <div class="screen" id="scrRest" style="background:linear-gradient(180deg,#2b2066,#a4538d 70%,#f0a82b);">
-    <div class="comic" style="font-size:clamp(40px,7vw,70px);color:var(--panel);-webkit-text-stroke:6px var(--ink);paint-order:stroke;">HERO RESTS</div>
-    <div id="restHero"></div>
-    <div class="bubble" id="restText"><span></span><div class="ear" data-ear="rest">🔊</div></div>
-    <div style="display:flex;gap:14px;">
-      <button class="btn" id="btnRestDone">REST 🌙</button>
-      <button class="btn ghost" id="btnRestMore">One more mission</button>
-    </div>
-  </div>
-
-  <!-- SETTINGS -->
-  <div id="settingsPanel">
-    <div class="comic" style="font-size:34px;color:var(--gold);">GROWN-UP CORNER</div>
-    <div class="vpstatus" id="vpStatus2"></div>
-    <button class="btn ghost" id="btnVoiceTest">🔊 Test voice</button>
-    <div class="read" style="font-size:15px;max-width:600px;text-align:center;color:#cfc6f2;">Backup: copy this code somewhere safe. Paste it back and tap Restore to recover progress on any device.</div>
-    <textarea id="saveBox" spellcheck="false"></textarea>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
-      <button class="btn ghost" id="btnCopySave">Copy backup</button>
-      <button class="btn ghost" id="btnRestoreSave">Restore</button>
-      <button class="btn ghost" id="btnCloseSettings">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- Optional studio-generated voicepack. Game works without it (TTS fallback). -->
-<script src="voicepack.js" onerror="void(0)"></script>
-
-<script>
 /* =========================================================
-   HERO TEDDY — v2.2 GEM CITY · CAGED ALLIES
+   SUPER TEDDY — v2.2 STAR FORCE CITY · CAGED ALLIES
    New: voicepack audio engine (studio clips w/ TTS fallback)
-        + real scrollable Gem City map with landmarks.
+        + real scrollable Star Force City map with landmarks.
 ========================================================= */
-const NAME="Teddy";
+const NAME="Super Teddy";
 const LETTERS={
   s:{kw:"sun",icon:"☀️"}, a:{kw:"apple",icon:"🍎"}, t:{kw:"tiger",icon:"🐯"},
   p:{kw:"pig",icon:"🐷"}, i:{kw:"insect",icon:"🐜"}, n:{kw:"nest",icon:"🪺"}
@@ -332,13 +44,13 @@ const LINES={
   intro_i:{t:"Mission! A Vexbot trapped the Letter Gem I! This is I. It says..."},
   intro_n:{t:"Mission! A Vexbot trapped the Letter Gem N! This is N. It says..."},
   word_at:{t:"at!"}, word_sat:{t:"sat!"}, word_tap:{t:"tap!"}, word_pin:{t:"pin!"}, word_nap:{t:"nap!"},
-  panel1:{t:"This is Gem City. A city powered by magical Letter Gems, words, and stories."},
+  panel1:{t:"This is Star Force City. A city powered by magical Letter Gems, words, and stories."},
   panel2:{t:"But one night, LORD VEX and his Vexbot army attacked! They stole the Letter Gems and smashed every word into pieces. Now nobody can read. Not signs, not books, not even bedtime stories."},
-  panel3:{t:"The city needed a hero. The founders of the Hero League, your mom and dad, searched everywhere... and they chose YOU, Teddy."},
+  panel3:{t:"The city needed a hero. The founders of the Hero League, your mom and dad, searched everywhere... and they chose YOU, Super Teddy."},
   panel4:{t:"These are the Gem Lenses. Your glasses are superpowered! With them, you can see hidden Letter Gems nobody else can see."},
-  panel5:{t:"Rescue the gems. Rebuild the words. Save Gem City! Are you ready, hero Teddy?"},
-  welcome:{t:"Welcome back, hero Teddy!"},
-  pick:{t:"Pick your mission, Teddy!"},
+  panel5:{t:"Rescue the gems. Rebuild the words. Save Star Force City! Are you ready, Super Teddy?"},
+  welcome:{t:"Welcome back, Super Teddy!"},
+  pick:{t:"Pick your mission, Super Teddy!"},
   scan_intro:{t:"Lens calibration! Let's charge your Gem Lenses. There are no wrong answers. Every tap makes them stronger!"},
   scan_prompt:{t:"Tap the gem that says..."},
   scan_done:{t:"Lenses fully charged! Time for your first mission, hero!"},
@@ -351,7 +63,7 @@ const LINES={
   hit_again:{t:"Direct hit! Again!"},
   dodge:{t:"He dodged! Listen..."},
   flee:{t:"SYSTEM FAILURE! VEXBOT RETREATING!", v:"C"},
-  youdidit:{t:"You did it, Teddy!"},
+  youdidit:{t:"You did it, Super Teddy!"},
   patrol_intro:{t:"Rooftop patrol! Letter Gems are hiding all over the city. Find them, hero!"},
   forge_intro1:{t:"The WORD FORGE is open!"},
   forge_intro2:{t:"Gems together make WORDS. And words forge the mightiest weapons!"},
@@ -360,20 +72,20 @@ const LINES={
   forge_listen:{t:"Listen for the next sound..."},
   blast:{t:"BLAST!"},
   forge_win1:{t:"The Vexbot is DESTROYED!"},
-  forge_win2:{t:"You READ words, Teddy! You are a true hero!"},
-  win_grow:{t:"Gem rescued! Your power grows, Teddy! Look at those muscles!"},
+  forge_win2:{t:"You READ words, Super Teddy! You are a true hero!"},
+  win_grow:{t:"Gem rescued! Your power grows, Super Teddy! Look at those muscles!"},
   win_gear:{t:"You earned new gear!"},
   gear_belt:{t:"The Power Belt!"}, gear_boots:{t:"Rocket Boots!"},
-  gear_hammer:{t:"The WORD HAMMER! Forged from your first words!"}, gear_sword:{t:"The GEM SWORD! A true hero's blade!"}, base1:{t:"Welcome to your Hero Base, Teddy! Gear up and look strong!"},
-  finale1:{t:"Incoming message! ... Teddy! It's Amelia!", v:"B"},
+  gear_hammer:{t:"The WORD HAMMER! Forged from your first words!"}, gear_sword:{t:"The GEM SWORD! A true hero's blade!"}, base1:{t:"Welcome to your Hero Base, Super Teddy! Gear up and look strong!"},
+  finale1:{t:"Incoming message! ... Super Teddy! It's Amelia!", v:"B"},
   finale2:{t:"Lord Vex trapped me in the Heart Tower! Come rescue me in your next adventure!", v:"B"},
   finale3:{t:"To be continued, hero..."},
   free_tank:{t:"CAGE DESTROYED! You freed Archie! TANK has joined the Hero League... and he is ready to SMASH!"},
   free_flip:{t:"CAGE DESTROYED! You freed Ellie! FLIP has joined the league... backflips, cartwheels, and mid-air gem grabs!"},
   free_sunny:{t:"CAGE DESTROYED! You freed William! SUNNY has joined the league... and things are about to get silly!"},
-  rest1:{t:"The sun is setting over Gem City..."},
-  rest2:{t:"Even heroes rest. Great work today, Teddy. The city is safer because of you!"},
-  test:{t:"Hello hero Teddy! This is your mentor speaking. Gem City needs you!"}
+  rest1:{t:"The sun is setting over Star Force City..."},
+  rest2:{t:"Even heroes rest. Great work today, Super Teddy. The city is safer because of you!"},
+  test:{t:"Hello Super Teddy! This is your mentor speaking. Star Force City needs you!"}
 };
 const GEARLINE={ "Power Belt":"gear_belt","Rocket Boots":"gear_boots","Word Hammer":"gear_hammer","Gem Sword":"gear_sword" };
 const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#ffc93c"};
@@ -787,7 +499,7 @@ function mapSVG(){
   ${nodes}
   <g transform="translate(400 30)">
     <rect x="-200" y="0" width="400" height="52" rx="16" fill="rgba(21,15,46,.85)" stroke="#fff6e3" stroke-width="3"/>
-    <text x="0" y="36" text-anchor="middle" font-family="Bangers" font-size="28" fill="#ffc93c" letter-spacing="2">⚡ ${S.stars} · TEDDY'S GEM CITY</text>
+    <text x="0" y="36" text-anchor="middle" font-family="Bangers" font-size="28" fill="#ffc93c" letter-spacing="2">⚡ ${S.stars} · SUPER TEDDY'S CITY</text>
   </g>
   </svg>`;
 }
@@ -826,7 +538,7 @@ function heroMarker(){ let ix=0;
   return `<g transform="translate(${x-44} ${y-186}) scale(.30)">${heroNow(250).replace(/<svg[^>]*>|<\/svg>/g,"")}</g>`;
 }
 function toMap(){ sessionTick(); show("scrMap");
-  $("hudTitle").textContent="GEM CITY";
+  $("hudTitle").textContent="STAR FORCE CITY";
   $("mapSVGwrap").innerHTML=mapSVG();
   document.querySelectorAll(".mnode").forEach(n=>{
     if(n.id==="baseNode"){ n.addEventListener("click",showBase); return; }
@@ -1060,6 +772,3 @@ $("btnVoiceTest").onclick=()=>{Aud.pick();Aud.play("test");};
 $("btnCopySave").onclick=()=>{$("saveBox").select();document.execCommand("copy");};
 $("btnRestoreSave").onclick=()=>{ try{const d=JSON.parse($("saveBox").value);
   if(d&&d.v===1){S=d;save();$("settingsPanel").classList.remove("on");toMap();}}catch(e){alert("That backup code didn't work — double-check it and try again.");} };
-</script>
-</body>
-</html>

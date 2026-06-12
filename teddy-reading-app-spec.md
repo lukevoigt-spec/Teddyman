@@ -174,3 +174,31 @@ Short decodable sentences built ONLY from mastered letters + learned sight words
 **Engineering state:** v2.2 single-file game + voicepack.js (ElevenLabs-generated via separate Voice Studio tool, 3 voice roles: Mentor/Amelia/Vexbots; letter sounds best replaced by parent recordings). Audio engine has watchdog + skip failsafe so flows can never hang. Hosting: GitHub Pages; repo also carries CLAUDE.md (binding constraints for Claude Code sessions — that file wins any conflict with this spec).
 
 **M2 queue (ranked):** Heartguard rescue arc + letter group 2 (m d g o c k) → music/SFX engine → adaptive mastery-driven patrols → painted backgrounds (AI-generated, prompts supplied).
+
+---
+
+## 12. ADDENDUM — v2.3 naming + structure (supersedes conflicting names above)
+
+**Hero rename:** the in-game hero is now **Super Teddy** (the real child is still "Teddy"; "Super
+Teddy" is his hero identity). All narration/UI addresses him as Super Teddy. The gold hex **"T"**
+emblem is unchanged.
+
+**City rename:** **Gem City → Star Force City.** Only the *city name* changed — Letter Gems, Gem
+Lenses, Gem Sword, the gem collection, and all other "gem" nomenclature are unchanged.
+
+**Codebase split (no behavior change):** the single `index.html` was refactored into
+`index.html` + `styles.css` + `game.js` (still a no-build static site for GitHub Pages; load order
+`voicepack.js` → `game.js` preserved). File renamed `Index.html` → `index.html` so Pages serves it
+as the directory index reliably. Save key `heroTeddySave_v1` is unchanged — saves are preserved.
+
+**Decisions locked for M2/M3:** map becomes a **data-driven, zone-per-letter-group** world (replaces
+hardcoded node positions); distractor selection is **errorless on new letters, then minimal-pair**
+(confusable graphemes) for real decoding practice; **all allies (Heartguard/Tank/Flip/Sunny) are
+cheer/encourager presences only**, no combat role; **adaptive weakest-item patrols are the M3
+focal point**.
+
+**Security note:** `voice-studio.html` previously carried a hardcoded ElevenLabs API key. That key
+has been deleted at ElevenLabs, and the file has been **de-keyed** — the API key is now entered in
+the browser at runtime and never stored in the repo. With no secret committed, the keyless studio
+may live in the repo (it's the tool the parent uses to generate `voicepack.js`). The old key still
+exists in git history; the parent has accepted this since the key is fully revoked.
