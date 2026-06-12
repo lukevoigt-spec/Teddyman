@@ -68,7 +68,13 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 
 ## Voice/audio system
 - Aud.play(ids) plays voicepack clips, falls back to per-line TTS (LINES manifest: {t, r, v}).
-- Voice roles: A = Mentor/Narrator, B = Amelia, C = Vexbots/Lord Vex (robotic).
+- Voice roles: A = Mentor/Narrator, B = Amelia (Heartguard), C = Vexbots/Lord Vex (robotic),
+  T = Archie (Tank), F = Ellie (Flip), W = William (Sunny). The friends' lines are best
+  recorded in the real kids' voices via the Studio's Upload button (TTS is a stand-in).
+- Ally arcs: each freed friend OWNS one mission type and cheers Teddy BY REAL NAME during it
+  (Archie→boss, Ellie→trace, William→patrol, Amelia→every win). Cheers are woven into the
+  existing flow() sequence (friend line then the letter sound) so the sound is never lost and
+  flows can't hang; a face+name pop (allyPop) shows on screen. Cheer-presence only, no combat.
 - Letter-sound clips (snd_s … snd_n) are the most pedagogically critical audio; parent may
   replace them with own recordings via the Voice Studio tool (NOT in this repo — it holds an
   API key and must never be committed).

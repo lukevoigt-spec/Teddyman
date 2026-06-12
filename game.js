@@ -151,6 +151,12 @@ const LINES={
   heart_cheer1:{t:"Amazing reading, Super Teddy!", v:"B"},
   heart_cheer2:{t:"That's my little brother, everyone!", v:"B"},
   heart_cheer3:{t:"Heartguard is SO proud of you!", v:"B"},
+  cheer_archie1:{t:"BOOM! Smash that Vexbot, Super Teddy! Archie's got your back!", v:"T"},
+  cheer_archie2:{t:"So strong, Super Teddy! That's how Archie does it! Hit it again!", v:"T"},
+  cheer_ellie1:{t:"Beautiful, Super Teddy! Ellie says you stuck the landing!", v:"F"},
+  cheer_ellie2:{t:"Woo! Super neat tracing! Ellie's doing a cartwheel for you!", v:"F"},
+  cheer_will1:{t:"Wheee! William found it! Wait... YOU found it! Hooray!", v:"W"},
+  cheer_will2:{t:"Sparkles everywhere! Awesome finding, Super Teddy! Says William!", v:"W"},
   rest1:{t:"The sun is setting over Star Force City..."},
   rest2:{t:"Even heroes rest. Great work today, Super Teddy. The city is safer because of you!"},
   test:{t:"Hello Super Teddy! This is your mentor speaking. Star Force City needs you!"}
@@ -616,10 +622,29 @@ function allyFace(kind){
   if(kind==="flip")return `<circle r="26" fill="#ffd9b8" stroke="#150f2e" stroke-width="4"/><circle cx="0" cy="-26" r="10" fill="#9a7448" stroke="#150f2e" stroke-width="3"/><path d="M-24 -10 Q-20 -26 0 -26 Q20 -26 24 -10 Q12 -18 0 -16 Q-12 -18 -24 -10Z" fill="#9a7448" stroke="#150f2e" stroke-width="3"/><circle cx="-8" cy="0" r="3" fill="#150f2e"/><circle cx="9" cy="0" r="3" fill="#150f2e"/><path d="M-8 12 Q1 18 10 11" stroke="#150f2e" stroke-width="3.4" fill="none" stroke-linecap="round"/>`;
   return `<circle r="26" fill="#ffd9b8" stroke="#150f2e" stroke-width="4"/><path d="M-24 -6 Q-24 -30 0 -30 Q24 -30 24 -4 Q16 -20 2 -16 Q-12 -22 -20 -8Z" fill="#f2dfae" stroke="#150f2e" stroke-width="3"/><circle cx="-8" cy="0" r="3" fill="#150f2e"/><circle cx="9" cy="0" r="3" fill="#150f2e"/><path d="M-9 10 Q1 19 11 9" stroke="#150f2e" stroke-width="3.4" fill="none" stroke-linecap="round"/>`;
 }
-const CAGED=[{ix:3,kind:"tank",name:"TANK"},{ix:6,kind:"flip",name:"FLIP"},{ix:8,kind:"sunny",name:"SUNNY"}];
-/* Full league roster for the Hero Base shelf (mid = mission that frees them) */
-const LEAGUE=[...CAGED.map(t=>({mid:MISSIONS[t.ix].id,kind:t.kind,name:t.name})),
-  {mid:17,kind:"heart",name:"HEARTGUARD"}];
+const CAGED=[{ix:3,kind:"tank",name:"TANK",real:"ARCHIE"},{ix:6,kind:"flip",name:"FLIP",real:"ELLIE"},{ix:8,kind:"sunny",name:"SUNNY",real:"WILLIAM"}];
+/* Hero League: each friend (a REAL person Teddy knows) owns one mission type and
+   cheers him BY NAME during it, once freed. Amelia cheers on every win. */
+const ALLY={
+  tank: {real:"Archie",  owns:"boss",   lines:["cheer_archie1","cheer_archie2"]},
+  flip: {real:"Ellie",   owns:"trace",  lines:["cheer_ellie1","cheer_ellie2"]},
+  sunny:{real:"William", owns:"patrol", lines:["cheer_will1","cheer_will2"]},
+  heart:{real:"Amelia",  owns:"win",    lines:["heart_cheer1","heart_cheer2","heart_cheer3"]}
+};
+function allyMid(kind){ if(kind==="heart")return 17;
+  const c=CAGED.find(x=>x.kind===kind); return c?MISSIONS[c.ix].id:-1; }
+function allyFreed(kind){ return !!S.done[allyMid(kind)]; }
+function allyLine(kind){ const L=ALLY[kind].lines; return L[Math.floor(Math.random()*L.length)]; }
+/* brief celebratory pop of the friend's face + name; auto-removes, no flash */
+function allyPop(kind){ const st=$("stage"); if(!st)return;
+  const d=document.createElement("div"); d.className="allypop";
+  d.innerHTML=`<svg viewBox="-34 -40 68 84" width="76" aria-hidden="true">${allyFace(kind)}</svg>`+
+    `<div class="allyname">${(ALLY[kind].real||"").toUpperCase()}!</div>`;
+  st.appendChild(d); setTimeout(()=>d.remove(),2200); }
+/* Full league roster for the Hero Base shelf (mid = mission that frees them).
+   real = the actual person Teddy knows; name = their hero alias. */
+const LEAGUE=[...CAGED.map(t=>({mid:MISSIONS[t.ix].id,kind:t.kind,name:t.name,real:t.real})),
+  {mid:17,kind:"heart",name:"HEARTGUARD",real:"AMELIA"}];
 function allyTeasers(){
   let out="";
   CAGED.forEach(t=>{ const [x,y]=NODE_POS[t.ix]; const side=x<400?1:-1;
@@ -628,8 +653,9 @@ function allyTeasers(){
       out+=`<g transform="translate(${px} ${y-80})">
         <g fill="#ffc93c" opacity=".9"><path d="M0 -52 L6 -38 L-6 -38Z"/><path d="M-38 -34 L-26 -28 L-34 -20Z"/><path d="M38 -34 L26 -28 L34 -20Z"/></g>
         <g>${allyFace(t.kind)}</g>
-        <rect x="-72" y="34" width="144" height="30" rx="10" fill="rgba(21,15,46,.88)" stroke="#3ec97e" stroke-width="2.5"/>
-        <text x="0" y="55" text-anchor="middle" font-family="Bangers" font-size="16" fill="#9fe870" letter-spacing="1">${t.name} FREED!</text></g>`;
+        <rect x="-78" y="34" width="156" height="30" rx="10" fill="rgba(21,15,46,.88)" stroke="#3ec97e" stroke-width="2.5"/>
+        <text x="0" y="55" text-anchor="middle" font-family="Bangers" font-size="16" fill="#9fe870" letter-spacing="1">${t.real} FREED!</text>
+        <text x="0" y="80" text-anchor="middle" font-family="Bangers" font-size="12" fill="#9fe870" opacity=".7" letter-spacing="1">"${t.name}"</text></g>`;
     } else {
       out+=`<g transform="translate(${px} ${y-86})">
         <line x1="0" y1="-66" x2="0" y2="-46" stroke="#23263b" stroke-width="6"/>
@@ -638,8 +664,9 @@ function allyTeasers(){
         <g stroke="#3a3f5e" stroke-width="6"><line x1="-26" y1="-44" x2="-26" y2="38"/><line x1="-9" y1="-44" x2="-9" y2="38"/><line x1="9" y1="-44" x2="9" y2="38"/><line x1="26" y1="-44" x2="26" y2="38"/></g>
         <rect x="-42" y="-46" width="84" height="86" rx="14" fill="none" stroke="#150f2e" stroke-width="4"/>
         <circle cx="0" cy="42" r="9" fill="#e62e2e" stroke="#150f2e" stroke-width="3"/>
-        <rect x="-78" y="56" width="156" height="30" rx="10" fill="rgba(21,15,46,.88)" stroke="#e62e2e" stroke-width="2.5"/>
-        <text x="0" y="77" text-anchor="middle" font-family="Bangers" font-size="16" fill="#ff9d8f" letter-spacing="1">FREE ${t.name}!</text></g>`;
+        <rect x="-82" y="56" width="164" height="30" rx="10" fill="rgba(21,15,46,.88)" stroke="#e62e2e" stroke-width="2.5"/>
+        <text x="0" y="77" text-anchor="middle" font-family="Bangers" font-size="16" fill="#ff9d8f" letter-spacing="1">FREE ${t.real}!</text>
+        <text x="0" y="102" text-anchor="middle" font-family="Bangers" font-size="12" fill="#ff9d8f" opacity=".7" letter-spacing="1">"${t.name}"</text></g>`;
     } });
   return out;
 }
@@ -725,7 +752,9 @@ function traceDone(){ const svg=$("traceSVG");
   svg.onpointerdown=svg.onpointermove=null;
   svg.querySelectorAll(".tdot").forEach(d=>d.classList.add("hit"));
   burstAt($("traceWrap"),learnLetter.toUpperCase()+"!");
-  flow(Aud.play(["freed","snd_"+learnLetter]),()=>startFind(learnLetter)); }
+  let ids=["freed","snd_"+learnLetter];
+  if(allyFreed("flip")&&Math.random()<0.6){ ids=[allyLine("flip"),...ids]; allyPop("flip"); }  /* Ellie owns tracing */
+  flow(Aud.play(ids),()=>startFind(learnLetter)); }
 
 /* ---------------- FIND ---------------- */
 let findTarget,findRep,findGoal,findMiss,patrolSet=null,afterFind=null;
@@ -743,7 +772,9 @@ function nextFind(){
   opts.forEach(o=>{ const t=document.createElement("button"); t.className="tile read";
     const upperRound=(findRep%3===2); t.textContent=upperRound?o.toUpperCase():o; t.dataset.g=o;
     t.onclick=()=>{ if(o===g){ record(g,true); t.classList.add("win"); burstAt(t); Aud.ding();
-        findRep++; flow(Aud.play(["yes","snd_"+g]),()=>setTimeout(nextFind,160)); }
+        findRep++; let lead="yes";
+        if(patrolSet&&allyFreed("sunny")&&Math.random()<0.55){ lead=allyLine("sunny"); allyPop("sunny"); }  /* William owns patrols */
+        flow(Aud.play([lead,"snd_"+g]),()=>setTimeout(nextFind,160)); }
       else { record(g,false); findMiss++; t.classList.add("dim");
         if(findMiss>=2){ row.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===g)x.classList.add("hint");}); }
         Aud.play(["almost","snd_"+g]); } };
@@ -768,7 +799,9 @@ function bossRound(g){
         burstAt(bs,"ZAP!"); Aud.ding();
         if(bossHP<=0){ bs.classList.add("flee");
           flow(Aud.play(["flee","youdidit"]),missionComplete); }
-        else flow(Aud.play(["hit_again","snd_"+g]),()=>bossRound(g)); }
+        else { let lead="hit_again";
+          if(allyFreed("tank")&&Math.random()<0.55){ lead=allyLine("tank"); allyPop("tank"); }  /* Archie owns boss battles */
+          flow(Aud.play([lead,"snd_"+g]),()=>bossRound(g)); } }
       else { record(g,false); t.classList.add("dim"); Aud.play(["dodge","snd_"+g]); } };
     row.appendChild(t); }); }
 
@@ -879,7 +912,7 @@ function paintBase(){
   const lg=$("leagueShelf"); lg.innerHTML="";
   let anyL=false;
   LEAGUE.forEach(t=>{ if(S.done[t.mid]){ anyL=true;
-    lg.innerHTML+=`<svg viewBox="-32 -36 64 76" width="52"><g>${allyFace(t.kind)}</g><text y="42" text-anchor="middle" font-family="Bangers" font-size="11.5" fill="#ffc93c">${t.name}</text></svg>`; } });
+    lg.innerHTML+=`<svg viewBox="-32 -36 64 86" width="54"><g>${allyFace(t.kind)}</g><text y="42" text-anchor="middle" font-family="Bangers" font-size="13" fill="#ffc93c">${t.real}</text><text y="55" text-anchor="middle" font-family="Bangers" font-size="9.5" fill="#9b94c9" letter-spacing=".5">"${t.name}"</text></svg>`; } });
   if(!anyL)lg.innerHTML='<div class="baselbl" style="font-size:15px;">Smash Vex\u2019s cages to free your friends!</div>';
 }
 $("btnBaseBack").onclick=()=>{Aud.stop();toMap();};

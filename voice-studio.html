@@ -29,6 +29,7 @@ th,td{padding:7px 8px;border-bottom:1px solid #3a2d72;text-align:left;vertical-a
 td input[type=text]{font-size:14px;padding:6px 8px;}
 .tag{display:inline-block;padding:2px 8px;border-radius:8px;font-weight:800;font-size:12px;}
 .tagA{background:#2257c4;} .tagB{background:#b3486e;} .tagC{background:#5b2690;}
+.tagT{background:#b5651d;} .tagF{background:#1f8a70;} .tagW{background:#c9a227;color:#150f2e;}
 .ok{color:#3ec97e;font-weight:800;} .err{color:#ef5348;font-weight:800;} .pend{color:#9b94c9;}
 #bar{height:14px;border-radius:7px;background:#171236;border:2px solid #3a2d72;overflow:hidden;}
 #barFill{height:100%;width:0%;background:linear-gradient(90deg,#ffd75e,#f0a82b);transition:width .3s;}
@@ -55,6 +56,13 @@ td input[type=text]{font-size:14px;padding:6px 8px;}
       <div><label>Voice A — Mentor / Narrator</label><select id="vA"></select></div>
       <div><label>Voice B — Amelia (Heartguard)</label><select id="vB"></select></div>
       <div><label>Voice C — Vexbots / Lord Vex (robotic villain)</label><select id="vC"></select></div>
+    </div>
+    <div class="note">The friends below cheer Teddy by name. Best of all: record the real Archie,
+      Ellie and William saying their lines (use the Upload button on each) — TTS is just a stand-in.</div>
+    <div class="row">
+      <div><label>Voice T — Archie (Tank)</label><select id="vT"></select></div>
+      <div><label>Voice F — Ellie (Flip)</label><select id="vF"></select></div>
+      <div><label>Voice W — William (Sunny)</label><select id="vW"></select></div>
     </div>
   </div>
 
@@ -154,6 +162,12 @@ const LINES={
   heart_cheer1:{t:"Amazing reading, Super Teddy!",v:"B"},
   heart_cheer2:{t:"That's my little brother, everyone!",v:"B"},
   heart_cheer3:{t:"Heartguard is SO proud of you!",v:"B"},
+  cheer_archie1:{t:"BOOM! Smash that Vexbot, Super Teddy! Archie's got your back!",v:"T",note:"Archie's voice — record him for the real thing!"},
+  cheer_archie2:{t:"So strong, Super Teddy! That's how Archie does it! Hit it again!",v:"T",note:"Archie's voice"},
+  cheer_ellie1:{t:"Beautiful, Super Teddy! Ellie says you stuck the landing!",v:"F",note:"Ellie's voice — record her for the real thing!"},
+  cheer_ellie2:{t:"Woo! Super neat tracing! Ellie's doing a cartwheel for you!",v:"F",note:"Ellie's voice"},
+  cheer_will1:{t:"Wheee! William found it! Wait... YOU found it! Hooray!",v:"W",note:"William's voice — record him for the real thing!"},
+  cheer_will2:{t:"Sparkles everywhere! Awesome finding, Super Teddy! Says William!",v:"W",note:"William's voice"},
   test:{t:"Hello Super Teddy! This is your mentor speaking. Star Force City needs you!",v:"A"}
 };
 const PACK={};                 // id -> dataURI
@@ -193,7 +207,7 @@ async function loadVoices(){
     const r=await fetch("https://api.elevenlabs.io/v1/voices",{headers:{"xi-api-key":key}});
     if(!r.ok)throw new Error(r.status);
     const d=await r.json();
-    ["vA","vB","vC"].forEach(s=>{$(s).innerHTML="";
+    ["vA","vB","vC","vT","vF","vW"].forEach(s=>{$(s).innerHTML="";
       d.voices.forEach(v=>{const o=document.createElement("option");o.value=v.voice_id;o.textContent=v.name;$(s).appendChild(o);});});
     setMsg("Voices loaded ("+d.voices.length+") — pick one per role. Suggestions: warm storyteller for A, bright young female for B, playful gravelly for C.");
   }catch(e){setMsg("Could not load voices: "+e.message+" — check the key and internet connection.",1);}
@@ -204,7 +218,7 @@ async function genLine(id){
   const L=LINES[id];
   if(L.rec){setMsg("That's a letter sound — record it with Upload. TTS can't make a pure phoneme (it just names the letter).",1);return false;}
   const key=$("apiKey").value.trim(); if(!key){setMsg("Enter your API key first.",1);return false;}
-  const voiceId=$( L.v==="B"?"vB":(L.v==="C"?"vC":"vA") ).value;
+  const voiceId=$( ({A:"vA",B:"vB",C:"vC",T:"vT",F:"vF",W:"vW"})[L.v]||"vA" ).value;
   if(!voiceId){setMsg("Load voices and pick one for role "+L.v+" first.",1);return false;}
   const text=document.querySelector(`input[data-id="${id}"]`).value;
   setStatus(id,"pend","generating…");
