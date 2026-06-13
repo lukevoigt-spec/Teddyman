@@ -493,3 +493,18 @@ body.calm #bgLayer{filter:none!important;}
 #recBtn.live{background:linear-gradient(180deg,#ff5e57,#c01f2e);}
 #recBtn.live .recdot{animation:recpulse 1s ease-in-out infinite;}
 @keyframes recpulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ===================== GROWN-UP CORNER — settings cards ===================== */
+.setcard{width:min(640px,94vw);background:rgba(20,12,44,.5);border:2px solid #3a2d72;border-radius:16px;
+  padding:14px 16px;display:flex;flex-direction:column;gap:10px;margin:2px 0;}
+.setcard-h{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:16px;color:var(--gold);}
+.setcard-sub{font-family:'Andika',sans-serif;font-size:13px;line-height:1.45;color:#b9b0e0;}
+.setrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.setrow label{font-size:15px;color:#eee;min-width:104px;}
+.setrange{flex:1;min-width:140px;height:8px;-webkit-appearance:none;appearance:none;border-radius:6px;
+  background:#241b4d;outline:none;border:1px solid #3a2d72;}
+.setrange::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;
+  background:linear-gradient(180deg,#ffd75e,#f0a82b);border:3px solid var(--ink);cursor:pointer;}
+.setrange::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#ffce3a;border:3px solid var(--ink);cursor:pointer;}
+.setval{font-size:14px;color:var(--gold);min-width:46px;text-align:right;}
+.setinput{width:100%;padding:9px 12px;border-radius:12px;border:2px solid #3a2d72;background:#171236;color:var(--txt);font-size:14px;}

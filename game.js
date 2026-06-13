@@ -615,6 +615,8 @@ function profiles(){ let p=readJSON(PROFKEY,null);
   if(!Array.isArray(p)||!p.length){ p=[{id:"teddy",name:"Teddy"}]; try{localStorage.setItem(PROFKEY,JSON.stringify(p));}catch(e){} }
   return p; }
 function profileName(id){ const p=profiles().find(x=>x.id===id); return p?p.name:"Player"; }
+/* escape parent-entered text (profile names) before any innerHTML/template use */
+function escHTML(s){ return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 function activeProfileId(){ const id=localStorage.getItem(ACTIVEKEY), p=profiles();
   return (id && p.some(x=>x.id===id)) ? id : p[0].id; }
 function keyFor(id){ return id==="teddy" ? "heroTeddySave_v1" : "heroTeddySave_v1::"+id; }
@@ -789,7 +791,7 @@ function clipFor(id){ return CUSTOM[id] || ((typeof VOICEPACK!=="undefined") && 
    Plays a parent clip / studio voicepack clip when present, falls back to
    speech synthesis per line otherwise.                                     */
 const Aud={
-  voice:null, cur:null, token:0,
+  voice:null, cur:null, token:0, vol:1,
   hasVP(id){ return !!clipFor(id); },
   pick(){ const vs=speechSynthesis.getVoices().filter(v=>v.lang&&v.lang.startsWith("en"));
     this.voice = vs.find(v=>/samantha/i.test(v.name)) || vs.find(v=>/karen|ava|allison|female/i.test(v.name)) || vs[0]||null; },
@@ -802,7 +804,7 @@ const Aud={
         if(!seq.length){res();return;}
         const id=seq.shift(); const L=LINES[id]||{t:id}; const src=clipFor(id);
         if(src){
-          const a=new Audio(src); this.cur=a;
+          const a=new Audio(src); this.cur=a; a.volume=this.vol;
           a.onended=()=>{this.cur=null;next();}; a.onerror=()=>{this.cur=null;ttsOne();};
           a.play().catch(()=>ttsOne());
           function ttsOne(){ Aud._tts(L,my).then(next); }
@@ -817,7 +819,7 @@ const Aud={
       if(!this.voice)this.pick();
       const u=new SpeechSynthesisUtterance(L.t);
       if(this.voice)u.voice=this.voice;
-      u.rate=L.r||0.92; u.pitch=1.05;
+      u.rate=L.r||0.92; u.pitch=1.05; u.volume=this.vol;
       u.onend=()=>{clearTimeout(guard);res();}; u.onerror=()=>{clearTimeout(guard);res();};
       speechSynthesis.speak(u);
   });},
@@ -946,7 +948,7 @@ function vpMsg(){ const n=(typeof VOICEPACK!=="undefined")?Object.keys(VOICEPACK
   const parts=[];
   if(c)parts.push(c+" voices recorded on this iPad");
   if(n)parts.push(n+" studio lines");
-  return parts.length? parts.join(" · ") : "Using built-in voice — record your own in Grown-Up Corner ▸ Audio"; }
+  return parts.length? parts.join(" · ") : "Using built-in voice — record your own in Grown-Up Corner ▸ Voices"; }
 $("vpStatus").textContent=vpMsg();
 /* paint the title for the ACTIVE player (auto-loaded last player) */
 function paintTitle(){ const nm=$("playerName"); if(nm)nm.textContent=profileName(ACTIVE);
@@ -956,6 +958,7 @@ function paintTitle(){ const nm=$("playerName"); if(nm)nm.textContent=profileNam
 paintTitle();
 setBG("scrTitle");   /* the title is shown via static HTML, so load its painted background at boot */
 if(S.calm)document.body.classList.add("calm");   /* parent "Calm" visual-detail mode */
+Aud.vol = (S.vol==null?1:S.vol);                 /* parent narration volume (0–1) */
 $("btnStart").onclick=()=>{ Aud.pick(); if(!S.intro)startIntro(); else {Aud.play("welcome"); toMap();} };
 $("btnContinue").onclick=()=>{ Aud.pick(); Aud.play("welcome"); toMap(); };
 /* ---- player picker (select an existing player; add/remove is parent-only) ---- */
@@ -965,7 +968,8 @@ function closePicker(){ $("playerPicker").classList.remove("on"); }
 function paintPicker(){ const wrap=$("playerCards"); if(!wrap)return; wrap.innerHTML="";
   profiles().forEach((p,i)=>{ const b=document.createElement("button"); b.className="playercard"+(p.id===ACTIVE?" cur":"");
     const hero=heroSVG(96,{muscle:1,cape:PC_CAPES[i%PC_CAPES.length],theme:p.id===ACTIVE&&currentAct()===2?"knight":"hero"});
-    b.innerHTML=`<div class="pchero">${hero}</div><div class="pcname read">${p.name}</div>`;
+    b.innerHTML=`<div class="pchero">${hero}</div><div class="pcname read"></div>`;
+    b.querySelector(".pcname").textContent=p.name;
     b.onclick=()=>switchProfile(p.id); wrap.appendChild(b); }); }
 function switchProfile(id){ closePicker(); if(id===ACTIVE)return;
   save(); Aud.stop(); applyProfile(id); S=load(); GEO=geomFor(currentAct()); paintTitle(); show("scrTitle");
@@ -1430,8 +1434,9 @@ function missionComplete(){
   }
   const firstTime=!S.done[CUR.id];
   S.done[CUR.id]=true;
-  ensureDaily(); S.daily.missions=(S.daily.missions||0)+1;
-  if(firstTime){ S.stars+=3; S.session.count++;
+  ensureDaily();
+  if(firstTime){ S.daily.missions=(S.daily.missions||0)+1;   /* count NEW missions today, not replays (QA P0) */
+    S.stars+=3; S.session.count++;
     const gear=GEAR_AT[CUR.id];
     if(gear&&!S.gear.includes(gear))S.gear.push(gear);
     /* auto-equip a newly-forged weapon so it shows immediately (kid needn't visit the Base) */
@@ -2145,7 +2150,7 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
       <div style="width:20px;height:46px;background:#241b4d;border-radius:5px;border:2px solid #3a2d72;display:flex;align-items:flex-end;overflow:hidden;"><div style="width:100%;height:${h}%;background:${hit?'linear-gradient(180deg,#ffd75e,#f0a82b)':'linear-gradient(180deg,#5fe0a0,#23a35f)'};"></div></div>
       <div class="pnote" style="font-size:10px;">${Math.round(x[1]/60)}</div></div>`; }).join("");
   el.innerHTML=`
-    <div class="psec" style="text-align:center;"><b>${profileName(ACTIVE)}'s progress</b> <span class="pnote">— each player has their own stats</span></div>
+    <div class="psec" style="text-align:center;"><b>${escHTML(profileName(ACTIVE))}'s progress</b> <span class="pnote">— each player has their own stats</span></div>
     <div class="psec"><b>Daily training (time on task)</b>
       <div class="pgrid" style="margin-top:6px;">
         <div class="pcard"><div class="pnum">${todayMin}<span style="font-size:13px;">m</span></div><div class="plbl">Today / ${goal}m goal</div></div>
@@ -2193,12 +2198,13 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
 };
 function openSettings(){ $("saveBox").value=JSON.stringify(S); $("vpStatus2").textContent=vpMsg(); window.renderProgress();
   $("cloudURL").value=cloudURL; cloudStatus(cloudURL?"Cloud sync ON — same URL on any device continues his progress":"Cloud sync off (saved on this device)");
-  paintPlayers(); $("settingsPanel").classList.add("on"); }
+  paintPlayers(); paintVol(); paintCalmBtn(); $("settingsPanel").classList.add("on"); }
 /* parent-only player management (inside the gated Grown-Up Corner) */
 function paintPlayers(){ const list=$("playersList"); if(!list)return; list.innerHTML="";
   profiles().forEach(p=>{ const row=document.createElement("div");
     row.style.cssText="display:flex;align-items:center;justify-content:space-between;gap:8px;background:#171236;border:2px solid #3a2d72;border-radius:10px;padding:6px 12px;";
-    row.innerHTML=`<span class="read" style="font-size:15px;">${p.name}${p.id===ACTIVE?' <span style="color:#9fe870;">(playing)</span>':''}</span>`;
+    row.innerHTML=`<span class="read" style="font-size:15px;"><span class="pnm"></span>${p.id===ACTIVE?' <span style="color:#9fe870;">(playing)</span>':''}</span>`;
+    row.querySelector(".pnm").textContent=p.name;
     if(p.id!=="teddy"){ const x=document.createElement("button"); x.className="btn ghost sm"; x.textContent="Remove"; x.style.fontSize="13px";
       x.onclick=()=>{ if(confirm("Remove player \""+p.name+"\" and their progress?")){ removeProfile(p.id); paintPlayers(); paintTitle(); } }; row.appendChild(x); }
     list.appendChild(row); }); }
@@ -2216,9 +2222,15 @@ $("btnCloudOff").onclick=()=>{ cloudURL=""; try{localStorage.removeItem("teddyCl
 $("btnCloseSettings").onclick=()=>$("settingsPanel").classList.remove("on");
 $("btnVoiceTest").onclick=()=>{Aud.pick();Aud.play("test");};
 /* Visual-detail toggle: Full (filters+animation) ⟷ Calm (lighter, for older iPads/battery) */
-function paintCalmBtn(){ const b=$("btnCalm"); if(b)b.textContent="Visual detail: "+(S.calm?"Calm":"Full"); }
+function paintCalmBtn(){ const b=$("btnCalm"); if(b)b.textContent=(S.calm?"Calm":"Full"); }
 $("btnCalm").onclick=()=>{ S.calm=!S.calm; document.body.classList.toggle("calm",!!S.calm); save(); Aud.ding(); paintCalmBtn(); };
 paintCalmBtn();
+/* Narration volume slider (parent setting) */
+function paintVol(){ const s=$("volSlider"),p=$("volPct"); const v=Math.round((S.vol==null?1:S.vol)*100);
+  if(s)s.value=v; if(p)p.textContent=v+"%"; }
+{ const vs=$("volSlider"); if(vs)vs.oninput=()=>{ S.vol=Math.max(0,Math.min(1,(+vs.value||0)/100)); Aud.vol=S.vol;
+    const p=$("volPct"); if(p)p.textContent=vs.value+"%"; save(); }; }
+paintVol();
 $("btnCopySave").onclick=()=>{$("saveBox").select();document.execCommand("copy");};
 $("btnRestoreSave").onclick=()=>{ try{const d=migrate(JSON.parse($("saveBox").value));
   if(d){ snapshot("before restore"); S=d; save(); $("settingsPanel").classList.remove("on"); GEO=geomFor(currentAct()); toMap(); }
