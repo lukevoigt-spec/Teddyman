@@ -4,7 +4,8 @@ Drop painted background images here to reskin the game. Each screen looks for a
 file named `bg-<slot>.jpg`. **If the file isn't here, the game just uses its
 original look** — so you can add scenes one at a time, with zero risk.
 
-- Format: **`.jpg`**, exact filename from the table below (all lowercase).
+- Format: **`.jpg`, `.png`, or `.webp`** all work (no conversion needed) — use the
+  exact base filename from the table below (all lowercase), e.g. `bg-title.png`.
 - **Per-act art:** Act 2 (the medieval realm) prefers its own scene named
   `bg-<slot>-a2.jpg` and falls back to the Act-1 `bg-<slot>.jpg` if absent. So you
   can give Act 2 a medieval look one file at a time. (Act 1 just uses `bg-<slot>.jpg`.)

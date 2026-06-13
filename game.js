@@ -847,25 +847,26 @@ const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrInter:"intro", scrScan:"la
   scrBase:"base", scrTrain:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
   scrBoss:"battle", scrForge:"battle", scrWin:"victory", scrRest:"rest" };
 const __bgCache={};
-/* Painted scene loader — ACT-AWARE. Act 2+ prefers its own scene (bg-<slot>-a2.jpg),
-   falling back to the Act-1 scene (bg-<slot>.jpg), then to the transparent default.
-   So Act 2 can be medieval without touching Act-1 art, and any missing file just
+const BG_EXTS=["jpg","png","webp"];   /* drop any of these — no conversion needed */
+/* Painted scene loader — ACT-AWARE + format-flexible. Act 2+ prefers its own scene
+   (bg-<slot>-a2.*), falling back to the Act-1 scene (bg-<slot>.*), then to the
+   transparent default. Tries jpg → png → webp for each. Any missing file just
    shows the original SVG/gradient look. */
 function setBG(id){ const layer=$("bgLayer"); if(!layer)return;
   const slot=BG_MAP[id];
   if(!slot){ layer.classList.remove("on"); return; }
-  const a=currentAct();
-  const cands = a>1 ? [slot+"-a"+a, slot] : [slot];
-  tryBG(layer, cands, 0, id); }
-function tryBG(layer, cands, i, id){
-  if(i>=cands.length){ layer.classList.remove("on"); return; }   /* none present → transparent default */
-  const name=cands[i], url="art/bg-"+name+".jpg";
-  if(__bgCache[name]===false){ tryBG(layer,cands,i+1,id); return; }
+  const a=currentAct(), names = a>1 ? [slot+"-a"+a, slot] : [slot];
+  const urls=[]; names.forEach(n=>BG_EXTS.forEach(e=>urls.push("art/bg-"+n+"."+e)));
+  tryBG(layer, urls, 0, id); }
+function tryBG(layer, urls, i, id){
+  if(i>=urls.length){ layer.classList.remove("on"); return; }   /* none present → transparent default */
+  const url=urls[i];
+  if(__bgCache[url]===false){ tryBG(layer,urls,i+1,id); return; }
   const apply=()=>{ if($(id)&&$(id).classList.contains("on")){ layer.style.backgroundImage="url("+url+")"; layer.classList.add("on"); } };
-  if(__bgCache[name]===true){ apply(); return; }
+  if(__bgCache[url]===true){ apply(); return; }
   const img=new Image();
-  img.onload=()=>{ __bgCache[name]=true; apply(); };
-  img.onerror=()=>{ __bgCache[name]=false; tryBG(layer,cands,i+1,id); };   /* try next candidate */
+  img.onload=()=>{ __bgCache[url]=true; apply(); };
+  img.onerror=()=>{ __bgCache[url]=false; tryBG(layer,urls,i+1,id); };   /* try next candidate */
   img.src=url;
 }
 function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
