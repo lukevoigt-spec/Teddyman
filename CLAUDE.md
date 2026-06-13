@@ -10,6 +10,12 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - `index.html` — the entire game (currently single-file; refactor into modules is welcome,
   but the deployed result must remain a static site that GitHub Pages serves with no build step,
   or include the built output in the repo)
+- `data-lines.js` — the LINES voice manifest, extracted from game.js (first slice of the no-build
+  MODULAR SPLIT). Pure data, no game-state deps; loaded via its own `<script>` BEFORE game.js (classic
+  scripts share the top-level lexical scope, so `const LINES` is visible to game.js as long as load
+  order respects deps). The test harnesses load it before game.js too. PATTERN for future slices
+  (data-missions, state-save, audio, map, …): extract pure/low-dep blocks, add a `<script>` in
+  dependency order, prepend it in both tests/*.test.js, then run the suites + a runtime boot check.
 - `voicepack.js` — optional shipped audio clips (`window.VOICEPACK = {lineId: dataURI}`).
   NEVER regenerate, rename IDs, or delete it. New narration = add new line IDs to the LINES
   manifest with TTS fallback text (they appear in the in-app studio automatically).
