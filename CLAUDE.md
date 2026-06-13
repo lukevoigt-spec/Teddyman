@@ -13,11 +13,17 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - `voicepack.js` — optional shipped audio clips (`window.VOICEPACK = {lineId: dataURI}`).
   NEVER regenerate, rename IDs, or delete it. New narration = add new line IDs to the LINES
   manifest with TTS fallback text (they appear in the in-app studio automatically).
-- `audio-studio.js` — the IN-APP audio studio (Grown-Up Corner ▸ Audio tab): record (mic) or
-  ElevenLabs-generate voices from inside the game. Clips save to the device in IndexedDB
-  (`VStore`/`CUSTOM` in game.js) and play immediately; Export writes a voicepack.js to make
-  them permanent across devices. Playback priority: CUSTOM (device) → window.VOICEPACK → TTS.
-  `voice-studio.html` is the older standalone version, now superseded by this.
+- `audio-studio.js` — the IN-APP VOICE STUDIO (Grown-Up Corner ▸ Audio tab), revamped into a
+  guided, bulletproof 3-section flow with a progress dashboard: (1) LETTER SOUNDS — a guided
+  one-at-a-time recorder with research-based articulation coaching per phoneme (continuous vs
+  stop sounds, NO added schwa, mouth position), record→auto-playback→Keep/Re-record→auto-advance,
+  PLUS a power-user grid (tap any of the 37 snd_* phonemes to redo it). Phonemes are DERIVED from
+  the `snd_` prefix and are record-primary (TTS/ElevenLabs can't make a clean phoneme). (2) TALKING
+  LINES — ElevenLabs key + per-role voice picks REMEMBERED on the device (localStorage `stElKey`/
+  `stElVoices`; "Forget key" clears), "Generate all" with progress, per-line gen/upload/delete.
+  (3) SAVE TO ALL DEVICES — one-tap Publish (GitHub token) + Download/Restore backup. Clips save to
+  the device in IndexedDB (`VStore`/`CUSTOM` in game.js) and play immediately. Playback priority:
+  CUSTOM (device) → window.VOICEPACK → TTS. `voice-studio.html` is the older standalone version.
 - `teddy-reading-app-spec.md` — full design spec; read it before significant changes.
 - `STYLE.md` — the DESIGN SYSTEM: real CSS tokens (`:root` vars), the "premium studio"
   target palette/components, and a gap checklist. Read before any styling/visual change;
