@@ -566,6 +566,17 @@ body.calm #sceneParticles{display:none;}
 body[data-act="2"] .mote{background:radial-gradient(circle,rgba(255,200,120,.9),rgba(255,150,60,0) 70%);}
 @media (prefers-reduced-motion:reduce){#sceneParticles{display:none!important;}}
 
+/* ===================== TALKING MENTOR (cutscene narration) =====================
+   While a cutscene character narrates, the portrait does a gentle speaking bob
+   so the mentor reads as talking to Teddy (audio-first delight). Subtle nod +
+   micro-rotate on the art wrapper; the inner SVG keeps its own idle float.
+   Disabled under Calm + reduced-motion. */
+@media (prefers-reduced-motion: no-preference){
+  #introArt.talking>*,#interArt.talking>*{animation:speakBob .5s ease-in-out infinite;transform-origin:50% 92%;}
+}
+@keyframes speakBob{0%,100%{transform:translateY(0) rotate(0deg);}25%{transform:translateY(-3px) rotate(-.5deg);}75%{transform:translateY(-2px) rotate(.5deg);}}
+body.calm #introArt.talking>*,body.calm #interArt.talking>*{animation:none;}
+
 /* ===================== UNLOCK CARD (reward reveal) ===================== */
 #unlockCard{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
   background:rgba(6,3,16,.78);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);}

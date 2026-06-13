@@ -303,6 +303,17 @@ $("btnPickerClose").onclick=closePicker;
 cloudPull().then(changed=>{ if(changed){ GEO=geomFor(currentAct()); paintTitle(); $("vpStatus").textContent=vpMsg();
   cloudStatus("Restored his latest progress from the cloud ✓"); } });
 
+/* While a cutscene character narrates, gently bob the portrait so the mentor
+   reads as "talking" to Teddy (face-agnostic — works for bearded Noah, the
+   dragon, the captives, etc., none of which have an animatable mouth). The
+   bob runs for the audio's duration; a token guards against a re-paint's stale
+   promise clearing the new talk state. Honours reduced-motion + Calm (CSS). */
+function faceSpeak(artEl, key, textEl, ids, display){
+  const pr=narrate(key, textEl, ids, display);
+  if(artEl){ const tok=(artEl.__sp=(artEl.__sp||0)+1); artEl.classList.add("talking");
+    pr.then(()=>{ if(artEl.__sp===tok) artEl.classList.remove("talking"); }); }
+  return pr; }
+
 /* ---------------- INTRO ---------------- */
 const INTRO=[
  {art:citySVG(), id:"panel1"},
@@ -314,7 +325,7 @@ const INTRO=[
 let introIx=0;
 function startIntro(){ introIx=0; show("scrIntro"); paintIntro(); }
 function paintIntro(){ const p=INTRO[introIx]; $("introArt").innerHTML=p.art;
-  narrate("intro",$("introText"),[p.id]);
+  faceSpeak($("introArt"),"intro",$("introText"),[p.id]);
   $("btnIntroNext").textContent = introIx<INTRO.length-1?"NEXT ➜":"I'M READY!"; }
 $("btnIntroNext").onclick=()=>{ introIx++;
   if(introIx<INTRO.length)paintIntro();
@@ -336,7 +347,7 @@ let interIx=0;
 function startInterlude(){ interIx=0; show("scrInter"); paintInter(); }
 function paintInter(){ const p=INTERLUDE[interIx];
   $("interArt").innerHTML=(typeof p.art==="function")?p.art():p.art;
-  narrate("inter",$("interText"),[p.id]);
+  faceSpeak($("interArt"),"inter",$("interText"),[p.id]);
   $("btnInterNext").textContent = interIx<INTERLUDE.length-1?"NEXT ➜":"INTO THE PORTAL! ➜";
   $("btnInterNext").onclick=()=>{ interIx++;
     if(interIx<INTERLUDE.length)paintInter(); else finishInterlude(); }; }
@@ -353,14 +364,14 @@ let a2Ix=0;
 function startAct2Intro(){ a2Ix=0; show("scrInter"); paintA2(); }
 function paintA2(){ const p=ACT2_INTRO[a2Ix];
   $("interArt").innerHTML=(typeof p.art==="function")?p.art():p.art;
-  narrate("inter",$("interText"),[p.id]);
+  faceSpeak($("interArt"),"inter",$("interText"),[p.id]);
   $("btnInterNext").textContent = a2Ix<ACT2_INTRO.length-1?"NEXT ➜":"ENTER THE REALM! ➜";
   $("btnInterNext").onclick=()=>{ a2Ix++;
     if(a2Ix<ACT2_INTRO.length)paintA2(); else { S.act2intro=true; save(); Aud.stop(); toMap(); } }; }
 /* Shown when the current act has no missions yet (safe fallback). */
 function actComingSoon(){ show("scrInter");
   $("interArt").innerHTML=`<div style="display:flex;justify-content:center;">${heroNow(220)}</div>`;
-  narrate("inter",$("interText"),["interlude5"]);
+  faceSpeak($("interArt"),"inter",$("interText"),["interlude5"]);
   $("btnInterNext").textContent="BACK TO TITLE";
   $("btnInterNext").onclick=()=>{ Aud.stop(); show("scrTitle"); }; }
 
