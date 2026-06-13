@@ -387,7 +387,14 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   the intro pattern). Beats: Mom & Dad return (interlude1) → captured friends (interlude2,
   captiveSVG '?' silhouettes — real faces TBD) → THE VIXEN taunts (interlude3, role V, vixenSVG
   placeholder) → time portal + Noah the Red (interlude4, portalSVG) → KNIGHT transformation
-  (interlude_knight, heroSVG theme:"knight", powerless). The final NEXT calls finishInterlude() →
+  (interlude_knight, heroSVG theme:"knight", powerless). CINEMATIC (no video — kept SVG for whole-game
+  consistency, parent's call): show() adds body.cinematic on scrIntro/scrInter (letterbox #cineBars +
+  moodier #sceneGrade); each beat carries an optional fx (cutsceneFX in game.js): "villain" = red
+  cine-villain wash + Sfx.villain sting (Vixen/Vex beats), "portal" = Sfx.whoosh, "transform" = white
+  flash + screen shake + .transformfx glow-pulse + Sfx.transform AND Music.setAct(2) so the medieval
+  theme swells in as he becomes a knight, "heroic" = Sfx.win (hero reveals). Every beat does a beatIn
+  fade/push-in; talking-portrait bob (faceSpeak) already runs during narration. All juice Calm/reduced-
+  motion gated. The final NEXT calls finishInterlude() →
   setAct(2) → actComingSoon(): a friendly "to be continued" panel (interlude5 + knight hero) that
   BACK-TO-TITLEs. SAFETY: toMap() and geomFor() now guard the empty Act-2 (no zones/missions yet) —
   toMap routes to actComingSoon, geomFor returns a safe stub — so the flip to Act 2 can never break

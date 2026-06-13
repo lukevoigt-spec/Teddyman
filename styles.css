@@ -653,6 +653,35 @@ body.calm .bubble::after{animation:none;}
 @keyframes speakBob{0%,100%{transform:translateY(0) rotate(0deg);}25%{transform:translateY(-3px) rotate(-.5deg);}75%{transform:translateY(-2px) rotate(.5deg);}}
 body.calm #introArt.talking>*,body.calm #interArt.talking>*{animation:none;}
 
+/* ===================== CINEMATIC CUTSCENES (story beats) =====================
+   Movie-mode chrome + per-beat drama for the intro / Act-1→Act-2 interlude.
+   Letterbox bars slide in on body.cinematic; each beat fades/pushes in; villain
+   beats wash the stage red; the knight transformation flashes + glows. All motion
+   honours Calm + reduced-motion. */
+#cineBars{position:absolute;inset:0;z-index:7;pointer-events:none;}
+#cineBars .cb{position:absolute;left:0;right:0;height:clamp(26px,5vh,52px);background:#05030f;
+  transform:translateY(-100%);transition:transform .55s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 24px rgba(0,0,0,.6);}
+#cineBars .cb.bot{bottom:0;top:auto;transform:translateY(100%);}
+body.cinematic #cineBars .cb.top{transform:translateY(0);}
+body.cinematic #cineBars .cb.bot{transform:translateY(0);}
+/* deeper, moodier grade while a cutscene plays */
+body.cinematic #sceneGrade{background:
+  radial-gradient(ellipse 128% 104% at 50% 40%, transparent 40%, rgba(5,2,14,.66) 100%),
+  linear-gradient(180deg, rgba(255,212,140,.06), transparent 30%);}
+/* villain beat — red menace wash */
+body.cine-villain #sceneGrade{background:
+  radial-gradient(ellipse 128% 104% at 50% 42%, transparent 36%, rgba(18,2,6,.72) 100%),
+  linear-gradient(180deg, rgba(255,60,60,.12), transparent 34%)!important;}
+/* per-beat entrance */
+.panelart.beatin{animation:beatIn .6s cubic-bezier(.2,.8,.2,1);}
+@keyframes beatIn{0%{opacity:0;transform:translateY(14px) scale(.94);}100%{opacity:1;transform:none;}}
+/* knight transformation — radiant glow pulse on the hero art */
+.panelart.transformfx{animation:transformPulse 1.1s ease;}
+@keyframes transformPulse{0%{filter:brightness(2.4) drop-shadow(0 0 0 #fff);}
+  30%{filter:brightness(1.5) drop-shadow(0 0 26px #bfe3ff);}100%{filter:none;}}
+body.calm .panelart.beatin,body.calm .panelart.transformfx{animation:none;}
+body.calm #cineBars .cb{transition:none;}
+
 /* ===================== UNLOCK CARD (reward reveal) ===================== */
 #unlockCard{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
   background:rgba(6,3,16,.78);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);}

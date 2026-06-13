@@ -41,6 +41,10 @@ const Sfx={
   unlock(){  this._go(()=>{ [523,659,784,1047].forEach((f,i)=>this.note(f,i*0.085,0.18,"sine",0.42)); }); },
   win(){     this._go(()=>{ [523,659,784,1047,1319].forEach((f,i)=>this.note(f,i*0.09,0.22,"sine",0.46)); this.note(1568,0.52,0.4,"sine",0.26); }); },
   gem(){     this._go(()=>{ this.note(1568,0,0.10,"triangle",0.3); this.note(2093,0.07,0.14,"triangle",0.24); }); },
+  /* cutscene/cinematic cues */
+  whoosh(){    this._go(()=>{ this.glide(170,920,0,0.5,"sawtooth",0.16); this.glide(900,200,0.18,0.5,"sine",0.12); }); },
+  villain(){   this._go(()=>{ this.note(174,0,0.32,"sawtooth",0.22); this.note(146,0.14,0.46,"sawtooth",0.2); }); },   /* low ominous sting */
+  transform(){ this._go(()=>{ [330,440,550,660,880].forEach((f,i)=>this.note(f,i*0.06,0.30,"triangle",0.34)); this.note(1320,0.40,0.5,"sine",0.3); }); },
   /* parent controls */
   setVol(v){ this.vol=Math.max(0,Math.min(1,v)); if(this.master)this.master.gain.value=this.vol; if(typeof S!=="undefined")S.sfxVol=this.vol; if(typeof save==="function")save(); },
   setOn(on){ this.on=!!on; if(typeof S!=="undefined")S.sfxOn=this.on; if(typeof save==="function")save(); }

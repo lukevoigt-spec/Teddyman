@@ -208,7 +208,7 @@ const LINES={
   interlude3:{t:"Hello, little hero. Such a shame to spoil your party. I'm whisking your precious friends far, far away — to a time long, long ago. Do try to catch up... if you can. Ta-ta!", v:"V"},
   interlude4:{t:"She slipped through a shimmering time portal — to the age of KNIGHTS and DRAGONS! A mighty wizard named Noah the Red is already there, waiting to help you, hero."},
   interlude_knight:{t:"You leap into the portal! In a swirl of light your gems and gear are gone... and you rise again as SUPER TEDDY THE KNIGHT! A brave new quest awaits."},
-  interlude5:{t:"Rest now, champion. Your medieval adventure is being built, and begins very soon. TO BE CONTINUED!"},
+  interlude5:{t:"And so a brave new quest begins. Onward, Sir Teddy — the medieval realm awaits!"},
   /* ===== ACT-2 FINALE — Dragon Keep / rescue Miss Kendall ===== */
   f2_intro:{t:"THE DRAGON KEEP, Sir Teddy! The Vixen has Miss Kendall locked in the highest tower, guarded by her mightiest dragon. Use your RUNES, your BLENDS, and your MAGIC-E — bring it down!"},
   f2_p1:{t:"Break the dragon ward! Tap the gem that makes the sound…"},

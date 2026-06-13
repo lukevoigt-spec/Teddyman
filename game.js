@@ -227,6 +227,10 @@ function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.r
   /* diegetic corner-bracket frame on the gameplay/learning screens only (not the
      title/map/base/cutscenes, where it'd crowd or clash) */
   document.body.classList.toggle("framed", FRAME_SLOTS.has(BG_MAP[id]));
+  /* cinematic "movie mode" (letterbox + moodier grade) on the story cutscenes */
+  const cine=(id==="scrIntro"||id==="scrInter");
+  document.body.classList.toggle("cinematic", cine);
+  if(!cine)document.body.classList.remove("cine-villain");
   if(typeof Music!=="undefined" && Music.setAct) Music.setAct(currentAct());   /* swap the act's theme */
   $("hud").style.display=(id==="scrTitle")?"none":"flex"; refreshHUD();
   const dm=$("dailyMeter"); if(dm){ dm.style.display=(id==="scrMap")?"block":"none"; if(id==="scrMap")updateDailyMeter(); } }
@@ -324,18 +328,36 @@ function faceSpeak(artEl, key, textEl, ids, display){
     pr.then(()=>{ if(artEl.__sp===tok) artEl.classList.remove("talking"); }); }
   return pr; }
 
+/* ---------------- CINEMATIC CUTSCENE FX ----------------
+   Per-beat drama for the story screens: a fade/push-in entrance + optional set
+   pieces (villain red-wash + sting, portal whoosh, knight-transform flash/glow +
+   the Act-2 music swelling in). All juice respects Calm / reduced-motion. */
+function cutsceneFX(artEl, fx){
+  if(artEl){ artEl.classList.remove("beatin","transformfx"); void artEl.offsetWidth; artEl.classList.add("beatin"); }
+  document.body.classList.toggle("cine-villain", fx==="villain");
+  if(fx==="villain"){ if(typeof Sfx!=="undefined"&&Sfx.villain)Sfx.villain(); }
+  else if(fx==="portal"){ if(typeof Sfx!=="undefined"&&Sfx.whoosh)Sfx.whoosh(); }
+  else if(fx==="transform"){
+    if(typeof Sfx!=="undefined"&&Sfx.transform)Sfx.transform();
+    flashScreen("rgba(255,255,255,.6)"); shakeStage(true);
+    if(artEl)artEl.classList.add("transformfx");
+    if(typeof Music!=="undefined"&&Music.setAct)Music.setAct(2);   /* the medieval theme rises as he becomes a knight */
+  }
+  else if(fx==="heroic"){ if(typeof Sfx!=="undefined"&&Sfx.win)Sfx.win(); }
+}
+
 /* ---------------- INTRO ---------------- */
 const INTRO=[
  {art:citySVG(), id:"panel1"},
- {art:inkblotSVG(300), id:"panel2"},
+ {art:inkblotSVG(300), id:"panel2", fx:"villain"},
  {art:`<div style="display:flex;justify-content:center;padding:24px;">${mentorChips(280)}</div>`, id:"panel3"},
  {art:`<div style="display:flex;justify-content:center;padding:20px;"><svg viewBox="0 0 200 90" width="300"><g stroke="#1d4fb8" stroke-width="9" fill="#cfe6ff" fill-opacity=".4" stroke-linejoin="round"><rect x="20" y="20" width="62" height="50" rx="12"/><rect x="116" y="20" width="62" height="50" rx="12"/><line x1="82" y1="42" x2="116" y2="42"/></g></svg></div>`, id:"panel4"},
- {art:`<div style="display:flex;justify-content:center;">${heroNow(220)}</div>`, id:"panel5"}
+ {art:`<div style="display:flex;justify-content:center;">${heroNow(220)}</div>`, id:"panel5", fx:"heroic"}
 ];
 let introIx=0;
 function startIntro(){ introIx=0; show("scrIntro"); paintIntro(); }
 function paintIntro(){ const p=INTRO[introIx]; $("introArt").innerHTML=p.art;
-  faceSpeak($("introArt"),"intro",$("introText"),[p.id]);
+  faceSpeak($("introArt"),"intro",$("introText"),[p.id]); cutsceneFX($("introArt"),p.fx);
   $("btnIntroNext").textContent = introIx<INTRO.length-1?"NEXT ➜":"I'M READY!"; }
 $("btnIntroNext").onclick=()=>{ introIx++;
   if(introIx<INTRO.length)paintIntro();
@@ -349,15 +371,15 @@ $("btnIntroNext").onclick=()=>{ introIx++;
 const INTERLUDE=[
  {art:`<div style="display:flex;justify-content:center;padding:20px;">${mentorChips(260)}</div>`, id:"interlude1"},
  {art:`<div style="display:flex;justify-content:center;">${captiveSVG(260)}</div>`, id:"interlude2"},
- {art:`<div style="display:flex;justify-content:center;">${vixenSVG(220)}</div>`, id:"interlude3"},
- {art:`<div style="display:flex;justify-content:center;">${portalSVG(220)}</div>`, id:"interlude4"},
- {art:()=>`<div style="display:flex;justify-content:center;">${heroSVG(220,{...heroOpts(),theme:"knight",muscle:0,weapon:"none",belt2:false,boots2:false})}</div>`, id:"interlude_knight"}
+ {art:`<div style="display:flex;justify-content:center;">${vixenSVG(220)}</div>`, id:"interlude3", fx:"villain"},
+ {art:`<div style="display:flex;justify-content:center;">${portalSVG(220)}</div>`, id:"interlude4", fx:"portal"},
+ {art:()=>`<div style="display:flex;justify-content:center;">${heroSVG(220,{...heroOpts(),theme:"knight",muscle:0,weapon:"none",belt2:false,boots2:false})}</div>`, id:"interlude_knight", fx:"transform"}
 ];
 let interIx=0;
 function startInterlude(){ interIx=0; show("scrInter"); paintInter(); }
 function paintInter(){ const p=INTERLUDE[interIx];
   $("interArt").innerHTML=(typeof p.art==="function")?p.art():p.art;
-  faceSpeak($("interArt"),"inter",$("interText"),[p.id]);
+  faceSpeak($("interArt"),"inter",$("interText"),[p.id]); cutsceneFX($("interArt"),p.fx);
   $("btnInterNext").textContent = interIx<INTERLUDE.length-1?"NEXT ➜":"INTO THE PORTAL! ➜";
   $("btnInterNext").onclick=()=>{ interIx++;
     if(interIx<INTERLUDE.length)paintInter(); else finishInterlude(); }; }
@@ -368,13 +390,13 @@ function finishInterlude(){ Aud.stop(); setAct(2); save();
 const ACT2_INTRO=[
  {art:()=>`<div style="display:flex;justify-content:center;">${noahSVG(240)}</div>`, id:"noah1"},
  {art:()=>`<div style="display:flex;justify-content:center;gap:8px;align-items:center;">${noahSVG(160)}<div style="display:flex;gap:8px;">${["sh","ch","th"].map(d=>`<span style="font-family:Andika;font-weight:700;font-size:46px;color:#ffd75e;-webkit-text-stroke:5px #150f2e;paint-order:stroke;">${d}</span>`).join("")}</div></div>`, id:"noah2"},
- {art:()=>`<div style="display:flex;justify-content:center;">${heroNow(220)}</div>`, id:"noah3"}
+ {art:()=>`<div style="display:flex;justify-content:center;">${heroNow(220)}</div>`, id:"noah3", fx:"heroic"}
 ];
 let a2Ix=0;
 function startAct2Intro(){ a2Ix=0; show("scrInter"); paintA2(); }
 function paintA2(){ const p=ACT2_INTRO[a2Ix];
   $("interArt").innerHTML=(typeof p.art==="function")?p.art():p.art;
-  faceSpeak($("interArt"),"inter",$("interText"),[p.id]);
+  faceSpeak($("interArt"),"inter",$("interText"),[p.id]); cutsceneFX($("interArt"),p.fx);
   $("btnInterNext").textContent = a2Ix<ACT2_INTRO.length-1?"NEXT ➜":"ENTER THE REALM! ➜";
   $("btnInterNext").onclick=()=>{ a2Ix++;
     if(a2Ix<ACT2_INTRO.length)paintA2(); else { S.act2intro=true; save(); Aud.stop(); toMap(); } }; }
