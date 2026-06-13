@@ -73,6 +73,7 @@
   <!-- HERO BASE -->
   <div class="screen" id="scrBase" style="gap:10px;">
     <div class="comic" style="font-size:clamp(34px,6vw,56px);color:var(--gold);-webkit-text-stroke:6px var(--ink);paint-order:stroke;margin-top:50px;">HERO BASE</div>
+    <div class="baselbl" style="font-size:20px;">💰 <span id="baseCoins" style="color:var(--gold);">0</span> coins</div>
     <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;justify-content:center;">
       <div id="baseHero"></div>
       <div style="display:flex;flex-direction:column;gap:12px;max-width:420px;">
@@ -85,9 +86,34 @@
         <div class="gemshelf" id="leagueShelf"></div>
         <div class="baselbl">GEM COLLECTION</div>
         <div class="gemshelf" id="gemShelf"></div>
+        <div class="baselbl">TROPHY SHELF</div>
+        <div class="gemshelf" id="trophyShelf"></div>
       </div>
     </div>
-    <button class="btn blue" id="btnBaseBack">CITY MAP ➜</button>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+      <button class="btn" id="btnTrain">🏋️ TRAINING ROOM</button>
+      <button class="btn" id="btnShop">🛒 SHOP</button>
+      <button class="btn blue" id="btnBaseBack">CITY MAP ➜</button>
+    </div>
+  </div>
+
+  <!-- TRAINING ROOM (daily practice — earns coins, no story gating) -->
+  <div class="screen" id="scrTrain">
+    <div class="hudtitle" style="margin-top:46px;font-family:'Bangers',cursive;font-size:clamp(26px,5vw,40px);color:var(--gold);">🏋️ TRAINING ROOM</div>
+    <div class="baselbl" style="font-size:18px;">💰 <span id="trainCoins" style="color:var(--gold);">0</span> &nbsp; ✅ <span id="trainReps">0</span></div>
+    <div class="bubble" id="trainText"><span></span><div class="ear" data-ear="train">🔊</div></div>
+    <div id="trainWord" class="slotrow"></div>
+    <div id="trainChoices" class="tilerow"></div>
+    <button class="btn blue" id="btnTrainBack">🏠 BACK TO BASE</button>
+  </div>
+
+  <!-- SHOP (spend coins on cosmetic Hero-Base items) -->
+  <div id="shopPanel">
+    <div class="comic" style="font-size:34px;color:var(--gold);">🛒 HERO SHOP</div>
+    <div class="baselbl" style="font-size:20px;">💰 <span id="shopCoins" style="color:var(--gold);">0</span> coins</div>
+    <div class="read" style="font-size:14px;max-width:560px;text-align:center;color:#cfc6f2;">Earn coins in the Training Room, then collect items for your Hero Base!</div>
+    <div id="shopGrid"></div>
+    <button class="btn blue" id="btnShopClose">DONE</button>
   </div>
 
   <!-- LEARN -->

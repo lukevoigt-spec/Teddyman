@@ -258,6 +258,24 @@ body{
 .baselbl{font-family:'Bangers',cursive;color:#9b94c9;font-size:20px;letter-spacing:.1em;}
 .gemshelf{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;background:rgba(21,15,46,.6);
   border:3px solid #3a2d72;border-radius:18px;padding:12px 18px;min-height:64px;}
+/* Training Room slot row (build-the-word) */
+.slotrow{display:flex;gap:clamp(8px,1.6vw,16px);flex-wrap:wrap;justify-content:center;min-height:90px;align-items:center;}
+/* Trophy shelf items */
+.trophy{font-size:34px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.4));}
+/* Shop overlay */
+#shopPanel{position:absolute;inset:0;background:rgba(10,8,24,.95);z-index:20;display:none;flex-direction:column;
+  align-items:center;justify-content:flex-start;gap:14px;padding:24px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+#shopPanel.on{display:flex;}
+#shopGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;width:min(680px,94vw);}
+.shopitem{background:rgba(21,15,46,.7);border:3px solid #3a2d72;border-radius:16px;padding:12px 8px;
+  display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;}
+.shopitem .ic{font-size:42px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.4));}
+.shopitem .nm{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:14px;color:var(--txt);}
+.shopitem .buy{font-family:'Bangers',cursive;font-size:17px;letter-spacing:.04em;padding:6px 14px;border-radius:12px;
+  border:3px solid var(--ink);background:linear-gradient(180deg,#ffd75e,#f0a82b);color:var(--ink);cursor:pointer;}
+.shopitem .buy.cant{opacity:.45;}
+.shopitem.owned{border-color:#3ec97e;}
+.shopitem .owned-tag{font-family:'Bangers',cursive;color:#9fe870;font-size:16px;}
 .mcloudA{animation:mdrift 90s linear infinite;}
 .mcloudB{animation:mdrift 140s linear infinite;}
 @keyframes mdrift{from{transform:translateX(0)}to{transform:translateX(-180px)}}

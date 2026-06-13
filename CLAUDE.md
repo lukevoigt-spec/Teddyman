@@ -95,6 +95,21 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   against research for Teddy's profile first; sentence-building supports syntax/comprehension once
   decoding is solid, sequenced AFTER word reading).
 
+## Training Room + Hero Shop (live, supplementary daily loop)
+- A second daily activity DECOUPLED from story progression (Hero Base ▸ 🏋️ TRAINING ROOM). Drills the
+  highest-transfer skill — BUILD (segment/encode) + DECODE (blend/read) of decodable words, ALTERNATING
+  each rep — adaptive to his weakest letters (pickTrainWord weights words by 5−str of their letters).
+  No gating, no countdown. Every correct rep calls record() so practice STRENGTHENS mastery (this is
+  also the rebalance toward blending/segmenting per the reading-ladder audit). trainPool() = READWORDS
+  whose letters are all taught. trainBuild/trainDecode mirror forge/read but loop endlessly + pay coins.
+- COINS (S.coins) earned per rep (+1, +2 on combo≥3) → spent in the HERO SHOP (🛒) on a finite COSMETIC
+  collection for the Base (BASE_ITEMS: banner/plant/poster/trophy/medal/lamp/vexbot/dragon/crown/rocket).
+  Owned items (S.owned) show on the Base TROPHY SHELF (only earned items, per the no-empty-slots rule).
+  Cosmetic only — zero pay-to-win, no gameplay perks. paintShop builds cards via createElement.
+- DAILY SPLIT: trainTick counts Training-Room time into S.daily.trainSecs (via __inTraining, set in
+  show() when id==="scrTrain"); the Progress tab shows the 🎯 missions vs 🏋️ training minute split so a
+  parent can aim for a ~15/15 balance. Still a gentle meter — never a countdown or penalty.
+
 ## World canon
 - City: Star Force City, powered by Letter Gems. Villain: LORD VEX (Vader-coded cyborg warlord)
   and his VEXBOT soldiers. Hero: Super Teddy (the child is "Teddy"; his hero identity is

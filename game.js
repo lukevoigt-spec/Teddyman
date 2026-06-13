@@ -384,6 +384,12 @@ const LINES={
   gear_belt:{t:"The Power Belt!"}, gear_boots:{t:"Rocket Boots!"}, gear_shield:{t:"The GEM SHIELD! Forged from power words!"}, gear_gauntlet:{t:"The GEM GAUNTLET! Now your word power is unstoppable!"},
   m3_done:{t:"You crushed the Vex Captain and conquered Thunder Ridge! Lord Vex's Fortress is just ahead, Super Teddy..."},
   gear_hammer:{t:"The WORD HAMMER! Forged from your first words!"}, gear_sword:{t:"The GEM SWORD! A true hero's blade!"}, base1:{t:"Welcome to your Hero Base, Super Teddy! Gear up and look strong!"},
+  train_intro:{t:"Training Room! Build and read words to earn coins, Super Teddy. Practice makes you POWERFUL!"},
+  train_build:{t:"Build the word you hear!"},
+  train_read:{t:"Read the word, then tap what it means!"},
+  train_yes:{t:"Coin earned!"},
+  train_none:{t:"Learn a few letters on the missions first, then come back to train!"},
+  shop_need:{t:"Not enough coins yet — train a little more, hero!"},
   finale1:{t:"Incoming message! ... Super Teddy! It's Amelia!", v:"B"},
   finale2:{t:"Lord Vex trapped me in the Heart Tower! Come rescue me in your next adventure!", v:"B"},
   finale3:{t:"To be continued, hero..."},
@@ -451,7 +457,7 @@ const KEY="heroTeddySave_v1";
 const BAKKEY="heroTeddySave_v1_bak";
 const SNAPKEY="heroTeddySave_v1_snaps";
 let S=load();
-function fresh(){return {v:1,act:1,ts:0,intro:false,scan:false,done:{},mastery:{},stars:0,gear:[],equip:{weapon:"none",cape:"red"},session:{count:0,day:"",rest:false}};}
+function fresh(){return {v:1,act:1,ts:0,intro:false,scan:false,done:{},mastery:{},stars:0,coins:0,owned:{},gear:[],equip:{weapon:"none",cape:"red"},session:{count:0,day:"",rest:false}};}
 /* normalize ANY (old / partial / slightly broken) save object — never throws */
 function migrate(d){ if(!d||typeof d!=="object"||d.v!==1) return null;
   d.act=(typeof d.act==="number")?d.act:1; d.ts=d.ts||0;
@@ -463,6 +469,7 @@ function migrate(d){ if(!d||typeof d!=="object"||d.v!==1) return null;
   d.session=(d.session&&typeof d.session==="object")?d.session:{count:0,day:"",rest:false};
   if(d.session.day===undefined)d.session.day=""; if(d.session.count===undefined)d.session.count=0; if(d.session.rest===undefined)d.session.rest=false;
   if(typeof d.stars!=="number")d.stars=0; d.intro=!!d.intro; d.scan=!!d.scan;
+  if(typeof d.coins!=="number")d.coins=0; d.owned=(d.owned&&typeof d.owned==="object")?d.owned:{};
   return d; }
 function readKey(k){ try{ const raw=localStorage.getItem(k); if(!raw)return null; return migrate(JSON.parse(raw)); }catch(e){ return null; } }
 /* rough "how much progress" — more done missions (then newer) wins a tie-break */
@@ -526,18 +533,18 @@ function ensureDaily(){ const d=dayKey();
   if(!S.daily || S.daily.day!==d){
     if(S.daily && S.daily.secs){ S.history=S.history||{}; S.history[S.daily.day]=S.daily.secs;
       const ks=Object.keys(S.history).sort(); while(ks.length>60)delete S.history[ks.shift()]; }
-    S.daily={day:d, secs:0, missions:0, goalHit:false};
+    S.daily={day:d, secs:0, trainSecs:0, missions:0, goalHit:false};
     if(!S.goalMin)S.goalMin=30;
     save();
-  } else if(!S.goalMin){ S.goalMin=30; }
+  } else { if(!S.goalMin)S.goalMin=30; if(S.daily.trainSecs===undefined)S.daily.trainSecs=0; }
 }
-let __lastInteract=Date.now(), __dailyDirty=0;
+let __lastInteract=Date.now(), __dailyDirty=0, __inTraining=false;
 function noteInteract(){ __lastInteract=Date.now(); }
 function dailyGoalSecs(){ return (S.goalMin||30)*60; }
 function trainTick(){ ensureDaily();
   const hidden=(typeof document!=="undefined" && document.hidden);
   if(!hidden && (Date.now()-__lastInteract)<45000){
-    S.daily.secs++; __dailyDirty++;
+    S.daily.secs++; if(__inTraining)S.daily.trainSecs=(S.daily.trainSecs||0)+1; __dailyDirty++;
     if(__dailyDirty>=20){ __dailyDirty=0; save(); }
     updateDailyMeter();
     if(!S.daily.goalHit && S.daily.secs>=dailyGoalSecs()){ S.daily.goalHit=true; save(); dailyGoalReached(); }
@@ -685,7 +692,7 @@ const $=id=>document.getElementById(id);
    if the file is missing the layer stays transparent and the original look shows.
    Several screens intentionally share one scene (e.g. learn/trace, boss/forge). */
 const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrInter:"intro", scrScan:"lab", scrMap:"city", scrRead:"learn", scrSpell:"learn", scrSent:"learn", scrCloze:"learn", scrScramble:"learn", scrFortress:"battle",
-  scrBase:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
+  scrBase:"base", scrTrain:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
   scrBoss:"battle", scrForge:"battle", scrWin:"victory", scrRest:"rest" };
 const __bgCache={};
 function setBG(id){ const layer=$("bgLayer"); if(!layer)return;
@@ -701,6 +708,7 @@ function setBG(id){ const layer=$("bgLayer"); if(!layer)return;
   img.src=url;
 }
 function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
+  __inTraining=(id==="scrTrain");   /* daily time split: count training-room time separately */
   $(id).classList.add("on"); $(id).classList.add("fadein");
   setTimeout(()=>$(id).classList.remove("fadein"),600);
   setBG(id);
@@ -1615,8 +1623,99 @@ function paintBase(){
   LEAGUE.forEach(t=>{ if(S.done[t.mid]){ anyL=true;
     lg.innerHTML+=`<svg viewBox="-32 -36 64 86" width="54"><g>${allyFace(t.kind)}</g><text y="42" text-anchor="middle" font-family="Bangers" font-size="13" fill="#ffc93c">${t.real}</text><text y="55" text-anchor="middle" font-family="Bangers" font-size="9.5" fill="#9b94c9" letter-spacing=".5">"${t.name}"</text></svg>`; } });
   if(!anyL)lg.innerHTML='<div class="baselbl" style="font-size:15px;">Smash Vex\u2019s cages to free your friends!</div>';
+  /* coins + trophy shelf (Training Room collection) */
+  const cn=$("baseCoins"); if(cn)cn.textContent=S.coins||0;
+  const tro=$("trophyShelf");
+  if(tro){ const owned=BASE_ITEMS.filter(it=>S.owned&&S.owned[it.id]);
+    tro.innerHTML = owned.length
+      ? owned.map(it=>`<span class="trophy" title="${it.nm}">${it.ic}</span>`).join("")
+      : '<div class="baselbl" style="font-size:15px;">Train to earn coins, then shop for trophies!</div>'; }
 }
 $("btnBaseBack").onclick=()=>{Aud.stop();toMap();};
+
+/* ---------------- TRAINING ROOM + HERO SHOP ----------------
+   A supplementary DAILY practice loop, decoupled from story progression. It
+   drills the highest-transfer skill — BUILD (segment/encode) + DECODE (blend/
+   read) of decodable words, adaptive to his weakest letters — so practice
+   actually strengthens mastery (this is also the rebalance toward blending/
+   segmenting). Correct reps earn COINS, spent on a finite COSMETIC collection
+   for the Hero Base. No gating, no countdown, no pay-to-win. */
+const BASE_ITEMS=[
+  {id:"banner",   nm:"Hero Banner", ic:"🚩", cost:10},
+  {id:"plant",    nm:"Power Plant", ic:"🪴", cost:12},
+  {id:"poster",   nm:"Hero Poster", ic:"🖼️", cost:15},
+  {id:"trophy",   nm:"Gold Trophy", ic:"🏆", cost:20},
+  {id:"medal",    nm:"Gold Medal",  ic:"🥇", cost:25},
+  {id:"lamp",     nm:"Star Lamp",   ic:"⭐", cost:30},
+  {id:"vexbot",   nm:"Vexbot Toy",  ic:"🤖", cost:40},
+  {id:"dragon",   nm:"Dragon Toy",  ic:"🐉", cost:55},
+  {id:"crown",    nm:"Crown Stand", ic:"👑", cost:70},
+  {id:"rocket",   nm:"Mini Rocket", ic:"🚀", cost:90}
+];
+let trainReps=0,trainSlot=0,trainCur,trainMiss=0;
+function trainPool(){ const t=taughtLetters(); return Object.keys(READWORDS).filter(w=>w.split("").every(c=>t.includes(c))); }
+function pickTrainWord(){ const pool=trainPool(); if(!pool.length)return null;
+  /* weight toward words built from his weakest letters (so practice targets need) */
+  const wt=pool.map(w=>1+w.split("").reduce((s,c)=>s+(5-(mast(c).str||0)),0));
+  let r=Math.random()*wt.reduce((a,b)=>a+b,0);
+  for(let i=0;i<pool.length;i++){ r-=wt[i]; if(r<=0)return pool[i]; }
+  return pool[0]; }
+function showTrain(){ clearFlow(); trainReps=0; show("scrTrain"); updateTrainHUD();
+  flow(narrate("train",$("trainText"),["train_intro"]),()=>trainRound()); }
+function updateTrainHUD(){ $("trainCoins").textContent=S.coins||0; $("trainReps").textContent=trainReps; }
+function trainRound(){ const w=pickTrainWord();
+  if(!w){ flow(narrate("train",$("trainText"),["train_none"]),()=>{ __inTraining=false; showBase(); }); return; }
+  (trainReps%2===0) ? trainBuild(w) : trainDecode(w); }
+function trainBuild(w){ trainCur=w; trainSlot=0; trainMiss=0;
+  narrate("train",$("trainText"),["train_build"].concat(wordAudio(w)),"Build the word you hear! 🔊");
+  const wr=$("trainWord"); wr.innerHTML="";
+  w.split("").forEach(()=>{ const s=document.createElement("div"); s.className="slot read"; wr.appendChild(s); });
+  const need=w.split("");
+  const choices=shuf([...new Set(need)].concat(shuf(taughtLetters().filter(x=>!need.includes(x))).slice(0,2)));
+  const cr=$("trainChoices"); cr.innerHTML="";
+  choices.forEach(c=>{ const b=document.createElement("button"); b.className="tile read"; b.textContent=c; b.dataset.g=c;
+    b.style.width=b.style.height="clamp(72px,12vw,108px)"; b.style.fontSize="clamp(40px,6.5vw,60px)";
+    b.onclick=()=>{ const want=w[trainSlot];
+      if(c===want){ record(c,true); const slot=wr.children[trainSlot]; slot.textContent=c; slot.classList.add("filled"); Aud.ding(); trainSlot++;
+        if(trainSlot>=w.length){ record("w_"+w,true); trainWin(b,w); } else Aud.play("snd_"+c); }
+      else { record(c,false); trainMiss++; b.classList.add("dim");
+        if(trainMiss>=2)cr.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===want)x.classList.add("hint");});
+        Aud.play(["snd_"+want]); setTimeout(()=>b.classList.remove("dim"),900); } };
+    cr.appendChild(b); }); }
+function trainDecode(w){ trainCur=w; trainMiss=0;
+  narrate("train",$("trainText"),["train_read"],"Read the word… tap what it means! 📖");
+  const wr=$("trainWord"); wr.innerHTML="";
+  w.split("").forEach(c=>{ const t=document.createElement("button"); t.className="tile read rletter"; t.textContent=c; t.onclick=()=>Aud.play("snd_"+c); wr.appendChild(t); });
+  const opts=shuf([w].concat(shuf(Object.keys(READWORDS).filter(x=>x!==w)).slice(0,2)));
+  const cr=$("trainChoices"); cr.innerHTML="";
+  opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.textContent=READWORDS[o]; b.dataset.w=o;
+    b.onclick=()=>{ if(o===w){ record("w_"+w,true); b.classList.add("win"); trainWin(b,w); }
+      else { record("w_"+w,false); trainMiss++; b.classList.add("dim");
+        if(trainMiss>=2)cr.querySelectorAll(".picktile").forEach(x=>{if(x.dataset.w===w)x.classList.add("hint");}); readSoundOut(w); } };
+    cr.appendChild(b); }); }
+function trainWin(el,w){ const bonus=combo>=3?2:1; S.coins=(S.coins||0)+bonus; trainReps++; save();
+  burstAt(el); coinFloat(el,bonus); updateTrainHUD();
+  flow(Aud.play(["train_yes"].concat(wordAudio(w))),()=>setTimeout(trainRound,260)); }
+function coinFloat(el,n){ const s=$("stage"); if(!s||!el)return; const r=el.getBoundingClientRect(),st=s.getBoundingClientRect();
+  const c=document.createElement("div"); c.className="combochip"; c.style.color="#ffd75e";
+  c.style.top=(r.top-st.top-20)+"px"; c.textContent="+"+n+" 💰"; s.appendChild(c); setTimeout(()=>c.remove(),900); }
+$("btnTrain").onclick=()=>showTrain();
+$("btnTrainBack").onclick=()=>{ __inTraining=false; Aud.stop(); showBase(); };
+/* ---- shop ---- */
+function openShop(){ paintShop(); $("shopPanel").classList.add("on"); }
+function paintShop(){ $("shopCoins").textContent=S.coins||0;
+  const g=$("shopGrid"); g.innerHTML="";
+  BASE_ITEMS.forEach(it=>{ const owned=!!S.owned[it.id], can=(S.coins||0)>=it.cost;
+    const d=document.createElement("div"); d.className="shopitem"+(owned?" owned":"");
+    d.innerHTML=`<div class="ic">${it.ic}</div><div class="nm">${it.nm}</div>`;
+    if(owned){ const t=document.createElement("div"); t.className="owned-tag"; t.textContent="OWNED ✓"; d.appendChild(t); }
+    else { const buy=document.createElement("button"); buy.className="buy"+(can?"":" cant"); buy.textContent="💰 "+it.cost;
+      buy.onclick=()=>{ if((S.coins||0)>=it.cost){ S.coins-=it.cost; S.owned[it.id]=true; save(); Aud.ding(); burstAt(d); paintShop(); }
+        else Aud.play("shop_need"); };
+      d.appendChild(buy); }
+    g.appendChild(d); }); }
+$("btnShop").onclick=()=>openShop();
+$("btnShopClose").onclick=()=>{ $("shopPanel").classList.remove("on"); paintBase(); };
 
 /* ---------------- SETTINGS ---------------- */
 /* Parent-facing progress snapshot (read-only) — what Teddy can actually read. */
@@ -1674,6 +1773,7 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
         <div class="pcard"><div class="pnum">${daysHit}<span style="font-size:13px;">/7</span></div><div class="plbl">Days hit goal</div></div>
       </div>
       <div style="display:flex;gap:7px;justify-content:center;align-items:flex-end;margin-top:8px;">${bars}</div>
+      <div class="pnote" style="text-align:center;margin-top:7px;">Today's split — 🎯 <b>${Math.max(0,todayMin-Math.floor((S.daily.trainSecs||0)/60))}m</b> missions · 🏋️ <b>${Math.floor((S.daily.trainSecs||0)/60)}m</b> training. A 15/15 balance (new missions + Training Room practice) is a great daily rhythm.</div>
       <div class="pnote" style="text-align:center;margin-top:7px;">Daily goal: <button class="chipbtn" id="goalDown">−5</button> <b>${goal} min</b> <button class="chipbtn" id="goalUp">+5</button><br>~30 min/day across 3–4 short sessions is ideal — spaced practice beats one long sitting, and suits his focus.</div>
     </div>
     <div class="pgrid">
