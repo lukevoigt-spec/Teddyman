@@ -1417,7 +1417,7 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
 function openSettings(){ $("saveBox").value=JSON.stringify(S); $("vpStatus2").textContent=vpMsg(); window.renderProgress();
   $("cloudURL").value=cloudURL; cloudStatus(cloudURL?"Cloud sync ON — same URL on any device continues his progress":"Cloud sync off (saved on this device)");
   { const rw=$("resetWho"); if(rw)rw.textContent=profileName(ACTIVE)+"'s"; }
-  paintPlayers(); paintVol(); paintCalmBtn(); $("settingsPanel").classList.add("on"); }
+  paintPlayers(); paintVol(); paintDetailSeg(); $("settingsPanel").classList.add("on"); }
 /* parent-only player management (inside the gated Grown-Up Corner) */
 function paintPlayers(){ const list=$("playersList"); if(!list)return; list.innerHTML="";
   profiles().forEach(p=>{ const row=document.createElement("div");
@@ -1448,10 +1448,9 @@ function detailLevel(){ return S.detail || (S.calm?"lite":"full"); }
 function applyDetail(){ const d=detailLevel();
   document.body.classList.toggle("calm", d!=="full");   /* calm + lite both drop idle motion */
   document.body.classList.toggle("lite", d==="lite"); }
-function paintCalmBtn(){ const b=$("btnCalm"); if(b)b.textContent=DETAIL_LABEL[detailLevel()]; }
-$("btnCalm").onclick=()=>{ const next=DETAIL_ORDER[(DETAIL_ORDER.indexOf(detailLevel())+1)%3];
-  S.detail=next; delete S.calm; applyDetail(); save(); Aud.ding(); paintCalmBtn(); };
-paintCalmBtn();
+function paintDetailSeg(){ const d=detailLevel(); document.querySelectorAll("#detailSeg button").forEach(b=>b.classList.toggle("on",b.dataset.det===d)); }
+document.querySelectorAll("#detailSeg button").forEach(b=>{ b.onclick=()=>{ S.detail=b.dataset.det; delete S.calm; applyDetail(); save(); Aud.ding(); paintDetailSeg(); }; });
+paintDetailSeg();
 /* Narration volume slider (parent setting) */
 function paintVol(){ const s=$("volSlider"),p=$("volPct"); const v=Math.round((S.vol==null?1:S.vol)*100);
   if(s)s.value=v; if(p)p.textContent=v+"%"; }

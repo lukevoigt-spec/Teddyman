@@ -59,7 +59,7 @@ Music.boot();
 if(typeof currentAct==="function") Music.setAct(currentAct());
 (function(){
   const slider=(typeof $==="function")?$("musicSlider"):null, pct=(typeof $==="function")?$("musicPct"):null, btn=(typeof $==="function")?$("btnMusicToggle"):null;
-  function paintBtn(){ if(btn)btn.textContent=Music.on?"On":"Off"; }
+  function paintBtn(){ if(btn)btn.classList.toggle("on",Music.on); }
   function paintSlider(){ const v=Math.round(Music.vol*100); if(slider)slider.value=v; if(pct)pct.textContent=v+"%"; }
   paintBtn(); paintSlider();
   if(slider)slider.oninput=()=>{ const v=(+slider.value||0)/100; if(pct)pct.textContent=slider.value+"%"; Music.setVol(v); };

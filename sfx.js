@@ -53,7 +53,7 @@ Sfx.boot();
 /* Settings wiring (own volume + on/off, separate from voice & music) */
 (function(){
   const slider=(typeof $==="function")?$("sfxSlider"):null, pct=(typeof $==="function")?$("sfxPct"):null, btn=(typeof $==="function")?$("btnSfxToggle"):null;
-  function paintBtn(){ if(btn)btn.textContent=Sfx.on?"On":"Off"; }
+  function paintBtn(){ if(btn)btn.classList.toggle("on",Sfx.on); }
   function paintSlider(){ const v=Math.round(Sfx.vol*100); if(slider)slider.value=v; if(pct)pct.textContent=v+"%"; }
   paintBtn(); paintSlider();
   if(slider)slider.oninput=()=>{ const v=(+slider.value||0)/100; if(pct)pct.textContent=slider.value+"%"; Sfx.setVol(v); };

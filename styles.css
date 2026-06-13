@@ -250,10 +250,10 @@ body[data-act="2"] .navitem{border-color:#6a5436;background:rgba(50,38,18,.55);c
 #saveBox{width:min(640px,90vw);height:100px;border-radius:14px;border:3px solid var(--txt);background:#171236;color:var(--txt);font-size:12px;padding:8px;}
 
 /* Grown-Up Corner tabs */
-.tabbar{display:flex;gap:8px;}
-.tabbtn{font-family:'Bangers',cursive;font-size:22px;letter-spacing:.04em;color:var(--txt);
-  background:rgba(255,255,255,.06);border:3px solid #3a2d72;border-radius:14px 14px 0 0;padding:8px 22px;cursor:pointer;}
-.tabbtn.on{background:#241b4d;border-color:var(--gold);color:var(--gold);}
+.tabbar{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;background:rgba(10,5,24,.5);padding:6px;border-radius:16px;border:1.5px solid #2a2150;}
+.tabbtn{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:15px;letter-spacing:.01em;color:#b9b0e0;
+  background:transparent;border:none;border-radius:11px;padding:9px 16px;cursor:pointer;transition:background .15s,color .15s;}
+.tabbtn.on{background:linear-gradient(180deg,#312368,#241b4d);color:var(--gold);box-shadow:inset 0 0 0 1.5px rgba(255,206,58,.4),0 2px 8px rgba(0,0,0,.3);}
 .tabpane{display:none;flex-direction:column;align-items:center;gap:12px;width:min(720px,94vw);}
 /* Progress tab */
 .pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;}
@@ -577,19 +577,34 @@ body.lite #titleHero>svg,body.lite #baseHero>svg,body.lite #winHero>svg,body.lit
 @keyframes recpulse{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* ===================== GROWN-UP CORNER — settings cards ===================== */
-.setcard{width:min(640px,94vw);background:rgba(20,12,44,.5);border:2px solid #3a2d72;border-radius:16px;
-  padding:14px 16px;display:flex;flex-direction:column;gap:10px;margin:2px 0;}
-.setcard-h{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:16px;color:var(--gold);}
-.setcard-sub{font-family:'Andika',sans-serif;font-size:13px;line-height:1.45;color:#b9b0e0;}
+.setcard{width:min(640px,94vw);background:linear-gradient(165deg,rgba(38,26,76,.62),rgba(18,11,40,.62));
+  border:1.5px solid #3a2d72;border-radius:18px;padding:15px 17px;display:flex;flex-direction:column;gap:11px;margin:2px 0;
+  box-shadow:0 6px 20px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.05);}
+.setcard.danger{background:linear-gradient(165deg,rgba(70,20,42,.5),rgba(30,10,22,.55));}
+.setcard-h{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:17px;color:var(--gold);display:flex;align-items:center;gap:8px;}
+.sc-ic{font-size:19px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4));}
+.setcard-sub{font-family:'Andika',sans-serif;font-size:12.5px;line-height:1.45;color:#a99fd6;}
 .setrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
-.setrow label{font-size:15px;color:#eee;min-width:104px;}
-.setrange{flex:1;min-width:140px;height:8px;-webkit-appearance:none;appearance:none;border-radius:6px;
-  background:#241b4d;outline:none;border:1px solid #3a2d72;}
-.setrange::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;
-  background:linear-gradient(180deg,#ffd75e,#f0a82b);border:3px solid var(--ink);cursor:pointer;}
-.setrange::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#ffce3a;border:3px solid var(--ink);cursor:pointer;}
-.setval{font-size:14px;color:var(--gold);min-width:46px;text-align:right;}
+.setrow label{font-size:15px;font-weight:600;color:#efeaff;min-width:96px;}
+.setrange{flex:1;min-width:130px;height:10px;-webkit-appearance:none;appearance:none;border-radius:6px;
+  background:linear-gradient(90deg,#5a4ba0,#241b4d);outline:none;border:1px solid #4a3a86;box-shadow:inset 0 1px 3px rgba(0,0,0,.4);}
+.setrange::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;
+  background:linear-gradient(180deg,#ffe07a,#f0a82b);border:3px solid var(--ink);cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,.45);}
+.setrange::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#ffce3a;border:3px solid var(--ink);cursor:pointer;}
+.setval{font-size:14px;font-weight:700;color:var(--gold);min-width:46px;text-align:right;}
 .setinput{width:100%;padding:9px 12px;border-radius:12px;border:2px solid #3a2d72;background:#171236;color:var(--txt);font-size:14px;}
+/* game-like ON/OFF toggle switch */
+.switch{position:relative;width:58px;height:32px;flex:0 0 auto;border-radius:18px;cursor:pointer;padding:0;
+  border:2px solid var(--ink);background:linear-gradient(180deg,#4a4366,#2a2440);transition:background .18s;box-shadow:inset 0 2px 5px rgba(0,0,0,.45);}
+.switch.on{background:linear-gradient(180deg,#5fe0a0,#23a35f);}
+.switch-k{position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;
+  background:linear-gradient(180deg,#fff,#d7d0ee);border:1.5px solid var(--ink);transition:left .18s;box-shadow:0 2px 4px rgba(0,0,0,.4);}
+.switch.on .switch-k{left:28px;}
+/* segmented control (Full / Calm / Lite) */
+.segctl{display:inline-flex;gap:3px;background:rgba(10,5,24,.55);padding:4px;border-radius:13px;border:1.5px solid #3a2d72;}
+.segctl button{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:14px;color:#b9b0e0;background:transparent;
+  border:none;border-radius:9px;padding:7px 16px;cursor:pointer;transition:background .15s,color .15s;}
+.segctl button.on{background:linear-gradient(180deg,#ffe07a,#f0a82b);color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.3);}
 
 /* ===================== SCENE HARMONIZER (cinematic grade) =====================
    A vignette + warm upper key light + per-act colour grade painted over the
