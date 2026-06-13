@@ -377,9 +377,15 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 
 ## Voice/audio system
 - Aud.play(ids) plays voicepack clips, falls back to per-line TTS (LINES manifest: {t, r, v}).
-- Voice roles: A = Mentor/Narrator, B = Amelia (Heartguard), C = Vexbots/Lord Vex (robotic),
-  T = Archie (Tank), F = Ellie (Flip), W = William (Sunny). The friends' lines are best
-  recorded in the real kids' voices via the Studio's Upload button (TTS is a stand-in).
+- Voice roles (line `v` field → a voice the parent assigns per role in the Studio): A = Mentor/Narrator,
+  B = Amelia (Heartguard), C = Vexbots/Lord Vex (robotic), T = Archie (Tank), F = Ellie (Flip),
+  W = William (Sunny), V = THE VIXEN (Act-2 villain), N = NOAH THE RED (Act-2 wizard mentor),
+  P = MOM & DAD. NOTE: Vixen + Noah used to SHARE role "V" (a bug — Vixen spoke in Noah's voice); now
+  split, and Noah's Act-2 lines (rune/blend/magic intros, noah1-3, act2_win, f2_intro) carry v:"N",
+  the Mom&Dad message carries v:"P". Shared prompt lines (find_prompt etc.) stay role A since they're
+  reused across both acts. Changing a role only affects FUTURE Studio generation — re-assign the N/V/P
+  voices and re-Generate+Publish those lines to hear them. The friends' lines are best recorded in the
+  real kids' voices via the Studio's Upload button (TTS is a stand-in).
 - Ally arcs: each freed friend OWNS one mission type and cheers Teddy BY REAL NAME during it
   (Archie→boss, Ellie→trace, William→patrol, Amelia→every win). Cheers are woven into the
   existing flow() sequence (friend line then the letter sound) so the sound is never lost and
