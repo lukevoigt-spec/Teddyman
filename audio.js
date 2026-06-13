@@ -51,40 +51,46 @@ function clipFor(id){
    Plays a parent clip / studio voicepack clip when present, falls back to
    speech synthesis per line otherwise.                                     */
 const Aud={
-  voice:null, cur:null, token:0, vol:1,
+  voice:null, el:null, token:0, vol:1, _poll:null, _hard:null, _resolve:null,
   hasVP(id){ return !!clipFor(id); },
   pick(){ const vs=speechSynthesis.getVoices().filter(v=>v.lang&&v.lang.startsWith("en"));
     this.voice = vs.find(v=>/samantha/i.test(v.name)) || vs.find(v=>/karen|ava|allison|female/i.test(v.name)) || vs[0]||null; },
-  stop(){ this.token++; speechSynthesis.cancel(); if(this.cur){try{this.cur.pause();}catch(e){}this.cur=null;} },
+  _clear(){ if(this._poll){clearInterval(this._poll);this._poll=null;} if(this._hard){clearTimeout(this._hard);this._hard=null;} },
+  /* tear down the current sequence (timers + audio + music duck) and resolve its
+     promise, so a superseded flow never hangs and no stray timer crosses into the next play() */
+  _settle(){ this._clear(); if(typeof Music!=="undefined" && Music.unduck) Music.unduck();
+    const r=this._resolve; this._resolve=null; if(r)r(); },
+  stop(){ this.token++;
+    if(this.el){ try{this.el.pause();}catch(e){} this.el.onended=null; this.el.onerror=null; }
+    try{speechSynthesis.cancel();}catch(e){} this._settle(); },
+  /* ONE persistent <audio> element is reused for every clip in a sequence. iOS unlocks
+     audio output per element on the first user-gesture play, so reusing the already-unlocked
+     element makes chained clips (e.g. prompt → snd_ch) play reliably on the FIRST pass —
+     creating a fresh Audio() per clip is what dropped the cold second clip. Each clip advances
+     on its OWN ended event (snappy, never caps a long line); a 45s hard timeout only catches a
+     clip that never plays at all, and the ⏭ skip covers any edge. */
   play(ids){ this.stop(); const my=this.token;
     const seq=Array.isArray(ids)?ids.slice():[ids];
     if(typeof Music!=="undefined" && Music.duck) Music.duck();   /* dip the music under narration */
-    /* PER-CLIP advance: each clip resolves on its OWN onended (snappy auto-advance),
-       with a per-clip watchdog tightened to the clip's real duration as a fallback if
-       onended never fires (iPad Safari). No global time cap — so a long recorded line
-       is never cut mid-sentence, and the flow still advances right when each clip ends. */
+    if(!this.el){ try{ this.el=new Audio(); }catch(e){ this.el=null; } }
+    const a=this.el;
     return new Promise(resolve=>{
-      const finish=()=>{ if(typeof Music!=="undefined" && Music.unduck) Music.unduck(); resolve(); };
+      this._resolve=resolve;
       const next=()=>{
-        if(my!==this.token){ finish(); return; }    /* superseded by a newer play()/stop() */
-        if(!seq.length){ finish(); return; }
+        if(my!==this.token) return;                /* superseded — stop() already settled the promise */
+        if(!seq.length){ this._settle(); return; }
         const id=seq.shift(); const L=LINES[id]||{t:id}; const src=clipFor(id);
-        if(src){
-          const a=new Audio(src); this.cur=a; a.volume=this.vol;
-          let advanced=false, poll=null, hard=null;
-          const cleanup=()=>{ if(poll)clearInterval(poll); if(hard)clearTimeout(hard); };
-          const go=()=>{ if(advanced)return; advanced=true; cleanup(); next(); };
-          const fail=()=>{ if(advanced)return; advanced=true; cleanup(); Aud._tts(L,my).then(next); };
-          a.onended=go; a.onerror=fail;
-          /* advance the instant the clip ACTUALLY finishes (a.ended) — never guesses or
-             caps the length, so a long line is never cut; works even if the onended
-             event is dropped (iPad Safari). hard timeout only catches a clip that never
-             plays/ends at all (the ⏭ skip covers that too). */
-          const pr=a.play();
-          const startPoll=()=>{ poll=setInterval(()=>{ if(a.ended)go(); }, 200); };
-          if(pr&&pr.then){ pr.then(startPoll).catch(fail); } else { startPoll(); }
-          hard=setTimeout(go, 45000);
-        } else { this._tts(L,my).then(next); }
+        if(!src || !a){ this._tts(L,my).then(next); return; }
+        let advanced=false;
+        const go=()=>{ if(advanced||my!==this.token)return; advanced=true; this._clear(); a.onended=null; a.onerror=null; next(); };
+        const fail=()=>{ if(advanced||my!==this.token)return; advanced=true; this._clear(); a.onended=null; a.onerror=null; Aud._tts(L,my).then(next); };
+        a.onended=go; a.onerror=fail; a.volume=this.vol;
+        try{ a.pause(); }catch(e){}
+        try{ a.src=src; a.currentTime=0; }catch(e){}
+        this._clear();
+        this._poll=setInterval(()=>{ if(my!==this.token)return; if(a.ended)go(); }, 200);
+        this._hard=setTimeout(()=>{ if(my===this.token)go(); }, 45000);
+        const pr=a.play(); if(pr&&pr.then)pr.catch(fail);
       };
       next();
     });
