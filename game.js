@@ -585,7 +585,7 @@ const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#
    player; add/remove only in the Grown-Up Corner. The default player "teddy"
    keeps the ORIGINAL save keys + cloud key, so existing progress is never lost
    and an existing Worker URL keeps working unchanged. */
-const DEFAULT_CLOUD_URL="";   /* paste the Worker URL here once → zero per-device setup; "" = use the in-app field */
+const DEFAULT_CLOUD_URL="https://teddy-saves.lukevoigt.workers.dev";   /* baked-in Worker URL → every device auto-syncs, zero per-device setup */
 const PROFKEY="teddyProfiles", ACTIVEKEY="teddyActiveProfile";
 function readJSON(k,f){ try{ const v=JSON.parse(localStorage.getItem(k)); return v==null?f:v; }catch(e){ return f; } }
 function profiles(){ let p=readJSON(PROFKEY,null);
