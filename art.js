@@ -37,9 +37,13 @@ const bootFx=o.boots2?`<g stroke="#ff8a3d" stroke-width="5" stroke-linecap="roun
 <path d="M86 472 q4 12 -2 22"/><path d="M104 472 q0 14 -4 24"/>
 <path d="M148 472 q4 12 -2 22"/><path d="M166 472 q0 14 -4 24"/></g>`:"";
 return `<svg viewBox="-30 -150 310 660" width="${w}" aria-hidden="true">
-<defs><linearGradient id="${u}suit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${th.suit[0]}"/><stop offset="1" stop-color="${th.suit[1]}"/></linearGradient>
-<linearGradient id="${u}cape" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${cp[0]}"/><stop offset="1" stop-color="${cp[1]}"/></linearGradient>
-<linearGradient id="${u}gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd75e"/><stop offset="1" stop-color="#f0a82b"/></linearGradient></defs>
+<defs><linearGradient id="${u}suit" x1=".18" y1="0" x2=".82" y2="1"><stop offset="0" stop-color="${th.sheen}"/><stop offset=".22" stop-color="${th.suit[0]}"/><stop offset=".72" stop-color="${th.suit[1]}"/><stop offset="1" stop-color="${th.muscle}"/></linearGradient>
+<linearGradient id="${u}cape" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="${cp[0]}"/><stop offset=".55" stop-color="${cp[1]}"/><stop offset="1" stop-color="${cp[1]}"/></linearGradient>
+<linearGradient id="${u}gold" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#fff0bd"/><stop offset=".45" stop-color="#ffd75e"/><stop offset="1" stop-color="#e0901f"/></linearGradient>
+<radialGradient id="${u}skin" cx=".42" cy=".34" r=".78"><stop offset="0" stop-color="#ffe6cc"/><stop offset=".65" stop-color="#ffd4af"/><stop offset="1" stop-color="#edb085"/></radialGradient>
+<radialGradient id="${u}sh" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#0a0620" stop-opacity=".55"/><stop offset="1" stop-color="#0a0620" stop-opacity="0"/></radialGradient>
+<clipPath id="${u}face"><circle cx="124" cy="66" r="54"/></clipPath></defs>
+<ellipse cx="123" cy="470" rx="98" ry="20" fill="url(#${u}sh)"/>
 ${o.weapon==="hammer"||o.weapon==="sword"?weapon:""}
 <path d="M62 122 Q38 220 30 350 Q28 406 50 448 Q90 426 124 436 Q170 424 200 446 Q224 402 218 346 Q210 218 184 122 Q122 104 62 122Z" fill="url(#${u}cape)" stroke="#150f2e" stroke-width="6"/>
 <g stroke="#150f2e" stroke-width="6" stroke-linejoin="round">
@@ -75,10 +79,11 @@ ${o.theme==="knight"?`<!-- ===== knight helm (Act-2 placeholder) ===== -->
 <g stroke="none"><circle cx="110" cy="64" r="3.4" fill="#9fe0ff"/><circle cx="138" cy="64" r="3.4" fill="#9fe0ff"/></g>
 <path d="M124 4 Q124 -24 150 -30 Q138 -16 142 0 Q132 -8 124 4Z" fill="${cp[0]}" stroke="#150f2e" stroke-width="5" stroke-linejoin="round"/>
 </svg>`:`<!-- ===== head (refined Style C) ===== -->
-<rect x="111" y="110" width="26" height="26" rx="7" fill="#ffd9b8" stroke="#150f2e" stroke-width="5"/>
-<circle cx="124" cy="66" r="54" fill="#ffd9b8" stroke="#150f2e" stroke-width="6"/>
-<circle cx="70" cy="70" r="11" fill="#ffd9b8" stroke="#150f2e" stroke-width="5"/>
-<circle cx="178" cy="70" r="11" fill="#ffd9b8" stroke="#150f2e" stroke-width="5"/>
+<rect x="111" y="110" width="26" height="26" rx="7" fill="url(#${u}skin)" stroke="#150f2e" stroke-width="5"/>
+<circle cx="70" cy="70" r="11" fill="url(#${u}skin)" stroke="#150f2e" stroke-width="5"/>
+<circle cx="178" cy="70" r="11" fill="url(#${u}skin)" stroke="#150f2e" stroke-width="5"/>
+<circle cx="124" cy="66" r="54" fill="url(#${u}skin)" stroke="#150f2e" stroke-width="6"/>
+<g clip-path="url(#${u}face)"><ellipse cx="156" cy="80" rx="32" ry="50" fill="#c2855c" opacity=".20"/><ellipse cx="102" cy="44" rx="30" ry="24" fill="#fff" opacity=".16"/></g>
 <path d="M68 58 Q58 4 124 0 Q190 -2 184 56 Q168 24 144 28 Q164 8 128 14 Q138 0 104 10 Q78 16 82 40 Q70 42 68 58Z" fill="#d8b572" stroke="#150f2e" stroke-width="6" stroke-linejoin="round"/>
 <path d="M144 28 Q174 16 184 54 Q170 32 144 38Z" fill="#e8cb8e" stroke="none"/>
 <g fill="#cfe6ff" fill-opacity=".4" stroke="#1d4fb8" stroke-width="7" stroke-linejoin="round">
