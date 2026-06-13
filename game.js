@@ -183,6 +183,9 @@ const SCENE_TONE2={
   battle: {key:"#ff7a3a", rim:"#ffd24a"},   /* dragon fire */
   base:   {key:"#e8c27a", rim:"#9a7bff"}
 };
+/* gameplay slots that get the diegetic corner-bracket frame (mission/learning
+   activity screens — NOT title/map/base/win/rest/cutscenes). */
+const FRAME_SLOTS=new Set(["lab","learn","city","battle"]);
 function applySceneTone(id){
   const slot=BG_MAP[id]||"learn";
   const t=(currentAct()===2 && SCENE_TONE2[slot]) || SCENE_TONE[slot] || SCENE_TONE.learn;
@@ -221,6 +224,9 @@ function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.r
   document.body.dataset.act=currentAct();
   applySceneTone(id);
   document.body.classList.toggle("scene-battle", BG_MAP[id]==="battle");
+  /* diegetic corner-bracket frame on the gameplay/learning screens only (not the
+     title/map/base/cutscenes, where it'd crowd or clash) */
+  document.body.classList.toggle("framed", FRAME_SLOTS.has(BG_MAP[id]));
   $("hud").style.display=(id==="scrTitle")?"none":"flex"; refreshHUD();
   const dm=$("dailyMeter"); if(dm){ dm.style.display=(id==="scrMap")?"block":"none"; if(id==="scrMap")updateDailyMeter(); } }
 function refreshHUD(){ $("hudStars").textContent="⚡ "+S.stars; }

@@ -599,6 +599,42 @@ body.calm #sceneParticles{display:none;}
 body[data-act="2"] .mote{background:radial-gradient(circle,rgba(255,200,120,.9),rgba(255,150,60,0) 70%);}
 @media (prefers-reduced-motion:reduce){#sceneParticles{display:none!important;}}
 
+/* ===================== DIEGETIC UI FRAME (corner-bracket viewfinder) =============
+   Frames the play area like an in-world HUD readout. Corner brackets glow in the
+   scene's accent (--scene-rim from the harmonizer), so the frame matches each
+   painting. pointer-events:none (never blocks a tap) + only on gameplay screens
+   (body.framed), so it never crowds learning tiles. Act 2 gets ornate gold corners. */
+#sceneFrame{position:absolute;inset:0;z-index:6;pointer-events:none;opacity:0;transition:opacity .45s ease;}
+body.framed #sceneFrame{opacity:1;}
+.fc{position:absolute;width:30px;height:30px;border:0 solid var(--scene-rim,#6db5ff);opacity:.6;
+  filter:drop-shadow(0 0 5px var(--scene-rim,#6db5ff));transition:border-color .5s ease;}
+.fc.tl{top:calc(env(safe-area-inset-top,10px) + 6px);left:10px;border-top-width:3px;border-left-width:3px;border-top-left-radius:11px;}
+.fc.tr{top:calc(env(safe-area-inset-top,10px) + 6px);right:10px;border-top-width:3px;border-right-width:3px;border-top-right-radius:11px;}
+.fc.bl{bottom:calc(env(safe-area-inset-bottom,10px) + 6px);left:10px;border-bottom-width:3px;border-left-width:3px;border-bottom-left-radius:11px;}
+.fc.br{bottom:calc(env(safe-area-inset-bottom,10px) + 6px);right:10px;border-bottom-width:3px;border-right-width:3px;border-bottom-right-radius:11px;}
+/* Act 2 — bigger, gold, ornate corners (medieval frame) with a small corner gem */
+body[data-act="2"] .fc{width:38px;height:38px;border-color:#e8c27a;filter:drop-shadow(0 0 5px rgba(255,200,110,.6));opacity:.72;border-width:0;}
+body[data-act="2"] .fc.tl{border-top-width:4px;border-left-width:4px;}
+body[data-act="2"] .fc.tr{border-top-width:4px;border-right-width:4px;}
+body[data-act="2"] .fc.bl{border-bottom-width:4px;border-left-width:4px;}
+body[data-act="2"] .fc.br{border-bottom-width:4px;border-right-width:4px;}
+body[data-act="2"] .fc::after{content:"";position:absolute;width:7px;height:7px;border-radius:50%;background:#ffd75e;box-shadow:0 0 6px #ffd75e;}
+body[data-act="2"] .fc.tl::after{top:-5px;left:-5px;} body[data-act="2"] .fc.tr::after{top:-5px;right:-5px;}
+body[data-act="2"] .fc.bl::after{bottom:-5px;left:-5px;} body[data-act="2"] .fc.br::after{bottom:-5px;right:-5px;}
+/* Lite tier flattens the frame's glow (cheap, but keep it consistent + still) */
+body.lite .fc{filter:none;}
+body.lite #sceneFrame{transition:none;}
+
+/* Diegetic "live comms" accent on the narration panel: a soft signal dot at the
+   bubble's top-left, pulsing while on a gameplay screen (reads as an active
+   transmission). Gold in Act 2 (a wax-seal feel). Motion gated. */
+.bubble::after{content:"";position:absolute;left:14px;top:-7px;width:13px;height:13px;border-radius:50%;
+  background:var(--scene-rim,#6db5ff);border:2.5px solid var(--ink);box-shadow:0 0 8px var(--scene-rim,#6db5ff);}
+body[data-act="2"] .bubble::after{background:#ffd75e;box-shadow:0 0 8px #ffd75e;}
+@media (prefers-reduced-motion:no-preference){.bubble::after{animation:commsDot 1.8s ease-in-out infinite;}}
+@keyframes commsDot{0%,100%{opacity:.5;transform:scale(.85);}50%{opacity:1;transform:scale(1.12);}}
+body.calm .bubble::after{animation:none;}
+
 /* ===================== TALKING MENTOR (cutscene narration) =====================
    While a cutscene character narrates, the portrait does a gentle speaking bob
    so the mentor reads as talking to Teddy (audio-first delight). Subtle nod +

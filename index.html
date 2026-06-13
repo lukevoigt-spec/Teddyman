@@ -40,6 +40,10 @@
     <i class="mote sm" style="left:50%;animation-duration:21s;animation-delay:10s"></i>
     <i class="mote sm" style="left:79%;animation-duration:22s;animation-delay:2.5s"></i>
   </div>
+  <!-- Diegetic UI frame: corner brackets that frame the play area like an in-world
+       HUD viewfinder (Act 1) / ornate corners (Act 2). Tinted by --scene-rim so it
+       matches the scene, pointer-events:none, shown only on gameplay screens. -->
+  <div id="sceneFrame" aria-hidden="true"><i class="fc tl"></i><i class="fc tr"></i><i class="fc bl"></i><i class="fc br"></i></div>
 
   <!-- Daily Training meter (shown on the map hub; gentle, never a penalty) -->
   <div id="dailyMeter" style="display:none;">

@@ -212,7 +212,12 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   body[data-act=2]; learning tiles stay Andika). (6) HERO EMOTION + random WIN POSES — win poses DONE
   (winpose1-4); hero facial emotion still TODO (limited by the Gem-Lens mask). (7) mentors MOUTH-MOVE
   during narration — DONE: faceSpeak() bobs/nods the speaking cutscene portrait for the audio's duration
-  (face-agnostic; reduced-motion/Calm aware). (8) DIEGETIC UI FRAMES (spellbook/forge/comms) — TODO.
+  (face-agnostic; reduced-motion/Calm aware). (8) DIEGETIC UI FRAMES — DONE (light-touch, learning tiles
+  untouched): #sceneFrame draws corner-bracket "viewfinder" frames at the screen edges, tinted by
+  --scene-rim so they match the harmonizer (Act 1 = thin HUD brackets; Act 2 = bigger gold ornate corners
+  with a gem accent). pointer-events:none; shown only on gameplay screens (body.framed, FRAME_SLOTS =
+  lab/learn/city/battle in show()). The narration .bubble gets a pulsing "live comms" signal dot
+  (gold/wax-seal in Act 2). Lite flattens the glow; Calm stops the pulse.
   (9) DAILY-METRIC clarity fix — DONE (firstTime guard on S.daily.missions + day-rollover regression
   test). (10) cosmetic COLLECTIBLE upgrades — DONE: Base gem shelf gems twinkle and a fully-MASTERED gem
   earns a gold ✦ (.gembox.mastered, masteredItem-gated — collection meets mastery); trophies became
