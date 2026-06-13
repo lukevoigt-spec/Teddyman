@@ -153,7 +153,11 @@ const MISSIONS=[
   {id:126,type:"read", words:["home","cube","nose","rose","bike","cake"],lbl:"Spellery Reading Rally",z:103},
   {id:127,type:"forge",words:["cape","kite","rose","cute"],lbl:"Dragon Duel: The Vowel Wyrm!",finale:true,z:103}
 ];
-const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield",22:"Gem Gauntlet",47:"Alphabet Star",30:"Reading Crown",33:"Spell Tome",36:"Story Key",52:"Fluency Badge"};
+const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield",22:"Gem Gauntlet",47:"Alphabet Star",30:"Reading Crown",33:"Spell Tome",36:"Story Key",52:"Fluency Badge",
+  /* ACT 2 — the Vixen stole his powers, so he RE-EARNS gear through the medieval ladder
+     (act-scoped: actGearList only counts this act's missions, so Act-1 gear isn't double-counted).
+     Reuses the appearance-mapped names so the knight visibly re-powers as he progresses. */
+  110:"Gem Sword", 118:"Power Belt", 127:"Rocket Boots"};
 /* Cloze (read the sentence, pick the word that fits the blank — picture-anchored,
    research-backed CBM Maze format) and Scramble (arrange words into a sentence). */
 const CLOZE=[
@@ -1404,7 +1408,9 @@ function missionComplete(){
   ensureDaily(); S.daily.missions=(S.daily.missions||0)+1;
   if(firstTime){ S.stars+=3; S.session.count++;
     const gear=GEAR_AT[CUR.id];
-    if(gear&&!S.gear.includes(gear))S.gear.push(gear); }
+    if(gear&&!S.gear.includes(gear))S.gear.push(gear);
+    /* auto-equip a newly-forged weapon so it shows immediately (kid needn't visit the Base) */
+    if(gear==="Gem Sword")S.equip.weapon="sword"; else if(gear==="Word Hammer")S.equip.weapon="hammer"; }
   save();
   if(firstTime && (CUR.finale||CUR.rescue||CUR.type==="fortress")) snapshot(CUR.lbl||("Mission "+CUR.id));  /* safety roll-back point */
   showWin(firstTime);
