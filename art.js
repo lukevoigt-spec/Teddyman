@@ -275,31 +275,36 @@ function allyFace(kind){
 
 /* ---- THE VIXEN (Act-2 villain; sly woman who morphs into a dragon) ---- */
 function vixenSVG(w=240){
+const u="x"+(__huid++);
 return `<svg viewBox="-90 -130 300 360" width="${w}" aria-hidden="true">
 <defs>
-<linearGradient id="vxhair" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e23b6d"/><stop offset="1" stop-color="#7a1442"/></linearGradient>
-<linearGradient id="vxgown" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a1840"/><stop offset="1" stop-color="#2a0c20"/></linearGradient>
+<linearGradient id="vxhair" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#f0497e"/><stop offset=".55" stop-color="#b51f56"/><stop offset="1" stop-color="#6a0f3a"/></linearGradient>
+<linearGradient id="vxgown" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#6e1f4e"/><stop offset="1" stop-color="#220818"/></linearGradient>
+<radialGradient id="${u}skin" cx=".42" cy=".34" r=".8"><stop offset="0" stop-color="#ffe0cb"/><stop offset=".7" stop-color="#f6cdb6"/><stop offset="1" stop-color="#e3aa8c"/></radialGradient>
+<radialGradient id="${u}aura" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#e0307a" stop-opacity=".5"/><stop offset=".55" stop-color="#a01050" stop-opacity=".15"/><stop offset="1" stop-color="#a01050" stop-opacity="0"/></radialGradient>
+<radialGradient id="${u}eye" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#d6ffce"/><stop offset=".5" stop-color="#44e07a"/><stop offset="1" stop-color="#1e8a44"/></radialGradient>
+<filter id="${u}lit" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="4" result="b"/><feSpecularLighting in="b" surfaceScale="4.5" specularConstant=".45" specularExponent="16" lighting-color="#ffe6f2" result="s"><fePointLight x="20" y="-130" z="150"/></feSpecularLighting><feComposite in="s" in2="SourceAlpha" operator="in" result="sc"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="sc"/></feMerge></filter>
+<filter id="${u}glow" x="-120%" y="-120%" width="340%" height="340%"><feGaussianBlur stdDeviation="3.5"/></filter>
 </defs>
-<!-- dragon-wing hint behind her (she morphs) -->
-<path d="M40 60 Q-70 -10 -78 90 Q-30 60 -8 96 Q-44 90 -40 150 Q-2 110 30 120Z" fill="#3a1030" stroke="#150f2e" stroke-width="5" opacity=".85"/>
-<path d="M80 60 Q190 -10 198 90 Q150 60 128 96 Q164 90 160 150 Q122 110 90 120Z" fill="#3a1030" stroke="#150f2e" stroke-width="5" opacity=".85"/>
-<!-- gown -->
+<style>@media (prefers-reduced-motion: no-preference){.xfloat{animation:${u}fl 5s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}.xeye{animation:${u}gl 2.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}}@keyframes ${u}fl{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(.6deg)}}@keyframes ${u}gl{0%,100%{opacity:.5}50%{opacity:1}}</style>
+<g class="xaura"><ellipse cx="78" cy="70" rx="158" ry="166" fill="url(#${u}aura)"/></g>
+<g class="xfloat"><g filter="url(#${u}lit)">
+<path d="M40 60 Q-70 -10 -78 90 Q-30 60 -8 96 Q-44 90 -40 150 Q-2 110 30 120Z" fill="#3a1030" stroke="#150f2e" stroke-width="5" opacity=".9"/>
+<path d="M80 60 Q190 -10 198 90 Q150 60 128 96 Q164 90 160 150 Q122 110 90 120Z" fill="#3a1030" stroke="#150f2e" stroke-width="5" opacity=".9"/>
 <path d="M40 150 Q60 120 96 120 Q132 120 140 150 L162 226 L18 226Z" fill="url(#vxgown)" stroke="#150f2e" stroke-width="6"/>
-<!-- flowing red hair -->
 <path d="M44 18 Q24 70 18 140 Q40 120 52 150 Q56 100 70 70Z" fill="url(#vxhair)" stroke="#150f2e" stroke-width="5"/>
 <path d="M136 18 Q156 70 162 140 Q140 120 128 150 Q124 100 110 70Z" fill="url(#vxhair)" stroke="#150f2e" stroke-width="5"/>
-<!-- face -->
-<circle cx="90" cy="64" r="46" fill="#f6d3c0" stroke="#150f2e" stroke-width="6"/>
+<circle cx="90" cy="64" r="46" fill="url(#${u}skin)" stroke="#150f2e" stroke-width="6"/>
 <path d="M44 50 Q40 -2 90 -2 Q140 -2 136 50 Q120 22 96 26 Q120 6 84 14 Q104 0 70 12 Q50 20 56 44 Q48 44 44 50Z" fill="url(#vxhair)" stroke="#150f2e" stroke-width="6" stroke-linejoin="round"/>
-<!-- cat-green sly eyes -->
+<g class="xeye" filter="url(#${u}glow)"><ellipse cx="73" cy="58" rx="8" ry="6" fill="#44e07a"/><ellipse cx="107" cy="58" rx="8" ry="6" fill="#44e07a"/></g>
 <path d="M62 58 Q72 50 84 58 Q74 66 62 58Z" fill="#fff"/><path d="M96 58 Q108 50 118 58 Q106 66 96 58Z" fill="#fff"/>
-<ellipse cx="73" cy="58" rx="3" ry="5.5" fill="#3fae6b"/><ellipse cx="107" cy="58" rx="3" ry="5.5" fill="#3fae6b"/>
+<ellipse cx="73" cy="58" rx="3.2" ry="6" fill="url(#${u}eye)"/><ellipse cx="107" cy="58" rx="3.2" ry="6" fill="url(#${u}eye)"/>
+<ellipse cx="73" cy="58" rx="1.3" ry="5" fill="#150f2e"/><ellipse cx="107" cy="58" rx="1.3" ry="5" fill="#150f2e"/>
 <path d="M58 52 Q72 44 86 50 M94 50 Q108 44 122 52" stroke="#150f2e" stroke-width="3" fill="none" stroke-linecap="round"/>
-<!-- sly grin -->
 <path d="M70 84 Q90 98 112 82 Q98 92 70 84Z" fill="#a3243f" stroke="#150f2e" stroke-width="3.5" stroke-linejoin="round"/>
-<!-- little dragon horns -->
 <path d="M58 8 Q50 -16 64 -20 Q60 -6 70 4Z" fill="#7a1442" stroke="#150f2e" stroke-width="4"/>
 <path d="M122 8 Q130 -16 116 -20 Q120 -6 110 4Z" fill="#7a1442" stroke="#150f2e" stroke-width="4"/>
+</g></g>
 </svg>`;}
 
 /* ---- time portal (static swirl — NO flicker) ---- */
@@ -372,29 +377,32 @@ return `<svg viewBox="-20 -40 240 420" width="${w}" aria-hidden="true">
 
 /* ---- DRAGON — Act-2 boss (the Vixen's dragon army). Placeholder. ---- */
 function dragonSVG(w=240){
+const u="d"+(__huid++);
 return `<svg viewBox="-30 -40 300 320" width="${w}" aria-hidden="true">
 <defs>
-<linearGradient id="dbody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fae6b"/><stop offset="1" stop-color="#1e6b3e"/></linearGradient>
-<linearGradient id="dwing" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a1442"/><stop offset="1" stop-color="#3a0f24"/></linearGradient>
+<linearGradient id="dbody" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#5fd089"/><stop offset=".5" stop-color="#34a061"/><stop offset="1" stop-color="#155534"/></linearGradient>
+<linearGradient id="dwing" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#9c1c52"/><stop offset=".6" stop-color="#5a1030"/><stop offset="1" stop-color="#2e0a1c"/></linearGradient>
+<radialGradient id="${u}aura" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff7a2e" stop-opacity=".5"/><stop offset=".55" stop-color="#e0301a" stop-opacity=".15"/><stop offset="1" stop-color="#e0301a" stop-opacity="0"/></radialGradient>
+<radialGradient id="${u}eye" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff7c4"/><stop offset=".5" stop-color="#ffce3a"/><stop offset="1" stop-color="#ff7a1e"/></radialGradient>
+<linearGradient id="${u}flame" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ffd75e"/><stop offset=".5" stop-color="#ff8a3d"/><stop offset="1" stop-color="#e6453c"/></linearGradient>
+<filter id="${u}lit" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="4" result="b"/><feSpecularLighting in="b" surfaceScale="5" specularConstant=".5" specularExponent="16" lighting-color="#eaffe0" result="s"><fePointLight x="60" y="-120" z="150"/></feSpecularLighting><feComposite in="s" in2="SourceAlpha" operator="in" result="sc"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="sc"/></feMerge></filter>
+<filter id="${u}glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4"/></filter>
 </defs>
-<!-- wings -->
-<path d="M70 110 Q-26 60 -22 170 Q24 130 52 168 Q10 150 26 200 Q60 150 96 156Z" fill="url(#dwing)" stroke="#150f2e" stroke-width="6"/>
-<path d="M170 110 Q266 60 262 170 Q216 130 188 168 Q230 150 214 200 Q180 150 144 156Z" fill="url(#dwing)" stroke="#150f2e" stroke-width="6"/>
-<!-- body/neck -->
+<style>@media (prefers-reduced-motion: no-preference){.dfloat{animation:${u}fl 4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}.dflapL{animation:${u}flL 2.8s ease-in-out infinite;transform-box:fill-box;transform-origin:90% 30%}.dflapR{animation:${u}flR 2.8s ease-in-out infinite;transform-box:fill-box;transform-origin:10% 30%}.deye{animation:${u}gl 2s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}.dflame{animation:${u}fk .55s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 0}}@keyframes ${u}fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}@keyframes ${u}flL{0%,100%{transform:rotate(2deg)}50%{transform:rotate(-5deg)}}@keyframes ${u}flR{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(5deg)}}@keyframes ${u}gl{0%,100%{opacity:.55}50%{opacity:1}}@keyframes ${u}fk{0%,100%{transform:scaleY(1) scaleX(1)}50%{transform:scaleY(1.25) scaleX(.9)}}</style>
+<g class="daura"><ellipse cx="120" cy="150" rx="170" ry="150" fill="url(#${u}aura)"/></g>
+<g class="dfloat"><g filter="url(#${u}lit)">
+<g class="dflapL"><path d="M70 110 Q-26 60 -22 170 Q24 130 52 168 Q10 150 26 200 Q60 150 96 156Z" fill="url(#dwing)" stroke="#150f2e" stroke-width="6"/></g>
+<g class="dflapR"><path d="M170 110 Q266 60 262 170 Q216 130 188 168 Q230 150 214 200 Q180 150 144 156Z" fill="url(#dwing)" stroke="#150f2e" stroke-width="6"/></g>
 <path d="M86 240 Q70 170 100 140 Q120 120 120 96 Q120 120 140 140 Q170 170 154 240Z" fill="url(#dbody)" stroke="#150f2e" stroke-width="6"/>
-<!-- belly scales -->
 <g stroke="#9fe870" stroke-width="3" opacity=".5" fill="none"><path d="M108 160 H132 M106 184 H134 M108 208 H132"/></g>
-<!-- head -->
 <path d="M70 70 Q72 24 120 22 Q168 24 170 70 Q150 96 120 96 Q90 96 70 70Z" fill="url(#dbody)" stroke="#150f2e" stroke-width="6"/>
-<!-- snout -->
-<path d="M88 72 Q120 110 152 72 Q140 88 120 88 Q100 88 88 72Z" fill="#1e6b3e" stroke="#150f2e" stroke-width="5"/>
-<!-- horns -->
+<path d="M88 72 Q120 110 152 72 Q140 88 120 88 Q100 88 88 72Z" fill="#175f37" stroke="#150f2e" stroke-width="5"/>
 <path d="M78 34 Q60 6 76 -6 Q78 14 92 26Z" fill="#e8cfa0" stroke="#150f2e" stroke-width="5"/>
 <path d="M162 34 Q180 6 164 -6 Q162 14 148 26Z" fill="#e8cfa0" stroke="#150f2e" stroke-width="5"/>
-<!-- glowing eyes -->
-<g stroke="none"><path d="M92 56 Q102 48 112 56 Q102 64 92 56Z" fill="#ffd75e"/><path d="M128 56 Q138 48 148 56 Q138 64 128 56Z" fill="#ffd75e"/>
-<circle cx="102" cy="56" r="3" fill="#150f2e"/><circle cx="138" cy="56" r="3" fill="#150f2e"/></g>
-<!-- nostrils + little flame -->
+<g class="deye" filter="url(#${u}glow)"><ellipse cx="102" cy="56" rx="11" ry="9" fill="#ff8a1e"/><ellipse cx="138" cy="56" rx="11" ry="9" fill="#ff8a1e"/></g>
+<g stroke="none"><path d="M92 56 Q102 47 112 56 Q102 65 92 56Z" fill="url(#${u}eye)"/><path d="M128 56 Q138 47 148 56 Q138 65 128 56Z" fill="url(#${u}eye)"/>
+<ellipse cx="102" cy="56" rx="2.4" ry="5" fill="#150f2e"/><ellipse cx="138" cy="56" rx="2.4" ry="5" fill="#150f2e"/></g>
 <circle cx="110" cy="80" r="2.5" fill="#150f2e"/><circle cx="130" cy="80" r="2.5" fill="#150f2e"/>
-<path d="M120 92 q-8 14 0 26 q8 -12 0 -26Z" fill="#ff8a3d" stroke="#e6453c" stroke-width="2"/>
+</g></g>
+<g class="dflame"><path d="M120 90 q-13 22 -5 40 q-6 -2 -6 -10 q-7 14 1 26 q10 14 20 0 q9 -13 1 -26 q0 8 -6 10 q9 -18 -5 -40Z" fill="url(#${u}flame)" stroke="#e6453c" stroke-width="1.5"/><path d="M120 104 q-7 12 -2 22 q9 10 4 -2 q6 -10 -2 -20Z" fill="#fff3c4" opacity=".8"/></g>
 </svg>`;}
