@@ -654,16 +654,11 @@ body.calm .bubble::after{animation:none;}
 body.calm #introArt.talking>*,body.calm #interArt.talking>*{animation:none;}
 
 /* ===================== CINEMATIC CUTSCENES (story beats) =====================
-   Movie-mode chrome + per-beat drama for the intro / Act-1→Act-2 interlude.
-   Letterbox bars slide in on body.cinematic; each beat fades/pushes in; villain
-   beats wash the stage red; the knight transformation flashes + glows. All motion
-   honours Calm + reduced-motion. */
-#cineBars{position:absolute;inset:0;z-index:7;pointer-events:none;}
-#cineBars .cb{position:absolute;left:0;right:0;height:clamp(26px,5vh,52px);background:#05030f;
-  transform:translateY(-100%);transition:transform .55s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 24px rgba(0,0,0,.6);}
-#cineBars .cb.bot{bottom:0;top:auto;transform:translateY(100%);}
-body.cinematic #cineBars .cb.top{transform:translateY(0);}
-body.cinematic #cineBars .cb.bot{transform:translateY(0);}
+   Per-beat drama for the intro / Act-1→Act-2 interlude: a moodier scene grade,
+   each beat fades/pushes in, villain beats wash the stage red, the knight
+   transformation flashes + glows. (Letterbox bars were REMOVED — on wide/landscape
+   screens they read as the screen being cut off and overlapped the HUD buttons.)
+   All motion honours Calm + reduced-motion. */
 /* deeper, moodier grade while a cutscene plays */
 body.cinematic #sceneGrade{background:
   radial-gradient(ellipse 128% 104% at 50% 40%, transparent 40%, rgba(5,2,14,.66) 100%),
@@ -680,7 +675,6 @@ body.cine-villain #sceneGrade{background:
 @keyframes transformPulse{0%{filter:brightness(2.4) drop-shadow(0 0 0 #fff);}
   30%{filter:brightness(1.5) drop-shadow(0 0 26px #bfe3ff);}100%{filter:none;}}
 body.calm .panelart.beatin,body.calm .panelart.transformfx{animation:none;}
-body.calm #cineBars .cb{transition:none;}
 
 /* ===================== UNLOCK CARD (reward reveal) ===================== */
 #unlockCard{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;

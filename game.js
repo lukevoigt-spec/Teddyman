@@ -231,7 +231,7 @@ function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.r
   /* diegetic corner-bracket frame on the gameplay/learning screens only (not the
      title/map/base/cutscenes, where it'd crowd or clash) */
   document.body.classList.toggle("framed", FRAME_SLOTS.has(BG_MAP[id]));
-  /* cinematic "movie mode" (letterbox + moodier grade) on the story cutscenes */
+  /* cinematic "movie mode" (moodier scene grade) on the story cutscenes */
   const cine=(id==="scrIntro"||id==="scrInter");
   document.body.classList.toggle("cinematic", cine);
   if(!cine)document.body.classList.remove("cine-villain");
