@@ -1219,8 +1219,11 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
   const sentTotal=MISSIONS.filter(m=>m.type==="sentence").length;
   const power=(currentAct()===2?["Squire","Soldier","Knight"]:["Hero","Super Hero","Mega Hero"])[heroOpts().muscle];
   const lettersRow=taught.length? taught.map(g=>`<span class="pgem" style="background:${GEMCOLOR[g]||'#888'}">${g.toUpperCase()}</span>`).join(" ") : "<i>none yet</i>";
-  /* ----- level-override slider: where he's unlocked to, drag to move him ----- */
-  const pm=playMissions(currentAct());
+  /* ----- level-override slider: where he's unlocked to, drag to move him -----
+     spans the WHOLE campaign (all acts in play order), so the parent can fast-
+     forward across the Act-1→Act-2 boundary to test later content. */
+  const pm=ACTS.flatMap(a=>playMissions(a.id));
+  const mActOf=m=>{ const z=ZONES.find(zz=>zz.id===m.z); return (z&&z.act)||1; };
   const doneCnt=pm.filter(m=>S.done[m.id]).length;
   const lvlLabel=v=>{ if(v<=0)return "Very start"; const m=pm[Math.min(v,pm.length)-1]; const z=ZONES.find(zz=>zz.id===m.z);
     return (z?z.name+" · ":"")+(m.lbl||("Mission "+m.id)); };
@@ -1293,6 +1296,8 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
       if(!confirm("Move "+profileName(ACTIVE)+" to Level "+v+" of "+pm.length+"?\n\n• Missions up to here are marked DONE; later ones are re-locked.\n• Gear and the intro/scan tutorials adjust to match (Level 0 = fresh start).\n• A backup is saved first — undo any time from “Backups” below."))return;
       snapshot("before level change");
       pm.forEach((m,i)=>{ if(i<v)S.done[m.id]=true; else delete S.done[m.id]; });
+      S.act = v>0 ? mActOf(pm[v-1]) : 1;   /* follow the slider across the act boundary */
+      if(S.act===2)S.act2intro=true;       /* skip the one-time Noah intro when fast-forwarded */
       S.gear=Object.keys(GEAR_AT).filter(id=>S.done[id]).map(id=>GEAR_AT[id]);
       /* keep the tutorial flags consistent with the simulated progress: level 0 =
          a true fresh start (intro + scan tutorials play again), any progress skips

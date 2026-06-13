@@ -58,34 +58,44 @@ const Aud={
   stop(){ this.token++; speechSynthesis.cancel(); if(this.cur){try{this.cur.pause();}catch(e){}this.cur=null;} },
   play(ids){ this.stop(); const my=this.token;
     const seq=Array.isArray(ids)?ids.slice():[ids];
-    /* watchdog so a flow can never hang — but generous enough NOT to fire before a
-       real (recorded, longer-than-TTS) line finishes, or it would cut the narration
-       off mid-sentence. Genuine hangs are still escapable via the ⏭ skip (2.6s). */
-    const cap=6000+9000*seq.length;
     if(typeof Music!=="undefined" && Music.duck) Music.duck();   /* dip the music under narration */
-    const core=new Promise(res=>{
-      const next=()=>{ if(my!==this.token){res();return;}
-        if(!seq.length){res();return;}
+    /* PER-CLIP advance: each clip resolves on its OWN onended (snappy auto-advance),
+       with a per-clip watchdog tightened to the clip's real duration as a fallback if
+       onended never fires (iPad Safari). No global time cap — so a long recorded line
+       is never cut mid-sentence, and the flow still advances right when each clip ends. */
+    return new Promise(resolve=>{
+      const finish=()=>{ if(typeof Music!=="undefined" && Music.unduck) Music.unduck(); resolve(); };
+      const next=()=>{
+        if(my!==this.token){ finish(); return; }    /* superseded by a newer play()/stop() */
+        if(!seq.length){ finish(); return; }
         const id=seq.shift(); const L=LINES[id]||{t:id}; const src=clipFor(id);
         if(src){
           const a=new Audio(src); this.cur=a; a.volume=this.vol;
-          a.onended=()=>{this.cur=null;next();}; a.onerror=()=>{this.cur=null;ttsOne();};
-          a.play().catch(()=>ttsOne());
-          function ttsOne(){ Aud._tts(L,my).then(next); }
+          let advanced=false, wd=null;
+          const go=()=>{ if(advanced)return; advanced=true; if(wd)clearTimeout(wd); next(); };
+          const fail=()=>{ if(advanced)return; advanced=true; if(wd)clearTimeout(wd); Aud._tts(L,my).then(next); };
+          a.onended=go; a.onerror=fail;
+          wd=setTimeout(go,15000);   /* fallback until we know the real duration */
+          const pr=a.play();
+          if(pr&&pr.then) pr.then(()=>{ if(advanced)return;
+              const d=(isFinite(a.duration)&&a.duration>0)? a.duration*1000+1300 : 15000;
+              if(wd)clearTimeout(wd); wd=setTimeout(go,d);
+            }).catch(fail);
         } else { this._tts(L,my).then(next); }
-      }; next();
+      };
+      next();
     });
-    const race=Promise.race([core,new Promise(r=>setTimeout(r,cap))]);
-    race.then(()=>{ if(typeof Music!=="undefined" && Music.unduck) Music.unduck(); });   /* restore after */
-    return race;
   },
   _tts(L,my){ return new Promise(res=>{
-      const guard=setTimeout(res,8000);
       if(!("speechSynthesis" in window)){res();return;}
       if(!this.voice)this.pick();
-      const u=new SpeechSynthesisUtterance(L.t);
+      const txt=(L.t||"")+"";
+      const u=new SpeechSynthesisUtterance(txt);
       if(this.voice)u.voice=this.voice;
       u.rate=L.r||0.92; u.pitch=1.05; u.volume=this.vol;
+      /* text-proportional guard: a flaky onend (iPad) can't stall the flow, but it's
+         long enough not to clip a real spoken line. ~75ms/char, 1–11s. */
+      const guard=setTimeout(res, Math.min(11000, Math.max(1500, 900+txt.length*75)));
       u.onend=()=>{clearTimeout(guard);res();}; u.onerror=()=>{clearTimeout(guard);res();};
       speechSynthesis.speak(u);
   });},
