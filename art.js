@@ -273,9 +273,11 @@ function allyFace(kind){
     `<path d="M19 -8 Q30 6 23 22 Q19 8 15 -2Z" fill="#a87f50" stroke="#150f2e" stroke-width="2.5"/>`+
     allyEyes()+ smile+
     `<path d="M0 22 q3 -4 6 -1 q3 3 -1 6 l-5 4 -5 -4 q-4 -3 -1 -6 q3 -3 6 1z" fill="#e6453c" stroke="#150f2e" stroke-width="1.6"/>`;
-  if(kind==="tank")return head+   /* Archie — longer, shaggy dishwater-blonde hair */
-    `<path d="M-26 2 Q-28 -32 0 -33 Q28 -32 26 0 Q22 -18 14 -14 Q18 -27 7 -21 Q9 -31 -3 -22 Q-6 -31 -14 -21 Q-12 -28 -22 -14 Q-26 -8 -26 2Z" fill="#c2a067" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>`+
-    `<path d="M-25 -2 Q-29 16 -22 25 L-17 -8Z M25 -2 Q29 16 22 25 L17 -8Z" fill="#c2a067" stroke="#150f2e" stroke-width="2.5"/>`+
+  if(kind==="tank")return head+   /* Archie — golden-blond, tousled, side-swept fringe (from his photo) */
+    `<path d="M-26 -2 Q-30 -32 0 -34 Q30 -32 26 -2 Q23 -15 16 -14 Q19 -26 4 -25 Q-2 -26 -8 -24 Q-14 -26 -20 -16 Q-25 -10 -26 -2Z" fill="#ddb968" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>`+
+    `<path d="M18 -23 Q3 -7 -21 -13 Q-9 -11 -1 -15 Q-14 -9 -19 -3 Q-4 -17 13 -16 Q17 -21 18 -23Z" fill="#e9ce80" stroke="#150f2e" stroke-width="2.4" stroke-linejoin="round"/>`+
+    `<path d="M-24 -5 Q-31 7 -25 16 L-19 -10Z" fill="#ddb968" stroke="#150f2e" stroke-width="2.2"/>`+
+    `<path d="M25 -7 Q31 3 26 12 L20 -11Z" fill="#ddb968" stroke="#150f2e" stroke-width="2.2"/>`+
     allyEyes()+ smile;
   if(kind==="kendall")return head+   /* Miss Kendall — kind teacher (brown hair in a low bun) — placeholder until a photo */
     `<path d="M-25 -2 Q-27 -30 0 -30 Q27 -30 25 -2 Q25 18 18 26 L15 -6 Q14 -22 0 -20 Q-14 -22 -15 -6 L-18 26 Q-25 18 -25 -2Z" fill="#7a5230" stroke="#150f2e" stroke-width="3"/>`+
@@ -345,7 +347,43 @@ const BODY_CFG={
   mom:     {col:"#ff7a6b", pose:"stand", init:"M"},
   dad:     {col:"#2c5fb0", pose:"flex",  init:"D"}
 };
+/* dispatch: characters with a real-life outfit get a bespoke body; the rest use
+   the generic caped super-suit template. */
 function allyBody(kind,w=200){
+  if(kind==="tank")return archieBody(w);
+  return genericBody(kind,w);
+}
+/* ARCHIE — sporty athlete: team jersey (#7), athletic shorts, crew socks + sneakers. */
+function archieBody(w=200){ const u="ar"+(__huid++), skin="#f3c79c",
+  jer="#ff7a2f", jerD="#c9501a", sho="#26407a", shoD="#15234a";
+  const armS=d=>`<path d="${d}" fill="none" stroke="#150f2e" stroke-width="16" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${skin}" stroke-width="11" stroke-linecap="round"/>`;
+  return `<svg viewBox="-72 -116 144 256" width="${w}" aria-hidden="true">
+<defs>
+<linearGradient id="${u}j" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${jer}"/><stop offset="1" stop-color="${jerD}"/></linearGradient>
+<linearGradient id="${u}s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sho}"/><stop offset="1" stop-color="${shoD}"/></linearGradient>
+<radialGradient id="${u}au" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff9a4f" stop-opacity=".42"/><stop offset="1" stop-color="#ff9a4f" stop-opacity="0"/></radialGradient>
+</defs>
+<ellipse cx="0" cy="118" rx="46" ry="11" fill="#000" opacity=".34"/>
+<ellipse cx="0" cy="-4" rx="80" ry="118" fill="url(#${u}au)"/>
+${armS("M-30 -34 Q-48 -8 -42 28")}${armS("M30 -34 Q48 -8 42 28")}
+<circle cx="-42" cy="30" r="6.5" fill="${skin}" stroke="#150f2e" stroke-width="3.5"/>
+<circle cx="42" cy="30" r="6.5" fill="${skin}" stroke="#150f2e" stroke-width="3.5"/>
+<rect x="-21" y="58" width="15" height="42" rx="6.5" fill="${skin}" stroke="#150f2e" stroke-width="4"/>
+<rect x="6" y="58" width="15" height="42" rx="6.5" fill="${skin}" stroke="#150f2e" stroke-width="4"/>
+<rect x="-22" y="95" width="17" height="17" rx="3.5" fill="#fff" stroke="#150f2e" stroke-width="3.5"/>
+<rect x="5" y="95" width="17" height="17" rx="3.5" fill="#fff" stroke="#150f2e" stroke-width="3.5"/>
+<rect x="-22" y="99" width="17" height="3.4" fill="${jer}"/><rect x="5" y="99" width="17" height="3.4" fill="${jer}"/>
+<path d="M-22 110 L-4 110 L-4 116 Q-4 121 -11 121 L-28 121 Q-31 111 -22 110Z" fill="#f0f0f2" stroke="#150f2e" stroke-width="3.5" stroke-linejoin="round"/>
+<path d="M22 110 L4 110 L4 116 Q4 121 11 121 L28 121 Q31 111 22 110Z" fill="#f0f0f2" stroke="#150f2e" stroke-width="3.5" stroke-linejoin="round"/>
+<path d="M-26 117 h17 M9 117 h17" stroke="#150f2e" stroke-width="2" opacity=".5"/>
+<path d="M-22 30 L22 30 L22 50 Q12 57 2 55 L0 42 L-2 55 Q-12 57 -22 50Z" fill="url(#${u}s)" stroke="#150f2e" stroke-width="5"/>
+<path d="M-34 -42 Q-43 -16 -23 34 L23 34 Q43 -16 34 -42 Q24 -47 18 -44 Q0 -34 -18 -44 Q-24 -47 -34 -42Z" fill="url(#${u}j)" stroke="#150f2e" stroke-width="5.5"/>
+<path d="M-18 -44 Q0 -33 18 -44" fill="none" stroke="${jerD}" stroke-width="3.4" stroke-linecap="round"/>
+<text x="0" y="2" text-anchor="middle" font-family="Bangers,sans-serif" font-size="28" fill="#fff" stroke="${jerD}" stroke-width="1.2">7</text>
+<g transform="translate(0 -80) scale(1.04)">${allyFace("tank")}</g>
+</svg>`;
+}
+function genericBody(kind,w=200){
   const cfg=BODY_CFG[kind]||BODY_CFG.tank, col=cfg.col, dk=_shade(col,.40), u="bd"+(__huid++), skin="#ffd3b0";
   const fist=(x,y)=>`<circle cx="${x}" cy="${y}" r="6.5" fill="${skin}" stroke="#150f2e" stroke-width="3.5"/>`;
   const limb=d=>`<path d="${d}" fill="none" stroke="#150f2e" stroke-width="17" stroke-linecap="round"/>`+
