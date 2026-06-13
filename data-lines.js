@@ -208,7 +208,7 @@ const LINES={
   interlude3:{t:"Hello, little hero. Such a shame to spoil your party. I'm whisking your precious friends far, far away — to a time long, long ago. Do try to catch up... if you can. Ta-ta!", v:"V"},
   interlude4:{t:"She slipped through a shimmering time portal — to the age of KNIGHTS and DRAGONS! A mighty wizard named Noah the Red is already there, waiting to help you, hero."},
   interlude_knight:{t:"You leap into the portal! In a swirl of light your gems and gear are gone... and you rise again as SUPER TEDDY THE KNIGHT! A brave new quest awaits."},
-  interlude5:{t:"And so a brave new quest begins. Onward, Sir Teddy — the medieval realm awaits!"},
+  interlude5:{t:"And so a brave new quest begins. Onward, Sir Teddy — the Magic Kingdom awaits!"},
   /* ===== ACT-2 FINALE — Dragon Keep / rescue Miss Kendall ===== */
   f2_intro:{t:"THE DRAGON KEEP, Sir Teddy! The Vixen has Miss Kendall locked in the highest tower, guarded by her mightiest dragon. Use your RUNES, your BLENDS, and your MAGIC-E — bring it down!"},
   f2_p1:{t:"Break the dragon ward! Tap the gem that makes the sound…"},
@@ -222,7 +222,7 @@ const LINES={
   f2_win:{t:"The dragon is defeated! The Vixen flees in a swirl of smoke!"},
   kendall1:{t:"You did it, Sir Teddy! You READ your way through the whole Dragon Keep!"},
   kendall2:{t:"Teddy! My brave knight — you came for me! I always knew you would learn to read. Thank you, hero!"},
-  kendall3:{t:"MISS KENDALL is FREE! The medieval realm is safe, and you are a TRUE READER and a TRUE KNIGHT. What a champion!"},
+  kendall3:{t:"MISS KENDALL is FREE! The Magic Kingdom is safe, and you are a TRUE READER and a TRUE KNIGHT. What a champion!"},
   free_tank:{t:"CAGE DESTROYED! You freed Archie! TANK has joined the Hero League... and he is ready to SMASH!"},
   free_flip:{t:"CAGE DESTROYED! You freed Ellie! FLIP has joined the league... backflips, cartwheels, and mid-air gem grabs!"},
   free_sunny:{t:"CAGE DESTROYED! You freed William! SUNNY has joined the league... and things are about to get silly!"},

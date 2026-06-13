@@ -791,3 +791,15 @@ body[data-act="2"] .vsec,body[data-act="2"] .basehero,body[data-act="2"] .baseco
   border-color:#6a5436;background:rgba(40,30,16,.52);}
 body[data-act="2"] .basecard-h,body[data-act="2"] .vsec-h,body[data-act="2"] .baserank #powerLbl,
 body[data-act="2"] .basetitle,body[data-act="2"] .basecoins{color:#e6c576;}
+/* MAGIC KINGDOM display font — medieval lettering on Act-2 CHROME only (titles,
+   headers, HUD city, rank). Learning tiles stay Andika; narration + buttons stay
+   in their legible fonts. Falls back to the comic/sans face if the webfont fails. */
+body[data-act="2"] .comic,
+body[data-act="2"] #hudTitle,
+body[data-act="2"] .hudtitle,
+body[data-act="2"] .basetitle,
+body[data-act="2"] .basecard-h,
+body[data-act="2"] .vsec-h,
+body[data-act="2"] .setcard-h,
+body[data-act="2"] .baserank #powerLbl{
+  font-family:'MedievalSharp', 'Bangers', cursive; letter-spacing:.02em;}

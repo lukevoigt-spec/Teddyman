@@ -1,5 +1,5 @@
 /* =========================================================
-   SUPER TEDDY — STAR FORCE CITY (Act 1) + MEDIEVAL REALM (Act 2)
+   SUPER TEDDY — STAR FORCE CITY (Act 1) + MAGIC KINGDOM (Act 2)
    The game core: boot/title/intro, mission handlers, base/shop/training,
    settings, win/reward. Data/save/audio/map/allies live in their own modules
    (see CLAUDE.md repo layout + load order). The world map is a single-screen
@@ -1040,7 +1040,7 @@ function showWin(firstTime){ show("scrWin");
   if(CUR.type==="fortress"){
     $("btnWinNext").style.display="none";
     if(currentAct()===2){   /* Act-2 finale = end of the medieval quest → back to the (now-complete) map */
-      $("btnWinMap").textContent="MEDIEVAL REALM ➜";
+      $("btnWinMap").textContent="MAGIC KINGDOM ➜";
       $("btnWinMap").onclick=()=>toMap();
     } else {                /* Act-1 finale → the Act-1→Act-2 handoff cutscene */
       $("btnWinMap").textContent="CONTINUE ➜";

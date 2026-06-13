@@ -172,7 +172,7 @@ const ZONES=[
   { id:8, name:"VEX'S FORTRESS", bg:"fortress",
     letters:[],   /* the Act-1 finale boss */
     nodes:[[400,-4400]] },
-  /* ===== ACT 2 · MEDIEVAL REALM — zone 1: consonant DIGRAPHS (sh ch th wh ck ng) ===== */
+  /* ===== ACT 2 · MAGIC KINGDOM (medieval) — zone 1: consonant DIGRAPHS (sh ch th wh ck ng) ===== */
   { id:101, name:"CASTLETON", bg:"keep", act:2,
     letters:["sh","ch","th","wh","ck","ng"],
     base:[470,1408],
@@ -211,7 +211,7 @@ const ACTS=[
      through a time portal to the medieval age and becomes a KNIGHT; she steals
      his powers, so muscle + gear RESET (act-scoped) — fresh start, fights
      repetition. Mentor = Noah the Red (wizard). Rescue = Miss Kendall. */
-  { id:2, city:"MEDIEVAL REALM", villain:"THE VIXEN", rescue:"MISS KENDALL",
+  { id:2, city:"MAGIC KINGDOM", villain:"THE VIXEN", rescue:"MISS KENDALL",
     mentor:"NOAH THE RED", fortressLabel:"DRAGON KEEP · RESCUE MISS KENDALL",
     idBase:100, theme:"knight" }
 ];

@@ -40,6 +40,7 @@ function mapPaintSVG(){
   const a=currentAct(), zs=actZones(a), spots=ZONESPOTS[a]||[];
   const cur=curZoneIx(zs);
   let nodes="", hero="";
+  const lblFont = a===2 ? "MedievalSharp, Bangers" : "Bangers";   /* medieval lettering on the Magic Kingdom map */
   zs.forEach((z,zi)=>{
     const [x,y]=spots[zi]||[500,375];
     const st= zoneDone(z)?"done":(zi===cur?"current":"locked");
@@ -58,7 +59,7 @@ function mapPaintSVG(){
         : `<circle cx="${x}" cy="${y}" r="7" fill="#fff" opacity=".95"/>` }
       <g transform="translate(${x},${y+R+22})" filter="url(#mpill)">
         <rect x="${-pw/2}" y="-17" width="${pw}" height="34" rx="13" fill="rgba(10,5,24,.82)" stroke="${st==="locked"?"#6a6090":"#ffce3a"}" stroke-width="2.2"/>
-        <text x="0" y="6" text-anchor="middle" textLength="${pw-20}" lengthAdjust="spacingAndGlyphs" font-family="Bangers" font-size="17" fill="${st==="done"?"#9fe870":st==="locked"?"#9a92c0":"#ffe08a"}" letter-spacing="1">${nm}</text>
+        <text x="0" y="6" text-anchor="middle" textLength="${pw-20}" lengthAdjust="spacingAndGlyphs" font-family="${lblFont}" font-size="17" fill="${st==="done"?"#9fe870":st==="locked"?"#9a92c0":"#ffe08a"}" letter-spacing="1">${nm}</text>
       </g></g>`;
     if(zi===cur) hero=`<g transform="translate(${x-30} ${y-150}) scale(.26)">${heroNow(250).replace(/<svg[^>]*>|<\/svg>/g,"")}</g>`;
   });
