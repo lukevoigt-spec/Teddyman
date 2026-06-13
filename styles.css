@@ -529,6 +529,23 @@ body.scene-battle #sceneGrade{
     radial-gradient(ellipse 130% 108% at 50% 40%, transparent 44%, rgba(12,2,8,.62) 100%),
     linear-gradient(180deg, rgba(255,120,80,.10), transparent 26%);}
 body.calm #sceneGrade{transition:none;}
+/* PER-SCENE key/rim wash (driven by --scene-key/--scene-rim, set per screen in
+   show()): a warm key light spills from the top and the scene's accent rim glows
+   up from below, so each painting's palette tints the whole stage. 'screen' blend
+   lightens (a lit feel, never muddies); low opacity keeps it subtle. */
+#sceneGrade::before,#sceneGrade::after{content:"";position:absolute;inset:0;pointer-events:none;
+  mix-blend-mode:screen;transition:background .5s ease;}
+#sceneGrade::before{background:linear-gradient(180deg, var(--scene-key,#ffd48c), transparent 34%);opacity:.12;}
+#sceneGrade::after{background:radial-gradient(ellipse 120% 96% at 50% 118%, var(--scene-rim,#6db5ff), transparent 46%);opacity:.13;}
+body.calm #sceneGrade::before,body.calm #sceneGrade::after{opacity:.06;transition:none;}
+
+/* SCENE RIM-LIGHT on the big character art — a soft edge glow in the scene's
+   accent colour, so the hero/boss silhouette reads as lit by the painting behind
+   it. Direct-child SVG of each character holder; blur keeps it a gentle wrap. */
+#titleHero>svg,#baseHero>svg,#winHero>svg,#restHero>svg,.boss>svg{
+  filter:drop-shadow(0 0 15px var(--scene-rim,#6db5ff));transition:filter .5s ease;}
+body.calm #titleHero>svg,body.calm #baseHero>svg,body.calm #winHero>svg,body.calm #restHero>svg,body.calm .boss>svg{
+  filter:drop-shadow(0 0 7px var(--scene-rim,#6db5ff));transition:none;}
 
 /* ===================== AMBIENT ATMOSPHERE MOTES =====================
    Slow drifting glints behind the UI on non-learning screens only. Subtle,

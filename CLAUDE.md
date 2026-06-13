@@ -198,8 +198,12 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   learning leverage). (2) SETTINGS OVERHAUL — game-like, intuitive, add missing settings; study how real
   games lay out settings (parent flagged — current Grown-Up Corner isn't intuitive). (3) PERF "Full/Calm/
   Lite" detail tier (the new specular/blur filters are GPU-heavy on older iPads). (4) SCENE COLOR
-  HARMONIZER — per-screen --scene-key/--scene-rim CSS vars so character/UI rim-light matches the painting
-  (biggest "looks pro" lift per QA). (5) ACT-2 MEDIEVAL UI SKIN (parchment/stone chrome via
+  HARMONIZER — DONE: SCENE_TONE/SCENE_TONE2 (game.js) map each scene slot → a dominant KEY light +
+  accent RIM; show()/boot push them to body as --scene-key/--scene-rim. #sceneGrade::before/::after
+  wash each painting's palette over the stage (screen-blend, low opacity, Calm-aware) and the big
+  character art (#titleHero/#baseHero/#winHero/#restHero/.boss > svg) gets a soft scene-rim drop-shadow,
+  so the hero reads as lit by the painting behind it. Act-2 medieval scenes get warmer torch/stone/
+  dragon-fire overrides. (5) ACT-2 MEDIEVAL UI SKIN (parchment/stone chrome via
   body[data-act=2]; learning tiles stay Andika). (6) HERO EMOTION + random WIN POSES. (7) mentors
   MOUTH-MOVE during narration. (8) DIEGETIC UI FRAMES (spellbook/forge/comms). (9) DAILY-METRIC clarity
   fix (replays inflate S.daily.missions — QA P0). (10) cosmetic COLLECTIBLE upgrades (aura/cape-trim/

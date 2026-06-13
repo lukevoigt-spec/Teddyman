@@ -158,6 +158,34 @@ const $=id=>document.getElementById(id);
 const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrInter:"intro", scrScan:"lab", scrRead:"learn", scrSpell:"learn", scrMagic:"learn", scrSent:"learn", scrCloze:"learn", scrScramble:"learn", scrFortress:"battle",
   scrBase:"base", scrTrain:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
   scrBoss:"battle", scrForge:"battle", scrWin:"victory", scrRest:"rest" };
+/* SCENE HARMONIZER tones: each scene's dominant ambient KEY light + an accent
+   RIM, picked to match its painted background. show() pushes these to body as
+   --scene-key/--scene-rim so the grade overlay AND the foreground character art
+   read as lit by the same world (the scene's light wraps the hero's silhouette).
+   SCENE_TONE2 overrides the medieval Act-2 scenes (torch/stone/dragon-fire). */
+const SCENE_TONE={
+  title:  {key:"#ffd48c", rim:"#6db5ff"},   /* city night: gold key, cyan rim */
+  intro:  {key:"#c9a6ff", rim:"#7fd9ff"},   /* cutscene twilight */
+  lab:    {key:"#7fe3ff", rim:"#46f0c9"},   /* gem lab: cyan tech glow */
+  learn:  {key:"#ffe0a8", rim:"#9ad0ff"},   /* warm, focused classroom light */
+  city:   {key:"#9db8ff", rim:"#ffc93c"},   /* blue streets + gold gems */
+  battle: {key:"#ff8a5a", rim:"#9fe870"},   /* hot drama, toxic-green rim */
+  base:   {key:"#ffd06a", rim:"#5fa8ff"},   /* warm base interior + blue */
+  victory:{key:"#ffe27a", rim:"#ff8ad6"},   /* gold celebration + pink */
+  rest:   {key:"#b79cff", rim:"#7fd9ff"}    /* calm evening twilight */
+};
+const SCENE_TONE2={
+  title:  {key:"#e8c27a", rim:"#ff9a42"},
+  learn:  {key:"#ffd9a0", rim:"#c9b06a"},   /* parchment + stone */
+  city:   {key:"#e0c089", rim:"#ff9a42"},   /* sunlit medieval village */
+  battle: {key:"#ff7a3a", rim:"#ffd24a"},   /* dragon fire */
+  base:   {key:"#e8c27a", rim:"#9a7bff"}
+};
+function applySceneTone(id){
+  const slot=BG_MAP[id]||"learn";
+  const t=(currentAct()===2 && SCENE_TONE2[slot]) || SCENE_TONE[slot] || SCENE_TONE.learn;
+  document.body.style.setProperty("--scene-key", t.key);
+  document.body.style.setProperty("--scene-rim", t.rim); }
 const __bgCache={};
 const BG_EXTS=["jpg","jpeg","png","webp"];   /* drop any of these — no conversion needed */
 /* Painted scene loader — ACT-AWARE + format-flexible. Act 2+ prefers its own scene
@@ -187,8 +215,9 @@ function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.r
   $(id).classList.add("on"); $(id).classList.add("fadein");
   setTimeout(()=>$(id).classList.remove("fadein"),600);
   setBG(id);
-  /* scene harmonizer: per-act colour grade + hotter grade on battle/finale screens */
+  /* scene harmonizer: per-act colour grade + per-scene key/rim light + hotter grade on battle/finale */
   document.body.dataset.act=currentAct();
+  applySceneTone(id);
   document.body.classList.toggle("scene-battle", BG_MAP[id]==="battle");
   $("hud").style.display=(id==="scrTitle")?"none":"flex"; refreshHUD();
   const dm=$("dailyMeter"); if(dm){ dm.style.display=(id==="scrMap")?"block":"none"; if(id==="scrMap")updateDailyMeter(); } }
@@ -251,6 +280,7 @@ setBG("scrTitle");   /* the title is shown via static HTML, so load its painted 
 if(S.calm)document.body.classList.add("calm");   /* parent "Calm" visual-detail mode */
 Aud.vol = (S.vol==null?1:S.vol);                 /* parent narration volume (0–1) */
 document.body.dataset.act=currentAct();           /* scene-grade theme from boot (title is static) */
+applySceneTone("scrTitle");                        /* per-scene key/rim light for the boot title */
 document.body.classList.add("scene-ambient");     /* the boot title screen is ambient */
 $("btnStart").onclick=()=>{ Aud.pick(); if(!S.intro)startIntro(); else {Aud.play("welcome"); toMap();} };
 $("btnContinue").onclick=()=>{ Aud.pick(); Aud.play("welcome"); toMap(); };
