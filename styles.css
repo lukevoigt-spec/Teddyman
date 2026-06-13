@@ -199,7 +199,7 @@ body{
 .zapword{position:absolute;font-family:'Bangers',cursive;color:var(--gold);-webkit-text-stroke:6px var(--ink);paint-order:stroke;font-size:clamp(40px,8vw,72px);pointer-events:none;animation:zw .8s ease-out forwards;z-index:9;}
 @keyframes zw{0%{transform:scale(.4) rotate(-8deg);opacity:0}30%{opacity:1}100%{transform:scale(1.15) rotate(-8deg) translateY(-30px);opacity:0}}
 
-.panelart{position:relative;width:min(600px,90vw);border:5px solid var(--gold);border-radius:24px;overflow:hidden;background:#241b4d;box-shadow:0 14px 30px rgba(0,0,0,.5), 0 0 24px rgba(255,206,58,.22);}
+.panelart{position:relative;width:min(600px,90vw);border:5px solid var(--gold);border-radius:24px;overflow:hidden;background:rgba(20,12,44,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 14px 30px rgba(0,0,0,.5), 0 0 24px rgba(255,206,58,.22);}
 .panelart svg{display:block;width:100%;height:auto;}
 
 /* ally cheer pop — a friend's face + name bounces in during their mission type */
@@ -317,18 +317,20 @@ body{
 #bgLayer.on{box-shadow:inset 0 0 150px 36px rgba(6,3,18,.5), inset 0 -120px 130px rgba(6,3,18,.55);}
 
 /* characters & art "sit" in the scene: soft grounding shadow (+ faint hero glow) */
-#titleHero,#baseHero,#restHero,#winHero,#introArt,#interArt,.panelart,
+#titleHero,#baseHero,#restHero,#winHero,
 .boss,#bossArt,#forgeBoss,#fortVexSprite,.playercard .pchero,.allypop{
   filter:drop-shadow(0 16px 16px rgba(0,0,0,.5));}
+/* art inside the see-through panel casts its own shadow → pops in 3D */
+.panelart svg{filter:drop-shadow(0 12px 12px rgba(0,0,0,.55));}
 #titleHero,#baseHero{filter:drop-shadow(0 16px 16px rgba(0,0,0,.5)) drop-shadow(0 0 30px rgba(120,180,255,.32));}
 
 /* premium buttons: glossy top sheen + outer glow + crisp press */
 .btn{position:relative;overflow:hidden;border-width:6px;
-  box-shadow:0 8px 0 #9c6a12, 0 12px 26px rgba(0,0,0,.45), 0 0 22px rgba(255,206,58,.28);}
+  box-shadow:0 7px 0 #9c6a12, 0 9px 12px rgba(0,0,0,.4);}
 .btn::after{content:"";position:absolute;left:0;right:0;top:0;height:48%;pointer-events:none;
   background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(255,255,255,0));
   border-radius:22px 22px 50% 50%/24px 24px 36% 36%;}
-.btn.blue{box-shadow:0 8px 0 #143a85, 0 12px 26px rgba(0,0,0,.45), 0 0 22px rgba(80,150,255,.32);}
+.btn.blue{box-shadow:0 7px 0 #143a85, 0 9px 12px rgba(0,0,0,.4);}
 .btn.ghost{overflow:visible;background:rgba(16,10,38,.42);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   box-shadow:0 6px 16px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.14);}
 .btn.ghost::after{display:none;}
