@@ -17,6 +17,15 @@ result, **rename to the filename shown**, and drop it in this `art/` folder
 Priority order: `bg-title` → `bg-learn` → `bg-base` → `bg-city` → `bg-battle` →
 `bg-victory` → `bg-rest` → `bg-intro`, then the Act-2 `-a2` set.
 
+### App icon (bonus — for "Add to Home Screen")
+**→ save as `icon.png`** (this folder). It's wired up automatically (apple-touch-icon).
+> Create a 1024×1024 SQUARE app icon for a children's superhero reading game called
+> "Super Teddy." A bold, friendly emblem: a heroic masked kid-superhero bust (blue
+> mask/glasses, gold accents) centered — or a single gleaming gold hexagonal gem with
+> a stylized "super" emblem — on a rich deep-purple-to-blue radial-glow background.
+> Iconic, high-contrast, instantly readable at tiny sizes, thick clean shapes, subtle
+> glow, centered with margin. Absolutely NO text, letters, or words.
+
 ---
 
 ## ACT 1 — Star Force City (superhero)
