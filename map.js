@@ -63,7 +63,7 @@ function mapPaintSVG(){
       </g></g>`;
     if(zi===cur) hero=`<g transform="translate(${x-30} ${y-150}) scale(.26)">${heroNow(250).replace(/<svg[^>]*>|<\/svg>/g,"")}</g>`;
   });
-  return `<svg viewBox="0 0 1000 750" preserveAspectRatio="xMidYMid slice">
+  return `<svg viewBox="0 0 1000 750" preserveAspectRatio="xMidYMid meet">
     <defs>
       <radialGradient id="node_done" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#bdffdc"/><stop offset=".5" stop-color="#3ec97e"/><stop offset="1" stop-color="#0f6a40"/></radialGradient>
       <radialGradient id="node_current" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#fff1b8"/><stop offset=".5" stop-color="#ffce3a"/><stop offset="1" stop-color="#b9760f"/></radialGradient>
@@ -72,7 +72,7 @@ function mapPaintSVG(){
       <filter id="mpill" x="-15%" y="-60%" width="130%" height="220%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity=".55"/></filter>
       <style>@media (prefers-reduced-motion: no-preference){.mnode.current .obloom{animation:opul 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}}@keyframes opul{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.8;transform:scale(1.14)}}</style>
     </defs>
-    <image href="${MAPIMG[a]||MAPIMG[1]}" x="0" y="0" width="1000" height="750" preserveAspectRatio="xMidYMid slice"/>
+    <image href="${MAPIMG[a]||MAPIMG[1]}" x="0" y="0" width="1000" height="750" preserveAspectRatio="xMidYMid meet"/>
     ${mapFriends(a, zs, spots)}
     ${nodes}
     ${hero}

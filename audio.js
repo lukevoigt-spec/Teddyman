@@ -58,7 +58,10 @@ const Aud={
   stop(){ this.token++; speechSynthesis.cancel(); if(this.cur){try{this.cur.pause();}catch(e){}this.cur=null;} },
   play(ids){ this.stop(); const my=this.token;
     const seq=Array.isArray(ids)?ids.slice():[ids];
-    const cap=4000+2600*seq.length;
+    /* watchdog so a flow can never hang — but generous enough NOT to fire before a
+       real (recorded, longer-than-TTS) line finishes, or it would cut the narration
+       off mid-sentence. Genuine hangs are still escapable via the ⏭ skip (2.6s). */
+    const cap=6000+9000*seq.length;
     if(typeof Music!=="undefined" && Music.duck) Music.duck();   /* dip the music under narration */
     const core=new Promise(res=>{
       const next=()=>{ if(my!==this.token){res();return;}
