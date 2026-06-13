@@ -24,8 +24,9 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 1. NO timers as failure conditions. No countdowns on tasks. Personal-best flair only, if ever.
 2. NO harsh failure states: no "WRONG", no red X, no lives, no streak loss, no "you missed a day".
    Wrong answer = gentle dim + replay the sound + retry; after 2 misses, softly pulse the correct answer.
-3. NO strobe, rapid flashing, or high-frequency flicker anywhere (seizure-safety stance).
-   Shakes/bursts fine; flashes are not. Respect prefers-reduced-motion.
+3. Visual energy is ENCOURAGED — flashes, bursts, shakes, fast juicy feedback all welcome
+   (Teddy has no photosensitivity; gameplay/delight wins). Still respect prefers-reduced-motion
+   as a courtesy toggle, but the default look can be loud and stimulating.
 4. ANTI-GAMING RULE (critical pedagogy): sound-identification prompts must NEVER display the
    target letter or its sound-spelling on screen. The displayed prompt is generic
    ("Find the gem that makes the sound… 🔊"); only the AUDIO carries the target.
