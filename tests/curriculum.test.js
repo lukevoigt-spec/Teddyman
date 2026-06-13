@@ -16,7 +16,7 @@ const noop = () => {};
 function mkEl() {
   const b = { style: { setProperty: noop }, _html: "", classList: { _s: new Set(), add(...a){a.forEach(x=>this._s.add(x));}, remove(...a){a.forEach(x=>this._s.delete(x));}, contains(x){return this._s.has(x);}, toggle: noop },
     appendChild(c){this.children.push(c);}, removeChild: noop, remove: noop, setAttribute: noop, addEventListener: noop,
-    querySelector(){return mkEl();}, querySelectorAll(){return this.children;}, textContent: "", value: "0", focus: noop,
+    querySelector(sel){ this._qs=this._qs||{}; return this._qs[sel]||(this._qs[sel]=mkEl()); }, querySelectorAll(){return this.children;}, textContent: "", value: "0", focus: noop,
     getContext: () => ({}), children: [], select: noop, onclick: null, disabled: false, dataset: {},
     getBoundingClientRect: () => ({ left: 0, top: 0, width: 10, height: 10 }), clientWidth: 400, clientHeight: 600, offsetWidth: 400, offsetHeight: 600, className: "" };
   Object.defineProperty(b, "innerHTML", { get(){return b._html;}, set(v){ b._html = v; if (v === "") b.children.length = 0; } });
@@ -83,6 +83,38 @@ ok("every read word has a picture", picErr.length===0, picErr);
 var audErr = [];
 MISSIONS.filter(m=>m.type==="forge"||m.type==="read").forEach(m=>(m.words||[]).forEach(w=>{ if(!LINES["word_"+w]) audErr.push(w); }));
 ok("every forge/read word has a word_ audio line", audErr.length===0, [...new Set(audErr)]);
+
+grp("act id ranges + map-spot coverage");
+ok("each act's missions stay in its reserved 100-id range (ACTS.idBase)",
+  ACTS.every(function(a){ return actMissions(a.id).every(function(m){ return m.id>=a.idBase && m.id<a.idBase+100; }); }));
+ok("ZONESPOTS has a painted spot for every zone of each act",
+  [1,2].every(function(act){ return (ZONESPOTS[act]||[]).length >= actZones(act).length; }),
+  {a1:[actZones(1).length,(ZONESPOTS[1]||[]).length], a2:[actZones(2).length,(ZONESPOTS[2]||[]).length]});
+
+grp("map locking logic — no skipping ahead");
+var z1=actZones(1); S.done={};
+ok("fresh save: first zone is current (rest locked)", curZoneIx(z1)===0);
+zMissions(z1[0]).forEach(function(m){ S.done[m.id]=true; });
+ok("after the first zone is finished, the second zone becomes current", curZoneIx(z1)===1);
+S.done={};
+ok("zoneNext() returns the first UNDONE mission of a zone", (function(){ var first=zMissions(z1[0])[0], m=zoneNext(z1[0]); return m && m.id===first.id; })());
+
+grp("guards for the planned vowel-teams (ai/ee/oa) work");
+ok("sight word 'said' is NOT detected as magic-e", magicE("said")===null);
+ok("sight word 'said' stays LETTER-split (4 graphemes, no team merge)", toGraphemes("said").length===4);
+
+grp("security: parent-entered profile-name escaping");
+ok("escHTML neutralises <, >, \\" and '",
+  (function(){ var s=escHTML("<img src=x onerror=1>\\"'"); return s.indexOf("<")<0 && s.indexOf(">")<0 && s.indexOf('"')<0 && s.indexOf("'")<0; })());
+
+grp("anti-gaming: sound-ID prompt never reveals the target (CLAUDE.md #4)");
+(function(){ try{
+  S.done[0]=true; S.done[1]=true; S.done[3]=true;   // s, a, t taught
+  function findPrompt(g){ startFind(g,4,["s","a","t"],function(){}); return $("findText").querySelector("span").textContent || ""; }
+  var p1=findPrompt("s"), p2=findPrompt("a");
+  ok("find prompt is target-INDEPENDENT (same text for different sounds)", p1.length>0 && p1===p2, {p1:p1,p2:p2});
+}catch(e){ ok("anti-gaming find prompt is testable", false, String(e)); } })();
+S.done={};
 `;
 vm.runInContext(fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 
