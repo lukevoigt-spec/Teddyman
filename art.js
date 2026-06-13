@@ -43,16 +43,55 @@ return `<svg viewBox="-30 -150 310 660" width="${w}" aria-hidden="true">
 <radialGradient id="${u}skin" cx=".42" cy=".34" r=".78"><stop offset="0" stop-color="#ffe6cc"/><stop offset=".65" stop-color="#ffd4af"/><stop offset="1" stop-color="#edb085"/></radialGradient>
 <radialGradient id="${u}sh" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#0a0620" stop-opacity=".55"/><stop offset="1" stop-color="#0a0620" stop-opacity="0"/></radialGradient>
 <radialGradient id="${u}aura" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="${th.sheen}" stop-opacity=".55"/><stop offset=".5" stop-color="${th.sheen}" stop-opacity=".18"/><stop offset="1" stop-color="${th.sheen}" stop-opacity="0"/></radialGradient>
+<radialGradient id="${u}aura2" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffe28a" stop-opacity=".5"/><stop offset=".55" stop-color="#ffb938" stop-opacity=".16"/><stop offset="1" stop-color="#ffb938" stop-opacity="0"/></radialGradient>
 <radialGradient id="${u}embg" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff3c4" stop-opacity=".9"/><stop offset=".55" stop-color="#ffd75e" stop-opacity=".45"/><stop offset="1" stop-color="#ffd75e" stop-opacity="0"/></radialGradient>
 <linearGradient id="${u}capeL" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".18" stop-color="#fff" stop-opacity="0"/><stop offset=".8" stop-color="#150f2e" stop-opacity="0"/><stop offset="1" stop-color="#150f2e" stop-opacity=".35"/></linearGradient>
 <clipPath id="${u}face"><circle cx="124" cy="66" r="54"/></clipPath>
-<clipPath id="${u}tor"><path d="M64 142 Q123 120 182 142 L174 238 Q170 272 152 284 L96 284 Q76 272 72 238Z"/></clipPath></defs>
-<ellipse cx="124" cy="240" rx="150" ry="220" fill="url(#${u}aura)"/>
+<clipPath id="${u}lens"><rect x="82" y="50" width="38" height="32" rx="9"/><rect x="130" y="50" width="38" height="32" rx="9"/></clipPath>
+<clipPath id="${u}tor"><path d="M64 142 Q123 120 182 142 L174 238 Q170 272 152 284 L96 284 Q76 272 72 238Z"/></clipPath>
+<radialGradient id="${u}mote" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff7d6"/><stop offset=".4" stop-color="#ffd75e" stop-opacity=".9"/><stop offset="1" stop-color="#ffd75e" stop-opacity="0"/></radialGradient>
+<!-- sculpted specular lighting: blurs the silhouette, lights its top, clips back to shape -->
+<filter id="${u}lit" x="-25%" y="-25%" width="150%" height="150%">
+  <feGaussianBlur in="SourceAlpha" stdDeviation="4.5" result="b"/>
+  <feSpecularLighting in="b" surfaceScale="5.5" specularConstant=".5" specularExponent="16" lighting-color="#ffffff" result="s"><fePointLight x="50" y="-140" z="170"/></feSpecularLighting>
+  <feComposite in="s" in2="SourceAlpha" operator="in" result="sc"/>
+  <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="sc"/></feMerge>
+</filter>
+<!-- soft ambient-occlusion drop for figure separation -->
+<filter id="${u}drop" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="7" stdDeviation="7" flood-color="#080414" flood-opacity=".45"/></filter>
+<!-- faint fabric/energy texture -->
+<filter id="${u}tex"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .5 0"/><feComposite operator="in" in2="SourceGraphic"/></filter>
+</defs>
+<style>
+@media (prefers-reduced-motion: no-preference){
+ .hfloat{animation:${u}float 4.2s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+ .hbreath{animation:${u}breath 3.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+ .hcape{animation:${u}sway 4.8s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 0}
+ .haura{animation:${u}pulse 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}
+ .hglint{animation:${u}glint 5.5s ease-in-out infinite}
+ .hlid{animation:${u}blink 5s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 0}
+ .hmote{animation:${u}rise 5s ease-in-out infinite}
+ .hmote2{animation:${u}rise 6.4s ease-in-out .8s infinite}
+ .hmote3{animation:${u}rise 5.7s ease-in-out 1.9s infinite}
+}
+@keyframes ${u}float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes ${u}breath{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.025)}}
+@keyframes ${u}sway{0%,100%{transform:rotate(-1.4deg)}50%{transform:rotate(1.8deg)}}
+@keyframes ${u}pulse{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.06);opacity:1}}
+@keyframes ${u}glint{0%,12%{transform:translateX(-44px);opacity:0}18%{opacity:.9}26%,100%{transform:translateX(40px);opacity:0}}
+@keyframes ${u}blink{0%,94%,100%{transform:scaleY(0)}97%{transform:scaleY(1)}}
+@keyframes ${u}rise{0%{transform:translateY(0) scale(.7);opacity:0}25%{opacity:1}100%{transform:translateY(-150px) scale(1.1);opacity:0}}
+</style>
+<g class="haura"><ellipse cx="124" cy="252" rx="124" ry="206" fill="url(#${u}aura2)"/><ellipse cx="124" cy="240" rx="162" ry="232" fill="url(#${u}aura)"/></g>
+<g fill="url(#${u}mote)"><circle class="hmote" cx="58" cy="430" r="7"/><circle class="hmote2" cx="192" cy="452" r="5.5"/><circle class="hmote3" cx="120" cy="462" r="4.5"/></g>
+<g fill="#fff7d6"><path class="hmote2" d="M44 350 l2.5 7 7 2.5 -7 2.5 -2.5 7 -2.5 -7 -7 -2.5 7 -2.5z"/><path class="hmote3" d="M206 332 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2z"/><path class="hmote" d="M30 250 l2 5.5 5.5 2 -5.5 2 -2 5.5 -2 -5.5 -5.5 -2 5.5 -2z"/></g>
 <ellipse cx="123" cy="470" rx="98" ry="20" fill="url(#${u}sh)"/>
+<g class="hfloat"><g filter="url(#${u}lit)">
 ${o.weapon==="hammer"||o.weapon==="sword"?weapon:""}
+<g class="hcape">
 <path d="M62 122 Q38 220 30 350 Q28 406 50 448 Q90 426 124 436 Q170 424 200 446 Q224 402 218 346 Q210 218 184 122 Q122 104 62 122Z" fill="url(#${u}cape)" stroke="#150f2e" stroke-width="6"/>
 <path d="M62 122 Q38 220 30 350 Q28 406 50 448 Q90 426 124 436 Q170 424 200 446 Q224 402 218 346 Q210 218 184 122 Q122 104 62 122Z" fill="url(#${u}capeL)"/>
-<g stroke="${cp[1]}" stroke-width="4" fill="none" opacity=".5" stroke-linecap="round"><path d="M92 150 Q86 280 78 430"/><path d="M124 142 Q124 280 124 432"/><path d="M156 150 Q162 280 170 430"/></g>
+<g stroke="${cp[1]}" stroke-width="4" fill="none" opacity=".5" stroke-linecap="round"><path d="M92 150 Q86 280 78 430"/><path d="M124 142 Q124 280 124 432"/><path d="M156 150 Q162 280 170 430"/></g></g>
 <g stroke="#150f2e" stroke-width="6" stroke-linejoin="round">
 <path d="M96 288 L90 372 L86 412 L118 412 L124 310Z" fill="url(#${u}suit)"/>
 <path d="M150 288 L158 372 L162 412 L130 412 L126 310Z" fill="url(#${u}suit)"/>
@@ -61,13 +100,13 @@ ${o.weapon==="hammer"||o.weapon==="sword"?weapon:""}
 <path d="M84 412 L120 412 L120 424 L82 424Z" fill="#ffd75e" stroke-width="4"/>
 <path d="M126 412 L162 412 L164 424 L126 424Z" fill="#ffd75e" stroke-width="4"/></g>
 ${bootFx}
-<g transform="translate(123 0) scale(${sx} 1) translate(-123 0)">
+<g class="hbreath"><g transform="translate(123 0) scale(${sx} 1) translate(-123 0)">
 <path d="M64 142 Q123 120 182 142 L174 238 Q170 272 152 284 L96 284 Q76 272 72 238Z" fill="url(#${u}suit)" stroke="#150f2e" stroke-width="6"/>
 <g clip-path="url(#${u}tor)"><path d="M130 128 L190 142 L182 252 Q176 282 150 292 L130 292Z" fill="${th.muscle}" opacity=".32"/><ellipse cx="94" cy="158" rx="34" ry="27" fill="#fff" opacity=".22"/></g>
 <path d="M74 150 Q96 136 122 134 L120 170 Q96 172 80 184Z" fill="${th.sheen}" opacity=".55"/>
 ${m>=1?`<path d="M92 168 Q123 152 154 168" stroke="${th.muscle}" stroke-width="5" fill="none" stroke-linecap="round"/>`:''}
 ${m>=2?`<path d="M100 206 Q123 196 146 206 M104 232 Q123 224 142 232" stroke="${th.muscle}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`:''}
-</g>
+</g></g>
 <g stroke="#150f2e" stroke-width="6" stroke-linejoin="round">
 <path d="M66 152 Q34 170 28 212 Q34 242 62 252 L84 264 L92 244 L72 232 Q58 220 60 198 Q66 172 78 162Z" fill="url(#${u}suit)"/>
 <path d="M180 152 Q212 170 218 212 Q214 230 202 240 L196 220 Q200 208 192 192 Q184 172 170 162Z" fill="url(#${u}suit)"/>
@@ -78,6 +117,7 @@ ${biceps}
 <path d="M88 272 L158 272 L154 294 L92 294Z" fill="url(#${u}gold)" stroke="#150f2e" stroke-width="5"/>
 ${beltGlow}
 <circle cx="123" cy="198" r="46" fill="url(#${u}embg)"/>
+<circle class="haura" cx="123" cy="198" r="36" fill="none" stroke="#fff3c4" stroke-width="2.5" opacity=".5"/>
 <g transform="translate(123 198)"><path d="M0 -32 L29 -16 L29 16 L0 32 L-29 16 L-29 -16Z" fill="url(#${u}gold)" stroke="#150f2e" stroke-width="5"/>
 <path d="M-22 -12 L-2 -24 L0 -16 L-18 -5Z" fill="#fff" opacity=".4"/>
 <path d="M-15 -15 L15 -15 L15 -6 L5 -6 L5 17 L-5 17 L-5 -6 L-15 -6Z" fill="#d23a31" stroke="#150f2e" stroke-width="3"/></g>
@@ -89,7 +129,7 @@ ${o.theme==="knight"?`<!-- ===== knight helm (Act-2 placeholder) ===== -->
 <g stroke="#150f2e" stroke-width="4"><line x1="124" y1="74" x2="124" y2="120"/><line x1="106" y1="78" x2="106" y2="118"/><line x1="142" y1="78" x2="142" y2="118"/></g>
 <g stroke="none"><circle cx="110" cy="64" r="3.4" fill="#9fe0ff"/><circle cx="138" cy="64" r="3.4" fill="#9fe0ff"/></g>
 <path d="M124 4 Q124 -24 150 -30 Q138 -16 142 0 Q132 -8 124 4Z" fill="${cp[0]}" stroke="#150f2e" stroke-width="5" stroke-linejoin="round"/>
-</svg>`:`<!-- ===== head (refined Style C) ===== -->
+</g></g></svg>`:`<!-- ===== head (refined Style C) ===== -->
 <rect x="111" y="110" width="26" height="26" rx="7" fill="url(#${u}skin)" stroke="#150f2e" stroke-width="5"/>
 <circle cx="70" cy="70" r="11" fill="url(#${u}skin)" stroke="#150f2e" stroke-width="5"/>
 <circle cx="178" cy="70" r="11" fill="url(#${u}skin)" stroke="#150f2e" stroke-width="5"/>
@@ -104,11 +144,13 @@ ${o.theme==="knight"?`<!-- ===== knight helm (Act-2 placeholder) ===== -->
 <circle cx="103" cy="67" r="5" fill="#6fa8d8"/><circle cx="151" cy="67" r="5" fill="#6fa8d8"/>
 <circle cx="103" cy="67" r="2.4" fill="#150f2e"/><circle cx="151" cy="67" r="2.4" fill="#150f2e"/>
 <circle cx="105" cy="64" r="1.7" fill="#fff"/><circle cx="153" cy="64" r="1.7" fill="#fff"/></g>
+<g fill="url(#${u}skin)"><rect class="hlid" x="92.5" y="55" width="17" height="13" rx="5"/><rect class="hlid" x="140.5" y="55" width="17" height="13" rx="5"/></g>
+<g clip-path="url(#${u}lens)"><rect class="hglint" x="74" y="44" width="15" height="46" fill="#fff" opacity=".5" transform="skewX(-22)"/></g>
 <g stroke="none" fill="#e89a78" opacity=".5"><circle cx="92" cy="90" r="7"/><circle cx="156" cy="90" r="7"/></g>
 <g stroke="none" fill="#d99a6c" opacity=".9"><circle cx="108" cy="91" r="2"/><circle cx="116" cy="94" r="2"/><circle cx="132" cy="94" r="2"/><circle cx="140" cy="91" r="2"/></g>
 <path d="M98 97 Q124 120 150 97 Q146 113 124 117 Q102 113 98 97Z" fill="#7c3a3a" stroke="#150f2e" stroke-width="4" stroke-linejoin="round"/>
 <path d="M103 99 Q124 110 145 99 Q124 105 103 99Z" fill="#fff" stroke="none"/>
-</svg>`}`;}
+</g></g></svg>`}`;}
 
 /* ---- LORD VEX / VEXBOT (refined: angled glowing visor, sharper menace) ---- */
 function inkblotSVG(w=240){
