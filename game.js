@@ -2003,7 +2003,7 @@ function paintBase(){
   const shelf=$("gemShelf"); shelf.innerHTML="";
   let any=false;
   ORDER.forEach(g=>{ if(S.done[LETTER_MISSION[g]]){ any=true;
-    shelf.innerHTML+=`<svg viewBox="-20 -22 40 44" width="46"><polygon points="0,-16 13,-5 8,14 -8,14 -13,-5" fill="${GEMCOLOR[g]}" stroke="#150f2e" stroke-width="3"/><circle cx="-4" cy="-8" r="2.4" fill="#fff" opacity=".9"/><text y="9" text-anchor="middle" font-family="Andika" font-weight="700" font-size="17" fill="#150f2e">${g}</text></svg>`; } });
+    shelf.innerHTML+=gemSVG(g, GEMCOLOR[g], 48); } });
   if(!any)shelf.innerHTML='<div class="baselbl" style="font-size:15px;">Rescue gems on missions to fill your shelf!</div>';
   /* league */
   const lg=$("leagueShelf"); lg.innerHTML="";

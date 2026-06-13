@@ -435,3 +435,26 @@ return `<svg viewBox="-30 -40 300 320" width="${w}" aria-hidden="true">
 </g></g>
 <g class="dflame"><path d="M120 92 q-18 26 -7 50 q-8 -2 -8 -13 q-9 18 1 33 q13 18 28 0 q11 -16 1 -34 q0 11 -8 13 q12 -23 -7 -49Z" fill="url(#${u}flame)" stroke="#e6453c" stroke-width="1.5"/><path d="M120 110 q-9 15 -2 28 q11 12 5 -3 q8 -13 -3 -25Z" fill="#fff3c4" opacity=".85"/></g>
 </svg>`;}
+
+/* =========================================================
+   SHARED ART SYSTEM — reusable premium collectibles.
+   gemSVG(letter, color, size): a faceted, glowing cut-jewel with a crisp
+   outlined letter, used for the Base gem shelf / collectibles. Keeps the
+   "letter gems power the hero" motif premium without hurting readability.
+========================================================= */
+function gemSVG(g, color, w){
+  const u="g"+(__huid++);
+  return `<svg viewBox="-26 -28 52 56" width="${w||46}" aria-hidden="true">
+<defs>
+<radialGradient id="${u}b" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="${color}" stop-opacity=".7"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient>
+<radialGradient id="${u}f" cx=".4" cy=".28" r=".85"><stop offset="0" stop-color="#ffffff"/><stop offset=".28" stop-color="${color}"/><stop offset="1" stop-color="#0a0414" stop-opacity=".55"/></radialGradient>
+</defs>
+<ellipse cx="0" cy="20" rx="15" ry="4" fill="#000" opacity=".35"/>
+<circle cx="0" cy="-1" r="25" fill="url(#${u}b)"/>
+<polygon points="0,-19 17,-8 17,9 0,20 -17,9 -17,-8" fill="url(#${u}f)" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="0,-19 17,-8 0,3 -17,-8" fill="#fff" opacity=".26"/>
+<g stroke="#150f2e" stroke-width="1" opacity=".35" fill="none"><path d="M-17,-8 L0,3 L17,-8 M0,3 L0,20"/></g>
+<path d="M-9,-12 L-3,-14 L-5,-7 L-11,-6Z" fill="#fff" opacity=".9"/>
+<text y="10" text-anchor="middle" font-family="Andika,sans-serif" font-weight="700" font-size="17" fill="#fff" stroke="#150f2e" stroke-width="3.4" paint-order="stroke" style="paint-order:stroke">${g}</text>
+</svg>`;
+}
