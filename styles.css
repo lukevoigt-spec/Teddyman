@@ -508,3 +508,24 @@ body.calm #bgLayer{filter:none!important;}
 .setrange::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#ffce3a;border:3px solid var(--ink);cursor:pointer;}
 .setval{font-size:14px;color:var(--gold);min-width:46px;text-align:right;}
 .setinput{width:100%;padding:9px 12px;border-radius:12px;border:2px solid #3a2d72;background:#171236;color:var(--txt);font-size:14px;}
+
+/* ===================== SCENE HARMONIZER (cinematic grade) =====================
+   A vignette + warm upper key light + per-act colour grade painted over the
+   background (under the UI), so foreground SVGs read as part of one lit world.
+   Cheap (static gradients); honours Calm mode and reduced-motion. */
+#sceneGrade{position:absolute;inset:0;z-index:0;pointer-events:none;transition:background .5s ease;
+  background:
+    radial-gradient(ellipse 132% 108% at 50% 38%, transparent 50%, rgba(6,3,16,.5) 100%),
+    linear-gradient(180deg, rgba(255,212,140,.07), transparent 28%),
+    linear-gradient(120deg, rgba(120,150,255,.05), transparent 40%);}
+body[data-act="2"] #sceneGrade{
+  background:
+    radial-gradient(ellipse 132% 108% at 50% 40%, transparent 48%, rgba(10,4,8,.56) 100%),
+    linear-gradient(180deg, rgba(255,156,66,.09), transparent 30%),
+    linear-gradient(120deg, rgba(180,90,40,.06), transparent 42%);}
+/* battle/finale screens grade hotter + darker for drama */
+body.scene-battle #sceneGrade{
+  background:
+    radial-gradient(ellipse 130% 108% at 50% 40%, transparent 44%, rgba(12,2,8,.62) 100%),
+    linear-gradient(180deg, rgba(255,120,80,.10), transparent 26%);}
+body.calm #sceneGrade{transition:none;}

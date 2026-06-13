@@ -899,6 +899,9 @@ function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.r
   $(id).classList.add("on"); $(id).classList.add("fadein");
   setTimeout(()=>$(id).classList.remove("fadein"),600);
   setBG(id);
+  /* scene harmonizer: per-act colour grade + hotter grade on battle/finale screens */
+  document.body.dataset.act=currentAct();
+  document.body.classList.toggle("scene-battle", BG_MAP[id]==="battle");
   $("hud").style.display=(id==="scrTitle")?"none":"flex"; refreshHUD();
   const dm=$("dailyMeter"); if(dm){ dm.style.display=(id==="scrMap")?"block":"none"; if(id==="scrMap")updateDailyMeter(); } }
 function refreshHUD(){ $("hudStars").textContent="⚡ "+S.stars; }
@@ -959,6 +962,7 @@ paintTitle();
 setBG("scrTitle");   /* the title is shown via static HTML, so load its painted background at boot */
 if(S.calm)document.body.classList.add("calm");   /* parent "Calm" visual-detail mode */
 Aud.vol = (S.vol==null?1:S.vol);                 /* parent narration volume (0–1) */
+document.body.dataset.act=currentAct();           /* scene-grade theme from boot (title is static) */
 $("btnStart").onclick=()=>{ Aud.pick(); if(!S.intro)startIntro(); else {Aud.play("welcome"); toMap();} };
 $("btnContinue").onclick=()=>{ Aud.pick(); Aud.play("welcome"); toMap(); };
 /* ---- player picker (select an existing player; add/remove is parent-only) ---- */
