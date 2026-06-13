@@ -19,6 +19,9 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   them permanent across devices. Playback priority: CUSTOM (device) → window.VOICEPACK → TTS.
   `voice-studio.html` is the older standalone version, now superseded by this.
 - `teddy-reading-app-spec.md` — full design spec; read it before significant changes.
+- `STYLE.md` — the DESIGN SYSTEM: real CSS tokens (`:root` vars), the "premium studio"
+  target palette/components, and a gap checklist. Read before any styling/visual change;
+  keep using the CSS variables (never raw hexes). Andika stays mandatory for letter content.
 
 ## HARD CONSTRAINTS — never violate, even if asked casually
 1. NO timers as failure conditions. No countdowns on tasks. Personal-best flair only, if ever.
