@@ -226,6 +226,10 @@ function actMissions(a){ const ids=new Set(actZones(a).map(z=>z.id)); return MIS
    the villain "stole" Teddy's gear. Mastery still persists across acts. */
 function actGearList(a){ const mids=new Set(actMissions(a).map(m=>m.id));
   return Object.keys(GEAR_AT).filter(id=>mids.has(+id)&&S.done[id]).map(id=>GEAR_AT[id]); }
+/* missions of an act in PLAY ORDER (zones run in ZONES-array order; missions
+   within a zone by id). Used by the parent's level-override slider so its order
+   matches the map Teddy actually sees. */
+function playMissions(a){ return actZones(a).flatMap(z=>MISSIONS.filter(m=>m.z===z.id).sort((x,y)=>x.id-y.id)); }
 /* Per-act map geometry — each act is its own city/map, positioned by ZONE
    membership (not flat id order) so groups slot in with appended save-ids. */
 function geomFor(a){
@@ -414,12 +418,58 @@ const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#
   e:"#27ae60",u:"#e67e22",r:"#ff5e57",h:"#5f6dff",b:"#3742fa",f:"#16a085",
   l:"#e84393",j:"#00b894",v:"#6c5ce7",w:"#0984e3",x:"#d63031",y:"#fdcb6e",z:"#636e72",q:"#a29bfe"};
 
-/* ---------------- SAVE ---------------- */
+/* ---------------- SAVE (hardened: redundant + self-healing) ----------------
+   Teddy's progress is precious — losing it could make him stop playing. So the
+   save is defensive on every front:
+   • TWO local copies (primary + backup). On load we take whichever has MORE
+     progress, so a half-written or wiped primary can be rebuilt from the backup.
+   • migrate() NEVER throws and fills any missing field, so an old or partial
+     save is repaired instead of discarded (the old code reset to zero on any
+     hiccup — that was the real wipe risk).
+   • The backup is only overwritten when the state actually HAS progress, so a
+     transient empty/fresh state can never clobber a good backup.
+   • Milestone SNAPSHOTS (a small dated ring) let a parent roll back if needed.
+   • Cloud sync (optional) is the real cross-device, eviction-proof backstop.
+   NOTE: on iPad Safari, "Add to Home Screen" + turning on cloud sync are the
+   two things that make saves truly durable (Safari can purge site storage after
+   ~7 idle days otherwise) — the Grown-Up Corner nudges for both.            */
 const KEY="heroTeddySave_v1";
+const BAKKEY="heroTeddySave_v1_bak";
+const SNAPKEY="heroTeddySave_v1_snaps";
 let S=load();
 function fresh(){return {v:1,act:1,ts:0,intro:false,scan:false,done:{},mastery:{},stars:0,gear:[],equip:{weapon:"none",cape:"red"},session:{count:0,day:"",rest:false}};}
-function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.v===1){if(!d.session.day)d.session={count:0,day:"",rest:false};if(!d.equip)d.equip={weapon:"none",cape:"red"};if(d.act===undefined)d.act=1;if(d.ts===undefined)d.ts=0;return d;}}catch(e){}return fresh();}
-function save(){ S.ts=Date.now(); try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} cloudPush(); }
+/* normalize ANY (old / partial / slightly broken) save object — never throws */
+function migrate(d){ if(!d||typeof d!=="object"||d.v!==1) return null;
+  d.act=(typeof d.act==="number")?d.act:1; d.ts=d.ts||0;
+  d.done=(d.done&&typeof d.done==="object")?d.done:{};
+  d.mastery=(d.mastery&&typeof d.mastery==="object")?d.mastery:{};
+  d.gear=Array.isArray(d.gear)?d.gear:[];
+  d.equip=(d.equip&&typeof d.equip==="object")?d.equip:{weapon:"none",cape:"red"};
+  if(d.equip.weapon===undefined)d.equip.weapon="none"; if(d.equip.cape===undefined)d.equip.cape="red";
+  d.session=(d.session&&typeof d.session==="object")?d.session:{count:0,day:"",rest:false};
+  if(d.session.day===undefined)d.session.day=""; if(d.session.count===undefined)d.session.count=0; if(d.session.rest===undefined)d.session.rest=false;
+  if(typeof d.stars!=="number")d.stars=0; d.intro=!!d.intro; d.scan=!!d.scan;
+  return d; }
+function readKey(k){ try{ const raw=localStorage.getItem(k); if(!raw)return null; return migrate(JSON.parse(raw)); }catch(e){ return null; } }
+/* rough "how much progress" — more done missions (then newer) wins a tie-break */
+function progressScore(d){ return d? (Object.keys(d.done||{}).length*1e6 + (d.ts||0)/1e6) : -1; }
+function load(){ const a=readKey(KEY), b=readKey(BAKKEY);
+  let best=(progressScore(a)>=progressScore(b))?a:b;
+  return best||fresh(); }
+let __saveFailed=false;
+function hasProgress(d){ return d && (Object.keys(d.done||{}).length>0 || d.intro); }
+function save(){ S.ts=Date.now(); const json=JSON.stringify(S);
+  let ok=false; try{ localStorage.setItem(KEY,json); ok=true; }catch(e){}
+  /* only mirror to backup when there's real progress — never clobber a good backup with an empty state */
+  if(hasProgress(S)){ try{ localStorage.setItem(BAKKEY,json); }catch(e){} }
+  if(!ok && !__saveFailed){ __saveFailed=true; const w=document.getElementById("saveWarn"); if(w)w.style.display="block"; }
+  cloudPush(); }
+/* milestone snapshots — a small ring the parent can roll back to */
+function snapshot(label){ try{ let arr=JSON.parse(localStorage.getItem(SNAPKEY)||"[]"); if(!Array.isArray(arr))arr=[];
+  arr.push({ts:Date.now(), label:label||"", data:JSON.stringify(S)});
+  while(arr.length>6)arr.shift();
+  localStorage.setItem(SNAPKEY,JSON.stringify(arr)); }catch(e){} }
+function snapshots(){ try{ const a=JSON.parse(localStorage.getItem(SNAPKEY)||"[]"); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
 /* ---------------- CLOUD SAVE (optional, low-maintenance) ----------------
    Progress lives in localStorage (instant, offline). If a Cloudflare Worker
    URL is set in Grown-Up Corner, every save also debounce-syncs to the cloud,
@@ -437,8 +487,8 @@ function cloudPush(){ const u=cloudEndpoint(); if(!u)return; clearTimeout(__clou
       .catch(()=>cloudStatus("Offline — saved on device")); },2500); }
 async function cloudPull(){ const u=cloudEndpoint(); if(!u)return false;
   try{ const r=await fetch(u); if(!r.ok)return false; const t=(await r.text()).trim(); if(!t)return false;
-    const d=JSON.parse(t);
-    if(d&&d.v===1&&(d.ts||0)>(S.ts||0)){ S=d; if(d.act===undefined)S.act=1; if(d.ts===undefined)S.ts=0;
+    const d=migrate(JSON.parse(t));
+    if(d&&(d.ts||0)>(S.ts||0)){ S=d;
       try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} return true; } }
   catch(e){} return false; }
 function cloudConnect(url){ cloudURL=(url||"").trim();
@@ -493,7 +543,10 @@ if(typeof document!=="undefined"){
   setInterval(trainTick,1000);
 }
 function mast(g){ if(!S.mastery[g])S.mastery[g]={seen:0,ok:0,str:0}; return S.mastery[g]; }
-function record(g,ok){ const m=mast(g); m.seen++; if(ok){m.ok++;m.str=Math.min(5,m.str+1);} else {m.str=Math.max(0,m.str-1);} save(); }
+function record(g,ok){ const m=mast(g); m.seen++;
+  if(ok){m.ok++;m.str=Math.min(5,m.str+1); combo++; if(combo>=3)comboPop(combo);}
+  else {m.str=Math.max(0,m.str-1); combo=0;}
+  save(); }
 /* ---- MASTERY (proficiency, not just completion) ----
    An item is MASTERED when it's strong, well-seen, and accurate. Milestones
    (ally rescues / zone finales) are GATED on real mastery so "rescued X" truly
@@ -640,13 +693,44 @@ function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.r
   $("hud").style.display=(id==="scrTitle")?"none":"flex"; refreshHUD();
   const dm=$("dailyMeter"); if(dm){ dm.style.display=(id==="scrMap")?"block":"none"; if(id==="scrMap")updateDailyMeter(); } }
 function refreshHUD(){ $("hudStars").textContent="⚡ "+S.stars; }
+/* ---------------- JUICE / FX ----------------
+   Big, celebratory reward moments (no photosensitivity concern). All effects
+   are fire-and-forget DOM bits that auto-remove, so they can never hang a flow.
+   Respect prefers-reduced-motion: heavy effects soften to a calm version.   */
+const REDUCE = (window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+function stageEl(){ return $("stage"); }
+function shakeStage(big){ const s=stageEl(); if(!s||REDUCE)return; const c=big?"shaking big":"shaking";
+  s.classList.remove("shaking","big"); void s.offsetWidth; s.classList.add(...c.split(" "));
+  setTimeout(()=>s.classList.remove("shaking","big"),big?520:340); }
+function flashScreen(color){ const s=stageEl(); if(!s||REDUCE)return; const f=document.createElement("div");
+  f.className="flashfx"; if(color)f.style.background=color; s.appendChild(f); setTimeout(()=>f.remove(),360); }
+const CONFETTI_COLORS=["#ffd75e","#ff5e57","#3ec97e","#5f6dff","#a06ae8","#7fd9ff","#ff8a3d"];
+function confetti(n){ const s=stageEl(); if(!s)return; n=REDUCE?12:(n||64);
+  const W=s.clientWidth;
+  for(let i=0;i<n;i++){ const c=document.createElement("div"); c.className="confetti";
+    c.style.left=(Math.random()*W)+"px"; c.style.background=CONFETTI_COLORS[i%CONFETTI_COLORS.length];
+    c.style.setProperty("--dx",(Math.random()*160-80)+"px");
+    c.style.animationDelay=(Math.random()*0.25)+"s";
+    c.style.animationDuration=(1.1+Math.random()*0.9)+"s";
+    if(Math.random()<.5)c.style.borderRadius="50%";
+    s.appendChild(c); setTimeout(()=>c.remove(),2300); } }
+let combo=0;
+function comboPop(n){ const s=stageEl(); if(!s||REDUCE)return; const c=document.createElement("div");
+  c.className="combochip"; c.textContent="COMBO ×"+n+" 🔥"; s.appendChild(c); setTimeout(()=>c.remove(),950); }
 function burstAt(el,word){ const r=el.getBoundingClientRect(),st=$("stage").getBoundingClientRect();
+  const cx=r.left-st.left+r.width/2, cy=r.top-st.top+r.height/2;
   const b=document.createElement("div"); b.className="burst";
-  b.style.left=(r.left-st.left+r.width/2-70)+"px"; b.style.top=(r.top-st.top+r.height/2-70)+"px";
+  b.style.left=(cx-70)+"px"; b.style.top=(cy-70)+"px";
   $("stage").appendChild(b); setTimeout(()=>b.remove(),600);
+  if(!REDUCE){ for(let i=0;i<6;i++){ const sp=document.createElement("div"); sp.className="spark";
+      const ang=(Math.PI*2*i/6)+Math.random()*0.5, dist=44+Math.random()*26;
+      sp.style.left=cx+"px"; sp.style.top=cy+"px";
+      sp.style.setProperty("--sx",Math.cos(ang)*dist+"px"); sp.style.setProperty("--sy",Math.sin(ang)*dist+"px");
+      sp.style.background=CONFETTI_COLORS[i%CONFETTI_COLORS.length];
+      $("stage").appendChild(sp); setTimeout(()=>sp.remove(),520); } }
   if(word){ const z=document.createElement("div"); z.className="zapword"; z.textContent=word;
-    z.style.left=(r.left-st.left+r.width/2-60)+"px"; z.style.top=(r.top-st.top-40)+"px";
-    $("stage").appendChild(z); setTimeout(()=>z.remove(),900); } }
+    z.style.left=(cx-60)+"px"; z.style.top=(r.top-st.top-40)+"px";
+    $("stage").appendChild(z); setTimeout(()=>z.remove(),900); shakeStage(); flashScreen(); } }
 
 /* ---------------- TITLE ---------------- */
 $("titleHero").innerHTML=heroNow(210);
@@ -985,7 +1069,7 @@ function pickFoils(g, pool, n){ const cands=pool.filter(x=>x!==g);
   const twin=(CONFUSE[g]||[]).find(p=>cands.includes(p));
   const out = twin ? [twin].concat(shuf(cands.filter(x=>x!==twin)).slice(0,n-1)) : shuf(cands).slice(0,n);
   return shuf(out); }
-function startMission(m){ clearFlow(); CUR=m; $("hudTitle").textContent=m.lbl.toUpperCase();
+function startMission(m){ clearFlow(); combo=0; CUR=m; $("hudTitle").textContent=m.lbl.toUpperCase();
   if(m.type==="learn")startLearn(m);
   else if(m.type==="patrol")startPatrol(m.set);
   else if(m.type==="read")startRead(m);
@@ -1008,7 +1092,9 @@ function missionComplete(){
   if(firstTime){ S.stars+=3; S.session.count++;
     const gear=GEAR_AT[CUR.id];
     if(gear&&!S.gear.includes(gear))S.gear.push(gear); }
-  save(); showWin(firstTime);
+  save();
+  if(firstTime && (CUR.finale||CUR.rescue||CUR.type==="fortress")) snapshot(CUR.lbl||("Mission "+CUR.id));  /* safety roll-back point */
+  showWin(firstTime);
 }
 /* Gentle, mastery-locking review: a focused adaptive patrol of the weak items,
    then back to the milestone check. Loops (a few short rounds) until mastered. */
@@ -1391,6 +1477,8 @@ function forgeWord(){
 
 /* ---------------- WIN / REST ---------------- */
 function showWin(firstTime){ show("scrWin");
+  flashScreen("rgba(255,255,255,.5)"); confetti(CUR.finale||CUR.rescue||CUR.type==="fortress"?110:64);
+  if(CUR.finale||CUR.rescue||CUR.type==="fortress")setTimeout(()=>confetti(90),520);  /* extra pop on big milestones */
   const ally=CUR.rescue?"heart":(CUR.type==="fortress"?"leighton":null);
   $("winHero").innerHTML=heroNow(170)+
     (ally?`<svg viewBox="-32 -36 64 80" width="98" style="vertical-align:bottom;">${allyFace(ally)}<text y="42" text-anchor="middle" font-family="Bangers" font-size="12" fill="#ffc93c">${ally==="leighton"?"LEIGHTON":"HEARTGUARD"}</text></svg>`:"");
@@ -1484,6 +1572,29 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
   const sentTotal=MISSIONS.filter(m=>m.type==="sentence").length;
   const power=["Hero 💪","Super Hero 💪💪","Mega Hero 💪💪💪"][heroOpts().muscle];
   const lettersRow=taught.length? taught.map(g=>`<span class="pgem" style="background:${GEMCOLOR[g]||'#888'}">${g.toUpperCase()}</span>`).join(" ") : "<i>none yet</i>";
+  /* ----- level-override slider: where he's unlocked to, drag to move him ----- */
+  const pm=playMissions(currentAct());
+  const doneCnt=pm.filter(m=>S.done[m.id]).length;
+  const lvlLabel=v=>{ if(v<=0)return "Very start"; const m=pm[Math.min(v,pm.length)-1]; const z=ZONES.find(zz=>zz.id===m.z);
+    return (z?z.name+" · ":"")+(m.lbl||("Mission "+m.id)); };
+  const overrideHTML=`<div class="psec"><b>Set Teddy's level</b> <span class="pnote">(parent override)</span>
+      <div class="pnote" style="margin:4px 0 8px;">Drag to move him forward or back. Everything up to that point counts as done. Use if his progress ever glitches, or to skip/revisit.</div>
+      <input type="range" id="lvlSlide" min="0" max="${pm.length}" value="${doneCnt}" step="1" style="width:100%;accent-color:#ffc93c;">
+      <div style="display:flex;justify-content:space-between;font-size:11px;" class="pnote"><span>Start</span><span>Level ${pm.length}</span></div>
+      <div style="text-align:center;margin-top:6px;"><b id="lvlNow">Level ${doneCnt} / ${pm.length}</b> <span class="pnote">— <span id="lvlLbl">${lvlLabel(doneCnt)}</span></span></div>
+      <div style="text-align:center;margin-top:8px;"><button class="btn ghost sm" id="lvlApply" disabled>Move Teddy here</button></div></div>`;
+  /* ----- save-safety: snapshots + durability nudges ----- */
+  const snaps=snapshots();
+  const snapRows=snaps.length? snaps.slice().reverse().map((s,i)=>{ const realIx=snaps.length-1-i;
+    return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:3px 0;">
+      <span class="pnote">${new Date(s.ts).toLocaleDateString()} — ${s.label||"snapshot"}</span>
+      <button class="btn ghost sm snapRestore" data-i="${realIx}">Restore</button></div>`; }).join("") : `<div class="pnote">No snapshots yet — one is saved automatically at each rescue.</div>`;
+  const standalone = (window.navigator&&window.navigator.standalone) || (window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches);
+  const safetyHTML=`<div class="psec"><b>Save safety</b>
+      <div class="pnote" style="margin:4px 0 8px;">His progress is kept in two copies on this iPad and repaired automatically if one is damaged. For real peace of mind:</div>
+      <div class="pnote">${cloudURL?'✅ Cloud sync is ON — his progress is backed up off-device.':'⚠️ <b>Cloud sync is OFF.</b> Turn it on (Backup tab) so progress is safe even if this iPad is lost or cleared.'}</div>
+      <div class="pnote" style="margin-top:4px;">${standalone?'✅ Running as a Home-Screen app — storage is durable.':'⚠️ <b>Add to Home Screen</b> (Safari Share ▸ Add to Home Screen). Otherwise Safari can erase saved progress after about a week unused.'}</div>
+      <div style="margin-top:8px;"><b class="pnote">Safety snapshots</b> ${snapRows}</div></div>`;
   /* daily training: today + last-7-days history */
   ensureDaily();
   const goal=S.goalMin||30, todayMin=Math.floor((S.daily.secs||0)/60);
@@ -1519,18 +1630,44 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
       <div class="pnote">${taught.filter(letterMastered).length} / ${taught.length} letters mastered. A rescue can't be earned until every letter so far is mastered — so an ally freed = real proficiency.</div></div>
     ${weak.length?`<div class="psec"><b>Best to practice next</b> <span class="pnote">(weakest right now)</span>
       <div class="pgems">${weak.map(g=>`<span class="pgem warn">${g.toUpperCase()}</span> <span class="pnote">${progAcc(g)!=null?progAcc(g)+"%":"new"} ${strDots(g)}</span>`).join("<br>")}</div></div>`:""}
+    ${overrideHTML}
+    ${safetyHTML}
     <div class="psec pnote">Reading direction so far: letter→sound (decode) via Read-It &amp; Story Gate; sound→letter (spell) via Forge &amp; patrols. Both grow as he plays.</div>`;
   const gd=$("goalDown"), gu=$("goalUp");
   if(gd)gd.onclick=()=>{ S.goalMin=Math.max(5,(S.goalMin||30)-5); save(); updateDailyMeter(); window.renderProgress(); };
   if(gu)gu.onclick=()=>{ S.goalMin=Math.min(120,(S.goalMin||30)+5); save(); updateDailyMeter(); window.renderProgress(); };
+  /* level-override slider wiring */
+  const sl=$("lvlSlide"), apply=$("lvlApply");
+  if(sl){ sl.oninput=()=>{ const v=+sl.value; $("lvlNow").textContent="Level "+v+" / "+pm.length;
+      $("lvlLbl").textContent=lvlLabel(v); apply.disabled=(v===doneCnt); };
+    apply.onclick=()=>{ const v=+sl.value; snapshot("before level change");
+      pm.forEach((m,i)=>{ if(i<v)S.done[m.id]=true; else delete S.done[m.id]; });
+      S.gear=Object.keys(GEAR_AT).filter(id=>S.done[id]).map(id=>GEAR_AT[id]);
+      if(v>0){ S.intro=true; S.scan=true; }
+      save(); GEO=geomFor(currentAct());
+      $("settingsPanel").classList.remove("on"); Aud.stop&&Aud.stop(); toMap(); }; }
+  /* snapshot restore buttons */
+  document.querySelectorAll(".snapRestore").forEach(b=>{ b.onclick=()=>{ const arr=snapshots(); const s=arr[+b.dataset.i];
+    if(!s)return; const d=migrate(JSON.parse(s.data)); if(!d)return; snapshot("before restore"); S=d; save();
+    $("settingsPanel").classList.remove("on"); GEO=geomFor(currentAct()); toMap(); }; });
 };
-$("btnGear").onclick=()=>{ $("saveBox").value=JSON.stringify(S); $("vpStatus2").textContent=vpMsg(); window.renderProgress();
+function openSettings(){ $("saveBox").value=JSON.stringify(S); $("vpStatus2").textContent=vpMsg(); window.renderProgress();
   $("cloudURL").value=cloudURL; cloudStatus(cloudURL?"Cloud sync ON ☁️ — same URL on any device continues his progress":"Cloud sync off (saved on this device)");
-  $("settingsPanel").classList.add("on"); };
+  $("settingsPanel").classList.add("on"); }
+/* ADULT GATE: the Grown-Up Corner opens only on a 3-second PRESS-AND-HOLD, so
+   Teddy can't wander in and change things. The gear fills/grows while held. */
+(function(){ const g=$("btnGear"); if(!g)return; let t=null;
+  const start=e=>{ if(e&&e.preventDefault)e.preventDefault(); clearTimeout(t); g.classList.add("holding");
+    t=setTimeout(()=>{ g.classList.remove("holding"); Aud.pick&&Aud.pick(); openSettings(); },3000); };
+  const cancel=()=>{ clearTimeout(t); g.classList.remove("holding"); };
+  g.addEventListener("pointerdown",start);
+  ["pointerup","pointerleave","pointercancel"].forEach(ev=>g.addEventListener(ev,cancel)); })();
 $("btnCloudConnect").onclick=()=>cloudConnect($("cloudURL").value);
 $("btnCloudOff").onclick=()=>{ cloudURL=""; try{localStorage.removeItem("teddyCloudURL");}catch(e){} $("cloudURL").value=""; cloudStatus("Cloud sync off (saved on this device)"); };
 $("btnCloseSettings").onclick=()=>$("settingsPanel").classList.remove("on");
 $("btnVoiceTest").onclick=()=>{Aud.pick();Aud.play("test");};
 $("btnCopySave").onclick=()=>{$("saveBox").select();document.execCommand("copy");};
-$("btnRestoreSave").onclick=()=>{ try{const d=JSON.parse($("saveBox").value);
-  if(d&&d.v===1){S=d;save();$("settingsPanel").classList.remove("on");toMap();}}catch(e){alert("That backup code didn't work — double-check it and try again.");} };
+$("btnRestoreSave").onclick=()=>{ try{const d=migrate(JSON.parse($("saveBox").value));
+  if(d){ snapshot("before restore"); S=d; save(); $("settingsPanel").classList.remove("on"); GEO=geomFor(currentAct()); toMap(); }
+  else alert("That backup code didn't work — double-check it and try again."); }
+  catch(e){alert("That backup code didn't work — double-check it and try again.");} };
