@@ -5,6 +5,10 @@ file named `bg-<slot>.jpg`. **If the file isn't here, the game just uses its
 original look** — so you can add scenes one at a time, with zero risk.
 
 - Format: **`.jpg`**, exact filename from the table below (all lowercase).
+- **Per-act art:** Act 2 (the medieval realm) prefers its own scene named
+  `bg-<slot>-a2.jpg` and falls back to the Act-1 `bg-<slot>.jpg` if absent. So you
+  can give Act 2 a medieval look one file at a time. (Act 1 just uses `bg-<slot>.jpg`.)
+  See the **Act 2 — Medieval Realm** section at the bottom for those prompts.
 - The image is shown **cover-cropped** to fill the screen, so make it large and
   keep the important stuff toward the centre with some breathing room at the
   edges (the very edges may get cropped on some screens).
@@ -92,6 +96,69 @@ original look** — so you can add scenes one at a time, with zero risk.
 > first stars appearing, gem-lights glowing gently warm in the towers, a calm
 > hush. Soothing bedtime mood. Low contrast, restful.
 
-> **Note on the map:** the City Map screen draws its own illustrated scene in
-> code, so it doesn't use a `bg-*` file. `bg-city.jpg` shows on the gem-finding
-> ("patrol/find") screens. The zone-2 `heights` scene isn't wired to a slot yet.
+> **Note on the map:** the City Map screen draws its own illustrated SVG scene in
+> code, so a `bg-*` file mostly doesn't show *there*. `bg-city.jpg` shows on the
+> gem-finding ("find") screens. Giving the **map itself** a per-act medieval skin
+> is a separate code task (parked — see STYLE.md §0.5), not a background file.
+
+---
+
+# Act 2 — Medieval Realm (the "Magic Kingdom")
+
+Act 2 is a knights-and-dragons fantasy world (mentor: Noah the Red, a red-bearded
+wizard; villain: the Vixen, who morphs into dragons). Drop these as
+**`bg-<slot>-a2.jpg`** and they replace the Act-1 scene only while playing Act 2.
+Same rules: **environments only, no characters, no text/letters anywhere.**
+
+## Medieval style preamble (paste before every Act-2 prompt)
+> Painterly fantasy illustration for a children's reading game set in a magical
+> medieval kingdom — castles, stone keeps, enchanted forests, dragons implied by
+> mood only. Modern animated-film background quality (think a premium fantasy
+> mobile game): bold clean shapes, rich saturated high-contrast colour, warm
+> torchlight + cool moonlight, glowing magic runes and motes, banners and
+> heraldry, a sense of depth and wonder. NObody in frame (environment only), and
+> absolutely NO text, letters, words, numbers, runes-as-letters, or signage. No
+> harsh strobe/flicker. Keep the central area open so characters and buttons read
+> clearly on top. Landscape 4:3, ~2048×1536.
+
+## Act-2 prompts
+
+**`bg-city-a2.jpg`** — Find/quest backdrop — preamble +
+> A sweeping medieval kingdom vista at magic-hour: a great stone castle and a
+> walled village ("Stonekeep") on green hills, a winding torch-lit road, distant
+> mountains with a dragon-keep silhouette and faint ember glow, banners snapping
+> in the wind, glowing magic motes drifting. Layered depth, hopeful and grand.
+
+**`bg-learn-a2.jpg`** — Learn/Read/Magic-E/Spell screens — preamble +
+> A cosy wizard's study / spellery: warm candlelight, floating spellbooks and
+> glowing rune-stones (abstract glyphs, NOT letters), a big enchanted hearth, soft
+> magic particles, smooth uncluttered surfaces. Big open central space for a large
+> glyph to sit. Calm, encouraging, low-distraction.
+
+**`bg-battle-a2.jpg`** — Boss/Forge (Dragon Duel) — preamble +
+> A dramatic castle battlements / dragon's lair at night: cold-blue moonlight and
+> danger-red ember glow, smoke and sparks, a heroic shaft of light, ominous mood
+> implied by light and shadow only (no dragon or figures drawn). Centre kept clear
+> for the action.
+
+**`bg-base-a2.jpg`** — Hero Base (knight's hall) — preamble +
+> The interior of a cosy knight's great hall / armory: a stone hearth, a weapon
+> rack (sword & shield), banners and trophies, shelves of glowing rune-gems, a big
+> arched window onto the moonlit kingdom, warm torchlight. Proud, homey,
+> collectible. Centre floor kept open for the hero to stand.
+
+**`bg-victory-a2.jpg`** — Victory — preamble +
+> A triumphant fantasy dawn over the kingdom: radiant gold light rays over castle
+> spires and banners, drifting sparkles and gentle confetti of light (soft, NO
+> harsh flashing), rainbow magic glints, jubilant. Centre kept open for the hero.
+
+**`bg-rest-a2.jpg`** — Hero Rests — preamble +
+> A peaceful medieval village at dusk winding down: soft lavender-and-amber sunset
+> over thatched roofs and a castle, first stars, gentle window-glow and a campfire,
+> a calm hush. Soothing bedtime mood, low contrast, restful.
+
+**`bg-intro-a2.jpg`** — Act-2 cutscenes (Noah intro / interlude) — preamble +
+> A cinematic fantasy storybook backdrop: a shimmering time-portal glow over a
+> distant medieval kingdom at night, sweeping aurora-like magic light and drifting
+> embers, slightly tense but hopeful. Neutral and uncluttered so story panels read
+> on top.

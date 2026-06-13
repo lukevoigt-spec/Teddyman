@@ -847,16 +847,25 @@ const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrInter:"intro", scrScan:"la
   scrBase:"base", scrTrain:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
   scrBoss:"battle", scrForge:"battle", scrWin:"victory", scrRest:"rest" };
 const __bgCache={};
+/* Painted scene loader — ACT-AWARE. Act 2+ prefers its own scene (bg-<slot>-a2.jpg),
+   falling back to the Act-1 scene (bg-<slot>.jpg), then to the transparent default.
+   So Act 2 can be medieval without touching Act-1 art, and any missing file just
+   shows the original SVG/gradient look. */
 function setBG(id){ const layer=$("bgLayer"); if(!layer)return;
-  const name=BG_MAP[id];
-  if(!name){ layer.classList.remove("on"); return; }
-  const url="art/bg-"+name+".jpg";
-  if(__bgCache[name]===false){ layer.classList.remove("on"); return; }
-  const apply=()=>{ layer.style.backgroundImage="url("+url+")"; layer.classList.add("on"); };
+  const slot=BG_MAP[id];
+  if(!slot){ layer.classList.remove("on"); return; }
+  const a=currentAct();
+  const cands = a>1 ? [slot+"-a"+a, slot] : [slot];
+  tryBG(layer, cands, 0, id); }
+function tryBG(layer, cands, i, id){
+  if(i>=cands.length){ layer.classList.remove("on"); return; }   /* none present → transparent default */
+  const name=cands[i], url="art/bg-"+name+".jpg";
+  if(__bgCache[name]===false){ tryBG(layer,cands,i+1,id); return; }
+  const apply=()=>{ if($(id)&&$(id).classList.contains("on")){ layer.style.backgroundImage="url("+url+")"; layer.classList.add("on"); } };
   if(__bgCache[name]===true){ apply(); return; }
   const img=new Image();
-  img.onload=()=>{ __bgCache[name]=true; if($(id).classList.contains("on"))apply(); };
-  img.onerror=()=>{ __bgCache[name]=false; layer.classList.remove("on"); };  /* graceful fallback */
+  img.onload=()=>{ __bgCache[name]=true; apply(); };
+  img.onerror=()=>{ __bgCache[name]=false; tryBG(layer,cands,i+1,id); };   /* try next candidate */
   img.src=url;
 }
 function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
@@ -2006,6 +2015,7 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
       <div style="width:20px;height:46px;background:#241b4d;border-radius:5px;border:2px solid #3a2d72;display:flex;align-items:flex-end;overflow:hidden;"><div style="width:100%;height:${h}%;background:${hit?'linear-gradient(180deg,#ffd75e,#f0a82b)':'linear-gradient(180deg,#5fe0a0,#23a35f)'};"></div></div>
       <div class="pnote" style="font-size:10px;">${Math.round(x[1]/60)}</div></div>`; }).join("");
   el.innerHTML=`
+    <div class="psec" style="text-align:center;"><b>👤 ${profileName(ACTIVE)}'s progress</b> <span class="pnote">— each player has their own stats</span></div>
     <div class="psec"><b>Daily training (time on task)</b>
       <div class="pgrid" style="margin-top:6px;">
         <div class="pcard"><div class="pnum">${todayMin}<span style="font-size:13px;">m</span></div><div class="plbl">Today / ${goal}m goal</div></div>
