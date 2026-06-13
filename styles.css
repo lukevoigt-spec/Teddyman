@@ -214,7 +214,7 @@ body{
 .heroimg{width:clamp(150px,26vw,260px);}
 .gearlist{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
 .gearbadge{background:rgba(21,15,46,.7);border:3px solid var(--gold);color:var(--gold);border-radius:16px;padding:8px 16px;font-family:'Bangers',cursive;font-size:20px;letter-spacing:.05em;}
-#settingsPanel{position:absolute;inset:0;background:rgba(10,8,24,.94);z-index:20;display:none;flex-direction:column;align-items:center;justify-content:flex-start;gap:12px;padding:24px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+#settingsPanel{position:absolute;inset:0;background-color:#0b051f;background-image:linear-gradient(rgba(11,5,31,.84),rgba(11,5,31,.92)),url("art/bg-base.jpg");background-size:cover;background-position:center;z-index:20;display:none;flex-direction:column;align-items:center;justify-content:flex-start;gap:12px;padding:24px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 #settingsPanel.on{display:flex;}
 #saveBox{width:min(640px,90vw);height:100px;border-radius:14px;border:3px solid var(--txt);background:#171236;color:var(--txt);font-size:12px;padding:8px;}
 
@@ -272,7 +272,7 @@ body{
 .gemshelf{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;background:rgba(21,15,46,.6);
   border:3px solid #3a2d72;border-radius:18px;padding:12px 18px;min-height:64px;}
 /* Player picker (who's playing) */
-#playerPicker{position:absolute;inset:0;background:rgba(11,5,31,.95);z-index:22;display:none;
+#playerPicker{position:absolute;inset:0;background-color:#0b051f;background-image:linear-gradient(rgba(11,5,31,.55),rgba(11,5,31,.68)),url("art/bg-title.jpg");background-size:cover;background-position:center;z-index:22;display:none;
   flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:24px;}
 #playerPicker.on{display:flex;}
 #playerCards{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;align-items:flex-end;}
@@ -288,7 +288,7 @@ body{
 /* Trophy shelf items */
 .trophy{font-size:34px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.4));}
 /* Shop overlay */
-#shopPanel{position:absolute;inset:0;background:rgba(10,8,24,.95);z-index:20;display:none;flex-direction:column;
+#shopPanel{position:absolute;inset:0;background-color:#0b051f;background-image:linear-gradient(rgba(11,5,31,.66),rgba(11,5,31,.80)),url("art/bg-base.jpg");background-size:cover;background-position:center;z-index:20;display:none;flex-direction:column;
   align-items:center;justify-content:flex-start;gap:14px;padding:24px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 #shopPanel.on{display:flex;}
 #shopGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;width:min(680px,94vw);}
