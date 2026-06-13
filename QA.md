@@ -302,3 +302,123 @@ That keeps the parent from being the middle man while avoiding a single giant in
 ## 2026-06-13 Test Edit
 
 This is a small QA test edit to verify repository write and commit workflow.
+
+---
+
+## 2026-06-13 Code Review — Mission Fit, Bugs, Optimization, Next Agent Guidance
+
+### Executive take
+
+The app is doing the right thing for the mission: it is now a real personalized reading game, not just a demo. The strongest parts are the systematic curriculum ladder, audio-first interaction model, save hardening, profile isolation, mastery gates, and the shift toward actual decoding through Read-It, Story Gate, Dojo, magic-e, and Training Room practice.
+
+Current risk is mostly **maintenance risk** rather than product-direction risk. `game.js` is carrying almost every responsibility, and the number of curriculum rules is now high enough that the next coding agent should prioritize invariant coverage and low-risk modular seams before adding much more Act 2 content.
+
+### What is going well
+
+- **Mission alignment is strong.** The core loop teaches reading as the superpower, keeps instructions audio-first, avoids punitive timers/failure states, and rewards steady mastery.
+- **Pedagogy is much stronger than a typical hobby app.** The code distinguishes sound identification, encoding/building, decoding/reading, sight/heart words, cloze/maze practice, sentence ordering, digraphs, blends, and magic-e.
+- **Anti-gaming constraints are mostly respected.** Sound-ID screens use generic visible prompts and rely on audio for the target sound, which prevents text-to-text matching.
+- **Save safety is unusually mature.** Primary/backup local saves, migration, snapshots, profiles, and cloud sync are all present; tests cover the most important save behaviors.
+- **Act architecture is workable.** Act-scoped mission ranges, per-act maps, and act-scoped gear/power reset are the right primitives for continuing the story without corrupting old progress.
+- **Tests are now meaningful.** `tests/curriculum.test.js` and `tests/save.test.js` both pass and already protect high-value invariants.
+
+### Bugs / likely bugs to address
+
+1. **Daily mission count may overcount replayed missions.**
+   - `missionComplete()` increments `S.daily.missions` on every completion, before checking whether this is a first-time mission.
+   - That may be acceptable if it means "missions practiced today," but the UI copy reads like mission progress/new missions. If replaying old missions should not inflate the daily mission metric, increment only on `firstTime`, or rename the metric to "mission completions/practice rounds."
+
+2. **Level override can rebuild gear across all acts, not just the active act.**
+   - The parent slider applies completion for `playMissions(currentAct())`, then rebuilds `S.gear` from all `GEAR_AT` IDs currently done.
+   - This may be fine globally, but it is worth verifying with an Act 2 save: moving within Act 2 should not accidentally strip/restore Act 1 collectibles in a confusing way. The hero display is act-scoped, but the underlying gear array is global.
+
+3. **InnerHTML with user-entered profile names is a low-severity injection risk.**
+   - Player names are parent-entered and truncated, so this is not a child-safety emergency, but `paintPlayers()` and profile-card rendering inject names through template HTML.
+   - Recommendation: use `textContent` for profile names and only template trusted static/SVG markup.
+
+4. **Cloud endpoint uses bare profile IDs as write keys.**
+   - This is already documented as parked/low priority, but the baked Worker URL means anyone who knows the URL and key convention could read/write saves.
+   - Recommendation: add the optional passphrase-derived key before sharing the app broadly outside the family.
+
+5. **Spec/comment drift is starting to mislead.**
+   - Some older documents/comments still describe earlier names, old architecture, or Act 2 as a frame even though Act 2 content is live.
+   - Recommendation: prefer small doc cleanups whenever the coding agent touches nearby code, especially `teddy-reading-app-spec.md` and long comments in `CLAUDE.md`/`game.js`.
+
+### Optimization / maintainability concerns
+
+1. **`game.js` is now over the comfortable size for safe feature expansion.**
+   - It contains curriculum data, state migration, cloud sync, audio, map SVG generation, mission handlers, mastery logic, shop/base UI, settings, and parent dashboard rendering.
+   - This is still shippable because the app is static and tested, but the coupling cost will rise sharply with more Act 2 mechanics.
+   - Recommendation: start a no-build split only after current tests stay green. Use plain `<script>` tags in dependency order; do not introduce a build step unless the parent explicitly wants one.
+
+2. **Large SVG strings are hard to review.**
+   - `mapSVG()`, hero/ally art, and base shelf rendering rely on long template strings. This is fast enough for the current app, but hard to diff and easy to break with unescaped data.
+   - Recommendation: for new UI, prefer small DOM builder helpers or isolated render functions; keep data separate from markup where practical.
+
+3. **Randomized content needs deterministic test hooks.**
+   - Foil choice, weak-item selection, Training Room word choice, and map/art flourishes use `Math.random()` directly.
+   - Recommendation: if bugs become hard to reproduce, add a tiny `rand()` wrapper with optional seeded mode for tests. Do not over-engineer this yet.
+
+4. **Cloud sync is debounce-only and status-only.**
+   - That is appropriate for the stakes, but the app does not visibly queue/retry beyond the next save.
+   - Recommendation: if cross-device use becomes central, track `lastCloudOkTs` / `lastCloudErr` and expose it in the Backup tab so parents can know whether a device has really synced.
+
+5. **Tests currently validate data invariants more than DOM behavior.**
+   - The no-dependency VM harness is good, but important UX guarantees are still uncovered: locked nodes cannot start missions, sound-ID prompt text never contains the target, Training Room time counts, and parent override preserves profiles/saves.
+
+### Recommended priorities for the coding agent
+
+#### P0 — Fix / verify before adding lots of new content
+
+1. **Add app-invariant tests for the highest-risk rules**
+   - Sound-ID visible prompt does not include the target grapheme.
+   - Locked map nodes cannot call `startMission()`.
+   - Training Room increments `trainSecs` only when `show("scrTrain")` is active and recent interaction is present; leaving training stops `trainSecs`.
+   - Parent level override does not delete profile isolation or corrupt default Teddy keys.
+
+2. **Clarify daily metrics**
+   - Decide whether `S.daily.missions` means first-time missions or all mission completions.
+   - Make the variable/UI copy match that decision.
+
+#### P1 — Small hardening / cleanup
+
+1. Replace profile-name `innerHTML` with `textContent`.
+2. Add passphrase-derived cloud keys if the public Worker URL remains baked in.
+3. Add a small `escapeHTML()` helper only if template strings must contain dynamic parent-entered text; otherwise prefer DOM nodes.
+4. Keep retiring emoji UI where it affects polish, but do not remove useful child-reward symbols unless there is a clear replacement.
+
+#### P2 — Architecture before broad Act 2 expansion
+
+1. Split data first, mechanics second:
+   - `data-lines.js`
+   - `data-curriculum.js`
+   - `data-missions.js`
+   - `state-save.js`
+   - `audio.js`
+   - `map.js`
+2. Keep the deployed app no-build/static.
+3. Run the save and curriculum tests after each split.
+4. Avoid changing save keys or mission IDs during refactors.
+
+### Suggested tests to add next
+
+- `sound-id prompt hides target`: for `find`, `boss`, and fortress sound phases, assert visible text does not include the target grapheme or `/sound/` spelling.
+- `locked node enforcement`: simulate clicking a locked `.mnode` and assert no mission starts.
+- `training timer`: enter Training Room, tick with recent interaction, assert `daily.secs` and `daily.trainSecs` move; exit and assert only non-training time moves.
+- `profile name escaping`: create a profile named `<img onerror=...>` and assert it renders as text, not HTML.
+- `cloud newer-wins`: mock cloud payloads older/newer than local and assert only newer cloud saves replace local.
+- `act 2 override safety`: with mixed Act 1/Act 2 progress, use level override and assert expected done IDs/gears remain stable.
+
+### Product recommendations
+
+- Keep the next learning expansion narrow. Finish and polish the current Act 2 ladder before adding vowel teams, fluency passages, or new mechanics.
+- Prioritize real audio for phonemes, digraphs, magic-e long vowels, and the most common feedback lines. Audio quality matters more than more visual chrome for actual learning transfer.
+- Continue improving foreground art cohesion, but do not let art work delay fixes to save safety, daily-metric clarity, or invariant tests.
+- The parent/coding-agent workflow should keep using this file for durable review notes, not one-off task instructions.
+
+### Current verification
+
+As of this review, the existing regression checks pass:
+
+- `node tests/curriculum.test.js` — 13 passed, 0 failed.
+- `node tests/save.test.js` — 25 passed, 0 failed.
