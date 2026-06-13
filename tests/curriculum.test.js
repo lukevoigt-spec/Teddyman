@@ -106,6 +106,23 @@ ok("vowel teams tokenise as ONE gem (rain->r,ai,n; feet->f,ee,t; boat->b,oa,t)",
   toGraphemes("rain").join()==="r,ai,n" && toGraphemes("feet").join()==="f,ee,t" && toGraphemes("boat").join()==="b,oa,t");
 ok("VOWELTEAM_MISSION points at the right learn missions", Object.keys(VOWELTEAM_MISSION).every(t=>{var m=MISSIONS.find(x=>x.id===VOWELTEAM_MISSION[t]); return m && m.type==="learn" && m.letter===t;}));
 
+grp("Act-2 sentence-level fluency (the 2nd-grade rung) is decodable + well-wired");
+// the Great Library plays after every Act-2 skill zone, so the taught set is the 26 letters + all digraphs + magic-e + vowel teams
+var a2t = new Set(ORDER.concat(DIGRAPHS).concat(MAGICE_UNITS).concat(VOWELTEAMS));
+function a2ok(w){ if(SIGHT[w]) return true; var me=magicE(w); if(me && !a2t.has(me.unit)) return false; return toGraphemes(w).every(g=>a2t.has(g)); }
+var s2 = [];
+SENTENCES2.forEach(function(s,i){ s.t.forEach(function(w){ if(!a2ok(w)) s2.push("S2["+i+"] '"+w+"'"); }); });
+CLOZE2.forEach(function(c,i){ c.t.forEach(function(w){ if(w!=="_" && !a2ok(w)) s2.push("C2["+i+"] '"+w+"'"); });
+  [c.ans].concat(c.foils).forEach(function(w){ if(!a2ok(w)) s2.push("C2["+i+"] choice '"+w+"'"); }); });
+ok("every Act-2 sentence/cloze word is decodable (digraphs/blends/magic-e/vowel-teams + sight)", s2.length===0, s2);
+var ix = [];
+MISSIONS.forEach(function(m){
+  if(m.type==="sentence"){ var pool=(m.z>=100?SENTENCES2:SENTENCES); (m.sents||[]).forEach(function(i){ if(!pool[i]) ix.push("sentence m"+m.id+" idx "+i); }); }
+  if(m.type==="cloze"){ var pool=(m.z>=100?CLOZE2:CLOZE); (m.items||[]).forEach(function(i){ if(!pool[i]) ix.push("cloze m"+m.id+" idx "+i); }); } });
+ok("sentence/cloze missions reference valid pool indices", ix.length===0, ix);
+ok("Act 2 now has sentence-level reading before the Dragon Keep finale",
+  actMissions(2).some(function(m){ return m.type==="sentence"; }) && actMissions(2).some(function(m){ return m.type==="cloze"; }));
+
 grp("security: parent-entered profile-name escaping");
 ok("escHTML neutralises <, >, \\" and '",
   (function(){ var s=escHTML("<img src=x onerror=1>\\"'"); return s.indexOf("<")<0 && s.indexOf(">")<0 && s.indexOf('"')<0 && s.indexOf("'")<0; })());

@@ -118,7 +118,13 @@ const MISSIONS=[
   {id:138,type:"read",words:["ship","frog","cake","rain"],lbl:"Fluency: Mixed Reading I",z:105},
   {id:139,type:"read",words:["chip","jump","home","boat"],lbl:"Fluency: Mixed Reading II",z:105},
   {id:140,type:"read",words:["king","milk","kite","feet"],lbl:"Fluency: Mixed Reading III",z:105},
-  {id:141,type:"read",words:["fish","trap","rose","goat","tree"],lbl:"Fluency Rally!",finale:true,z:105},
+  {id:141,type:"read",words:["fish","trap","rose","goat","tree"],lbl:"Fluency Rally!",z:105},
+  /* SENTENCE-level reading — the 2nd-grade rung: read whole decodable sentences
+     (Act-2 words + sight words) for meaning. SENTENCES2/CLOZE2 in data-content.js. */
+  {id:142,type:"sentence",sents:[0,1,2,3],lbl:"Story Stones I",z:105},
+  {id:143,type:"cloze",items:[0,1,2],lbl:"Word Riddles I",z:105},
+  {id:144,type:"sentence",sents:[4,5,6,7,8],lbl:"Story Stones II",z:105},
+  {id:145,type:"cloze",items:[3,4,5],lbl:"Word Riddles Rally",z:105},
   /* ===== ACT-2 FINALE — the Dragon Keep: a multi-phase boss (sound→read→spell→read)
      that gates on Act-2 mastery (digraphs + magic-e) and frees MISS KENDALL. ===== */
   {id:128,type:"fortress",lbl:"Dragon Keep: Free Miss Kendall!",finale:true,climax:true,z:106}
@@ -187,7 +193,7 @@ const ZONES=[
     letters:["ai","ee","oa"], nodes:autoNodes(9,{y0:-1240,step:104,phase:2.6}) },
   /* ===== ACT 2 · zone 5: FLUENCY (rapid mixed decoding) ===== */
   { id:105, name:"THE GREAT LIBRARY", bg:"spellery", act:2,
-    letters:[], nodes:autoNodes(4,{y0:-1640,step:110,phase:1.1}) },
+    letters:[], nodes:autoNodes(8,{y0:-1640,step:96,phase:1.1}) },
   /* ===== ACT 2 · FINALE zone — the Dragon Keep (Vixen's dragon boss, rescue Miss Kendall) ===== */
   { id:106, name:"DRAGON KEEP", bg:"fortress", act:2, letters:[], nodes:[[470,-1700]] }
 ];

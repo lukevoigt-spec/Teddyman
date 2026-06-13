@@ -726,7 +726,7 @@ function startSentence(m){ show("scrSent"); sentMission=m; sentList=m.sents.slic
 function nextSentence(){
   if(sentIx>=sentGoal){ const champ=sentMission && sentMission.id===36;
     flow(Aud.play(champ?["sent_champ"]:["sent_yes"]),missionComplete); return; }
-  const s=SENTENCES[sentList[sentIx]]; sentCur=s; sentMiss=0;
+  const s=(currentAct()===2?SENTENCES2:SENTENCES)[sentList[sentIx]]; sentCur=s; sentMiss=0;
   $("sentProg").textContent=sentIx+" / "+sentGoal;
   narrate("sent",$("sentText"),["sent_prompt"],"Read the sentence… then tap the picture!");
   const wr=$("sentWords"); wr.innerHTML="";
@@ -750,7 +750,7 @@ let clozeList,clozeIx,clozeGoal,clozeMiss;
 function startCloze(m){ show("scrCloze"); clozeList=m.items.slice(); clozeIx=0; clozeGoal=clozeList.length;
   $("clozeChoices").innerHTML=""; flow(narrate("cloze",$("clozeText"),["cloze_intro"]),()=>nextCloze()); }
 function nextCloze(){ if(clozeIx>=clozeGoal){ flow(Aud.play(["dojo_yes"]),missionComplete); return; }
-  const c=CLOZE[clozeList[clozeIx]]; clozeMiss=0;
+  const c=(currentAct()===2?CLOZE2:CLOZE)[clozeList[clozeIx]]; clozeMiss=0;
   $("clozeProg").textContent=clozeIx+" / "+clozeGoal; $("clozePic").textContent=c.pic;
   narrate("cloze",$("clozeText"),["cloze_prompt"],"Read it… tap the word that fits the blank!");
   const sw=$("clozeSent"); sw.innerHTML="";

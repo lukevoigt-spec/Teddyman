@@ -198,8 +198,12 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   full closed helm; armor colour shifts per tier; Base/Progress power label reads the rank in Act 2).
 - ACT 2 IS CONTENT-COMPLETE (the full ~2nd-grade ladder is live): zones 101 CASTLETON (digraphs) →
   102 DRAGONSTEEL FORGE (blends) → 103 ENCHANTER'S TOWER (magic-e) → 104 THE SINGING GLADE (VOWEL
-  TEAMS ai/ee/oa, missions 129–137) → 105 THE GREAT LIBRARY (FLUENCY: rapid mixed decoding of every
-  Act-2 skill, missions 138–141) → 106 DRAGON KEEP (finale, rescue Miss Kendall, mission 128). VOWEL
+  TEAMS ai/ee/oa, missions 129–137) → 105 THE GREAT LIBRARY (FLUENCY: rapid mixed word decoding 138–141,
+  THEN SENTENCE-LEVEL reading — Story Stones sentence→picture 142/144 + Word Riddles cloze/maze 143/145,
+  the 2nd-grade rung) → 106 DRAGON KEEP (finale, rescue Miss Kendall, mission 128). SENTENCE FLUENCY:
+  SENTENCES2/CLOZE2 (data-content.js) use Act-2 words (digraphs/blends/magic-e/vowel-teams) + sight words,
+  all decodable by zone-105 play order (curriculum.test guards it); startSentence/startCloze pick the
+  act's pool via currentAct()===2 (Act-1 fortSentencePic stays on SENTENCES). VOWEL
   TEAMS: VOWELTEAMS=["ai","ee","oa"]; GRAPH2=DIGRAPHS+VOWELTEAMS drives toGraphemes() longest-match
   (rain=[r,ai,n], one gem = one team, the long-vowel sound snd_ai/ee/oa). Backward-compatible: the
   ONLY words containing ai/ee/oa are the new ones + the sight word "said", which is fully sight-handled
@@ -208,9 +212,9 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   order). VOWELTEAM_MISSION feeds taughtVowelTeams → taughtGraphemes + actGraphemes (so the finale
   gates on digraphs+magic-e+vowel-teams). Learn screen: 2-char graphemes SKIP the trace ("FIND IT!").
 - ACT-2 POLISH TODO (not content): real Vixen/Miss-Kendall/friend art; long-vowel + digraph + vowel-
-  team phoneme recordings (parent, via the Voice Studio — the snd_ai/ee/oa lines already appear there);
-  optional Act-2 sentence-level fluency (currently word-level). The game is now playable end-to-end
-  through the full Act-2 ladder.
+  team phoneme recordings (parent, via the Voice Studio — the snd_ai/ee/oa lines already appear there).
+  Act-2 sentence-level fluency is now DONE (Great Library Story Stones + Word Riddles), so the full
+  letter→digraph→blend→magic-e→vowel-team→word-fluency→SENTENCE ladder is live end-to-end.
 - PLANNED ENHANCEMENTS (parent-prioritized backlog — "identify 10, do best-first"): (1) AUDIO WORKFLOW
   REDO — streamline + bulletproof the record/ElevenLabs/export/publish pipeline (parent flagged; highest
   learning leverage). (2) SETTINGS OVERHAUL — game-like, intuitive, add missing settings; study how real

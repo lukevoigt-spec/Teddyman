@@ -44,6 +44,30 @@ const SENTENCES=[
   {t:["you","can","run"],        pic:"🏃", foil:"😴"},
   {t:["I","had","a","nap"],      pic:"😴", foil:"🏃"}
 ];
+/* ACT 2 — sentence reading with the medieval skills (digraphs/blends/magic-e/
+   vowel-teams) + sight words. Every word is decodable by the time the Great
+   Library plays (all Act-2 skills + the 26 letters are taught). curriculum.test
+   guards decodability. Read the sentence, tap the picture it tells about. */
+const SENTENCES2=[
+  {t:["the","ship","is","big"],         pic:"🚢", foil:"🚲"},
+  {t:["a","frog","can","jump"],         pic:"🐸", foil:"🐟"},
+  {t:["the","king","has","a","ring"],   pic:"🤴", foil:"🐸"},
+  {t:["I","see","a","bee"],             pic:"🐝", foil:"🐐"},
+  {t:["the","goat","is","on","a","boat"],pic:"⛵", foil:"🚂"},
+  {t:["a","fish","can","swim"],         pic:"🐟", foil:"🐸"},
+  {t:["the","train","is","fast"],       pic:"🚂", foil:"⛵"},
+  {t:["you","can","ride","a","bike"],   pic:"🚲", foil:"🚂"},
+  {t:["the","rose","is","red"],         pic:"🌹", foil:"🌳"}
+];
+/* ACT 2 — cloze / maze (read the sentence, tap the word that fits the blank). */
+const CLOZE2=[
+  {t:["the","ship","is","_"],          ans:"big",  foils:["red","wet"],   pic:"🚢"},
+  {t:["a","frog","can","_"],           ans:"jump", foils:["swim","ship"], pic:"🐸"},
+  {t:["I","see","a","_"],              ans:"bee",  foils:["goat","tree"], pic:"🐝"},
+  {t:["the","_","is","fast"],          ans:"train",foils:["rose","boat"], pic:"🚂"},
+  {t:["you","can","ride","a","_"],     ans:"bike", foils:["bath","ring"], pic:"🚲"},
+  {t:["the","goat","is","on","a","_"], ans:"boat", foils:["bike","cake"], pic:"⛵"}
+];
 /* Sight ("heart") words — not fully decodable; learned as wholes. h = indices
    of the "heart"/tricky letters that don't say their usual sound. */
 const SIGHT={
