@@ -24,7 +24,7 @@
 
   <!-- Daily Training meter (shown on the map hub; gentle, never a penalty) -->
   <div id="dailyMeter" style="display:none;">
-    <div class="dailylabel">🗓️ TODAY'S TRAINING <span id="dailyTime"></span></div>
+    <div class="dailylabel">TODAY'S TRAINING <span id="dailyTime"></span></div>
     <div class="dailybar"><div id="dailyFill"></div></div>
   </div>
 
@@ -32,12 +32,12 @@
     <div class="chip" id="hudTitle">STAR FORCE CITY</div>
     <div style="display:flex;gap:10px;align-items:center;">
       <div class="chip starsrow" id="hudStars">⚡ 0</div>
-      <div class="roundbtn" id="btnHome" title="Map">🗺️</div>
-      <div class="roundbtn" id="btnGear" title="Grown-Up Corner — hold 3s to open">⚙️</div>
+      <div class="roundbtn" id="btnHome" title="Map"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg></div>
+      <div class="roundbtn" id="btnGear" title="Grown-Up Corner — hold 3s to open"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5 5l2.1 2.1M16.9 16.9 19 19M19 5l-2.1 2.1M7.1 16.9 5 19"/></svg></div>
     </div>
   </div>
 
-  <div class="roundbtn" id="btnSkip" style="position:absolute;right:16px;bottom:16px;display:none;z-index:8;width:64px;height:64px;font-size:30px;">⏭</div>
+  <div class="roundbtn" id="btnSkip" title="Skip" style="position:absolute;right:16px;bottom:16px;display:none;z-index:8;width:64px;height:64px;"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M5 5l9 7-9 7V5zm11 0h3v14h-3V5z"/></svg></div>
 
   <!-- TITLE -->
   <div class="screen on" id="scrTitle">
@@ -46,7 +46,7 @@
     <div id="titleHero"></div>
     <button class="btn" id="btnStart">START</button>
     <button class="btn ghost" id="btnContinue" style="display:none;">CONTINUE MISSION</button>
-    <button class="btn ghost sm" id="btnPlayer" style="font-size:clamp(16px,2.4vw,22px);">👥 <span id="playerName">Teddy</span> — switch</button>
+    <button class="btn ghost sm" id="btnPlayer" style="font-size:clamp(16px,2.4vw,22px);"><span id="playerName">Teddy</span> — switch</button>
     <div class="vpstatus" id="vpStatus"></div>
   </div>
 
@@ -104,15 +104,15 @@
       </div>
     </div>
     <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
-      <button class="btn" id="btnTrain">🏋️ TRAINING ROOM</button>
-      <button class="btn" id="btnShop">🛒 SHOP</button>
+      <button class="btn" id="btnTrain">TRAINING ROOM</button>
+      <button class="btn" id="btnShop">SHOP</button>
       <button class="btn blue" id="btnBaseBack">CITY MAP ➜</button>
     </div>
   </div>
 
   <!-- TRAINING ROOM (daily practice — earns coins, no story gating) -->
   <div class="screen" id="scrTrain">
-    <div class="hudtitle" style="margin-top:46px;font-family:'Bangers',cursive;font-size:clamp(26px,5vw,40px);color:var(--gold);">🏋️ TRAINING ROOM</div>
+    <div class="hudtitle" style="margin-top:46px;font-family:'Bangers',cursive;font-size:clamp(26px,5vw,40px);color:var(--gold);">TRAINING ROOM</div>
     <div class="baselbl" style="font-size:18px;">💰 <span id="trainCoins" style="color:var(--gold);">0</span> &nbsp; ✅ <span id="trainReps">0</span></div>
     <div class="bubble" id="trainText"><span></span><div class="ear" data-ear="train">🔊</div></div>
     <div id="trainWord" class="slotrow"></div>
@@ -122,7 +122,7 @@
 
   <!-- SHOP (spend coins on cosmetic Hero-Base items) -->
   <div id="shopPanel">
-    <div class="comic" style="font-size:34px;color:var(--gold);">🛒 HERO SHOP</div>
+    <div class="comic" style="font-size:34px;color:var(--gold);">HERO SHOP</div>
     <div class="baselbl" style="font-size:20px;">💰 <span id="shopCoins" style="color:var(--gold);">0</span> coins</div>
     <div class="read" style="font-size:14px;max-width:560px;text-align:center;color:#cfc6f2;">Earn coins in the Training Room, then collect items for your Hero Base!</div>
     <div id="shopGrid"></div>
@@ -155,7 +155,7 @@
   <div class="screen" id="scrRead">
     <div class="bubble" id="readText"><span></span><div class="ear" data-ear="read">🔊</div></div>
     <div class="tilerow" id="readWord"></div>
-    <button class="btn ghost" id="btnReadSound">🔊 Sound it out</button>
+    <button class="btn ghost" id="btnReadSound">Sound it out</button>
     <div class="tilerow" id="readChoices"></div>
     <div class="starsrow" id="readProg"></div>
   </div>
@@ -164,7 +164,7 @@
   <div class="screen" id="scrMagic">
     <div class="bubble" id="magicText"><span></span><div class="ear" data-ear="magic">🔊</div></div>
     <div class="tilerow" id="magicWord"></div>
-    <button class="btn" id="magicCast" style="display:none;">CAST MAGIC-E ✨</button>
+    <button class="btn" id="magicCast" style="display:none;">CAST MAGIC-E</button>
     <button class="btn blue" id="magicNext" style="display:none;">NEXT ➜</button>
     <div class="starsrow" id="magicProg"></div>
   </div>
@@ -198,7 +198,7 @@
   <div class="screen" id="scrScramble">
     <div class="bubble" id="scramText"><span></span><div class="ear" data-ear="scram">🔊</div></div>
     <div id="scramPic" style="font-size:clamp(48px,10vw,86px);line-height:1;"></div>
-    <button class="btn ghost" id="btnScramHear">🔊 Hear the sentence</button>
+    <button class="btn ghost" id="btnScramHear">Hear the sentence</button>
     <div class="tilerow" id="scramSlots" style="gap:8px;"></div>
     <div class="tilerow" id="scramTiles" style="gap:8px;"></div>
     <div class="starsrow" id="scramProg"></div>
@@ -249,7 +249,7 @@
     <div id="restHero"></div>
     <div class="bubble" id="restText"><span></span><div class="ear" data-ear="rest">🔊</div></div>
     <div style="display:flex;gap:14px;">
-      <button class="btn" id="btnRestDone">REST 🌙</button>
+      <button class="btn" id="btnRestDone">REST</button>
       <button class="btn ghost" id="btnRestMore">One more mission</button>
     </div>
   </div>
@@ -257,12 +257,12 @@
   <!-- SETTINGS -->
   <div id="settingsPanel">
     <div class="comic" style="font-size:34px;color:var(--gold);">GROWN-UP CORNER</div>
-    <div id="saveWarn" style="display:none;background:#5a1530;border:2px solid #ff5e57;color:#ffd0cb;border-radius:12px;padding:8px 14px;font-size:13px;text-align:center;max-width:min(640px,94vw);">⚠️ This iPad blocked saving (storage full or private mode). Turn on cloud sync or copy a backup so progress isn't lost.</div>
+    <div id="saveWarn" style="display:none;background:#5a1530;border:2px solid #ff5e57;color:#ffd0cb;border-radius:12px;padding:8px 14px;font-size:13px;text-align:center;max-width:min(640px,94vw);">This iPad blocked saving (storage full or private mode). Turn on cloud sync or copy a backup so progress isn't lost.</div>
     <div class="vpstatus" id="vpStatus2"></div>
     <div class="tabbar">
-      <button class="tabbtn on" data-tab="tabBackup">💾 Backup</button>
-      <button class="tabbtn" data-tab="tabProgress">📈 Progress</button>
-      <button class="tabbtn" data-tab="tabAudio">🎙️ Audio</button>
+      <button class="tabbtn on" data-tab="tabBackup">Backup</button>
+      <button class="tabbtn" data-tab="tabProgress">Progress</button>
+      <button class="tabbtn" data-tab="tabAudio">Audio</button>
     </div>
 
     <div id="tabProgress" class="tabpane">
@@ -270,16 +270,16 @@
     </div>
 
     <div id="tabBackup" class="tabpane on">
-      <button class="btn ghost" id="btnVoiceTest">🔊 Test voice</button>
+      <button class="btn ghost" id="btnVoiceTest">Test voice</button>
 
       <div class="audrow" style="flex-direction:column;border:2px solid #3a2d72;border-radius:14px;padding:12px;width:min(640px,94vw);">
-        <div class="read" style="font-size:14px;color:#cfc6f2;text-align:center;">👥 <b>Players</b> — each has their own saved progress. Teddy auto-loads; tap <b>Switch</b> on the title to change. Add a profile for yourself to test without touching his progress.</div>
+        <div class="read" style="font-size:14px;color:#cfc6f2;text-align:center;"><b>Players</b> — each has their own saved progress. Teddy auto-loads; tap <b>Switch</b> on the title to change. Add a profile for yourself to test without touching his progress.</div>
         <div id="playersList" style="display:flex;flex-direction:column;gap:6px;width:100%;"></div>
-        <button class="btn ghost sm" id="btnAddPlayer">➕ Add player</button>
+        <button class="btn ghost sm" id="btnAddPlayer">Add player</button>
       </div>
 
       <div class="audrow" style="flex-direction:column;border:2px solid #3a2d72;border-radius:14px;padding:12px;width:min(640px,94vw);">
-        <div class="read" style="font-size:14px;color:#cfc6f2;text-align:center;">☁️ <b>Cloud sync</b> — his progress follows him to any device. Paste your Cloudflare Worker URL here once; the <i>same URL</i> on another iPad continues right where he left off. (Setup: see <b>cloud/README.md</b>.)</div>
+        <div class="read" style="font-size:14px;color:#cfc6f2;text-align:center;"><b>Cloud sync</b> — his progress follows him to any device. Paste your Cloudflare Worker URL here once; the <i>same URL</i> on another iPad continues right where he left off. (Setup: see <b>cloud/README.md</b>.)</div>
         <input id="cloudURL" type="text" placeholder="https://teddy-save.your-name.workers.dev" style="width:100%;padding:9px 12px;border-radius:12px;border:2px solid #3a2d72;background:#171236;color:var(--txt);font-size:14px;">
         <div style="display:flex;gap:10px;justify-content:center;">
           <button class="btn ghost sm" id="btnCloudConnect">Connect / Sync now</button>
@@ -306,9 +306,9 @@
       </div>
       <div id="elVoices" class="audrow" style="display:none;"></div>
       <div class="audrow">
-        <button class="btn ghost sm" id="btnGenAll">⚡ Generate spoken lines</button>
-        <button class="btn ghost sm" id="btnExportVP">⬇️ Export voicepack.js</button>
-        <button class="btn ghost sm" id="btnImportVP">⬆️ Import</button>
+        <button class="btn ghost sm" id="btnGenAll">Generate spoken lines</button>
+        <button class="btn ghost sm" id="btnExportVP">Export voicepack.js</button>
+        <button class="btn ghost sm" id="btnImportVP">Import</button>
         <input id="vpFile" type="file" accept=".js,text/javascript,application/javascript" style="display:none">
         <div class="audfilter">
           <button class="chipbtn on" data-filter="sounds">Letter sounds</button>
@@ -317,7 +317,7 @@
       </div>
       <div class="audrow" style="border-top:2px solid #3a2d72;padding-top:12px;margin-top:2px;">
         <input id="ghToken" type="password" placeholder="GitHub fine-grained token (Contents: write) — used now, never saved">
-        <button class="btn ghost sm" id="btnPublish">🚀 Publish to all devices</button>
+        <button class="btn ghost sm" id="btnPublish">Publish to all devices</button>
       </div>
       <div class="read" style="font-size:12px;color:#9b94c9;max-width:640px;">
         Publish writes your voices to the project so <b>every</b> device gets them. Make a token at

@@ -706,7 +706,7 @@ function updateDailyMeter(){ const fill=$("dailyFill"); if(!fill)return;
   const pct=Math.min(100, 100*(S.daily.secs||0)/dailyGoalSecs());
   fill.style.width=pct+"%"; fill.classList.toggle("done", pct>=100);
   const t=$("dailyTime"); if(t){ const m=Math.floor((S.daily.secs||0)/60);
-    t.textContent = pct>=100 ? "— "+m+" min · GOAL! ⭐" : "— "+m+" / "+(S.goalMin||30)+" min"; }
+    t.textContent = pct>=100 ? "— "+m+" min · GOAL!" : "— "+m+" / "+(S.goalMin||30)+" min"; }
 }
 function dailyGoalReached(){ try{Aud.ding();}catch(e){} Aud.play("daily_goal"); }
 ensureDaily();
@@ -921,8 +921,8 @@ $("titleHero").innerHTML=heroNow(210);
 function vpMsg(){ const n=(typeof VOICEPACK!=="undefined")?Object.keys(VOICEPACK).length:0;
   const c=Object.keys(CUSTOM).length;
   const parts=[];
-  if(c)parts.push("🎤 "+c+" voices recorded on this iPad");
-  if(n)parts.push("🎙️ "+n+" studio lines");
+  if(c)parts.push(c+" voices recorded on this iPad");
+  if(n)parts.push(n+" studio lines");
   return parts.length? parts.join(" · ") : "Using built-in voice — record your own in Grown-Up Corner ▸ Audio"; }
 $("vpStatus").textContent=vpMsg();
 /* paint the title for the ACTIVE player (auto-loaded last player) */
@@ -1025,8 +1025,8 @@ function nextScan(){ if(scanIx>=SCAN_SET.length){ S.scan=true; save();
   const target=SCAN_SET[scanIx];
   const foils=SCAN_SET.filter(x=>x!==target).sort(()=>Math.random()-.5).slice(0,2);
   const opts=[target,...foils].sort(()=>Math.random()-.5);
-  $("scanProg").textContent="🔍 "+(scanIx+1)+" / "+SCAN_SET.length;
-  narrate("scan",$("scanText"),["scan_prompt","snd_"+target],"Tap the gem that makes the sound\u2026 \ud83d\udd0a");
+  $("scanProg").textContent=(scanIx+1)+" / "+SCAN_SET.length;
+  narrate("scan",$("scanText"),["scan_prompt","snd_"+target],"Tap the gem that makes the sound\u2026");
   const row=$("scanTiles"); row.innerHTML="";
   opts.forEach(g=>{ const t=document.createElement("button"); t.className="tile read"; t.textContent=g;
     t.onclick=()=>{ const ok=(g===target);
@@ -1416,8 +1416,8 @@ function nextFind(){
   if(findRep>=findGoal){ (afterFind||(()=>startBoss(findTarget)))(); return; }
   const g = patrolSet? (pickWeak(patrolSet)||patrolSet[0]) : findTarget;
   findTarget=g; findMiss=0;
-  $("findProg").textContent="⭐ "+findRep+" / "+findGoal;
-  narrate("find",$("findText"),["find_prompt","snd_"+g],"Find the gem that makes the sound\u2026 \ud83d\udd0a");
+  $("findProg").textContent=findRep+" / "+findGoal;
+  narrate("find",$("findText"),["find_prompt","snd_"+g],"Find the gem that makes the sound\u2026");
   /* patrol foils come only from letters already taught; learn-mission foils from the zone */
   const foilPool=patrolSet||taughtGraphemes();   /* only already-taught graphemes (incl. digraphs) as distractors */
   const foils=pickFoils(g, foilPool, 3);       /* biases toward the confusable twin (b/d…) */
@@ -1440,7 +1440,7 @@ function bossSprite(w){ return currentAct()===2 ? dragonSVG(w) : inkblotSVG(w); 
 function startBoss(g){ show("scrBoss"); bossHP=3;
   $("bossArt").innerHTML=`<div class="boss" id="bossSprite">${bossSprite(240)}</div>`;
   paintPips("bossPips",bossHP,3);
-  narrate("boss",$("bossText"),["boss_intro","snd_"+g],"Blast the Vexbot! Tap the gem that makes the sound\u2026 \ud83d\udd0a");
+  narrate("boss",$("bossText"),["boss_intro","snd_"+g],"Blast the Vexbot! Tap the gem that makes the sound\u2026");
   bossRound(g); }
 function paintPips(id,hp,max){ const p=$(id); p.innerHTML="";
   for(let i=0;i<max;i++){const d=document.createElement("div");d.className="pip"+(i<hp?"":" off");p.appendChild(d);} }
@@ -1476,8 +1476,8 @@ function nextRead(){
     const champ = CUR.id===30;
     flow(Aud.play(champ?["rally_champ"]:["read_yes"]), missionComplete); return; }
   const w=readWords[readIx]; readMiss=0; const POOL=readPool();
-  $("readProg").textContent="📖 "+readIx+" / "+readGoal;
-  narrate("read",$("readText"),["read_prompt"],"Read the word… then tap what it means! 📖");
+  $("readProg").textContent=readIx+" / "+readGoal;
+  narrate("read",$("readText"),["read_prompt"],"Read the word… then tap what it means!");
   /* the word, as tappable grapheme tiles (a digraph is ONE tile = one sound;
      in a magic-e word the silent E is dimmed and the vowel marked "long") */
   const wr=$("readWord"); wr.innerHTML=""; const me=magicE(w), snds=graphemeSounds(w);
@@ -1529,8 +1529,8 @@ function practiceSpell(){
   if(spellIx>=spellGoal){ const champ=spellMission.id===33;
     flow(Aud.play(champ?["spell_done"]:["spell_yes"]),missionComplete); return; }
   const w=spellPool[Math.floor(Math.random()*spellPool.length)]; spellMiss=0; spellSlot=0;
-  $("spellProg").textContent="✨ "+spellIx+" / "+spellGoal;
-  narrate("spell",$("spellText"),["spell_build","sw_"+w],"Build the word you hear — sound by sound! ✨");
+  $("spellProg").textContent=spellIx+" / "+spellGoal;
+  narrate("spell",$("spellText"),["spell_build","sw_"+w],"Build the word you hear — sound by sound!");
   const sw=$("spellWord"); sw.innerHTML="";
   w.split("").forEach((c,j)=>{ const s=document.createElement("div"); s.className="slot read"+(isHeart(w,j)?" heartslot":""); sw.appendChild(s); });
   const need=w.split("");
@@ -1565,8 +1565,8 @@ function nextSentence(){
   if(sentIx>=sentGoal){ const champ=sentMission && sentMission.id===36;
     flow(Aud.play(champ?["sent_champ"]:["sent_yes"]),missionComplete); return; }
   const s=SENTENCES[sentList[sentIx]]; sentCur=s; sentMiss=0;
-  $("sentProg").textContent="📖 "+sentIx+" / "+sentGoal;
-  narrate("sent",$("sentText"),["sent_prompt"],"Read the sentence… then tap the picture! 📖");
+  $("sentProg").textContent=sentIx+" / "+sentGoal;
+  narrate("sent",$("sentText"),["sent_prompt"],"Read the sentence… then tap the picture!");
   const wr=$("sentWords"); wr.innerHTML="";
   s.t.forEach(w=>{ const t=document.createElement("button");
     t.className="tile wordtile read"+(SIGHT[w]?" heartword":"");
@@ -1589,8 +1589,8 @@ function startCloze(m){ show("scrCloze"); clozeList=m.items.slice(); clozeIx=0; 
   $("clozeChoices").innerHTML=""; flow(narrate("cloze",$("clozeText"),["cloze_intro"]),()=>nextCloze()); }
 function nextCloze(){ if(clozeIx>=clozeGoal){ flow(Aud.play(["dojo_yes"]),missionComplete); return; }
   const c=CLOZE[clozeList[clozeIx]]; clozeMiss=0;
-  $("clozeProg").textContent="📖 "+clozeIx+" / "+clozeGoal; $("clozePic").textContent=c.pic;
-  narrate("cloze",$("clozeText"),["cloze_prompt"],"Read it… tap the word that fits the blank! 📖");
+  $("clozeProg").textContent=clozeIx+" / "+clozeGoal; $("clozePic").textContent=c.pic;
+  narrate("cloze",$("clozeText"),["cloze_prompt"],"Read it… tap the word that fits the blank!");
   const sw=$("clozeSent"); sw.innerHTML="";
   c.t.forEach(w=>{ if(w==="_"){ const s=document.createElement("div"); s.className="wordslot read"; s.id="clozeBlank"; s.textContent="?"; sw.appendChild(s); }
     else { const t=document.createElement("button"); t.className="tile wordtile read"+(SIGHT[w]?" heartword":""); t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>Aud.play(wordAudio(w)); sw.appendChild(t); } });
@@ -1612,8 +1612,8 @@ function startScramble(m){ show("scrScramble"); scramList=m.items.slice(); scram
   $("scramTiles").innerHTML=""; $("scramSlots").innerHTML=""; flow(narrate("scram",$("scramText"),["scram_intro"]),()=>nextScramble()); }
 function nextScramble(){ if(scramIx>=scramGoal){ flow(Aud.play(["dojo_yes"]),missionComplete); return; }
   const s=SCRAMBLE[scramList[scramIx]]; scramCur=s; scramPos=0; scramMiss=0;
-  $("scramProg").textContent="📖 "+scramIx+" / "+scramGoal; $("scramPic").textContent=s.pic;
-  narrate("scram",$("scramText"),["scram_prompt",...scramAudio(s)],"Build the sentence! Tap the words in order. 🔊");
+  $("scramProg").textContent=scramIx+" / "+scramGoal; $("scramPic").textContent=s.pic;
+  narrate("scram",$("scramText"),["scram_prompt",...scramAudio(s)],"Build the sentence! Tap the words in order.");
   const sl=$("scramSlots"); sl.innerHTML="";
   s.words.forEach(()=>{ const d=document.createElement("div"); d.className="wordslot read"; sl.appendChild(d); });
   const tr=$("scramTiles"); tr.innerHTML="";
@@ -1659,7 +1659,7 @@ function fortRound(){ const ph=FORTRESS[fPhase];
   ({sound:fortSound,read:fortRead,spell:fortSpell,sentence:fortSentence})[ph.kind](); }
 function fortMissHint(){ fMiss++; }
 function fortSound(){ const pool=taughtLetters(); const g=pickWeak(pool)||pool[0];
-  narrate("fort",$("fortText"),["snd_"+g],"Blast the shield! Tap the gem that makes the sound… 🔊");
+  narrate("fort",$("fortText"),["snd_"+g],"Blast the shield! Tap the gem that makes the sound…");
   $("fortWord").innerHTML="";
   const foils=pickFoils(g, pool, 3);   /* fortress shield: include the confusable twin */
   const row=$("fortChoices"); row.innerHTML="";
@@ -1670,7 +1670,7 @@ function fortSound(){ const pool=taughtLetters(); const g=pickWeak(pool)||pool[0
         if(fMiss>=2)row.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===g)x.classList.add("hint");}); Aud.play(["snd_"+g]); } };
     row.appendChild(t); }); }
 function fortRead(){ const ws=Object.keys(READWORDS); const w=ws[Math.floor(Math.random()*ws.length)];
-  narrate("fort",$("fortText"),["read_prompt"],"Read the word-lock… tap what it means! 📖");
+  narrate("fort",$("fortText"),["read_prompt"],"Read the word-lock… tap what it means!");
   const wr=$("fortWord"); wr.innerHTML="";
   w.split("").forEach(c=>{ const t=document.createElement("button"); t.className="tile read rletter"; t.textContent=c; t.onclick=()=>Aud.play("snd_"+c); wr.appendChild(t); });
   const foils=ws.filter(x=>x!==w).sort(()=>Math.random()-.5).slice(0,2);
@@ -1685,7 +1685,7 @@ function fortRead(){ const ws=Object.keys(READWORDS); const w=ws[Math.floor(Math
 let fortSpellSlot=0;
 function fortSpell(){ const pool=taughtSight().length?taughtSight():["the","a","I"]; const w=pool[Math.floor(Math.random()*pool.length)];
   fortSpellSlot=0;
-  narrate("fort",$("fortText"),["spell_build","sw_"+w],"Build the spell you hear — sound by sound! ✨");
+  narrate("fort",$("fortText"),["spell_build","sw_"+w],"Build the spell you hear — sound by sound!");
   const wr=$("fortWord"); wr.innerHTML="";
   w.split("").forEach((c,j)=>{ const s=document.createElement("div"); s.className="slot read"+(isHeart(w,j)?" heartslot":""); wr.appendChild(s); });
   const need=w.split("");
@@ -1707,7 +1707,7 @@ function fortSpell(){ const pool=taughtSight().length?taughtSight():["the","a","
    research-validated comprehension check, so the win = real reading. */
 function fortSentence(){ if(fRound===0) fortSentencePic(); else fortMaze(); }
 function fortMaze(){ const c=FORTMAZE[Math.floor(Math.random()*FORTMAZE.length)];
-  narrate("fort",$("fortText"),["sent_prompt"],"Read it to free Leighton… tap the word that fits the blank! 📖");
+  narrate("fort",$("fortText"),["sent_prompt"],"Read it to free Leighton… tap the word that fits the blank!");
   const wr=$("fortWord"); wr.innerHTML="";
   c.t.forEach(w=>{ if(w==="_"){ const s=document.createElement("div"); s.className="wordslot read"; s.id="fortBlank"; s.textContent="?"; wr.appendChild(s); }
     else { const t=document.createElement("button"); t.className="tile wordtile read"+(SIGHT[w]?" heartword":""); t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>Aud.play(wordAudio(w)); wr.appendChild(t); } });
@@ -1720,7 +1720,7 @@ function fortMaze(){ const c=FORTMAZE[Math.floor(Math.random()*FORTMAZE.length)]
         if(fMiss>=2)row.querySelectorAll(".wordtile").forEach(x=>{if(x.dataset.w===c.ans)x.classList.add("hint");}); Aud.play(["almost",...done.flatMap(wordAudio)]); } };
     row.appendChild(b); }); }
 function fortSentencePic(){ const s=SENTENCES[Math.floor(Math.random()*SENTENCES.length)];
-  narrate("fort",$("fortText"),["sent_prompt"],"Read it to free Leighton… tap the picture! 📖");
+  narrate("fort",$("fortText"),["sent_prompt"],"Read it to free Leighton… tap the picture!");
   const wr=$("fortWord"); wr.innerHTML="";
   s.t.forEach(w=>{ const t=document.createElement("button"); t.className="tile wordtile read"+(SIGHT[w]?" heartword":""); t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>Aud.play(wordAudio(w)); wr.appendChild(t); });
   const row=$("fortChoices"); row.innerHTML="";
@@ -1755,7 +1755,7 @@ function forgeWord(){
   const w=forgeWords[forgeWordIx]; forgeSlotIx=0;
   const gs=toGraphemes(w);   /* tokenise so digraphs (sh) are ONE build slot, one gem */
   const me=magicE(w), snds=graphemeSounds(w);
-  narrate("forge",$("forgeText"),["forge_build",...snds,"word_"+w],"Build the word! Listen\u2026 \ud83d\udd0a");
+  narrate("forge",$("forgeText"),["forge_build",...snds,"word_"+w],"Build the word! Listen\u2026");
   const slots=$("forgeSlots"); slots.innerHTML="";
   gs.forEach((g,j)=>{ const s=document.createElement("div"); s.className="slot read"; if(me&&j===me.e)s.classList.add("silente"); if(me&&j===me.v)s.classList.add("longv"); slots.appendChild(s); });
   const pool=taughtGraphemes().filter(x=>!gs.includes(x));   /* distractor: taught graphemes only */
@@ -1792,12 +1792,12 @@ function startMagic(m){ show("scrMagic"); magicM=m; magicPairs=m.pairs.slice(); 
 function magicStep(){
   if(magicIx>=magicPairs.length){ record(magicM.unit,true); flow(Aud.play(["magic_done"]),missionComplete); return; }
   const pair=magicPairs[magicIx], sh=pair[0], lo=pair[1], me=magicE(lo);
-  $("magicProg").textContent="✨ "+magicIx+" / "+magicPairs.length;
+  $("magicProg").textContent=magicIx+" / "+magicPairs.length;
   const wr=$("magicWord"); wr.innerHTML="";
   toGraphemes(sh).forEach((c,j)=>{ const t=document.createElement("div"); t.className="tile read magtile"+(j===me.v?" vowelt":"");
     t.textContent=c; if(j===me.v)t.dataset.vowel="1"; wr.appendChild(t); });
   $("magicNext").style.display="none";
-  $("magicCast").style.display="inline-block"; $("magicCast").textContent="CAST MAGIC-E ✨";
+  $("magicCast").style.display="inline-block"; $("magicCast").textContent="CAST MAGIC-E";
   $("magicCast").onclick=()=>castMagicE(sh,lo);
   narrate("magic",$("magicText"),["magic_short",...graphemeSounds(sh),"word_"+sh],"This word says… then CAST the spell!");
 }
@@ -1821,7 +1821,7 @@ function showWin(firstTime){ show("scrWin");
   $("winHero").innerHTML=heroNow(170)+
     (ally?`<svg viewBox="-32 -36 64 80" width="98" style="vertical-align:bottom;">${allyFace(ally)}<text y="42" text-anchor="middle" font-family="Bangers" font-size="12" fill="#ffc93c">${ally==="leighton"?"LEIGHTON":"HEARTGUARD"}</text></svg>`:"");
   const gear=GEAR_AT[CUR.id];
-  $("winGear").innerHTML=(firstTime&&gear)?`<div class="gearbadge">NEW GEAR: ⭐ ${gear}</div>`:"";
+  $("winGear").innerHTML=(firstTime&&gear)?`<div class="gearbadge">NEW GEAR: ${gear}</div>`:"";
   let ids;
   if(CUR.type==="fortress") ids=["leighton1","leighton2","leighton3"];  /* the Act-2 handoff is its own cutscene now */
   else if(CUR.rescue) ids=["free_heart1","free_heart2","m2_done"];
@@ -1878,7 +1878,7 @@ function paintBase(){
   capes.forEach(([k,lbl,need])=>{ const locked=S.stars<need;
     const b=document.createElement("button");
     b.className="echip"+(S.equip.cape===k?" onsel":"")+(locked?" lockd":"");
-    b.textContent=locked?(lbl+" 🔒 ⚡"+need):lbl;
+    b.textContent=locked?(lbl+" · ⚡"+need):lbl;
     b.onclick=()=>{S.equip.cape=k;save();Aud.ding();paintBase();};
     crow.appendChild(b); });
   /* gem shelf: earned letters only */
@@ -1937,7 +1937,7 @@ function trainRound(){ const w=pickTrainWord();
   if(!w){ flow(narrate("train",$("trainText"),["train_none"]),()=>{ __inTraining=false; showBase(); }); return; }
   (trainReps%2===0) ? trainBuild(w) : trainDecode(w); }
 function trainBuild(w){ trainCur=w; trainSlot=0; trainMiss=0;
-  narrate("train",$("trainText"),["train_build"].concat(wordAudio(w)),"Build the word you hear! 🔊");
+  narrate("train",$("trainText"),["train_build"].concat(wordAudio(w)),"Build the word you hear!");
   const wr=$("trainWord"); wr.innerHTML="";
   w.split("").forEach(()=>{ const s=document.createElement("div"); s.className="slot read"; wr.appendChild(s); });
   const need=w.split("");
@@ -1953,7 +1953,7 @@ function trainBuild(w){ trainCur=w; trainSlot=0; trainMiss=0;
         Aud.play(["snd_"+want]); setTimeout(()=>b.classList.remove("dim"),900); } };
     cr.appendChild(b); }); }
 function trainDecode(w){ trainCur=w; trainMiss=0;
-  narrate("train",$("trainText"),["train_read"],"Read the word… tap what it means! 📖");
+  narrate("train",$("trainText"),["train_read"],"Read the word… tap what it means!");
   const wr=$("trainWord"); wr.innerHTML="";
   w.split("").forEach(c=>{ const t=document.createElement("button"); t.className="tile read rletter"; t.textContent=c; t.onclick=()=>Aud.play("snd_"+c); wr.appendChild(t); });
   const opts=shuf([w].concat(shuf(Object.keys(READWORDS).filter(x=>x!==w)).slice(0,2)));
@@ -2021,8 +2021,8 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
   const standalone = (window.navigator&&window.navigator.standalone) || (window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches);
   const safetyHTML=`<div class="psec"><b>Save safety</b>
       <div class="pnote" style="margin:4px 0 8px;">His progress is kept in two copies on this iPad and repaired automatically if one is damaged. For real peace of mind:</div>
-      <div class="pnote">${cloudURL?'✅ Cloud sync is ON — his progress is backed up off-device.':'⚠️ <b>Cloud sync is OFF.</b> Turn it on (Backup tab) so progress is safe even if this iPad is lost or cleared.'}</div>
-      <div class="pnote" style="margin-top:4px;">${standalone?'✅ Running as a Home-Screen app — storage is durable.':'⚠️ <b>Add to Home Screen</b> (Safari Share ▸ Add to Home Screen). Otherwise Safari can erase saved progress after about a week unused.'}</div>
+      <div class="pnote">${cloudURL?'<span style="color:#39d98a;font-weight:800;">✓</span> Cloud sync is ON — his progress is backed up off-device.':'<span style="color:#ff5e57;font-weight:800;">✗</span> <b>Cloud sync is OFF.</b> Turn it on (Backup tab) so progress is safe even if this iPad is lost or cleared.'}</div>
+      <div class="pnote" style="margin-top:4px;">${standalone?'<span style="color:#39d98a;font-weight:800;">✓</span> Running as a Home-Screen app — storage is durable.':'<span style="color:#ff5e57;font-weight:800;">✗</span> <b>Add to Home Screen</b> (Safari Share ▸ Add to Home Screen). Otherwise Safari can erase saved progress after about a week unused.'}</div>
       <div style="margin-top:8px;"><b class="pnote">Safety snapshots</b> ${snapRows}</div></div>`;
   /* daily training: today + last-7-days history */
   ensureDaily();
@@ -2036,7 +2036,7 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
       <div style="width:20px;height:46px;background:#241b4d;border-radius:5px;border:2px solid #3a2d72;display:flex;align-items:flex-end;overflow:hidden;"><div style="width:100%;height:${h}%;background:${hit?'linear-gradient(180deg,#ffd75e,#f0a82b)':'linear-gradient(180deg,#5fe0a0,#23a35f)'};"></div></div>
       <div class="pnote" style="font-size:10px;">${Math.round(x[1]/60)}</div></div>`; }).join("");
   el.innerHTML=`
-    <div class="psec" style="text-align:center;"><b>👤 ${profileName(ACTIVE)}'s progress</b> <span class="pnote">— each player has their own stats</span></div>
+    <div class="psec" style="text-align:center;"><b>${profileName(ACTIVE)}'s progress</b> <span class="pnote">— each player has their own stats</span></div>
     <div class="psec"><b>Daily training (time on task)</b>
       <div class="pgrid" style="margin-top:6px;">
         <div class="pcard"><div class="pnum">${todayMin}<span style="font-size:13px;">m</span></div><div class="plbl">Today / ${goal}m goal</div></div>
@@ -2044,7 +2044,7 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
         <div class="pcard"><div class="pnum">${daysHit}<span style="font-size:13px;">/7</span></div><div class="plbl">Days hit goal</div></div>
       </div>
       <div style="display:flex;gap:7px;justify-content:center;align-items:flex-end;margin-top:8px;">${bars}</div>
-      <div class="pnote" style="text-align:center;margin-top:7px;">Today's split — 🎯 <b>${Math.max(0,todayMin-Math.floor((S.daily.trainSecs||0)/60))}m</b> missions · 🏋️ <b>${Math.floor((S.daily.trainSecs||0)/60)}m</b> training. A 15/15 balance (new missions + Training Room practice) is a great daily rhythm.</div>
+      <div class="pnote" style="text-align:center;margin-top:7px;">Today's split — <b>${Math.max(0,todayMin-Math.floor((S.daily.trainSecs||0)/60))}m</b> missions · <b>${Math.floor((S.daily.trainSecs||0)/60)}m</b> training. A 15/15 balance (new missions + Training Room practice) is a great daily rhythm.</div>
       <div class="pnote" style="text-align:center;margin-top:7px;">Daily goal: <button class="chipbtn" id="goalDown">−5</button> <b>${goal} min</b> <button class="chipbtn" id="goalUp">+5</button><br>~30 min/day across 3–4 short sessions is ideal — spaced practice beats one long sitting, and suits his focus.</div>
     </div>
     <div class="pgrid">
@@ -2083,7 +2083,7 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
     $("settingsPanel").classList.remove("on"); GEO=geomFor(currentAct()); toMap(); }; });
 };
 function openSettings(){ $("saveBox").value=JSON.stringify(S); $("vpStatus2").textContent=vpMsg(); window.renderProgress();
-  $("cloudURL").value=cloudURL; cloudStatus(cloudURL?"Cloud sync ON ☁️ — same URL on any device continues his progress":"Cloud sync off (saved on this device)");
+  $("cloudURL").value=cloudURL; cloudStatus(cloudURL?"Cloud sync ON — same URL on any device continues his progress":"Cloud sync off (saved on this device)");
   paintPlayers(); $("settingsPanel").classList.add("on"); }
 /* parent-only player management (inside the gated Grown-Up Corner) */
 function paintPlayers(){ const list=$("playersList"); if(!list)return; list.innerHTML="";
