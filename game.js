@@ -847,7 +847,7 @@ const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrInter:"intro", scrScan:"la
   scrBase:"base", scrTrain:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
   scrBoss:"battle", scrForge:"battle", scrWin:"victory", scrRest:"rest" };
 const __bgCache={};
-const BG_EXTS=["jpg","png","webp"];   /* drop any of these — no conversion needed */
+const BG_EXTS=["jpg","jpeg","png","webp"];   /* drop any of these — no conversion needed */
 /* Painted scene loader — ACT-AWARE + format-flexible. Act 2+ prefers its own scene
    (bg-<slot>-a2.*), falling back to the Act-1 scene (bg-<slot>.*), then to the
    transparent default. Tries jpg → png → webp for each. Any missing file just
