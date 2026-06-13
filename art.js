@@ -247,14 +247,20 @@ return `<svg viewBox="0 0 600 300">
 </svg>`;}
 
 /* ---- Hero League friends (refined faces: catchlight eyes, cleaner) ---- */
-function allyEyes(){ return `<circle cx="-8" cy="0" r="3.6" fill="#fff"/><circle cx="9" cy="0" r="3.6" fill="#fff"/>`+
-  `<circle cx="-8" cy=".4" r="2.1" fill="#150f2e"/><circle cx="9" cy=".4" r="2.1" fill="#150f2e"/>`+
+function allyEyes(){ return `<g stroke="#4a3526" stroke-width="2" fill="none" stroke-linecap="round" opacity=".5"><path d="M-12 -6 Q-8 -8.5 -4 -6.5"/><path d="M4 -6.5 Q8 -8.5 12 -6"/></g>`+
+  `<circle cx="-8" cy="0" r="3.8" fill="#fff"/><circle cx="9" cy="0" r="3.8" fill="#fff"/>`+
+  `<circle cx="-8" cy=".4" r="2.2" fill="#150f2e"/><circle cx="9" cy=".4" r="2.2" fill="#150f2e"/>`+
   `<circle cx="-7" cy="-1.1" r="1" fill="#fff"/><circle cx="10" cy="-1.1" r="1" fill="#fff"/>`; }
 /* Real-friend faces — stylized to recognizable traits (hair colour/style +
    expression), built from the parent's photos. Not photoreal; just "clearly them". */
 function allyFace(kind){
-  const head=`<circle r="26" fill="#ffd9b8" stroke="#150f2e" stroke-width="4"/>`;
-  const smile=`<path d="M-9 10 Q1 18 10 9" stroke="#150f2e" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
+  const u="af"+(__huid++);
+  const head=`<defs><radialGradient id="${u}sk" cx=".4" cy=".3" r=".78"><stop offset="0" stop-color="#ffeada"/><stop offset=".68" stop-color="#ffd3b0"/><stop offset="1" stop-color="#e3a57e"/></radialGradient>`+
+    `<radialGradient id="${u}rm" cx=".5" cy=".42" r=".6"><stop offset=".68" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#7a3a1a" stop-opacity=".24"/></radialGradient></defs>`+
+    `<circle r="26" fill="url(#${u}sk)" stroke="#150f2e" stroke-width="4"/><circle r="26" fill="url(#${u}rm)"/>`;
+  const smile=`<path d="M-8 10 Q1 17 9 9" stroke="#9c4a3a" stroke-width="3.2" fill="none" stroke-linecap="round"/>`+
+    `<path d="M-1 1 Q3 7 -2 9" stroke="#d2926a" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".7"/>`+
+    `<g fill="#ff9a8a" opacity=".3"><circle cx="-13" cy="6" r="3.8"/><circle cx="13" cy="6" r="3.8"/></g>`;
   if(kind==="leighton")return head+   /* Leighton — long flowing light-brown hair + her star */
     `<path d="M-26 -2 Q-28 -32 0 -32 Q28 -32 26 -2 Q26 16 19 24 L16 -8 Q14 -22 0 -20 Q-14 -22 -16 -8 L-19 24 Q-26 16 -26 -2Z" fill="#c6a06a" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>`+
     `<path d="M-17 16 Q-22 28 -15 34 M17 16 Q22 28 15 34" stroke="#c6a06a" stroke-width="7" fill="none" stroke-linecap="round"/>`+

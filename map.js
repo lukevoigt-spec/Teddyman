@@ -33,7 +33,7 @@ function mapFriends(a, zs, spots){
   Object.keys(byZi).forEach(zi=>{ const sp=spots[zi]; if(!sp)return; const [x,y]=sp;
     const list=byZi[zi]; const unf=list.find(r=>!S.done[r.mid]); const r=unf||list[list.length-1]; const freed=!unf;
     const fx=x+(x<500?72:-72);
-    out+=`<g transform="translate(${fx} ${y-4}) scale(.62)">${allyMapFig(r.kind, freed)}</g>`; });
+    out+=`<g transform="translate(${fx} ${y-2}) scale(.5)">${allyMapFig(r.kind, freed)}</g>`; });
   return out;
 }
 function mapPaintSVG(){
