@@ -402,7 +402,7 @@ return `<svg viewBox="-20 -40 240 420" width="${w}" aria-hidden="true">
 /* ---- DRAGON — Act-2 boss (the Vixen's dragon army). Placeholder. ---- */
 function dragonSVG(w=240){
 const u="d"+(__huid++);
-return `<svg viewBox="0 0 300 320" width="${w}" aria-hidden="true">
+return `<svg viewBox="-24 -12 348 344" width="${w}" aria-hidden="true">
 <defs>
 <linearGradient id="dbody" x1=".25" y1="0" x2=".75" y2="1"><stop offset="0" stop-color="#5c7196"/><stop offset=".5" stop-color="#3c4d70"/><stop offset="1" stop-color="#25324e"/></linearGradient>
 <linearGradient id="dcream" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#e8dec5"/><stop offset="1" stop-color="#c2b594"/></linearGradient>
@@ -412,7 +412,7 @@ return `<svg viewBox="0 0 300 320" width="${w}" aria-hidden="true">
 <filter id="${u}lit" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="3.5" result="b"/><feSpecularLighting in="b" surfaceScale="4" specularConstant=".4" specularExponent="18" lighting-color="#dfe8ff" result="s"><fePointLight x="60" y="-40" z="160"/></feSpecularLighting><feComposite in="s" in2="SourceAlpha" operator="in" result="sc"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="sc"/></feMerge></filter>
 <filter id="${u}glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3"/></filter>
 </defs>
-<style>@media (prefers-reduced-motion: no-preference){.dfloat{animation:${u}fl 4.5s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}.dwingR{animation:${u}wr 3s ease-in-out infinite;transform-box:fill-box;transform-origin:30% 70%}.dwingL{animation:${u}wl 3s ease-in-out infinite;transform-box:fill-box;transform-origin:80% 70%}.deye{animation:${u}gl 2.4s ease-in-out infinite}.dtail{animation:${u}tw 4s ease-in-out infinite;transform-box:fill-box;transform-origin:18% 82%}}@keyframes ${u}fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes ${u}wr{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(6deg)}}@keyframes ${u}wl{0%,100%{transform:rotate(4deg)}50%{transform:rotate(-5deg)}}@keyframes ${u}gl{0%,100%{opacity:.6}50%{opacity:1}}@keyframes ${u}tw{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(3deg)}}</style>
+<style>@media (prefers-reduced-motion: no-preference){.dfloat{animation:${u}fl 4.5s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}.dwingR{animation:${u}wr 3s ease-in-out infinite;transform-box:fill-box;transform-origin:5% 67%}.dwingL{animation:${u}wl 3s ease-in-out infinite;transform-box:fill-box;transform-origin:95% 67%}.deye{animation:${u}gl 2.4s ease-in-out infinite}.dtail{animation:${u}tw 4s ease-in-out infinite;transform-box:fill-box;transform-origin:18% 82%}}@keyframes ${u}fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}@keyframes ${u}wr{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(11deg)}}@keyframes ${u}wl{0%,100%{transform:rotate(7deg)}50%{transform:rotate(-11deg)}}@keyframes ${u}gl{0%,100%{opacity:.6}50%{opacity:1}}@keyframes ${u}tw{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(3deg)}}</style>
 <g class="daura"><ellipse cx="150" cy="170" rx="180" ry="170" fill="url(#${u}aura)"/></g>
 <g class="dfloat">
 <g class="dtail">
@@ -420,8 +420,8 @@ return `<svg viewBox="0 0 300 320" width="${w}" aria-hidden="true">
 <path d="M282 160 l16 -9 l-5 14 l13 -2 l-16 12Z" fill="url(#dcream)" stroke="#18202f" stroke-width="4" stroke-linejoin="round"/>
 <g fill="url(#dcream)" stroke="#18202f" stroke-width="2.5"><path d="M232 228 l-4 -16 l12 8z"/><path d="M258 212 l-2 -16 l12 9z"/></g>
 </g>
-<g class="dwingL" filter="url(#${u}lit)"><path d="M122 108 Q66 70 46 104 Q62 100 76 116 Q54 112 58 140 Q84 116 116 132Z" fill="url(#dwing)" stroke="#18202f" stroke-width="5"/><g stroke="#9a8c68" stroke-width="2.5" fill="none"><path d="M70 104 L62 134"/><path d="M92 116 L86 138"/></g></g>
-<g class="dwingR" filter="url(#${u}lit)"><path d="M178 104 Q244 56 274 96 Q288 120 272 152 Q254 122 230 132 Q248 146 240 176 Q212 140 182 134Z" fill="url(#dwing)" stroke="#18202f" stroke-width="5"/><g stroke="#9a8c68" stroke-width="2.5" fill="none"><path d="M236 100 L246 150"/><path d="M210 120 L218 152"/></g></g>
+<g class="dwingL" filter="url(#${u}lit)"><path d="M122 118 Q44 36 -16 6 Q-12 52 8 76 Q-20 86 6 120 Q-22 134 20 150 Q2 178 46 178 Q88 140 126 156Z" fill="url(#dwing)" stroke="#18202f" stroke-width="5" stroke-linejoin="round"/><g stroke="#9a8c68" stroke-width="2.5" fill="none" opacity=".7"><path d="M120 122 L-16 6"/><path d="M120 138 L8 76"/><path d="M120 150 L6 120"/></g></g>
+<g class="dwingR" filter="url(#${u}lit)"><path d="M178 118 Q256 36 316 6 Q312 52 292 76 Q320 86 294 120 Q322 134 280 150 Q298 178 254 178 Q212 140 174 156Z" fill="url(#dwing)" stroke="#18202f" stroke-width="5" stroke-linejoin="round"/><g stroke="#9a8c68" stroke-width="2.5" fill="none" opacity=".7"><path d="M180 122 L316 6"/><path d="M180 138 L292 76"/><path d="M180 150 L294 120"/></g></g>
 <g filter="url(#${u}lit)">
 <path d="M112 238 Q92 270 102 300 L146 300 Q150 266 140 240Z" fill="url(#dbody)" stroke="#18202f" stroke-width="5"/>
 <path d="M188 238 Q208 270 198 300 L154 300 Q150 266 160 240Z" fill="url(#dbody)" stroke="#18202f" stroke-width="5"/>
