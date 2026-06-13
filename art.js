@@ -163,37 +163,40 @@ return `<svg viewBox="0 0 600 300">
 function allyEyes(){ return `<circle cx="-8" cy="0" r="3.6" fill="#fff"/><circle cx="9" cy="0" r="3.6" fill="#fff"/>`+
   `<circle cx="-8" cy=".4" r="2.1" fill="#150f2e"/><circle cx="9" cy=".4" r="2.1" fill="#150f2e"/>`+
   `<circle cx="-7" cy="-1.1" r="1" fill="#fff"/><circle cx="10" cy="-1.1" r="1" fill="#fff"/>`; }
+/* Real-friend faces — stylized to recognizable traits (hair colour/style +
+   expression), built from the parent's photos. Not photoreal; just "clearly them". */
 function allyFace(kind){
   const head=`<circle r="26" fill="#ffd9b8" stroke="#150f2e" stroke-width="4"/>`;
-  if(kind==="leighton")return head+
-    `<path d="M-26 -2 Q-28 -30 0 -30 Q28 -30 26 -2 Q24 8 18 16 L16 -8 Q14 -22 0 -20 Q-14 -22 -16 -8 L-18 16 Q-24 8 -26 -2Z" fill="#b98a5a" stroke="#150f2e" stroke-width="3"/>`+
-    `<path d="M-18 14 Q-22 24 -16 30 M18 14 Q22 24 16 30" stroke="#caa06a" stroke-width="6" fill="none" stroke-linecap="round"/>`+
-    `<path d="M-13 -20 Q0 -30 13 -20 Q6 -16 0 -17 Q-6 -16 -13 -20Z" fill="#9ec9ff" stroke="#150f2e" stroke-width="2"/>`+
-    `<g fill="#ffd75e" stroke="#150f2e" stroke-width="1.4"><path d="M0 -34 l3 6 l6 0 l-5 4 l2 6 l-6 -4 l-6 4 l2 -6 l-5 -4 l6 0z"/></g>`+
+  const smile=`<path d="M-9 10 Q1 18 10 9" stroke="#150f2e" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
+  if(kind==="leighton")return head+   /* Leighton — long flowing light-brown hair + her star */
+    `<path d="M-26 -2 Q-28 -32 0 -32 Q28 -32 26 -2 Q26 16 19 24 L16 -8 Q14 -22 0 -20 Q-14 -22 -16 -8 L-19 24 Q-26 16 -26 -2Z" fill="#c6a06a" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>`+
+    `<path d="M-17 16 Q-22 28 -15 34 M17 16 Q22 28 15 34" stroke="#c6a06a" stroke-width="7" fill="none" stroke-linecap="round"/>`+
+    `<path d="M-13 -21 Q0 -31 13 -21 Q6 -17 0 -18 Q-6 -17 -13 -21Z" fill="#d8b27a" stroke="#150f2e" stroke-width="2"/>`+
+    `<g fill="#ffd75e" stroke="#150f2e" stroke-width="1.4"><path d="M0 -35 l3 6 l6 0 l-5 4 l2 6 l-6 -4 l-6 4 l2 -6 l-5 -4 l6 0z"/></g>`+
     allyEyes()+
-    `<g stroke="none" fill="#d99a6c" opacity=".8"><circle cx="-7" cy="9" r="1.4"/><circle cx="0" cy="11" r="1.4"/><circle cx="7" cy="9" r="1.4"/></g>`+
-    `<path d="M-8 12 Q1 19 10 11" stroke="#150f2e" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
-  if(kind==="heart")return head+
-    `<path d="M-24 -4 Q-26 -30 0 -30 Q26 -30 24 -4 Q14 -22 0 -20 Q-14 -22 -24 -4Z" fill="#e8a87c" stroke="#150f2e" stroke-width="3"/>`+
-    allyEyes()+
-    `<path d="M-9 10 Q1 18 11 9" stroke="#150f2e" stroke-width="3.2" fill="none" stroke-linecap="round"/>`+
-    `<path d="M-6 13 L8 12" stroke="#dfe9ff" stroke-width="2" stroke-linecap="round"/>`+
+    `<g stroke="none" fill="#d99a6c" opacity=".7"><circle cx="-7" cy="9" r="1.4"/><circle cx="0" cy="11" r="1.4"/><circle cx="7" cy="9" r="1.4"/></g>`+ smile;
+  if(kind==="heart")return head+   /* Amelia — dark-blonde pulled back, gentle smile + heart */
+    `<path d="M-24 -4 Q-26 -30 0 -30 Q26 -30 24 -4 Q14 -22 0 -20 Q-14 -22 -24 -4Z" fill="#b78f5c" stroke="#150f2e" stroke-width="3"/>`+
+    `<path d="M19 -8 Q30 6 23 22 Q19 8 15 -2Z" fill="#a87f50" stroke="#150f2e" stroke-width="2.5"/>`+
+    allyEyes()+ smile+
     `<path d="M0 22 q3 -4 6 -1 q3 3 -1 6 l-5 4 -5 -4 q-4 -3 -1 -6 q3 -3 6 1z" fill="#e6453c" stroke="#150f2e" stroke-width="1.6"/>`;
-  if(kind==="tank")return head+
-    `<path d="M-25 -6 Q-27 -30 0 -30 Q27 -30 25 -4 Q19 -22 6 -18 Q14 -10 4 -7 Q-8 -16 -18 -10 Q-25 -5 -25 -6Z" fill="#d8b572" stroke="#150f2e" stroke-width="3"/>`+
-    `<g fill="#e89a78" opacity=".45"><circle cx="-15" cy="9" r="4"/><circle cx="16" cy="9" r="4"/></g>`+
-    allyEyes()+
-    `<path d="M-9 11 Q1 18 10 10" stroke="#150f2e" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
-  if(kind==="flip")return head+
-    `<circle cx="0" cy="-27" r="10" fill="#9a7448" stroke="#150f2e" stroke-width="3"/>`+
-    `<path d="M-24 -10 Q-20 -27 0 -27 Q20 -27 24 -10 Q12 -19 0 -17 Q-12 -19 -24 -10Z" fill="#9a7448" stroke="#150f2e" stroke-width="3"/>`+
-    allyEyes()+
-    `<path d="M-9 11 Q1 18 10 10" stroke="#150f2e" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
-  return head+ /* sunny — William, gap-toothed grin, side-swept blonde */
-    `<path d="M-24 -6 Q-24 -30 0 -30 Q24 -30 24 -4 Q16 -22 2 -17 Q-12 -22 -20 -8Z" fill="#f2dfae" stroke="#150f2e" stroke-width="3"/>`+
-    allyEyes()+
-    `<path d="M-10 9 Q1 20 11 9 Q1 15 -10 9Z" fill="#7c3a3a" stroke="#150f2e" stroke-width="2.4"/>`+
-    `<rect x="-2" y="10" width="4" height="4" fill="#fff"/>`;
+  if(kind==="tank")return head+   /* Archie — longer, shaggy dishwater-blonde hair */
+    `<path d="M-26 2 Q-28 -32 0 -33 Q28 -32 26 0 Q22 -18 14 -14 Q18 -27 7 -21 Q9 -31 -3 -22 Q-6 -31 -14 -21 Q-12 -28 -22 -14 Q-26 -8 -26 2Z" fill="#c2a067" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>`+
+    `<path d="M-25 -2 Q-29 16 -22 25 L-17 -8Z M25 -2 Q29 16 22 25 L17 -8Z" fill="#c2a067" stroke="#150f2e" stroke-width="2.5"/>`+
+    allyEyes()+ smile;
+  if(kind==="flip")return head+   /* Ellie — light-brown hair, half-up */
+    `<path d="M-24 -2 Q-26 -29 0 -29 Q26 -29 24 -2 Q24 17 18 25 L15 -6 Q14 -20 0 -19 Q-14 -20 -15 -6 L-18 25 Q-24 17 -24 -2Z" fill="#b18253" stroke="#150f2e" stroke-width="3"/>`+
+    `<path d="M-21 -10 Q-19 -29 0 -29 Q19 -29 21 -10 Q11 -20 0 -19 Q-11 -20 -21 -10Z" fill="#a3744a" stroke="#150f2e" stroke-width="2.5"/>`+
+    `<circle cx="0" cy="-31" r="6" fill="#b18253" stroke="#150f2e" stroke-width="2.5"/>`+
+    allyEyes()+ smile;
+  return head+ /* William (sunny) — spiky blonde, happy squinty eyes, big gap-toothed grin */
+    `<path d="M-25 -4 Q-27 -31 -2 -32 Q26 -33 25 -3 Q20 -20 12 -16 Q14 -27 6 -21 Q8 -31 -2 -23 Q-4 -31 -12 -21 Q-12 -29 -20 -16 Q-24 -12 -25 -4Z" fill="#ecd185" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>`+
+    `<path d="M-13 -1 Q-8 -7 -3 -1" stroke="#150f2e" stroke-width="3" fill="none" stroke-linecap="round"/>`+
+    `<path d="M3 -1 Q8 -7 13 -1" stroke="#150f2e" stroke-width="3" fill="none" stroke-linecap="round"/>`+
+    `<g fill="#ff9a8a" opacity=".45"><circle cx="-15" cy="9" r="4.4"/><circle cx="15" cy="9" r="4.4"/></g>`+
+    `<path d="M-12 8 Q0 22 12 8 Q0 14 -12 8Z" fill="#7c3a3a" stroke="#150f2e" stroke-width="2.6"/>`+
+    `<path d="M-9 8 Q0 11 9 8 L9 11 Q0 13 -9 11Z" fill="#fff"/>`+
+    `<rect x="-1.5" y="8" width="3" height="4.5" fill="#7c3a3a"/>`;
 }
 
 /* =========================================================
