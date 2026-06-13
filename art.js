@@ -300,60 +300,113 @@ function allyFace(kind){
 /* ---- THE VIXEN (Act-2 villain; sly woman who morphs into a dragon) ---- */
 function vixenSVG(w=240){
 const u="x"+(__huid++);
-return `<svg viewBox="-90 -130 300 360" width="${w}" aria-hidden="true">
+return `<svg viewBox="-60 -120 280 350" width="${w}" aria-hidden="true">
 <defs>
-<linearGradient id="vxhair" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#f0497e"/><stop offset=".55" stop-color="#b51f56"/><stop offset="1" stop-color="#6a0f3a"/></linearGradient>
-<linearGradient id="vxgown" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#6e1f4e"/><stop offset="1" stop-color="#220818"/></linearGradient>
-<radialGradient id="${u}skin" cx=".42" cy=".34" r=".8"><stop offset="0" stop-color="#ffe0cb"/><stop offset=".7" stop-color="#f6cdb6"/><stop offset="1" stop-color="#e3aa8c"/></radialGradient>
-<radialGradient id="${u}aura" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#e0307a" stop-opacity=".5"/><stop offset=".55" stop-color="#a01050" stop-opacity=".15"/><stop offset="1" stop-color="#a01050" stop-opacity="0"/></radialGradient>
-<radialGradient id="${u}eye" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#d6ffce"/><stop offset=".5" stop-color="#44e07a"/><stop offset="1" stop-color="#1e8a44"/></radialGradient>
-<filter id="${u}lit" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="4" result="b"/><feSpecularLighting in="b" surfaceScale="4.5" specularConstant=".45" specularExponent="16" lighting-color="#ffe6f2" result="s"><fePointLight x="20" y="-130" z="150"/></feSpecularLighting><feComposite in="s" in2="SourceAlpha" operator="in" result="sc"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="sc"/></feMerge></filter>
-<filter id="${u}glow" x="-120%" y="-120%" width="340%" height="340%"><feGaussianBlur stdDeviation="3.5"/></filter>
+<linearGradient id="${u}hair" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#ff5f93"/><stop offset=".5" stop-color="#c21f57"/><stop offset="1" stop-color="#5c0c32"/></linearGradient>
+<linearGradient id="${u}collar" x1=".5" y1="0" x2=".5" y2="1"><stop offset="0" stop-color="#4a1234"/><stop offset="1" stop-color="#140510"/></linearGradient>
+<linearGradient id="${u}gown" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#3a0f2a"/><stop offset="1" stop-color="#160510"/></linearGradient>
+<linearGradient id="${u}lip" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff5b78"/><stop offset="1" stop-color="#b21243"/></linearGradient>
+<radialGradient id="${u}skin" cx=".42" cy=".32" r=".85"><stop offset="0" stop-color="#fff3ee"/><stop offset=".7" stop-color="#ffe0d2"/><stop offset="1" stop-color="#ecb89f"/></radialGradient>
+<radialGradient id="${u}aura" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff2e7a" stop-opacity=".55"/><stop offset=".55" stop-color="#b0105a" stop-opacity=".16"/><stop offset="1" stop-color="#b0105a" stop-opacity="0"/></radialGradient>
+<radialGradient id="${u}eye" cx=".5" cy=".4" r=".6"><stop offset="0" stop-color="#eaffe2"/><stop offset=".45" stop-color="#46e87d"/><stop offset="1" stop-color="#0f9046"/></radialGradient>
+<filter id="${u}lit" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="4" result="b"/><feSpecularLighting in="b" surfaceScale="4.5" specularConstant=".5" specularExponent="16" lighting-color="#ffe6f2" result="s"><fePointLight x="20" y="-130" z="160"/></feSpecularLighting><feComposite in="s" in2="SourceAlpha" operator="in" result="sc"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="sc"/></feMerge></filter>
+<filter id="${u}glow" x="-150%" y="-150%" width="400%" height="400%"><feGaussianBlur stdDeviation="3.4"/></filter>
 </defs>
-<style>@media (prefers-reduced-motion: no-preference){.xfloat{animation:${u}fl 5s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}.xeye{animation:${u}gl 2.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}}@keyframes ${u}fl{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(.6deg)}}@keyframes ${u}gl{0%,100%{opacity:.5}50%{opacity:1}}</style>
-<g class="xaura"><ellipse cx="78" cy="70" rx="158" ry="166" fill="url(#${u}aura)"/></g>
+<style>@media (prefers-reduced-motion: no-preference){
+.xfloat{animation:${u}fl 5s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+.xeye{animation:${u}gl 2.4s ease-in-out infinite}
+.xhair{animation:${u}sw 6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 0}
+.xember{animation:${u}em 3.2s ease-in-out infinite}}
+@keyframes ${u}fl{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6px) rotate(.5deg)}}
+@keyframes ${u}gl{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes ${u}sw{0%,100%{transform:rotate(-1.2deg)}50%{transform:rotate(1.2deg)}}
+@keyframes ${u}em{0%{opacity:0;transform:translateY(0)}30%{opacity:.9}100%{opacity:0;transform:translateY(-26px)}}</style>
+<g class="xaura"><ellipse cx="80" cy="55" rx="150" ry="172" fill="url(#${u}aura)"/></g>
 <g class="xfloat"><g filter="url(#${u}lit)">
-<path d="M40 60 Q-70 -10 -78 90 Q-30 60 -8 96 Q-44 90 -40 150 Q-2 110 30 120Z" fill="#3a1030" stroke="#150f2e" stroke-width="5" opacity=".9"/>
-<path d="M80 60 Q190 -10 198 90 Q150 60 128 96 Q164 90 160 150 Q122 110 90 120Z" fill="#3a1030" stroke="#150f2e" stroke-width="5" opacity=".9"/>
-<path d="M40 150 Q60 120 96 120 Q132 120 140 150 L162 226 L18 226Z" fill="url(#vxgown)" stroke="#150f2e" stroke-width="6"/>
-<path d="M44 18 Q24 70 18 140 Q40 120 52 150 Q56 100 70 70Z" fill="url(#vxhair)" stroke="#150f2e" stroke-width="5"/>
-<path d="M136 18 Q156 70 162 140 Q140 120 128 150 Q124 100 110 70Z" fill="url(#vxhair)" stroke="#150f2e" stroke-width="5"/>
-<circle cx="90" cy="64" r="46" fill="url(#${u}skin)" stroke="#150f2e" stroke-width="6"/>
-<path d="M44 50 Q40 -2 90 -2 Q140 -2 136 50 Q120 22 96 26 Q120 6 84 14 Q104 0 70 12 Q50 20 56 44 Q48 44 44 50Z" fill="url(#vxhair)" stroke="#150f2e" stroke-width="6" stroke-linejoin="round"/>
-<g class="xeye" filter="url(#${u}glow)"><ellipse cx="73" cy="58" rx="8" ry="6" fill="#44e07a"/><ellipse cx="107" cy="58" rx="8" ry="6" fill="#44e07a"/></g>
-<path d="M62 58 Q72 50 84 58 Q74 66 62 58Z" fill="#fff"/><path d="M96 58 Q108 50 118 58 Q106 66 96 58Z" fill="#fff"/>
-<ellipse cx="73" cy="58" rx="3.2" ry="6" fill="url(#${u}eye)"/><ellipse cx="107" cy="58" rx="3.2" ry="6" fill="url(#${u}eye)"/>
-<ellipse cx="73" cy="58" rx="1.3" ry="5" fill="#150f2e"/><ellipse cx="107" cy="58" rx="1.3" ry="5" fill="#150f2e"/>
-<path d="M58 52 Q72 44 86 50 M94 50 Q108 44 122 52" stroke="#150f2e" stroke-width="3" fill="none" stroke-linecap="round"/>
-<path d="M70 84 Q90 98 112 82 Q98 92 70 84Z" fill="#a3243f" stroke="#150f2e" stroke-width="3.5" stroke-linejoin="round"/>
-<path d="M58 8 Q50 -16 64 -20 Q60 -6 70 4Z" fill="#7a1442" stroke="#150f2e" stroke-width="4"/>
-<path d="M122 8 Q130 -16 116 -20 Q120 -6 110 4Z" fill="#7a1442" stroke="#150f2e" stroke-width="4"/>
+<path d="M6 150 Q-20 60 14 24 Q20 96 58 120 L58 150Z" fill="url(#${u}collar)" stroke="#150f2e" stroke-width="5"/>
+<path d="M154 150 Q180 60 146 24 Q140 96 102 120 L102 150Z" fill="url(#${u}collar)" stroke="#150f2e" stroke-width="5"/>
+<path d="M14 26 Q20 96 56 119" fill="none" stroke="#d92f6a" stroke-width="3.2" stroke-linecap="round" opacity=".85"/>
+<path d="M146 26 Q140 96 104 119" fill="none" stroke="#d92f6a" stroke-width="3.2" stroke-linecap="round" opacity=".85"/>
+<path d="M28 30 Q-2 90 10 168 Q34 130 50 150 Q40 90 64 50Z" fill="url(#${u}hair)" stroke="#150f2e" stroke-width="5"/>
+<path d="M132 30 Q162 90 150 168 Q126 130 110 150 Q120 90 96 50Z" fill="url(#${u}hair)" stroke="#150f2e" stroke-width="5"/>
+<path d="M30 150 Q50 120 80 120 Q110 120 130 150 L150 226 L10 226Z" fill="url(#${u}gown)" stroke="#150f2e" stroke-width="6"/>
+<path d="M80 122 L80 200" stroke="#5c163e" stroke-width="3" opacity=".6"/>
+<path d="M66 96 Q66 116 60 124 Q80 132 100 124 Q94 116 94 96Z" fill="url(#${u}skin)" stroke="#150f2e" stroke-width="4"/>
+<path d="M44 52 Q44 104 80 116 Q116 104 116 52 Q116 12 80 12 Q44 12 44 52Z" fill="url(#${u}skin)" stroke="#150f2e" stroke-width="5.5"/>
+<path d="M50 6 Q40 -22 56 -30 Q54 -10 64 2Z" fill="#3a0f2a" stroke="#150f2e" stroke-width="3.5"/>
+<path d="M110 6 Q120 -22 104 -30 Q106 -10 96 2Z" fill="#3a0f2a" stroke="#150f2e" stroke-width="3.5"/>
+<g class="xhair">
+<path d="M44 36 Q34 -28 80 -26 Q126 -28 116 36 Q104 6 92 14 Q108 -8 80 -6 Q52 -8 68 14 Q56 6 44 36Z" fill="url(#${u}hair)" stroke="#150f2e" stroke-width="5.5" stroke-linejoin="round"/>
+<path d="M44 36 Q34 70 40 96 Q50 70 56 56 Q48 46 44 36Z" fill="url(#${u}hair)" stroke="#150f2e" stroke-width="4"/>
+<path d="M116 36 Q126 70 120 96 Q110 70 104 56 Q112 46 116 36Z" fill="url(#${u}hair)" stroke="#150f2e" stroke-width="4"/></g>
+<path d="M52 44 Q66 34 80 42 M80 42 Q94 34 108 44" stroke="#150f2e" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+<g class="xeye" filter="url(#${u}glow)"><ellipse cx="66" cy="56" rx="9" ry="7" fill="#46e87d"/><ellipse cx="94" cy="56" rx="9" ry="7" fill="#46e87d"/></g>
+<path d="M55 56 Q66 47 78 55 Q67 64 55 56Z" fill="#fff"/><path d="M82 56 Q94 47 105 55 Q94 64 82 56Z" fill="#fff"/>
+<ellipse cx="67" cy="56" rx="3.6" ry="6.4" fill="url(#${u}eye)"/><ellipse cx="93" cy="56" rx="3.6" ry="6.4" fill="url(#${u}eye)"/>
+<ellipse cx="67" cy="56" rx="1.5" ry="5" fill="#0c1a10"/><ellipse cx="93" cy="56" rx="1.5" ry="5" fill="#0c1a10"/>
+<circle cx="68.5" cy="53.5" r="1.3" fill="#fff"/><circle cx="94.5" cy="53.5" r="1.3" fill="#fff"/>
+<path d="M55 54 Q66 47 79 53 M81 53 Q94 47 105 54" stroke="#150f2e" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+<path d="M80 60 Q84 72 78 76" stroke="#d79a82" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+<path d="M62 90 Q80 100 100 86 Q88 96 80 95 Q72 95 62 90Z" fill="url(#${u}lip)" stroke="#8e1338" stroke-width="2.5" stroke-linejoin="round"/>
+<circle cx="104" cy="80" r="1.8" fill="#3a0f2a"/>
+<ellipse cx="58" cy="74" rx="6" ry="4" fill="#ff9bb6" opacity=".4"/><ellipse cx="102" cy="74" rx="6" ry="4" fill="#ff9bb6" opacity=".4"/>
 </g></g>
+<g class="xember" fill="#ff5d8f"><circle cx="18" cy="150" r="3"/><circle cx="150" cy="140" r="2.5"/></g>
+<g class="xember" fill="#ffd0e0" style="animation-delay:1.6s"><circle cx="40" cy="172" r="2"/><circle cx="128" cy="166" r="2.5"/></g>
 </svg>`;}
 
-/* ---- time portal (static swirl — NO flicker) ---- */
+/* ---- time portal (swirling vortex) ---- */
 function portalSVG(w=240){
-return `<svg viewBox="0 0 200 200" width="${w}" aria-hidden="true">
-<defs><radialGradient id="prt" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff7c4"/><stop offset=".35" stop-color="#7ad0ff"/><stop offset=".7" stop-color="#7a4fb6"/><stop offset="1" stop-color="#1a1030"/></radialGradient></defs>
-<circle cx="100" cy="100" r="92" fill="url(#prt)" stroke="#150f2e" stroke-width="6"/>
-<g fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".7">
-<path d="M100 28 Q150 50 160 100 Q150 150 100 172 Q50 150 40 100 Q50 50 100 28"/>
-<path d="M100 50 Q132 64 140 100 Q132 136 100 150 Q68 136 60 100 Q68 64 100 50"/>
-<path d="M100 72 Q116 80 120 100 Q116 120 100 128 Q84 120 80 100 Q84 80 100 72"/></g>
-<circle cx="100" cy="100" r="12" fill="#fff7c4"/>
-<g fill="#9fe870" opacity=".8"><circle cx="46" cy="60" r="4"/><circle cx="158" cy="74" r="4"/><circle cx="60" cy="150" r="4"/><circle cx="150" cy="146" r="4"/></g>
+const u="p"+(__huid++);
+return `<svg viewBox="-12 -12 224 224" width="${w}" aria-hidden="true">
+<defs>
+<radialGradient id="${u}core" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fffbe0"/><stop offset=".3" stop-color="#9be8ff"/><stop offset=".62" stop-color="#7a4fd6"/><stop offset="1" stop-color="#0e0826"/></radialGradient>
+<radialGradient id="${u}cz" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+<filter id="${u}b" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.6"/></filter>
+</defs>
+<style>@media (prefers-reduced-motion: no-preference){
+.${u}s1{animation:${u}sp 12s linear infinite;transform-origin:100px 100px}
+.${u}s2{animation:${u}sp2 8s linear infinite;transform-origin:100px 100px}
+.${u}pz{animation:${u}pl 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}}
+@keyframes ${u}sp{to{transform:rotate(360deg)}}
+@keyframes ${u}sp2{to{transform:rotate(-360deg)}}
+@keyframes ${u}pl{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.16)}}</style>
+<circle cx="100" cy="100" r="96" fill="url(#${u}core)" stroke="#150f2e" stroke-width="6"/>
+<g class="${u}s1" fill="none" stroke="#cfe9ff" stroke-linecap="round" opacity=".82">
+<path d="M100 16 Q176 44 184 100 Q176 156 100 184" stroke-width="5"/>
+<path d="M100 38 Q150 58 156 100 Q150 142 100 162" stroke-width="4" opacity=".8"/></g>
+<g class="${u}s2" fill="none" stroke="#e7c6ff" stroke-linecap="round" opacity=".7">
+<path d="M100 24 Q24 52 16 100 Q24 148 100 176" stroke-width="4.5"/>
+<path d="M100 50 Q58 66 54 100 Q58 134 100 150" stroke-width="3.5" opacity=".8"/></g>
+<circle class="${u}pz" cx="100" cy="100" r="22" fill="url(#${u}cz)" filter="url(#${u}b)"/>
+<circle cx="100" cy="100" r="9" fill="#fffbe0"/>
+<g class="${u}s1" fill="#9fe870"><circle cx="100" cy="14" r="4"/><circle cx="186" cy="100" r="3.5"/><circle cx="100" cy="186" r="3.5"/><circle cx="14" cy="100" r="3"/></g>
 </svg>`;}
 
-/* ---- captured friends (faces TBD — '?' silhouettes in a cage) ---- */
+/* ---- captured friends (faces TBD — '?' silhouettes in a glowing magic cage) ---- */
 function captiveSVG(w=240){
-return `<svg viewBox="0 0 240 180" width="${w}" aria-hidden="true">
-<rect x="20" y="20" width="200" height="150" rx="14" fill="#1a1030" stroke="#150f2e" stroke-width="6"/>
-<g stroke="#9aa3c4" stroke-width="7"><line x1="56" y1="20" x2="56" y2="170"/><line x1="98" y1="20" x2="98" y2="170"/><line x1="140" y1="20" x2="140" y2="170"/><line x1="182" y1="20" x2="182" y2="170"/></g>
-<g fill="#5a4a8c" stroke="#150f2e" stroke-width="4">
-<circle cx="70" cy="96" r="22"/><circle cx="120" cy="84" r="24"/><circle cx="170" cy="98" r="22"/></g>
-<g font-family="Bangers,sans-serif" fill="#ffc93c" text-anchor="middle" font-size="26">
-<text x="70" y="106">?</text><text x="120" y="94">?</text><text x="170" y="108">?</text></g>
-<rect x="20" y="20" width="200" height="150" rx="14" fill="none" stroke="#3a2d7d" stroke-width="2"/>
+const u="c"+(__huid++);
+return `<svg viewBox="0 0 240 192" width="${w}" aria-hidden="true">
+<defs>
+<linearGradient id="${u}bar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe3ff"/><stop offset=".5" stop-color="#6aa8ff"/><stop offset="1" stop-color="#2a5ad0"/></linearGradient>
+<radialGradient id="${u}cell" cx=".5" cy=".35" r=".85"><stop offset="0" stop-color="#2a1f55"/><stop offset="1" stop-color="#0c0820"/></radialGradient>
+<filter id="${u}g" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2.2"/></filter>
+</defs>
+<style>@media (prefers-reduced-motion: no-preference){.${u}fl{animation:${u}f 2.6s ease-in-out infinite}.${u}sad{animation:${u}s 5s ease-in-out infinite}}@keyframes ${u}f{0%,100%{opacity:.55}50%{opacity:1}}@keyframes ${u}s{0%,100%{transform:translateY(0)}50%{transform:translateY(2.5px)}}</style>
+<rect x="22" y="20" width="196" height="152" rx="16" fill="url(#${u}cell)" stroke="#150f2e" stroke-width="6"/>
+<g class="${u}sad" fill="#473a72" stroke="#150f2e" stroke-width="3.5">
+<g><circle cx="74" cy="92" r="20"/><path d="M54 152 Q54 116 74 116 Q94 116 94 152Z"/></g>
+<g><circle cx="120" cy="82" r="22"/><path d="M97 150 Q97 110 120 110 Q143 110 143 150Z"/></g>
+<g><circle cx="166" cy="92" r="20"/><path d="M146 152 Q146 116 166 116 Q186 116 186 152Z"/></g></g>
+<g font-family="Bangers,sans-serif" fill="#ffd75e" text-anchor="middle" font-size="24" opacity=".9">
+<text x="74" y="100">?</text><text x="120" y="90">?</text><text x="166" y="100">?</text></g>
+<g class="${u}fl" filter="url(#${u}g)" stroke="url(#${u}bar)" stroke-width="6" stroke-linecap="round">
+<line x1="60" y1="22" x2="60" y2="170"/><line x1="100" y1="22" x2="100" y2="170"/><line x1="140" y1="22" x2="140" y2="170"/><line x1="180" y1="22" x2="180" y2="170"/></g>
+<g stroke="#dff0ff" stroke-width="2" stroke-linecap="round" opacity=".7">
+<line x1="60" y1="22" x2="60" y2="170"/><line x1="100" y1="22" x2="100" y2="170"/><line x1="140" y1="22" x2="140" y2="170"/><line x1="180" y1="22" x2="180" y2="170"/></g>
+<rect x="18" y="14" width="204" height="12" rx="6" fill="#3a2d7d" stroke="#150f2e" stroke-width="4"/>
+<rect x="18" y="166" width="204" height="12" rx="6" fill="#3a2d7d" stroke="#150f2e" stroke-width="4"/>
+<g transform="translate(120 173)"><rect x="-13" y="-6" width="26" height="22" rx="5" fill="#ffce3a" stroke="#150f2e" stroke-width="3.5"/><path d="M-7 -6 v-6 a7 7 0 0 1 14 0 v6" fill="none" stroke="#150f2e" stroke-width="3.5"/><circle cx="0" cy="3" r="3" fill="#150f2e"/></g>
 </svg>`;}
 
 /* ---- NOAH THE RED — Act-2 mentor wizard (Gandalf-coded, red hair+beard).
