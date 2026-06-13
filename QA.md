@@ -37,3 +37,53 @@
 **Test commit by Grok (xAI):** Write access verified successfully! Added this line on 2026-06-13.
 
 [Rest of file content preserved; full history in Git.]
+
+## 2026-06-13 Latest Main Studio-Polish Review — Based on `6ed8c7b`
+
+### Review context
+
+- I reset the workspace to the current `origin/main` before reviewing, and the latest fetched `origin/main` after rebase was `6ed8c7b`, which includes `be3d032` (`Update voicepack.js from in-app studio (392 voices)`) plus the Boss Trophy Cages/Hero Base updates.
+- I read the current project guidance docs (`CLAUDE.md`, `STYLE.md`, `teddy-reading-app-spec.md`, and the existing `QA.md`) before reviewing the latest code shape.
+- This section is appended only; it intentionally does not overwrite the existing Grok/agent notes above.
+
+### What is materially stronger on latest main
+
+1. **Voice/audio-first experience is much closer to the mission.** The checked-in `voicepack.js` now contains a large generated pack, and the recent chained-audio fix makes the first run less likely to drop sequential clips after iPad unlock. That is a major practical improvement for a child-facing reading game.
+2. **The game now feels more like a place, not just a drill screen.** Hero Cards, rescued-friend voices, the Hero Base/menu work, boss trophy cages, richer map art, and committed BGM/SFX files all push the app toward a coherent studio-like loop.
+3. **The stale-deploy problem is being addressed.** The service worker cache version is bumped and its fetch path now prefers fresh network responses, which should reduce the “why am I seeing the old build?” confusion that has affected agent review.
+4. **The modular split is paying off.** The current data/audio/map/save split makes it easier to inspect individual systems and gives future agents smaller, safer surfaces to change.
+5. **The in-app studio/publish flow is becoming a real production pipeline.** The Audio Studio + GitHub publish path is the right direction for a one-person “mini studio” workflow where content can be recorded, reviewed, exported, and shipped quickly.
+
+### Suggested bug fixes / risk reductions
+
+These are suggestions, not mandates.
+
+1. **Expand CI syntax coverage beyond root JavaScript files.** The workflow currently checks root `*.js`, but a safer command would also cover `cloud/worker.js`, `tests/*.js`, and any future nested JS modules. Suggested pattern: `find . -name '*.js' -not -path './node_modules/*' -print0 | xargs -0 -n1 node --check`.
+2. **Add a storage/performance budget around `voicepack.js`.** The current generated voice pack is large enough to be a real iPad load/update consideration. Keep the audio-first mission, but consider splitting voices by category/act, lazy-loading non-critical clips, or generating a “core boot pack” plus optional packs.
+3. **Document the cloud passphrase state.** The code now exposes a `CLOUD_PASSPHRASE` configuration point, while the cloud README still reads like passphrase support is future work. Align the docs so future agents know whether the feature is live, optional, or intentionally disabled.
+4. **Treat the Audio Studio GitHub token as sensitive parent-only state.** Remembering the token in localStorage is convenient, but it should have a clear “clear token/revoke reminder” affordance and parent-facing warning because this app may run on a shared iPad.
+5. **Add visual smoke checks for the most important screens.** The CI now catches curriculum/save and parse regressions, but not “studio feel” regressions. A simple browser screenshot pass for title, map, mission, Hero Base, Audio Studio, and Hero Card states would catch many accidental CSS/SVG breaks.
+6. **Test Hero Cards and overlays with audio in progress.** Verify tapping a rescued friend, closing the full-body card, navigating home/base/map, and replaying audio do not interrupt each other in surprising ways on iPad Safari.
+7. **Define the post-Act-2 end state.** The current experience is rich enough that a weak ending would stand out. Decide whether Dragon Keep unlocks a “completed kingdom” loop, an Act-3 teaser, a free-play reading patrol, or a parent-only maintenance/review mode.
+8. **Keep `QA.md` append-only, but add a short current-priorities index if the team wants it.** The file has been compacted by other agents, which is okay, but future agents may benefit from a short top or bottom “current live priorities” list so they do not chase older stale notes.
+
+### Enhancement ideas to make it feel more game-studio-built
+
+1. **Daily Hero Patrol:** a gentle replay loop that recommends 3–5 short quests from weak sounds, recent misses, and favorite story beats without adding punishment or streak pressure.
+2. **Living Kingdom Map:** after each rescued friend, update the map with a visible restored landmark, ambient animation, and a short spoken thank-you line.
+3. **Audio Coverage Dashboard:** in the parent/studio area, show coverage for phonemes, sight words, mission lines, friend lines, and story moments so recording priorities are obvious.
+4. **Chapter title cards and mini cutscenes:** add brief animated title cards for Act transitions, boss reveals, rescued-friend moments, and Dragon Keep completion.
+5. **Hero Base as the main hub:** make Hero Base feel like Teddy’s clubhouse with the quest board, friend cards, recording booth/radio room, map table, trophies, and parent controls.
+6. **Friend postcard collection:** each rescued friend unlocks a postcard/card with a custom voice line, their reading superpower, and one replayable mini challenge.
+7. **Parent “teacher handoff” export:** generate a concise progress report with mastered words, shaky graphemes, favorite rewards, and suggested next practice.
+8. **Performance badge in parent mode:** show app version, cache version, voicepack size/date, last publish commit, and whether the build is fresh from network or service worker cache.
+9. **Replayable boss remixes:** once an act is cleared, allow short remixed boss encounters that target current weak items while using already-loved villains/animations.
+10. **Consistent studio art bible:** add a small gallery/spec for SVG proportions, shadows, animation timing, color palettes, and reduced-motion expectations so future agents don’t drift visually.
+
+### Queries for the coding agent / product owner
+
+1. Should the large `voicepack.js` remain a single generated file for simplicity, or should the studio start outputting a core pack plus lazy optional packs?
+2. Should the GitHub publish token be stored only per session, or is localStorage acceptable if the UI clearly labels it as a parent-only publishing tool?
+3. Is Act 2 intended to be the final complete game loop for now, or should the code start preparing for Act 3 hooks?
+4. Do we want the cloud passphrase enabled in production now, or only documented as an optional deployment hardening step?
+5. Should `QA.md` keep accumulating long-form agent review notes, or should we add a short “current priorities” summary that future agents update while preserving all historical sections below?
