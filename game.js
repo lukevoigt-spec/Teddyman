@@ -287,7 +287,6 @@ function vpMsg(){ const n=(typeof VOICEPACK!=="undefined")?Object.keys(VOICEPACK
   if(c)parts.push(c+" voices recorded on this iPad");
   if(n)parts.push(n+" studio lines");
   return parts.length? parts.join(" · ") : "Using built-in voice — record your own in Grown-Up Corner ▸ Voices"; }
-$("vpStatus").textContent=vpMsg();
 /* paint the title for the ACTIVE player (auto-loaded last player) */
 function paintTitle(){ const nm=$("playerName"); if(nm)nm.textContent=profileName(ACTIVE);
   $("titleHero").innerHTML=heroNow(210);
@@ -318,7 +317,7 @@ function switchProfile(id){ closePicker(); if(id===ACTIVE)return;
 $("btnPlayer").onclick=()=>{ Aud.pick(); openPicker(); };
 $("btnPickerClose").onclick=closePicker;
 /* on boot, restore newer cloud progress (if a Worker URL is configured/baked in) */
-cloudPull().then(changed=>{ if(changed){ GEO=geomFor(currentAct()); paintTitle(); $("vpStatus").textContent=vpMsg();
+cloudPull().then(changed=>{ if(changed){ GEO=geomFor(currentAct()); paintTitle();
   cloudStatus("Restored his latest progress from the cloud ✓"); } });
 
 /* While a cutscene character narrates, gently bob the portrait so the mentor

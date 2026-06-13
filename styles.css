@@ -23,7 +23,7 @@ body{
 .read{font-family:'Andika',sans-serif;}
 
 .btn{
-  font-family:'Bangers',cursive;font-size:clamp(26px,4.5vw,40px);letter-spacing:.06em;
+  font-family:'Bangers',cursive;font-size:clamp(26px,4.5vw,40px);letter-spacing:.06em;line-height:1.15;white-space:nowrap;
   color:var(--ink);background:linear-gradient(180deg,#ffd75e,#f0a82b);
   border:5px solid var(--ink);border-radius:26px;padding:16px 38px;cursor:pointer;
   box-shadow:0 8px 0 #9c6a12, 0 14px 24px rgba(0,0,0,.35);
@@ -390,9 +390,9 @@ body.calm .gembox>svg,body.calm .trophy,body.calm .gembox.mastered::after{animat
 #titleHero,#baseHero{filter:drop-shadow(0 16px 16px rgba(0,0,0,.5)) drop-shadow(0 0 30px rgba(120,180,255,.32));}
 
 /* premium buttons: glossy top sheen + outer glow + crisp press */
-.btn{position:relative;overflow:hidden;border-width:6px;
+.btn{position:relative;overflow:visible;border-width:6px;
   box-shadow:0 7px 0 #9c6a12, 0 9px 12px rgba(0,0,0,.4);}
-.btn::after{content:"";position:absolute;left:0;right:0;top:0;height:48%;pointer-events:none;
+.btn::after{content:"";position:absolute;left:0;right:0;top:0;height:48%;pointer-events:none;overflow:hidden;
   background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(255,255,255,0));
   border-radius:22px 22px 50% 50%/24px 24px 36% 36%;}
 .btn.blue{box-shadow:0 7px 0 #143a85, 0 9px 12px rgba(0,0,0,.4);}
