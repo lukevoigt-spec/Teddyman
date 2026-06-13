@@ -654,3 +654,98 @@ Checks run during this review:
 - `node tests/curriculum.test.js` — 30 passed, 0 failed.
 - `node tests/save.test.js` — 30 passed, 0 failed.
 - `node --check` across the local JavaScript files — passed.
+
+---
+
+## 2026-06-13 True-Latest Main Review — Based on `bdf69be`
+
+### Review context
+
+This review was performed after explicitly fetching/resetting to true `origin/main`, then rebasing once more when `main` advanced during push. The final reviewed base is `bdf69be` (`Parking lot: uppercase rounds in boss + optional cloud passphrase`). This supersedes any prior review based on `01a5a36` or `12bcece`.
+
+### What changed since the prior stale review
+
+- The Magic Kingdom rename is now live in code-facing places that matter: `ACTS[1].city`, Act-2 lore lines, the Act-2 finale map button, CLAUDE.md, and map-label comments.
+- The Act-2 medieval display font is now wired through the Google Fonts request, Act-2 CSS chrome selectors, and the painted map's SVG text labels.
+- Several prior QA items have now been addressed: daily mission counts count first-time completions, profile names have escaping coverage, level override has confirmation, boss sound-ID now includes deliberate uppercase rounds, optional cloud passphrase keys exist, and the CI/test surface is broader.
+- `QA.md` itself now contains several historical sections. Useful, but it is getting long enough that newest-priority visibility may become a real agent-workflow issue.
+
+### Bugs / risks / cleanup items to investigate
+
+1. **Documentation drift remains in art docs.**
+   - `art/README.md` still says "medieval realm" / "Act 2 — Medieval Realm" in a few places, while the app has moved to Magic Kingdom.
+   - This is harmless at runtime, but art-generation prompts/docs are exactly where wording consistency matters for future assets.
+
+2. **CI syntax check does not cover every JavaScript file in subdirectories.**
+   - The workflow uses `for f in *.js; do node --check "$f"; done`, which checks root JS files but not `cloud/worker.js` or future nested JS.
+   - Suggested improvement: use a `find`-based check with exclusions for dependencies, or explicitly include `cloud/worker.js`.
+
+3. **Service-worker cache version is still manual.**
+   - Network-first behavior is right for GitHub Pages, but `CACHE = "superteddy-v1"` has not changed despite major app/module/PWA changes.
+   - Not necessarily a bug, but the team should decide when cache names get bumped and document that rule.
+
+4. **Magic Kingdom font depends on Google Fonts.**
+   - The fallback is acceptable and learning content remains Andika, but Act-2 chrome will lose its medieval flavor if the font was never cached before offline use.
+   - Query: is that fine, or should `MedievalSharp` be self-hosted once the visual direction is settled?
+
+5. **Painted map zone UX still deserves an iPad check.**
+   - Zone-level nodes are cleaner than mission-level clutter, but they hide the number/name of the next mission.
+   - Consider showing "Next: <mission>" or "2 left" in the parent/progress layer first, rather than adding clutter to the child map immediately.
+
+6. **Cloud passphrase hardening exists, but remains opt-in.**
+   - `CLOUD_PASSPHRASE` now hashes the profile cloud slot without changing the Worker, while the default empty value preserves existing sync. The remaining decision is operational: when/if to set the passphrase on all family devices and how to communicate the one-time re-sync.
+
+7. **`cloud/README.md` still describes passphrase as future work.**
+   - The code and CLAUDE.md now say passphrase support is done, but `cloud/README.md` still says “If you ever want a passphrase...”. Update the cloud docs when the team decides whether to enable it.
+
+8. **Post-Act-2 maintenance loop is now more important than more content.**
+   - Since the full Act-2 sentence ladder is live, the next learning risk is retention/automatic review, not adding more scope.
+   - A cross-act weakest-item patrol would keep the app useful after story completion.
+
+### Enhancement suggestions for the next coding agent
+
+1. **Make a "latest priorities" block at the top of QA.md.**
+   - Keep the historical reviews below, but add a short current-priorities index so coding agents do not over-weight stale notes.
+
+2. **Add a load-order smoke test from `index.html`.**
+   - Parse local `<script src>` order and evaluate the same files in a VM harness. This is the best cheap guard for classic-script modularization.
+
+3. **Expand CI's syntax check.**
+   - Check all project JS files, including nested files like `cloud/worker.js`, and maybe `tests/*.js` explicitly even though the tests run.
+
+4. **Add PWA/offline assertions.**
+   - Validate `manifest.json`, icon paths, `sw.js` parseability, and that same-origin core files are reachable/cachable.
+
+5. **Add a service-worker update QA checklist.**
+   - On iPad: load online, install to home screen, go offline, launch, reconnect, deploy a commit, relaunch, verify fresh content wins.
+
+6. **Add cloud newer-wins tests.**
+   - Mock cloud payloads and confirm newer cloud saves replace local while older cloud saves do not.
+
+7. **Add visual smoke tests for SVG ID uniqueness.**
+   - Render multiple hero/villain/gem instances and assert no obvious duplicate `id="..."` collisions across a combined snippet.
+
+8. **Prioritize recorded phoneme coverage.**
+   - With content now broad, parent-recorded phoneme/digraph/vowel-team/long-vowel audio likely has more learning value than another visual pass.
+
+9. **Add a post-finale "maintenance mode" design.**
+   - After Miss Kendall is rescued, make the app explicitly transition into daily reading patrols rather than feeling "over."
+
+10. **Self-host display fonts only if the visual direction stabilizes.**
+   - Not urgent, but if Magic Kingdom chrome becomes important, self-hosting avoids offline-first-load inconsistency.
+
+### Open questions
+
+- Should the app now treat Act 2 as the end state, or is Act 3 still expected?
+- Should `QA.md` be reorganized so the current/latest section appears first?
+- Should `CLOUD_PASSPHRASE` be set now on all family devices, or should bare-key sync remain the default until there is a concrete sharing risk?
+- Does Teddy respond better to zone-level maps or mission-level maps? The current painted map is prettier, but a parent may want deeper visibility.
+- Are background music files final committed assets, or should there eventually be an in-app "music pack" workflow similar to voice clips?
+
+### Verification on true latest main
+
+Checks run on `bdf69be` before this QA update:
+
+- `node tests/curriculum.test.js` — 30 passed, 0 failed.
+- `node tests/save.test.js` — 33 passed, 0 failed.
+- `node --check` across the root local JavaScript files plus `audio-studio.js` and `sw.js` — passed.
