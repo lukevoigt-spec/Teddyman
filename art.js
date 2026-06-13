@@ -23,6 +23,12 @@ const KNIGHT_TIER=[{suit:["#9a6738","#5a3a1f"],muscle:"#4a2f18",sheen:"#caa06a"}
 const th = o.theme==="knight" ? KNIGHT_TIER[Math.min(2,m)] : (HERO_THEMES[o.theme||"hero"]||HERO_THEMES.hero);
 const capes={red:["#ef5348","#b92f33"],gold:["#ffd75e","#e08f1f"],purple:["#a06ae8","#6b2fa0"]};
 const cp=capes[o.cape||"red"]||capes.red;
+/* Act-2 knights wear NO cape (medieval, not superhero); boots take the tier's armor/leather colour */
+const knight=o.theme==="knight";
+const bootFill=knight?th.suit[1]:`url(#${u}cape)`;
+/* squire wears a cloth TUNIC (green), soldier a mail surcoat (grey); the full knight has plate, no tunic */
+const tunic=knight&&m<2 ? (m>=1?"#5a6270":"#5b7a3a") : null;
+const tunicHTML=tunic ? `<path d="M88 268 L160 268 L176 346 L72 346Z" fill="${tunic}" stroke="#150f2e" stroke-width="6" stroke-linejoin="round"/><path d="M124 270 L124 344" stroke="#150f2e" stroke-width="2.5" opacity=".35"/><path d="M124 270 L176 346 L130 346Z" fill="#000" opacity=".14"/>` : "";
 let weapon="";
 if(o.weapon==="hammer"){weapon=`<g transform="translate(196 6) rotate(16)" stroke="#150f2e" stroke-width="6" stroke-linejoin="round">
 <rect x="-8" y="36" width="16" height="130" rx="8" fill="#8a5a33"/>
@@ -104,15 +110,15 @@ return `<svg viewBox="-30 -150 310 660" width="${w}" aria-hidden="true">
 <ellipse cx="123" cy="470" rx="98" ry="20" fill="url(#${u}sh)"/>
 <g class="hfloat"><g filter="url(#${u}lit)">
 ${o.weapon==="hammer"||o.weapon==="sword"?weapon:""}
-<g class="hcape">
+${knight?"":`<g class="hcape">
 <path d="M80 126 Q124 106 168 126 Q190 240 200 350 Q206 416 192 452 L168 426 L148 452 L124 430 L100 452 L80 426 L56 452 Q42 416 48 350 Q58 240 80 126Z" fill="url(#${u}cape)" stroke="#150f2e" stroke-width="6"/>
 <path d="M80 126 Q124 106 168 126 Q190 240 200 350 Q206 416 192 452 L168 426 L148 452 L124 430 L100 452 L80 426 L56 452 Q42 416 48 350 Q58 240 80 126Z" fill="url(#${u}capeL)"/>
-<g stroke="${cp[1]}" stroke-width="4" fill="none" opacity=".5" stroke-linecap="round"><path d="M98 150 Q86 300 74 440"/><path d="M124 140 Q124 290 124 436"/><path d="M150 150 Q162 300 174 440"/></g></g>
+<g stroke="${cp[1]}" stroke-width="4" fill="none" opacity=".5" stroke-linecap="round"><path d="M98 150 Q86 300 74 440"/><path d="M124 140 Q124 290 124 436"/><path d="M150 150 Q162 300 174 440"/></g></g>`}
 <g stroke="#150f2e" stroke-width="6" stroke-linejoin="round">
 <path d="M116 268 L96 366 L88 432 L120 432 L124 292Z" fill="url(#${u}suit)"/>
 <path d="M132 268 L152 366 L160 432 L128 432 L124 292Z" fill="url(#${u}suit)"/>
-<path d="M82 428 L120 428 L120 452 Q120 468 98 468 L68 468 Q58 468 60 456 Q62 440 82 434Z" fill="url(#${u}cape)"/>
-<path d="M166 428 L128 428 L128 452 Q128 468 150 468 L180 468 Q190 468 188 456 Q186 440 166 434Z" fill="url(#${u}cape)"/>
+<path d="M82 428 L120 428 L120 452 Q120 468 98 468 L68 468 Q58 468 60 456 Q62 440 82 434Z" fill="${bootFill}"/>
+<path d="M166 428 L128 428 L128 452 Q128 468 150 468 L180 468 Q190 468 188 456 Q186 440 166 434Z" fill="${bootFill}"/>
 <path d="M82 428 L120 428 L120 440 L80 440Z" fill="#ffd75e" stroke-width="4"/>
 <path d="M128 428 L166 428 L168 440 L128 440Z" fill="#ffd75e" stroke-width="4"/></g>
 ${bootFx}
@@ -125,7 +131,8 @@ ${m>=2?`<path d="M104 208 Q124 200 144 208 M108 232 Q124 226 140 232" stroke="${
 </g></g>
 <g stroke="#150f2e" stroke-width="6" stroke-linejoin="round">${armL}${armR}</g>
 ${biceps}
-<path d="M90 254 L158 254 L153 278 L95 278Z" fill="url(#${u}gold)" stroke="#150f2e" stroke-width="5"/>
+${tunicHTML}
+<path d="M90 254 L158 254 L153 278 L95 278Z" fill="${knight&&m<1?'#7a4f2e':`url(#${u}gold)`}" stroke="#150f2e" stroke-width="5"/>
 ${beltGlow}
 <circle cx="124" cy="186" r="42" fill="url(#${u}embg)"/>
 <circle class="haura" cx="124" cy="186" r="32" fill="none" stroke="#fff3c4" stroke-width="2.5" opacity=".5"/>
@@ -397,29 +404,34 @@ function dragonSVG(w=240){
 const u="d"+(__huid++);
 return `<svg viewBox="-30 -40 300 320" width="${w}" aria-hidden="true">
 <defs>
-<linearGradient id="dbody" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#5fd089"/><stop offset=".5" stop-color="#34a061"/><stop offset="1" stop-color="#155534"/></linearGradient>
-<linearGradient id="dwing" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#9c1c52"/><stop offset=".6" stop-color="#5a1030"/><stop offset="1" stop-color="#2e0a1c"/></linearGradient>
-<radialGradient id="${u}aura" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff7a2e" stop-opacity=".5"/><stop offset=".55" stop-color="#e0301a" stop-opacity=".15"/><stop offset="1" stop-color="#e0301a" stop-opacity="0"/></radialGradient>
-<radialGradient id="${u}eye" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff7c4"/><stop offset=".5" stop-color="#ffce3a"/><stop offset="1" stop-color="#ff7a1e"/></radialGradient>
+<linearGradient id="dbody" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#6a2230"/><stop offset=".5" stop-color="#3a1018"/><stop offset="1" stop-color="#140508"/></linearGradient>
+<linearGradient id="dwing" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#7a1238"/><stop offset=".6" stop-color="#43091f"/><stop offset="1" stop-color="#1e0612"/></linearGradient>
+<radialGradient id="${u}aura" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff5a1e" stop-opacity=".55"/><stop offset=".55" stop-color="#c00808" stop-opacity=".18"/><stop offset="1" stop-color="#c00808" stop-opacity="0"/></radialGradient>
+<radialGradient id="${u}eye" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffe0a0"/><stop offset=".45" stop-color="#ff5a1e"/><stop offset="1" stop-color="#b00000"/></radialGradient>
 <linearGradient id="${u}flame" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ffd75e"/><stop offset=".5" stop-color="#ff8a3d"/><stop offset="1" stop-color="#e6453c"/></linearGradient>
 <filter id="${u}lit" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="4" result="b"/><feSpecularLighting in="b" surfaceScale="5" specularConstant=".5" specularExponent="16" lighting-color="#eaffe0" result="s"><fePointLight x="60" y="-120" z="150"/></feSpecularLighting><feComposite in="s" in2="SourceAlpha" operator="in" result="sc"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="sc"/></feMerge></filter>
 <filter id="${u}glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4"/></filter>
 </defs>
 <style>@media (prefers-reduced-motion: no-preference){.dfloat{animation:${u}fl 4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}.dflapL{animation:${u}flL 2.8s ease-in-out infinite;transform-box:fill-box;transform-origin:90% 30%}.dflapR{animation:${u}flR 2.8s ease-in-out infinite;transform-box:fill-box;transform-origin:10% 30%}.deye{animation:${u}gl 2s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}.dflame{animation:${u}fk .55s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 0}}@keyframes ${u}fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}@keyframes ${u}flL{0%,100%{transform:rotate(2deg)}50%{transform:rotate(-5deg)}}@keyframes ${u}flR{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(5deg)}}@keyframes ${u}gl{0%,100%{opacity:.55}50%{opacity:1}}@keyframes ${u}fk{0%,100%{transform:scaleY(1) scaleX(1)}50%{transform:scaleY(1.25) scaleX(.9)}}</style>
-<g class="daura"><ellipse cx="120" cy="150" rx="170" ry="150" fill="url(#${u}aura)"/></g>
+<g class="daura"><ellipse cx="120" cy="150" rx="182" ry="162" fill="url(#${u}aura)"/></g>
 <g class="dfloat"><g filter="url(#${u}lit)">
-<g class="dflapL"><path d="M70 110 Q-26 60 -22 170 Q24 130 52 168 Q10 150 26 200 Q60 150 96 156Z" fill="url(#dwing)" stroke="#150f2e" stroke-width="6"/></g>
-<g class="dflapR"><path d="M170 110 Q266 60 262 170 Q216 130 188 168 Q230 150 214 200 Q180 150 144 156Z" fill="url(#dwing)" stroke="#150f2e" stroke-width="6"/></g>
-<path d="M86 240 Q70 170 100 140 Q120 120 120 96 Q120 120 140 140 Q170 170 154 240Z" fill="url(#dbody)" stroke="#150f2e" stroke-width="6"/>
-<g stroke="#9fe870" stroke-width="3" opacity=".5" fill="none"><path d="M108 160 H132 M106 184 H134 M108 208 H132"/></g>
-<path d="M70 70 Q72 24 120 22 Q168 24 170 70 Q150 96 120 96 Q90 96 70 70Z" fill="url(#dbody)" stroke="#150f2e" stroke-width="6"/>
-<path d="M88 72 Q120 110 152 72 Q140 88 120 88 Q100 88 88 72Z" fill="#175f37" stroke="#150f2e" stroke-width="5"/>
-<path d="M78 34 Q60 6 76 -6 Q78 14 92 26Z" fill="#e8cfa0" stroke="#150f2e" stroke-width="5"/>
-<path d="M162 34 Q180 6 164 -6 Q162 14 148 26Z" fill="#e8cfa0" stroke="#150f2e" stroke-width="5"/>
-<g class="deye" filter="url(#${u}glow)"><ellipse cx="102" cy="56" rx="11" ry="9" fill="#ff8a1e"/><ellipse cx="138" cy="56" rx="11" ry="9" fill="#ff8a1e"/></g>
-<g stroke="none"><path d="M92 56 Q102 47 112 56 Q102 65 92 56Z" fill="url(#${u}eye)"/><path d="M128 56 Q138 47 148 56 Q138 65 128 56Z" fill="url(#${u}eye)"/>
-<ellipse cx="102" cy="56" rx="2.4" ry="5" fill="#150f2e"/><ellipse cx="138" cy="56" rx="2.4" ry="5" fill="#150f2e"/></g>
-<circle cx="110" cy="80" r="2.5" fill="#150f2e"/><circle cx="130" cy="80" r="2.5" fill="#150f2e"/>
+<g class="dflapL"><path d="M70 110 Q-30 54 -26 174 Q22 128 52 168 Q6 150 22 206 Q60 150 96 156Z" fill="url(#dwing)" stroke="#150f2e" stroke-width="6"/><g stroke="#1e0612" stroke-width="3" fill="none" opacity=".75"><path d="M38 118 L28 168"/><path d="M58 150 L50 196"/></g></g>
+<g class="dflapR"><path d="M170 110 Q270 54 266 174 Q218 128 188 168 Q234 150 218 206 Q180 150 144 156Z" fill="url(#dwing)" stroke="#150f2e" stroke-width="6"/><g stroke="#1e0612" stroke-width="3" fill="none" opacity=".75"><path d="M202 118 L212 168"/><path d="M182 150 L190 196"/></g></g>
+<g fill="#2a0a12" stroke="#150f2e" stroke-width="3"><path d="M120 116 l-10 -18 l10 5 l10 -5z"/><path d="M103 152 l-10 -15 l10 4 l9 -3z"/><path d="M137 152 l10 -15 l-10 4 l-9 -3z"/></g>
+<path d="M84 244 Q66 168 100 138 Q120 118 120 92 Q120 118 140 138 Q174 168 156 244Z" fill="url(#dbody)" stroke="#150f2e" stroke-width="6"/>
+<g stroke="#8a1020" stroke-width="3" opacity=".55" fill="none"><path d="M108 162 H132 M106 186 H134 M108 210 H132"/></g>
+<path d="M68 70 Q70 22 120 20 Q170 22 172 70 Q150 98 120 98 Q90 98 68 70Z" fill="url(#dbody)" stroke="#150f2e" stroke-width="6"/>
+<path d="M74 30 Q46 -4 70 -24 Q66 2 94 22Z" fill="#3a2a30" stroke="#150f2e" stroke-width="5"/>
+<path d="M166 30 Q194 -4 170 -24 Q174 2 146 22Z" fill="#3a2a30" stroke="#150f2e" stroke-width="5"/>
+<g fill="#2a0a12" stroke="#150f2e" stroke-width="2.5"><path d="M92 16 l-7 -13 l9 5z"/><path d="M148 16 l7 -13 l-9 5z"/></g>
+<path d="M82 44 L114 58 L109 66 L82 54Z" fill="#2a0a12" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>
+<path d="M158 44 L126 58 L131 66 L158 54Z" fill="#2a0a12" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>
+<g class="deye" filter="url(#${u}glow)"><ellipse cx="100" cy="63" rx="12" ry="8" fill="#ff3010"/><ellipse cx="140" cy="63" rx="12" ry="8" fill="#ff3010"/></g>
+<g stroke="none"><path d="M89 63 Q100 55 111 63 Q100 71 89 63Z" fill="url(#${u}eye)"/><path d="M129 63 Q140 55 151 63 Q140 71 129 63Z" fill="url(#${u}eye)"/>
+<path d="M100 57 L100 69 M140 57 L140 69" stroke="#150f2e" stroke-width="3.2"/></g>
+<path d="M84 80 Q120 102 156 80 Q150 98 120 98 Q90 98 84 80Z" fill="#3a0a12" stroke="#150f2e" stroke-width="5" stroke-linejoin="round"/>
+<g fill="#fff" stroke="#150f2e" stroke-width="1.5" stroke-linejoin="round"><path d="M95 83 l4 13 l5 -13z"/><path d="M113 88 l4 12 l5 -12z"/><path d="M134 83 l4 13 l5 -13z"/></g>
+<circle cx="106" cy="78" r="2.5" fill="#150f2e"/><circle cx="134" cy="78" r="2.5" fill="#150f2e"/>
 </g></g>
-<g class="dflame"><path d="M120 90 q-13 22 -5 40 q-6 -2 -6 -10 q-7 14 1 26 q10 14 20 0 q9 -13 1 -26 q0 8 -6 10 q9 -18 -5 -40Z" fill="url(#${u}flame)" stroke="#e6453c" stroke-width="1.5"/><path d="M120 104 q-7 12 -2 22 q9 10 4 -2 q6 -10 -2 -20Z" fill="#fff3c4" opacity=".8"/></g>
+<g class="dflame"><path d="M120 92 q-18 26 -7 50 q-8 -2 -8 -13 q-9 18 1 33 q13 18 28 0 q11 -16 1 -34 q0 11 -8 13 q12 -23 -7 -49Z" fill="url(#${u}flame)" stroke="#e6453c" stroke-width="1.5"/><path d="M120 110 q-9 15 -2 28 q11 12 5 -3 q8 -13 -3 -25Z" fill="#fff3c4" opacity=".85"/></g>
 </svg>`;}

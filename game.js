@@ -1328,10 +1328,13 @@ function mapPaintSVG(){
     const nm=z.name.toUpperCase();
     const pw=Math.min(300,Math.max(150,nm.length*11+26)), R=36;
     nodes+=`<g class="mnode ${st}" data-zi="${zi}">
-      <ellipse cx="${x}" cy="${y+30}" rx="34" ry="9" fill="#0a0414" opacity=".5"/>
-      <circle cx="${x}" cy="${y}" r="${R+13}" fill="url(#node_${st})" opacity=".4" filter="url(#mglow)"/>
-      <circle cx="${x}" cy="${y}" r="${R}" fill="url(#node_${st})" stroke="#150f2e" stroke-width="5"/>
-      <ellipse cx="${x}" cy="${y-13}" rx="18" ry="11" fill="#fff" opacity=".3"/>
+      <ellipse cx="${x}" cy="${y+32}" rx="32" ry="8" fill="#0a0414" opacity=".5"/>
+      <circle class="obloom" cx="${x}" cy="${y}" r="${R+16}" fill="url(#node_${st})" opacity=".5" filter="url(#mglow)"/>
+      <circle cx="${x}" cy="${y}" r="${R}" fill="url(#node_${st})" stroke="#0c0820" stroke-width="3"/>
+      <circle cx="${x}" cy="${y}" r="${R-1}" fill="none" stroke="#fff" stroke-width="2" opacity=".35"/>
+      <ellipse cx="${x}" cy="${y+13}" rx="${R*.62}" ry="${R*.36}" fill="#fff" opacity=".1"/>
+      <ellipse cx="${x-9}" cy="${y-14}" rx="13" ry="8" fill="#fff" opacity=".5" transform="rotate(-28 ${x-9} ${y-14})"/>
+      <circle cx="${x-13}" cy="${y-13}" r="4.5" fill="#fff" opacity=".9"/>
       ${ st==="done" ? `<text x="${x}" y="${y+13}" text-anchor="middle" font-family="Bangers" font-size="36" fill="#0c3f28">✓</text>`
         : st==="locked" ? `<g transform="translate(${x} ${y})" stroke="#150f2e" stroke-width="2.4"><path d="M-6 -1 v-4 a6 6 0 0 1 12 0 v4" fill="none" stroke="#d7d0ee"/><rect x="-10" y="-1" width="20" height="15" rx="3.5" fill="#d7d0ee"/></g>`
         : `<circle cx="${x}" cy="${y}" r="7" fill="#fff" opacity=".95"/>` }
@@ -1348,6 +1351,7 @@ function mapPaintSVG(){
       <radialGradient id="node_locked" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#5b5384"/><stop offset=".5" stop-color="#3b3360"/><stop offset="1" stop-color="#211c3a"/></radialGradient>
       <filter id="mglow" x="-90%" y="-90%" width="280%" height="280%"><feGaussianBlur stdDeviation="8"/></filter>
       <filter id="mpill" x="-15%" y="-60%" width="130%" height="220%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity=".55"/></filter>
+      <style>@media (prefers-reduced-motion: no-preference){.mnode.current .obloom{animation:opul 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}}@keyframes opul{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.8;transform:scale(1.14)}}</style>
     </defs>
     <image href="${MAPIMG[a]||MAPIMG[1]}" x="0" y="0" width="1000" height="750" preserveAspectRatio="xMidYMid slice"/>
     ${mapFriends(a, zs, spots)}
