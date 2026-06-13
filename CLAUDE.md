@@ -77,13 +77,19 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   2+), continuing the skills ladder (digraphs → long vowels → fluency …).
 - Save-id ranges are RESERVED per act so ids never collide: Act 1 = 0–99, Act 2 = 100–199, etc.
   (ACTS[].idBase). New missions always APPEND ids; never renumber (saves are keyed by mission id).
-- The map is PER-ACT: zones carry `act`; geomFor(act) computes that act's map geometry; mapSVG /
-  toMap render actMissions(currentAct()). S.act (default 1) tracks the current act. Adding an act =
-  push to ACTS + add act-tagged zones/missions; the map machinery already scopes to the current act.
-- NO SKIPPING AHEAD (foundation can't be rushed): map nodes are done/current/locked (avail(i)= first
-  or prev done). The lock is ENFORCED, not just visual — toMap's click handler ignores taps on
-  `.locked` nodes (plays a gentle locked_tip cue). Done/current stay replayable. Parent level-override
-  (Grown-Up Corner) is the only way to jump.
+- The map is a PAINTED WORLD MAP (live): one generated image per act (art/bg-map.jpeg, bg-map-a2.jpeg)
+  with the path + landmarks baked in; mapPaintSVG() overlays an interactive glowing node on each
+  zone's painted spot (ZONESPOTS[act] = per-zone [x,y] in a 1000x750 space, calibrated to the path).
+  Single screen (no scroll). A node is done(✓)/current(pulse)/locked(padlock); the hero stands on the
+  current zone, captured friends (mapFriends) wait nearby, and a Hero Base button sits bottom-left.
+  Tapping the CURRENT zone plays its next mission (zoneNext); locked zones are gated. The OLD scrolling
+  vector map (mapSVG/geomFor/nodeOf/skyline/trail) is now DEAD CODE kept only so setAct/geomFor calls
+  don't break — safe to delete later. Adding an act = push to ACTS + act-tagged zones/missions + a
+  ZONESPOTS[act] row + (optionally) a painted bg-map-a<N>.
+- NO SKIPPING AHEAD (foundation can't be rushed): zone nodes are done/current/locked (current = first
+  zone whose missions aren't all done; earlier zones done, later locked). The lock is ENFORCED — toMap's
+  click handler ignores `.locked` nodes (plays a gentle locked_tip cue). Done/current stay replayable.
+  Within a zone, missions play in id order (zoneNext = first undone). Parent level-override is the only jump.
 - Mastery persists across acts (keyed by grapheme/word, act-agnostic). Hero muscle is now
   act-scoped (heroOpts counts current-act done missions) so a new act can RESET his power.
 - GOAL / end state: by the end of ACT 2, Teddy should reach ~2nd-grade reading proficiency aligned
@@ -125,8 +131,33 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   cap→cape/tap→tape, kit→kite/pin→pine, hop→hope/not→note, cub→cube/tub→tube (demos); cake/kite/time,
   home/rope/cube/tube (forge); cake/bike/gate/kite, home/cube/nose/rose (read); cape/kite/rose/cute
   (Vowel Wyrm finale). LONG-VOWEL CLIPS (snd_a_long…) are critical audio the parent may record later.
-- TO BUILD NEXT (Act 2): more long-vowel spellings (vowel teams ai/ee/oa, then fluency); Act-2 gear/
-  power-up rewards; an Act-2 FINALE + Miss-Kendall rescue; real Vixen/dragon/Noah/friend art.
+- ACT-2 FINALE IS LIVE (DRAGON KEEP — zone 106, mission 128, type "fortress", finale+climax): the
+  proven 4-phase fortress flow made ACT-AWARE (FORTRESS2 + FCONF; Act-1 path untouched). Dragon boss
+  (dragonSVG), Vixen taunts (role V), sound phase uses taughtGraphemes (digraphs), read phase uses
+  READWORDS2. Gates on Act-2 mastery (digraphs+magic-e via actGraphemes) then frees MISS KENDALL —
+  added to LEAGUE (kind "kendall", placeholder teacher face in allyFace; real photo TBD), shown
+  captive on the map until rescued; win returns to the medieval map (no Act 3). Voice lines f2_*/
+  kendall*. ACT-2 GEAR re-powers the knight: GEAR_AT 110→Gem Sword, 118→Power Belt, 127→Rocket Boots
+  (act-scoped via actGearList; weapon auto-equips on forge). RANK PROGRESSION: the knight advances
+  SQUIRE→SOLDIER→KNIGHT by power tier (KNIGHT_TIER in heroSVG: leather cap → steel nose-guard cap →
+  full closed helm; armor colour shifts per tier; Base/Progress power label reads the rank in Act 2).
+- TO BUILD NEXT (Act 2, for the ~2nd-grade goal): VOWEL TEAMS (ai/ee/oa) + FLUENCY zones BEFORE the
+  finale on the ladder (insert as zones 104/105; the map positions by zone order). CAUTION: adding
+  vowel teams to toGraphemes() risks mis-tokenising the sight word "said" (s-ai-d) and any ee/oa
+  word — verify sight words stay letter-split and extend tests/curriculum.test.js first. Also: real
+  Vixen/dragon/Miss-Kendall/friend art; long-vowel + digraph phoneme recordings (parent).
+- PLANNED ENHANCEMENTS (parent-prioritized backlog — "identify 10, do best-first"): (1) AUDIO WORKFLOW
+  REDO — streamline + bulletproof the record/ElevenLabs/export/publish pipeline (parent flagged; highest
+  learning leverage). (2) SETTINGS OVERHAUL — game-like, intuitive, add missing settings; study how real
+  games lay out settings (parent flagged — current Grown-Up Corner isn't intuitive). (3) PERF "Full/Calm/
+  Lite" detail tier (the new specular/blur filters are GPU-heavy on older iPads). (4) SCENE COLOR
+  HARMONIZER — per-screen --scene-key/--scene-rim CSS vars so character/UI rim-light matches the painting
+  (biggest "looks pro" lift per QA). (5) ACT-2 MEDIEVAL UI SKIN (parchment/stone chrome via
+  body[data-act=2]; learning tiles stay Andika). (6) HERO EMOTION + random WIN POSES. (7) mentors
+  MOUTH-MOVE during narration. (8) DIEGETIC UI FRAMES (spellbook/forge/comms). (9) DAILY-METRIC clarity
+  fix (replays inflate S.daily.missions — QA P0). (10) cosmetic COLLECTIBLE upgrades (aura/cape-trim/
+  confetti). QA also wants app-invariant tests (locked-node enforcement, sound-ID hides target, profile-
+  name escaping) — fold in alongside whichever enhancement touches that code.
 - ACT 2 (FRAME + Zone 1 done; later zones TBD): villain = a smooth-talking
   evil VIXEN (Scarlett-Overkill-coded) who can morph into a DRAGON; her dragon army = Act-2 bosses.
   She kidnaps Miss Kendall + friends JJ, Nora, Cal and escapes through a TIME PORTAL to the MEDIEVAL
@@ -174,6 +205,17 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   "Super Teddy"), blue glasses = Gem Lenses, gold hex "T" emblem,
   red cape, Word Forge gauntlet. Words forge weapons (Word Hammer, Gem Sword).
 - Hero visibly gains muscle as missions complete (3 stages). Hero Base = equip/collection hub.
+- CHARACTER ART IS NOW "PREMIUM ANIMATED SVG" (live, all in art.js — the chosen pipeline: keep
+  everyone as parametric animated SVG; reserve painted images for backgrounds/maps). heroSVG = a
+  HEROIC power stance (hands-on-hips, or weapon raised + gripped when armed) with feSpecularLighting
+  (real sculpted 3D sheen), a power aura, glowing emblem, gem-lens glint, contact shadow, and idle
+  animation (breathe/blink/cape-sway/aura-pulse/float — all gated behind prefers-reduced-motion). The
+  villains/mentor (inkblotSVG/Lord Vex, dragonSVG, vixenSVG, noahSVG) got the same treatment: specular
+  lighting, themed auras, glowing pulsing eyes, dragon flame/wing-flap, Noah's glowing staff orb.
+  allyFace likenesses are built from the parent's real photos (Archie/Ellie/William/Amelia/Leighton +
+  Noah-the-Red = Uncle Noah; Miss Kendall = placeholder). PERF NOTE: the specular/blur filters are GPU
+  work — only one big character shows at a time so it's fine, but a "Full/Calm/Lite" detail tier is a
+  planned enhancement for older iPads. Tune characters in hero-lab.html / via the puppeteer shot harness.
 - Allies are real family/friends, freed from Vex's cages at milestone missions:
   Tank (Archie), Flip (Ellie), Sunny (William, comic relief), Heartguard (Amelia, M2 rescue arc),
   Leighton the Starlight Princess (final rescue at Vex's Fortress). Mentors = Mom & Dad.
