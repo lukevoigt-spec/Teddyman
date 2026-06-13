@@ -1,0 +1,15 @@
+{
+  "name": "Super Teddy — Star Force City",
+  "short_name": "Super Teddy",
+  "description": "Learn to read with Super Teddy — phonics superhero adventures.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "any",
+  "background_color": "#0b051f",
+  "theme_color": "#0b051f",
+  "icons": [
+    { "src": "art/icon.jpeg", "sizes": "1600x1600", "type": "image/jpeg", "purpose": "any" }
+  ]
+}

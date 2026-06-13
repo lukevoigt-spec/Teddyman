@@ -133,8 +133,18 @@ grp("anti-gaming: sound-ID prompt never reveals the target (CLAUDE.md #4)");
   function findPrompt(g){ startFind(g,4,["s","a","t"],function(){}); return $("findText").querySelector("span").textContent || ""; }
   var p1=findPrompt("s"), p2=findPrompt("a");
   ok("find prompt is target-INDEPENDENT (same text for different sounds)", p1.length>0 && p1===p2, {p1:p1,p2:p2});
-}catch(e){ ok("anti-gaming find prompt is testable", false, String(e)); } })();
+  // the displayed prompt must never contain the target grapheme or its sound-spelling
+  ok("find prompt text contains no letter/grapheme target", !/\b[sat]\b/.test(p1.toLowerCase().replace(/[^a-z ]/g," ")) || p1===p2, {p1:p1});
+  function bossPrompt(g){ startBoss(g); return $("bossText").querySelector("span").textContent || ""; }
+  var b1=bossPrompt("s"), b2=bossPrompt("a");
+  ok("boss prompt is target-INDEPENDENT too", b1.length>0 && b1===b2, {b1:b1,b2:b2});
+}catch(e){ ok("anti-gaming prompts are testable", false, String(e)); } })();
 S.done={};
+
+grp("Act-1 Reading Dojo SCRAMBLE words are decodable");
+(function(){ var allL=new Set(ORDER.slice()), e=[];
+  SCRAMBLE.forEach(function(s,i){ s.words.forEach(function(w){ if(!SIGHT[w] && !toGraphemes(w).every(function(g){return allL.has(g);})) e.push("S["+i+"] '"+w+"'"); }); });
+  ok("every scramble word is decodable (all 26 letters + sight)", e.length===0, e); })();
 `;
 vm.runInContext(fs.readFileSync(path.join(ROOT, "data-missions.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-content.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-lines.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "state-save.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "audio.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "allies.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "map.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "sfx.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "music.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 

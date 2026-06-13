@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Super Teddy">
 <meta name="theme-color" content="#0b051f">
+<link rel="manifest" href="manifest.json">
 <!-- Home-screen / favicon -->
 <link rel="apple-touch-icon" href="art/icon.jpeg">
 <link rel="icon" type="image/jpeg" href="art/icon.jpeg">
@@ -461,5 +462,11 @@
 <script src="sfx.js"></script>
 <script src="music.js"></script>
 <script src="audio-studio.js"></script>
+<script>
+/* register the service worker (offline resilience). Network-first, so deploys
+   always land when online. Defensive: only on https/localhost, never blocks. */
+if("serviceWorker" in navigator){ window.addEventListener("load",()=>{
+  try{ navigator.serviceWorker.register("sw.js").catch(()=>{}); }catch(e){} }); }
+</script>
 </body>
 </html>
