@@ -30,8 +30,13 @@ if(o.weapon==="sword"){weapon=`<g transform="translate(206 -8) rotate(10)" strok
 <rect x="-34" y="58" width="68" height="18" rx="8" fill="url(#${u}gold)"/>
 <rect x="-9" y="74" width="18" height="46" rx="8" fill="#8a5a33"/>
 <circle cx="0" cy="128" r="11" fill="url(#${u}gold)"/></g>`;}
-const biceps = m>=1 ? `<ellipse cx="44" cy="196" rx="${13+5*m}" ry="${11+4*m}" fill="url(#${u}suit)" stroke="#150f2e" stroke-width="5"/>
-<ellipse cx="204" cy="196" rx="${13+5*m}" ry="${11+4*m}" fill="url(#${u}suit)" stroke="#150f2e" stroke-width="5"/>` : "";
+const heldWeapon = o.weapon==="hammer"||o.weapon==="sword";
+const biceps = m>=1 ? `<ellipse cx="44" cy="196" rx="${13+5*m}" ry="${11+4*m}" fill="url(#${u}suit)" stroke="#150f2e" stroke-width="5"/>`+(heldWeapon?``:`<ellipse cx="204" cy="196" rx="${13+5*m}" ry="${11+4*m}" fill="url(#${u}suit)" stroke="#150f2e" stroke-width="5"/>`) : "";
+/* arms: left fist always on hip; right hand either on hip OR raised gripping the weapon */
+const armL=`<path d="M86 150 Q44 160 34 208 Q32 234 54 252 L84 262 L96 248 L70 236 Q54 226 60 206 Q68 172 96 162Z" fill="url(#${u}suit)"/><circle cx="84" cy="258" r="15" fill="#e6453c"/><path d="M76 252 a9 9 0 0 1 9 -5" stroke="#ffb3ad" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+const armRhip=`<path d="M162 150 Q204 160 214 208 Q216 234 194 252 L164 262 L152 248 L178 236 Q194 226 188 206 Q180 172 152 162Z" fill="url(#${u}suit)"/><circle cx="164" cy="258" r="15" fill="url(#${u}gold)"/><path d="M156 252 a9 9 0 0 1 9 -5" stroke="#fff0bd" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+const armRup=`<path d="M156 152 Q190 150 202 116 Q210 96 205 78 L183 84 Q185 104 173 122 Q165 137 146 156Z" fill="url(#${u}suit)"/><circle cx="201" cy="83" r="15" fill="url(#${u}gold)"/><path d="M193 77 a9 9 0 0 1 9 -5" stroke="#fff0bd" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+const armR=heldWeapon?armRup:armRhip;
 const beltGlow=o.belt2?`<rect x="86" y="250" width="76" height="30" rx="10" fill="none" stroke="#fff3c4" stroke-width="5" opacity=".85"/>`:"";
 const bootFx=o.boots2?`<g stroke="#ff8a3d" stroke-width="5" stroke-linecap="round" opacity=".9">
 <path d="M78 470 q4 12 -2 22"/><path d="M96 470 q0 14 -4 24"/>
@@ -107,11 +112,7 @@ ${bootFx}
 ${m>=1?`<path d="M96 178 Q124 162 152 178" stroke="${th.muscle}" stroke-width="5" fill="none" stroke-linecap="round"/>`:''}
 ${m>=2?`<path d="M104 208 Q124 200 144 208 M108 232 Q124 226 140 232" stroke="${th.muscle}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`:''}
 </g></g>
-<g stroke="#150f2e" stroke-width="6" stroke-linejoin="round">
-<path d="M86 150 Q44 160 34 208 Q32 234 54 252 L84 262 L96 248 L70 236 Q54 226 60 206 Q68 172 96 162Z" fill="url(#${u}suit)"/>
-<path d="M162 150 Q204 160 214 208 Q216 234 194 252 L164 262 L152 248 L178 236 Q194 226 188 206 Q180 172 152 162Z" fill="url(#${u}suit)"/>
-<circle cx="84" cy="258" r="15" fill="#e6453c"/><circle cx="164" cy="258" r="15" fill="url(#${u}gold)"/>
-<path d="M76 252 a9 9 0 0 1 9 -5" stroke="#ffb3ad" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M156 252 a9 9 0 0 1 9 -5" stroke="#fff0bd" stroke-width="4" fill="none" stroke-linecap="round"/></g>
+<g stroke="#150f2e" stroke-width="6" stroke-linejoin="round">${armL}${armR}</g>
 ${biceps}
 <path d="M90 254 L158 254 L153 278 L95 278Z" fill="url(#${u}gold)" stroke="#150f2e" stroke-width="5"/>
 ${beltGlow}
