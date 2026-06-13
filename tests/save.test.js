@@ -94,6 +94,21 @@ var back = load();
 ok("done preserved", Object.keys(back.done).length===3);
 ok("coins preserved", back.coins===42);
 ok("owned preserved", back.owned.trophy===true);
+
+grp("profiles: default + isolation + parent-only removal");
+ok("profiles seed [teddy]", profiles().length>=1 && profiles().some(p=>p.id==="teddy"));
+ok("teddy keeps the legacy save key", keyFor("teddy")==="heroTeddySave_v1");
+ok("other players are namespaced", keyFor("p1")==="heroTeddySave_v1::p1");
+var pid = addProfile("Tester");
+ok("addProfile adds a player", profiles().some(p=>p.id===pid && p.name==="Tester"));
+applyProfile(pid); S = fresh(); S.done = {0:true}; save();         // give the new player some progress
+applyProfile("teddy"); S = fresh(); S.done = {0:true,1:true,3:true,5:true}; save();
+ok("each player has its own save key", __store["heroTeddySave_v1"] && __store["heroTeddySave_v1::"+pid]);
+applyProfile(pid); var pl = load();
+ok("players are isolated (new player not Teddy's progress)", Object.keys(pl.done).length===1);
+applyProfile("teddy");
+ok("removeProfile refuses to delete default teddy", removeProfile("teddy")===false);
+ok("removeProfile deletes a real player's save", removeProfile(pid)===true && !__store["heroTeddySave_v1::"+pid]);
 `;
 vm.runInContext(fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 

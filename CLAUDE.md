@@ -42,6 +42,13 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
    cloud sync: if a Cloudflare Worker URL is set, save() also debounce-pushes to it and boot pulls
    the newer of {cloud,device} (S.ts timestamp, newer-wins) so the same URL on any device continues
    his progress. Device-first/offline-safe; never blocks play. Worker code = cloud/worker.js.
+   PROFILES (no-auth local players): each player has its OWN save (local keys keyFor(id) + its own
+   cloud slot ?k=<id>). Default player "teddy" KEEPS the original keys + cloud key (so existing
+   progress is never lost and an existing Worker URL keeps working). Auto-loads the last player; the
+   title has a 👥 "switch" picker; add/remove is parent-only in the Grown-Up Corner. removeProfile
+   refuses to delete "teddy". DEFAULT_CLOUD_URL (top of game.js) can be hard-coded to the Worker URL
+   so NO per-device pasting is ever needed — paste it there once and every device auto-syncs. Save +
+   profile layer is regression-tested in tests/save.test.js (25 assertions).
 8. All instructions are audio-first (the player cannot read yet). Every prompt has a replay
    button. Any flow that waits on audio MUST use the flow()/watchdog pattern so the game can
    never hang — there is always a ⏭ skip and a Home button.

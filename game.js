@@ -580,9 +580,33 @@ const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#
    NOTE: on iPad Safari, "Add to Home Screen" + turning on cloud sync are the
    two things that make saves truly durable (Safari can purge site storage after
    ~7 idle days otherwise) — the Grown-Up Corner nudges for both.            */
-const KEY="heroTeddySave_v1";
-const BAKKEY="heroTeddySave_v1_bak";
-const SNAPKEY="heroTeddySave_v1_snaps";
+/* ---------------- PROFILES (no-auth local players) ----------------
+   Each player has their OWN save (local + cloud slot). Auto-loads the last
+   player; add/remove only in the Grown-Up Corner. The default player "teddy"
+   keeps the ORIGINAL save keys + cloud key, so existing progress is never lost
+   and an existing Worker URL keeps working unchanged. */
+const DEFAULT_CLOUD_URL="";   /* paste the Worker URL here once → zero per-device setup; "" = use the in-app field */
+const PROFKEY="teddyProfiles", ACTIVEKEY="teddyActiveProfile";
+function readJSON(k,f){ try{ const v=JSON.parse(localStorage.getItem(k)); return v==null?f:v; }catch(e){ return f; } }
+function profiles(){ let p=readJSON(PROFKEY,null);
+  if(!Array.isArray(p)||!p.length){ p=[{id:"teddy",name:"Teddy"}]; try{localStorage.setItem(PROFKEY,JSON.stringify(p));}catch(e){} }
+  return p; }
+function profileName(id){ const p=profiles().find(x=>x.id===id); return p?p.name:"Player"; }
+function activeProfileId(){ const id=localStorage.getItem(ACTIVEKEY), p=profiles();
+  return (id && p.some(x=>x.id===id)) ? id : p[0].id; }
+function keyFor(id){ return id==="teddy" ? "heroTeddySave_v1" : "heroTeddySave_v1::"+id; }
+let ACTIVE=activeProfileId();
+let KEY=keyFor(ACTIVE), BAKKEY=KEY+"_bak", SNAPKEY=KEY+"_snaps";
+function applyProfile(id){ ACTIVE=id; try{localStorage.setItem(ACTIVEKEY,id);}catch(e){}
+  KEY=keyFor(id); BAKKEY=KEY+"_bak"; SNAPKEY=KEY+"_snaps"; }
+function addProfile(name){ name=(name||"").trim().slice(0,16)||"Player";
+  const id="p"+Date.now().toString(36), p=profiles(); p.push({id,name});
+  try{localStorage.setItem(PROFKEY,JSON.stringify(p));}catch(e){} return id; }
+function removeProfile(id){ if(id==="teddy")return false;            /* never delete the default player */
+  try{localStorage.setItem(PROFKEY,JSON.stringify(profiles().filter(x=>x.id!==id)));}catch(e){}
+  [keyFor(id),keyFor(id)+"_bak",keyFor(id)+"_snaps"].forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});
+  if(ACTIVE===id){ applyProfile(profiles()[0].id); S=load(); }
+  return true; }
 let S=load();
 function fresh(){return {v:1,act:1,ts:0,intro:false,scan:false,done:{},mastery:{},stars:0,coins:0,owned:{},gear:[],equip:{weapon:"none",cape:"red"},session:{count:0,day:"",rest:false}};}
 /* normalize ANY (old / partial / slightly broken) save object — never throws */
@@ -625,7 +649,8 @@ function snapshots(){ try{ const a=JSON.parse(localStorage.getItem(SNAPKEY)||"[]
    device just continues his progress. Fixed key, so the only thing to paste
    is the URL. Never blocks play; failures fall back to device-only.          */
 let cloudURL=""; try{ cloudURL=localStorage.getItem("teddyCloudURL")||""; }catch(e){}
-function cloudEndpoint(){ return cloudURL ? cloudURL.replace(/\/+$/,"")+"?k=teddy" : null; }
+if(!cloudURL && DEFAULT_CLOUD_URL) cloudURL=DEFAULT_CLOUD_URL;   /* baked-in URL = no per-device pasting */
+function cloudEndpoint(){ return cloudURL ? cloudURL.replace(/\/+$/,"")+"?k="+ACTIVE : null; }   /* each player = its own cloud slot */
 function cloudStatus(s){ const el=document.getElementById("cloudState"); if(el)el.textContent=s; }
 let __cloudT=null;
 function cloudPush(){ const u=cloudEndpoint(); if(!u)return; clearTimeout(__cloudT);
@@ -890,12 +915,30 @@ function vpMsg(){ const n=(typeof VOICEPACK!=="undefined")?Object.keys(VOICEPACK
   if(n)parts.push("🎙️ "+n+" studio lines");
   return parts.length? parts.join(" · ") : "Using built-in voice — record your own in Grown-Up Corner ▸ Audio"; }
 $("vpStatus").textContent=vpMsg();
-if(S.intro)$("btnContinue").style.display="inline-block";
+/* paint the title for the ACTIVE player (auto-loaded last player) */
+function paintTitle(){ const nm=$("playerName"); if(nm)nm.textContent=profileName(ACTIVE);
+  $("titleHero").innerHTML=heroNow(210);
+  $("btnContinue").style.display=S.intro?"inline-block":"none";
+  $("btnPlayer").style.display=profiles().length>1?"inline-block":"none"; }
+paintTitle();
 $("btnStart").onclick=()=>{ Aud.pick(); if(!S.intro)startIntro(); else {Aud.play("welcome"); toMap();} };
 $("btnContinue").onclick=()=>{ Aud.pick(); Aud.play("welcome"); toMap(); };
-/* on boot, restore newer cloud progress (if a Worker URL is configured) */
-cloudPull().then(changed=>{ if(changed){ GEO=geomFor(currentAct());
-  if(S.intro)$("btnContinue").style.display="inline-block"; $("vpStatus").textContent=vpMsg();
+/* ---- player picker (select an existing player; add/remove is parent-only) ---- */
+const PC_CAPES=["red","gold","purple"];
+function openPicker(){ paintPicker(); $("playerPicker").classList.add("on"); }
+function closePicker(){ $("playerPicker").classList.remove("on"); }
+function paintPicker(){ const wrap=$("playerCards"); if(!wrap)return; wrap.innerHTML="";
+  profiles().forEach((p,i)=>{ const b=document.createElement("button"); b.className="playercard"+(p.id===ACTIVE?" cur":"");
+    const hero=heroSVG(96,{muscle:1,cape:PC_CAPES[i%PC_CAPES.length],theme:p.id===ACTIVE&&currentAct()===2?"knight":"hero"});
+    b.innerHTML=`<div class="pchero">${hero}</div><div class="pcname read">${p.name}</div>`;
+    b.onclick=()=>switchProfile(p.id); wrap.appendChild(b); }); }
+function switchProfile(id){ closePicker(); if(id===ACTIVE)return;
+  save(); Aud.stop(); applyProfile(id); S=load(); GEO=geomFor(currentAct()); paintTitle(); show("scrTitle");
+  cloudPull().then(changed=>{ if(changed){ GEO=geomFor(currentAct()); paintTitle(); } }); }
+$("btnPlayer").onclick=()=>{ Aud.pick(); openPicker(); };
+$("btnPickerClose").onclick=closePicker;
+/* on boot, restore newer cloud progress (if a Worker URL is configured/baked in) */
+cloudPull().then(changed=>{ if(changed){ GEO=geomFor(currentAct()); paintTitle(); $("vpStatus").textContent=vpMsg();
   cloudStatus("Restored his latest progress from the cloud ✓"); } });
 
 /* ---------------- INTRO ---------------- */
@@ -2010,7 +2053,16 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
 };
 function openSettings(){ $("saveBox").value=JSON.stringify(S); $("vpStatus2").textContent=vpMsg(); window.renderProgress();
   $("cloudURL").value=cloudURL; cloudStatus(cloudURL?"Cloud sync ON ☁️ — same URL on any device continues his progress":"Cloud sync off (saved on this device)");
-  $("settingsPanel").classList.add("on"); }
+  paintPlayers(); $("settingsPanel").classList.add("on"); }
+/* parent-only player management (inside the gated Grown-Up Corner) */
+function paintPlayers(){ const list=$("playersList"); if(!list)return; list.innerHTML="";
+  profiles().forEach(p=>{ const row=document.createElement("div");
+    row.style.cssText="display:flex;align-items:center;justify-content:space-between;gap:8px;background:#171236;border:2px solid #3a2d72;border-radius:10px;padding:6px 12px;";
+    row.innerHTML=`<span class="read" style="font-size:15px;">${p.name}${p.id===ACTIVE?' <span style="color:#9fe870;">(playing)</span>':''}</span>`;
+    if(p.id!=="teddy"){ const x=document.createElement("button"); x.className="btn ghost sm"; x.textContent="Remove"; x.style.fontSize="13px";
+      x.onclick=()=>{ if(confirm("Remove player \""+p.name+"\" and their progress?")){ removeProfile(p.id); paintPlayers(); paintTitle(); } }; row.appendChild(x); }
+    list.appendChild(row); }); }
+$("btnAddPlayer").onclick=()=>{ const nm=prompt("New player name?"); if(nm&&nm.trim()){ addProfile(nm); paintPlayers(); paintTitle(); } };
 /* ADULT GATE: the Grown-Up Corner opens only on a 3-second PRESS-AND-HOLD, so
    Teddy can't wander in and change things. The gear fills/grows while held. */
 (function(){ const g=$("btnGear"); if(!g)return; let t=null;

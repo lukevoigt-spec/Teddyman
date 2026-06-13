@@ -28,6 +28,17 @@ Cloud sync). The *same URL* on another iPad continues right where he left off.
 8. **On any other iPad:** open the game ▸ same Grown-Up Corner ▸ paste the **same
    URL** ▸ Connect. His progress appears.
 
+## Multiple players (no setup change)
+The same single Worker serves every player profile — each player syncs under its
+own slot (keyed by name), so Teddy and your test account never collide. You set
+up the Worker once; new players need nothing extra.
+
+## Zero per-device setup (optional, recommended)
+Instead of pasting the URL on each device, you can **bake it into the game once**:
+set `DEFAULT_CLOUD_URL` at the top of `game.js` to your Worker URL and commit.
+Then *any* device that opens the site auto-syncs — nobody ever pastes anything.
+(Ask Claude to do this for you and just give it the URL.)
+
 ## How it behaves
 - Progress always saves to the device first (instant, works offline), then
   syncs to the cloud a couple seconds later. Never blocks play.
