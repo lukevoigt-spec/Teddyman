@@ -330,34 +330,44 @@ return `<svg viewBox="0 0 240 180" width="${w}" aria-hidden="true">
 /* ---- NOAH THE RED — Act-2 mentor wizard (Gandalf-coded, red hair+beard).
    Placeholder; refine when the parent provides a reference. ---- */
 function noahSVG(w=220){
+const u="n"+(__huid++);
 return `<svg viewBox="-20 -40 240 420" width="${w}" aria-hidden="true">
 <defs>
-<linearGradient id="nrobe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8c2f3a"/><stop offset="1" stop-color="#4a1420"/></linearGradient>
-<linearGradient id="nhat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3540"/><stop offset="1" stop-color="#5a1824"/></linearGradient>
+<linearGradient id="${u}robe" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#a83a44"/><stop offset=".55" stop-color="#7a2230"/><stop offset="1" stop-color="#3f1018"/></linearGradient>
+<linearGradient id="${u}hat" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#b03a44"/><stop offset="1" stop-color="#54141f"/></linearGradient>
+<radialGradient id="${u}skin" cx=".42" cy=".34" r=".8"><stop offset="0" stop-color="#ffe0cb"/><stop offset=".7" stop-color="#f6cdb6"/><stop offset="1" stop-color="#e3aa8c"/></radialGradient>
+<linearGradient id="${u}hair" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d57b3b"/><stop offset="1" stop-color="#a3461d"/></linearGradient>
+<radialGradient id="${u}aura" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#5fd0ff" stop-opacity=".45"/><stop offset=".55" stop-color="#3a7fd0" stop-opacity=".14"/><stop offset="1" stop-color="#3a7fd0" stop-opacity="0"/></radialGradient>
+<radialGradient id="${u}orb" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#fff"/><stop offset=".4" stop-color="#a8ecff"/><stop offset="1" stop-color="#2aa0e0"/></radialGradient>
+<filter id="${u}lit" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="4.5" result="b"/><feSpecularLighting in="b" surfaceScale="4" specularConstant=".4" specularExponent="14" lighting-color="#fff0dd" result="s"><fePointLight x="40" y="-130" z="150"/></feSpecularLighting><feComposite in="s" in2="SourceAlpha" operator="in" result="sc"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="sc"/></feMerge></filter>
+<filter id="${u}glow" x="-120%" y="-120%" width="340%" height="340%"><feGaussianBlur stdDeviation="6"/></filter>
 </defs>
-<!-- staff -->
+<style>@media (prefers-reduced-motion: no-preference){.nfloat{animation:${u}fl 5s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}.norb{animation:${u}gl 2.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}}@keyframes ${u}fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}@keyframes ${u}gl{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.14)}}</style>
+<g class="naura"><ellipse cx="100" cy="200" rx="138" ry="198" fill="url(#${u}aura)"/></g>
+<circle class="norb" cx="178" cy="40" r="30" fill="#7fd9ff" filter="url(#${u}glow)"/>
+<g class="nfloat"><g filter="url(#${u}lit)">
 <rect x="172" y="40" width="12" height="320" rx="6" fill="#6b4a2b" stroke="#150f2e" stroke-width="5"/>
-<circle cx="178" cy="40" r="18" fill="#7fd9ff" stroke="#150f2e" stroke-width="5"/>
-<circle cx="178" cy="40" r="7" fill="#fff7c4"/>
-<!-- robe -->
-<path d="M60 150 Q40 250 30 360 L170 360 Q160 250 140 150 Q100 132 60 150Z" fill="url(#nrobe)" stroke="#150f2e" stroke-width="6"/>
-<path d="M100 150 L100 360" stroke="#3a0f18" stroke-width="4" opacity=".5"/>
-<!-- sleeves -->
-<path d="M62 168 Q30 210 36 262 L60 250 Q60 210 78 186Z" fill="url(#nrobe)" stroke="#150f2e" stroke-width="6"/>
-<path d="M138 168 Q170 210 164 262 L140 250 Q140 210 122 186Z" fill="url(#nrobe)" stroke="#150f2e" stroke-width="6"/>
-<!-- face -->
-<circle cx="100" cy="92" r="40" fill="#f6d3c0" stroke="#150f2e" stroke-width="6"/>
-<!-- long red beard -->
-<path d="M66 100 Q70 180 100 210 Q130 180 134 100 Q118 128 100 126 Q82 128 66 100Z" fill="#c0392b" stroke="#150f2e" stroke-width="6" stroke-linejoin="round"/>
-<path d="M80 112 Q100 122 120 112" stroke="#a93226" stroke-width="4" fill="none"/>
-<!-- eyes + kindly brows -->
-<g stroke="none"><circle cx="86" cy="90" r="4.5" fill="#2b2233"/><circle cx="114" cy="90" r="4.5" fill="#2b2233"/></g>
-<path d="M74 80 Q86 74 96 80 M104 80 Q114 74 126 80" stroke="#c0392b" stroke-width="4" fill="none" stroke-linecap="round"/>
-<path d="M88 102 Q100 108 112 102" stroke="#b06b54" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/>
-<!-- wizard hat -->
-<path d="M58 64 Q100 -46 150 56 Q104 40 58 64Z" fill="url(#nhat)" stroke="#150f2e" stroke-width="6" stroke-linejoin="round"/>
-<path d="M50 64 Q100 44 158 60 L150 78 Q100 60 56 80Z" fill="url(#nhat)" stroke="#150f2e" stroke-width="6"/>
+<circle cx="178" cy="40" r="18" fill="url(#${u}orb)" stroke="#150f2e" stroke-width="5"/>
+<circle cx="173" cy="34" r="6" fill="#fff" opacity=".85"/>
+<path d="M60 150 Q40 250 30 360 L170 360 Q160 250 140 150 Q100 132 60 150Z" fill="url(#${u}robe)" stroke="#150f2e" stroke-width="6"/>
+<path d="M100 150 L100 360" stroke="#2a0a12" stroke-width="4" opacity=".5"/>
+<path d="M64 302 Q100 312 136 302" stroke="#ffd75e" stroke-width="3" fill="none" opacity=".5"/>
+<path d="M62 168 Q30 210 36 262 L60 250 Q60 210 78 186Z" fill="url(#${u}robe)" stroke="#150f2e" stroke-width="6"/>
+<path d="M138 168 Q170 210 164 262 L140 250 Q140 210 122 186Z" fill="url(#${u}robe)" stroke="#150f2e" stroke-width="6"/>
+<circle cx="100" cy="92" r="40" fill="url(#${u}skin)" stroke="#150f2e" stroke-width="6"/>
+<path d="M62 72 Q58 96 70 110 L80 102 Q68 88 70 74Z" fill="url(#${u}hair)" stroke="#150f2e" stroke-width="3"/>
+<path d="M138 72 Q142 96 130 110 L120 102 Q132 88 130 74Z" fill="url(#${u}hair)" stroke="#150f2e" stroke-width="3"/>
+<path d="M62 94 Q62 140 76 168 Q90 200 100 204 Q110 200 124 168 Q138 140 138 94 Q126 122 116 124 Q108 132 100 132 Q92 132 84 124 Q74 122 62 94Z" fill="url(#${u}hair)" stroke="#150f2e" stroke-width="6" stroke-linejoin="round"/>
+<path d="M78 118 Q100 110 122 118 Q112 127 100 127 Q88 127 78 118Z" fill="url(#${u}hair)" stroke="#150f2e" stroke-width="3"/>
+<g stroke="#8f3a1a" stroke-width="3" fill="none" opacity=".5" stroke-linecap="round"><path d="M82 132 Q88 160 96 182"/><path d="M118 132 Q112 160 104 182"/><path d="M100 134 L100 188"/></g>
+<g stroke="none"><circle cx="86" cy="88" r="5" fill="#fff"/><circle cx="114" cy="88" r="5" fill="#fff"/><circle cx="86" cy="89" r="3" fill="#5f86a8"/><circle cx="114" cy="89" r="3" fill="#5f86a8"/><circle cx="86" cy="89" r="1.5" fill="#16202c"/><circle cx="114" cy="89" r="1.5" fill="#16202c"/><circle cx="87.5" cy="86.5" r="1" fill="#fff"/><circle cx="115.5" cy="86.5" r="1" fill="#fff"/></g>
+<path d="M77 76 Q87 72 96 76 M104 76 Q113 72 123 76" stroke="url(#${u}hair)" stroke-width="3.6" fill="none" stroke-linecap="round"/>
+<g fill="#d99a6c" opacity=".7" stroke="none"><circle cx="80" cy="100" r="1.4"/><circle cx="88" cy="103" r="1.4"/><circle cx="112" cy="103" r="1.4"/><circle cx="120" cy="100" r="1.4"/></g>
+<path d="M58 64 Q100 -46 150 56 Q104 40 58 64Z" fill="url(#${u}hat)" stroke="#150f2e" stroke-width="6" stroke-linejoin="round"/>
+<path d="M50 64 Q100 44 158 60 L150 78 Q100 60 56 80Z" fill="url(#${u}hat)" stroke="#150f2e" stroke-width="6"/>
+<path d="M68 62 Q86 50 102 53 Q92 58 82 64Z" fill="url(#${u}hair)" stroke="#150f2e" stroke-width="2.5"/>
 <g fill="#ffd75e"><path d="M118 6 l3 7 l7 1 l-5 5 l1 7 l-6 -4 l-6 4 l1 -7 l-5 -5 l7 -1z"/></g>
+</g></g>
 </svg>`;}
 
 /* ---- DRAGON — Act-2 boss (the Vixen's dragon army). Placeholder. ---- */
