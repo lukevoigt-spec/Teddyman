@@ -276,6 +276,10 @@ body[data-act="2"] .navitem{border-color:#6a5436;background:rgba(50,38,18,.55);c
 .elvoice label{font-size:14px;font-weight:700;color:var(--txt);flex:1;}
 .elvoice select{flex:0 0 auto;min-width:170px;max-width:60%;padding:9px 12px;border-radius:12px;
   border:2px solid #4a3a86;background:#171236;color:var(--txt);font-size:15px;font-family:inherit;}
+.elgenrole{flex:0 0 auto;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:13px;
+  color:var(--ink);background:linear-gradient(180deg,#ffd75e,#f0a82b);border:2px solid var(--ink);
+  border-radius:12px;padding:8px 12px;cursor:pointer;white-space:nowrap;}
+.elgenrole:disabled{opacity:.55;cursor:default;}
 .audfilter{display:flex;gap:6px;margin-left:auto;}
 .chipbtn{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:14px;color:var(--txt);
   background:rgba(255,255,255,.06);border:2px solid #3a2d72;border-radius:14px;padding:6px 14px;cursor:pointer;}

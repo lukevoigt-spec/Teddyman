@@ -70,6 +70,8 @@
   }); }
   /* talking lines = everything that ISN'T a letter sound (those are record-only) */
   function talkLines(){ return Object.keys(LINES).filter(id=>!/^snd_/.test(id)); }
+  /* the talking lines spoken by one role/character */
+  function roleLines(k){ return talkLines().filter(id=>(LINES[id].v||"A")===k); }
 
   let elKey=localStorage.getItem(LS_KEY)||"";
   let elVoices=[];   /* loaded voice list from ElevenLabs */
@@ -209,9 +211,12 @@
     wrap.innerHTML='<div class="elvoice-h">🎙️ Pick a voice for each character, then tap “Gen” on a line (or “Generate all”):</div>';
     ROLES.forEach(([k,lbl])=>{ const d=document.createElement("div"); d.className="elvoice";
       const opts='<option value="">— choose a voice —</option>'+elVoices.map(v=>`<option value="${esc(v.voice_id)}"${saved[k]===v.voice_id?" selected":""}>${esc(v.name)}</option>`).join("");
-      d.innerHTML=`<label>${esc(lbl)}</label><select id="v_${k}">${opts}</select>`;
+      const n=roleLines(k).length;
+      d.innerHTML=`<label>${esc(lbl)}</label><select id="v_${k}">${opts}</select>`+
+        `<button class="elgenrole" id="grole_${k}" title="Re-generate every line for this character in the chosen voice">↻ Regen ${n} line${n===1?"":"s"}</button>`;
       wrap.appendChild(d); });
-    ROLES.forEach(([k])=>{ const s=$("v_"+k); if(s)s.onchange=saveVoicePicks; });
+    ROLES.forEach(([k])=>{ const s=$("v_"+k); if(s)s.onchange=saveVoicePicks;
+      const gb=$("grole_"+k); if(gb)gb.onclick=()=>genRole(k,gb); });
     try{ wrap.scrollIntoView({behavior:"smooth",block:"nearest"}); }catch(e){}
   }
   function saveVoicePicks(){ const m={}; ROLES.forEach(([k])=>{ const s=$("v_"+k); if(s&&s.value)m[k]=s.value; });
@@ -249,6 +254,20 @@
       setMsg("Generated "+id+" ✓"); buildTalkGrid(); buildDash(); return true;
     }catch(e){ setMsg("Generate failed for "+id+": "+(e.message||e),1); return false; }
     finally{ if(btn)btn.disabled=false; }
+  }
+  /* regenerate EVERY line for one character (force-overwrite) — for when you
+     re-assign that role's voice and want only its lines refreshed, not all. */
+  async function genRole(k,btn){
+    if(!elKey){ setMsg("Add your ElevenLabs key and Load voices first.",1); return; }
+    const sel=$("v_"+k); if(!sel||!sel.value){ setMsg("Pick a voice for this character first.",1); return; }
+    saveVoicePicks();
+    const todo=roleLines(k);
+    if(!todo.length){ setMsg("No talking lines for this character."); return; }
+    const lbl=roleName(k); if(btn)btn.disabled=true;
+    let ok=0; for(let i=0;i<todo.length;i++){ setMsg("Re-generating "+lbl+" lines… "+(i+1)+" / "+todo.length);
+      if(await genOne(todo[i]))ok++; await new Promise(r=>setTimeout(r,300)); }
+    if(btn)btn.disabled=false; buildTalkGrid(); buildDash();
+    setMsg("Re-generated "+ok+" / "+todo.length+" "+lbl+" lines. Tap “Save to all devices” ▸ Publish to push them.");
   }
   async function genAll(){
     if(!elKey){ setMsg("Add your ElevenLabs key and Load voices first.",1); return; }
