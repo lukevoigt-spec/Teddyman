@@ -1069,15 +1069,18 @@ function mapSVG(){
     const st=done(m.id)?"done":(avail(i)?"current":"locked");
     const fill=done(m.id)?"#3ec97e":(avail(i)?"#ffc93c":"#3b3360");
     const side = x<400 ? 1 : -1;
+    const lbl=m.lbl.toUpperCase();
+    const pw=Math.min(338, Math.max(168, lbl.length*11.5+30));      /* pill auto-fits the label */
+    let lx=x+side*(48+pw/2); lx=Math.max(pw/2+6, Math.min(800-pw/2-6, lx));   /* keep on-screen */
     nodes+=`<g class="mnode ${st}" data-mid="${m.id}">
       <ellipse cx="${x}" cy="${y+40}" rx="44" ry="12" fill="#0a0618" opacity=".5"/>
       <circle cx="${x}" cy="${y}" r="50" fill="${fill}" opacity=".42" filter="url(#softGlow)"/>
       <circle class="ring" cx="${x}" cy="${y}" r="40" fill="url(#node_${st})" stroke="#150f2e" stroke-width="6"/>
       <ellipse cx="${x}" cy="${y-15}" rx="23" ry="14" fill="#ffffff" opacity=".32"/>
       <text x="${x}" y="${y+13}" text-anchor="middle" font-family="Bangers" font-size="36" fill="#150f2e">${done(m.id)?"✓":(avail(i)?i+1:"🔒")}</text>
-      <g transform="translate(${x+side*150},${y})" filter="url(#pillShadow)">
-        <rect x="-118" y="-21" width="236" height="42" rx="15" fill="rgba(12,7,30,.86)" stroke="#ffce3a" stroke-width="2.5"/>
-        <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="20" fill="${done(m.id)?"#9fe870":"#ffe08a"}" letter-spacing="1">${m.lbl.toUpperCase()}</text>
+      <g transform="translate(${lx},${y})" filter="url(#pillShadow)">
+        <rect x="${-pw/2}" y="-21" width="${pw}" height="42" rx="15" fill="rgba(12,7,30,.86)" stroke="#ffce3a" stroke-width="2.5"/>
+        <text x="0" y="9" text-anchor="middle" textLength="${pw-22}" lengthAdjust="spacingAndGlyphs" font-family="Bangers" font-size="20" fill="${done(m.id)?"#9fe870":"#ffe08a"}" letter-spacing="1">${lbl}</text>
       </g></g>`;
   });
   const vexDone=currentAct()===1 && done(48);   /* Act-1 finale beaten (Act-1 map only) */
