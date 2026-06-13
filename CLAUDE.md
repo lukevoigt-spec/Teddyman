@@ -209,10 +209,14 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   character art (#titleHero/#baseHero/#winHero/#restHero/.boss > svg) gets a soft scene-rim drop-shadow,
   so the hero reads as lit by the painting behind it. Act-2 medieval scenes get warmer torch/stone/
   dragon-fire overrides. (5) ACT-2 MEDIEVAL UI SKIN (parchment/stone chrome via
-  body[data-act=2]; learning tiles stay Andika). (6) HERO EMOTION + random WIN POSES. (7) mentors
-  MOUTH-MOVE during narration. (8) DIEGETIC UI FRAMES (spellbook/forge/comms). (9) DAILY-METRIC clarity
-  fix (replays inflate S.daily.missions — QA P0). (10) cosmetic COLLECTIBLE upgrades (aura/cape-trim/
-  confetti). QA also wants app-invariant tests (locked-node enforcement, sound-ID hides target, profile-
+  body[data-act=2]; learning tiles stay Andika). (6) HERO EMOTION + random WIN POSES — win poses DONE
+  (winpose1-4); hero facial emotion still TODO (limited by the Gem-Lens mask). (7) mentors MOUTH-MOVE
+  during narration — DONE: faceSpeak() bobs/nods the speaking cutscene portrait for the audio's duration
+  (face-agnostic; reduced-motion/Calm aware). (8) DIEGETIC UI FRAMES (spellbook/forge/comms) — TODO.
+  (9) DAILY-METRIC clarity fix — DONE (firstTime guard on S.daily.missions + day-rollover regression
+  test). (10) cosmetic COLLECTIBLE upgrades — DONE: Base gem shelf gems twinkle and a fully-MASTERED gem
+  earns a gold ✦ (.gembox.mastered, masteredItem-gated — collection meets mastery); trophies became
+  glowing pedestal collectibles. All motion gated on body.calm. QA also wants app-invariant tests (locked-node enforcement, sound-ID hides target, profile-
   name escaping) — fold in alongside whichever enhancement touches that code.
 - ACT 2 LORE (now CONTENT-COMPLETE — see the content bullets above; this is the cast/story canon):
   villain = a smooth-talking

@@ -300,8 +300,36 @@ body{
 .playercard .pcname{font-weight:700;font-size:22px;color:var(--txt);}
 /* Training Room slot row (build-the-word) */
 .slotrow{display:flex;gap:clamp(8px,1.6vw,16px);flex-wrap:wrap;justify-content:center;min-height:90px;align-items:center;}
-/* Trophy shelf items */
-.trophy{font-size:34px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.4));}
+/* ===== COLLECTIBLE POLISH (Base shelves — reward delight, backlog #10) =====
+   Earned gems gently twinkle; a fully-mastered gem wears a gold ✦. Trophies sit
+   on glowing little pedestals instead of bare emoji. All motion is gated on
+   body.calm (so Calm + Lite + reduced-motion hold everything still). */
+.gembox{position:relative;display:inline-flex;}
+.gembox.mastered{filter:drop-shadow(0 0 7px rgba(255,210,90,.55));}
+@media (prefers-reduced-motion:no-preference){
+  .gembox>svg{animation:gemTwinkle 3.6s ease-in-out infinite;transform-origin:50% 62%;}
+  .gembox:nth-child(2n)>svg{animation-delay:.8s;}
+  .gembox:nth-child(3n)>svg{animation-delay:1.6s;}
+  .gembox:nth-child(4n)>svg{animation-delay:2.4s;}
+  .gembox.mastered::after{animation:gemSparkle 2.8s ease-in-out infinite;}
+}
+.gembox.mastered::after{content:"✦";position:absolute;top:-7px;right:-5px;font-size:13px;color:#fff;
+  text-shadow:0 0 7px var(--gold),0 0 3px var(--gold);pointer-events:none;}
+@keyframes gemTwinkle{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-3px) scale(1.05);}}
+@keyframes gemSparkle{0%,100%{opacity:.45;transform:scale(.8) rotate(0deg);}50%{opacity:1;transform:scale(1.18) rotate(22deg);}}
+/* Trophy shelf items — glowing pedestal collectibles */
+.trophy{position:relative;font-size:30px;width:56px;height:56px;display:inline-flex;align-items:center;justify-content:center;
+  border-radius:14px;border:2px solid #4a3a86;
+  background:radial-gradient(circle at 50% 32%, rgba(255,224,150,.24), rgba(21,15,46,.55) 72%);
+  box-shadow:0 4px 10px rgba(0,0,0,.42),inset 0 0 12px rgba(255,210,90,.14);
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.4));}
+@media (prefers-reduced-motion:no-preference){
+  .trophy{animation:troFloat 3.2s ease-in-out infinite;}
+  .trophy:nth-child(2n){animation-delay:.6s;}
+  .trophy:nth-child(3n){animation-delay:1.2s;}
+}
+@keyframes troFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+body.calm .gembox>svg,body.calm .trophy,body.calm .gembox.mastered::after{animation:none!important;}
 /* Shop overlay */
 #shopPanel{position:absolute;inset:0;background-color:#0b051f;background-image:linear-gradient(rgba(11,5,31,.66),rgba(11,5,31,.80)),url("art/bg-base.jpeg");background-size:cover;background-position:center;z-index:20;display:none;flex-direction:column;
   align-items:center;justify-content:flex-start;gap:14px;padding:24px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch;}

@@ -1058,7 +1058,9 @@ function paintBase(){
   const shelf=$("gemShelf"); shelf.innerHTML="";
   let any=false;
   ORDER.forEach(g=>{ if(S.done[LETTER_MISSION[g]]){ any=true;
-    shelf.innerHTML+=gemSVG(g, GEMCOLOR[g], 48); } });
+    /* earned gems twinkle; a fully-MASTERED gem earns a gold ✦ (collection meets
+       mastery — a visible "you truly own this one" reward). */
+    shelf.innerHTML+=`<span class="gembox${masteredItem(g)?" mastered":""}">${gemSVG(g, GEMCOLOR[g], 48)}</span>`; } });
   if(!any)shelf.innerHTML='<div class="baselbl" style="font-size:15px;">Rescue gems on missions to fill your shelf!</div>';
   /* league */
   const lg=$("leagueShelf"); lg.innerHTML="";
