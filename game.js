@@ -1,7 +1,9 @@
 /* =========================================================
-   SUPER TEDDY — v2.2 STAR FORCE CITY · CAGED ALLIES
-   New: voicepack audio engine (studio clips w/ TTS fallback)
-        + real scrollable Star Force City map with landmarks.
+   SUPER TEDDY — STAR FORCE CITY (Act 1) + MEDIEVAL REALM (Act 2)
+   The game core: boot/title/intro, mission handlers, base/shop/training,
+   settings, win/reward. Data/save/audio/map/allies live in their own modules
+   (see CLAUDE.md repo layout + load order). The world map is a single-screen
+   PAINTED map (map.js); voicepack audio engine has a per-line TTS fallback.
 ========================================================= */
 const NAME="Super Teddy";
 const LETTERS={
@@ -1246,7 +1248,10 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
     apply.onclick=()=>{ const v=+sl.value; snapshot("before level change");
       pm.forEach((m,i)=>{ if(i<v)S.done[m.id]=true; else delete S.done[m.id]; });
       S.gear=Object.keys(GEAR_AT).filter(id=>S.done[id]).map(id=>GEAR_AT[id]);
-      if(v>0){ S.intro=true; S.scan=true; }
+      /* keep the tutorial flags consistent with the simulated progress: level 0 =
+         a true fresh start (intro + scan tutorials play again), any progress skips
+         them. Symmetric so the slider is predictable in both directions (QA #3). */
+      S.intro = v>0; S.scan = v>0;
       save(); GEO=geomFor(currentAct());
       $("settingsPanel").classList.remove("on"); Aud.stop&&Aud.stop(); toMap(); }; }
   /* snapshot restore buttons */

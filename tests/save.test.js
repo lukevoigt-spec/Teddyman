@@ -109,6 +109,22 @@ ok("players are isolated (new player not Teddy's progress)", Object.keys(pl.done
 applyProfile("teddy");
 ok("removeProfile refuses to delete default teddy", removeProfile("teddy")===false);
 ok("removeProfile deletes a real player's save", removeProfile(pid)===true && !__store["heroTeddySave_v1::"+pid]);
+
+grp("daily metrics: day-boundary rollover (QA #4)");
+applyProfile("teddy"); S=fresh();
+ensureDaily();                                  // initialise today's bucket
+S.daily.day="2000-01-01"; S.daily.secs=123; S.daily.missions=4; S.daily.trainSecs=40;  // pretend it's an old day
+ensureDaily();                                  // crossing into "today" should archive + reset
+ok("rollover resets daily.day to today", S.daily.day===dayKey());
+ok("rollover zeroes today's counters", S.daily.secs===0 && S.daily.missions===0 && S.daily.trainSecs===0);
+ok("rollover archives yesterday's seconds into history", S.history && S.history["2000-01-01"]===123);
+ok("training time is a SUBSET of total (no double-count)", (function(){ S.daily.secs=10; S.daily.trainSecs=4; return S.daily.trainSecs<=S.daily.secs; })());
+
+grp("security: profile names are escaped before any innerHTML use (QA #1)");
+ok("escHTML(profileName) neutralises an injected name", (function(){
+  var bad=addProfile('<img src=x onerror=alert(1)>'); applyProfile("teddy");
+  var s=escHTML(profileName(bad)); removeProfile(bad);
+  return s.indexOf("<")<0 && s.indexOf(">")<0; })());
 `;
 vm.runInContext(fs.readFileSync(path.join(ROOT, "data-missions.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-content.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-lines.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "state-save.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "audio.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "allies.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "map.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 

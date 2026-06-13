@@ -209,7 +209,8 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   fix (replays inflate S.daily.missions — QA P0). (10) cosmetic COLLECTIBLE upgrades (aura/cape-trim/
   confetti). QA also wants app-invariant tests (locked-node enforcement, sound-ID hides target, profile-
   name escaping) — fold in alongside whichever enhancement touches that code.
-- ACT 2 (FRAME + Zone 1 done; later zones TBD): villain = a smooth-talking
+- ACT 2 LORE (now CONTENT-COMPLETE — see the content bullets above; this is the cast/story canon):
+  villain = a smooth-talking
   evil VIXEN (Scarlett-Overkill-coded) who can morph into a DRAGON; her dragon army = Act-2 bosses.
   She kidnaps Miss Kendall + friends JJ, Nora, Cal and escapes through a TIME PORTAL to the MEDIEVAL
   age — Teddy follows and becomes a KNIGHT (new theme/outfit/weapons; the villain steals his powers
