@@ -1178,8 +1178,9 @@ function openHeroCard(kind){
     `<div class="hc-stat"><b>Freed at</b><span>Mission ${t.mid}</span></div>`;
   $("hcFlip").classList.remove("flip");
   $("heroCard").classList.add("on");
+  if(LINES["card_"+kind])Aud.play("card_"+kind);   /* the friend says their signature line, in their own voice */
 }
-function closeHeroCard(){ $("heroCard").classList.remove("on"); }
+function closeHeroCard(){ Aud.stop(); $("heroCard").classList.remove("on"); }
 $("hcClose").onclick=e=>{ e.stopPropagation(); closeHeroCard(); };
 $("hcFlip").onclick=()=>$("hcFlip").classList.toggle("flip");
 $("heroCard").onclick=e=>{ if(e.target.id==="heroCard")closeHeroCard(); };

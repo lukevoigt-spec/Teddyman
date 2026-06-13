@@ -240,6 +240,13 @@ const LINES={
   heart_cheer1:{t:"Amazing reading, Super Teddy!", v:"B"},
   heart_cheer2:{t:"That's my little brother, everyone!", v:"B"},
   heart_cheer3:{t:"Heartguard is SO proud of you!", v:"B"},
+  /* hero-card signature lines — spoken when you tap a friend's card in the Base */
+  card_tank:{t:"Hey Teddy! Need some big muscles? I've got you, buddy! And WOW — you are getting SO good at reading!", v:"T"},
+  card_flip:{t:"Hi Teddy! Did you see that flip? Keep reading like a champ — you've totally got this!", v:"F"},
+  card_sunny:{t:"Teddy! Up high! Your reading is out of this WORLD, little buddy! Ha ha!", v:"W"},
+  card_heart:{t:"I'm so proud of you, Teddy. You're reading so beautifully — keep it up, sweetheart!", v:"B"},
+  card_leighton:{t:"You saved me, Super Teddy! And now you can READ — I always knew you could do it!", v:"L"},
+  card_kendall:{t:"Look at you reading, Teddy — my brave knight and my star student. I'm so proud of you!", v:"K"},
   cheer_archie1:{t:"BOOM! Smash that Vexbot, Super Teddy! Archie's got your back!", v:"T"},
   cheer_archie2:{t:"So strong, Super Teddy! That's how Archie does it! Hit it again!", v:"T"},
   cheer_ellie1:{t:"Beautiful, Super Teddy! Ellie says you stuck the landing!", v:"F"},
