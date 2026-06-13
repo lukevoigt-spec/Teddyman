@@ -72,6 +72,12 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   (3) SAVE TO ALL DEVICES — one-tap Publish (GitHub token) + Download/Restore backup. Clips save to
   the device in IndexedDB (`VStore`/`CUSTOM` in game.js) and play immediately. Playback priority:
   CUSTOM (device) → window.VOICEPACK → TTS. `voice-studio.html` is the older standalone version.
+- `manifest.json` + `sw.js` — PWA: the manifest makes "Add to Home Screen" install a fullscreen app
+  (name/icons/theme); sw.js is a NETWORK-FIRST service worker — online it always fetches fresh (so a
+  main deploy still lands within minutes), offline it serves the last cached copy (car rides / spotty
+  wifi). Self-updating (skipWaiting + clients.claim); registered defensively from index.html.
+- `.github/workflows/tests.yml` — CI: syntax-checks every JS file + runs both test suites on push/PR,
+  so a broken commit shows a red ✗ before it can reach the iPad (automates "never push broken code").
 - `teddy-reading-app-spec.md` — full design spec; read it before significant changes.
 - `STYLE.md` — the DESIGN SYSTEM: real CSS tokens (`:root` vars), the "premium studio"
   target palette/components, and a gap checklist. Read before any styling/visual change;
@@ -267,8 +273,9 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
     blue super-suit for steel armor and the masked head for a knight HELM (placeholder art; refine
     when parent provides references). Preview both in hero-lab.html ("ACT 2 · KNIGHT" section).
     Mastery still persists across acts (keyed by grapheme/word). The Act-1→Act-2 interlude HANDOFF
-    is built (see "Act 1 finale" below). TO BUILD NEXT: Act-2 zones+missions (ids 100+, digraphs/
-    blends ladder), Noah-the-Red mentor art/voice, real Vixen/dragon art + Miss-Kendall/friend faces.
+    is built (see "Act 1 finale" below). ACT 2 IS NOW CONTENT-COMPLETE (zones+missions ids 100+ all
+    built; cinematic interlude live). REMAINING = parent assets only: real Vixen/dragon art +
+    Miss-Kendall/friend faces, and the Noah/phoneme voice recordings.
 - Possible mechanic for Act 2: mad-lib / scrambled-sentence WORD-ORDER + Maze/Cloze tasks (validate
   against research for Teddy's profile first; sentence-building supports syntax/comprehension once
   decoding is solid, sequenced AFTER word reading).
@@ -303,8 +310,10 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   lighting, themed auras, glowing pulsing eyes, dragon flame/wing-flap, Noah's glowing staff orb.
   allyFace likenesses are built from the parent's real photos (Archie/Ellie/William/Amelia/Leighton +
   Noah-the-Red = Uncle Noah; Miss Kendall = placeholder). PERF NOTE: the specular/blur filters are GPU
-  work — only one big character shows at a time so it's fine, but a "Full/Calm/Lite" detail tier is a
-  planned enhancement for older iPads. Tune characters in hero-lab.html / via the puppeteer shot harness.
+  work — only one big character shows at a time so it's fine; the "Full/Calm/Lite" detail tier (S.detail,
+  done) drops those filters on Lite for older iPads. Allies got a glow-up too: allyFace gained skin
+  gradient + rim shadow + brows/cheeks/nose (depth, not flat), and allyMapFig a torso sheen + chest
+  emblem (rendered smaller on the map). Tune characters in hero-lab.html / via the puppeteer shot harness.
 - Allies are real family/friends, freed from Vex's cages at milestone missions:
   Tank (Archie), Flip (Ellie), Sunny (William, comic relief), Heartguard (Amelia, M2 rescue arc),
   Leighton the Starlight Princess (final rescue at Vex's Fortress). Mentors = Mom & Dad.
