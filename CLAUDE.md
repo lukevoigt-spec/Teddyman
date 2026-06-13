@@ -16,6 +16,8 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   order respects deps). The test harnesses load it before game.js too. PATTERN for future slices
   (data-missions, state-save, audio, map, …): extract pure/low-dep blocks, add a `<script>` in
   dependency order, prepend it in both tests/*.test.js, then run the suites + a runtime boot check.
+- `data-content.js` — reading content tables (CLOZE/FORTMAZE/SCRAMBLE/SENTENCES/SIGHT/READWORDS/
+  READWORDS2/TRACE), pure literals, no deps. Modular-split slice 2; loaded before game.js.
 - `voicepack.js` — optional shipped audio clips (`window.VOICEPACK = {lineId: dataURI}`).
   NEVER regenerate, rename IDs, or delete it. New narration = add new line IDs to the LINES
   manifest with TTS fallback text (they appear in the in-app studio automatically).
