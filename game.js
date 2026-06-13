@@ -955,6 +955,7 @@ function paintTitle(){ const nm=$("playerName"); if(nm)nm.textContent=profileNam
   $("btnPlayer").style.display=profiles().length>1?"inline-block":"none"; }
 paintTitle();
 setBG("scrTitle");   /* the title is shown via static HTML, so load its painted background at boot */
+if(S.calm)document.body.classList.add("calm");   /* parent "Calm" visual-detail mode */
 $("btnStart").onclick=()=>{ Aud.pick(); if(!S.intro)startIntro(); else {Aud.play("welcome"); toMap();} };
 $("btnContinue").onclick=()=>{ Aud.pick(); Aud.play("welcome"); toMap(); };
 /* ---- player picker (select an existing player; add/remove is parent-only) ---- */
@@ -2214,6 +2215,10 @@ $("btnCloudConnect").onclick=()=>cloudConnect($("cloudURL").value);
 $("btnCloudOff").onclick=()=>{ cloudURL=""; try{localStorage.removeItem("teddyCloudURL");}catch(e){} $("cloudURL").value=""; cloudStatus("Cloud sync off (saved on this device)"); };
 $("btnCloseSettings").onclick=()=>$("settingsPanel").classList.remove("on");
 $("btnVoiceTest").onclick=()=>{Aud.pick();Aud.play("test");};
+/* Visual-detail toggle: Full (filters+animation) ⟷ Calm (lighter, for older iPads/battery) */
+function paintCalmBtn(){ const b=$("btnCalm"); if(b)b.textContent="Visual detail: "+(S.calm?"Calm":"Full"); }
+$("btnCalm").onclick=()=>{ S.calm=!S.calm; document.body.classList.toggle("calm",!!S.calm); save(); Aud.ding(); paintCalmBtn(); };
+paintCalmBtn();
 $("btnCopySave").onclick=()=>{$("saveBox").select();document.execCommand("copy");};
 $("btnRestoreSave").onclick=()=>{ try{const d=migrate(JSON.parse($("saveBox").value));
   if(d){ snapshot("before restore"); S=d; save(); $("settingsPanel").classList.remove("on"); GEO=geomFor(currentAct()); toMap(); }

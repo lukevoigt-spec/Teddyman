@@ -420,3 +420,10 @@ body{
 .glasscol .baselbl{color:#e9e2ff;}
 
 @media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important;}}
+
+/* ===== CALM / performance mode (parent setting) — disables the GPU-heavy SVG
+   filters + idle character animations for older iPads or battery-sensitive use.
+   Screen transitions and learning content are unaffected; reading stays crisp. ===== */
+body.calm svg [filter]{filter:none!important;}
+body.calm svg *{animation:none!important;}
+body.calm #bgLayer{filter:none!important;}
