@@ -208,13 +208,24 @@ const ZONES=[
      Act 1 = 0–99, Act 2 = 100–199, Act 3 = 200–299, ...  (idBase below). */
 const ACTS=[
   { id:1, city:"STAR FORCE CITY", villain:"LORD VEX", rescue:"LEIGHTON",
-    fortressLabel:"VEX'S FORTRESS · RESCUE LEIGHTON", idBase:0 }
+    fortressLabel:"VEX'S FORTRESS · RESCUE LEIGHTON", idBase:0, theme:"hero" },
+  /* Act 2 (FRAME ONLY — no missions/zones built yet). Teddy follows the Vixen
+     through a time portal to the medieval age and becomes a KNIGHT; she steals
+     his powers, so muscle + gear RESET (act-scoped) — fresh start, fights
+     repetition. Mentor = Noah the Red (wizard). Rescue = Miss Kendall. */
+  { id:2, city:"MEDIEVAL REALM", villain:"THE VIXEN", rescue:"MISS KENDALL",
+    mentor:"NOAH THE RED", fortressLabel:"DRAGON KEEP · RESCUE MISS KENDALL",
+    idBase:100, theme:"knight" }
 ];
 ZONES.forEach(z=>{ if(z.act===undefined)z.act=1; });   /* existing zones belong to Act 1 */
 function currentAct(){ return S.act||1; }
 function actInfo(a){ return ACTS.find(x=>x.id===a)||ACTS[0]; }
 function actZones(a){ return ZONES.filter(z=>(z.act||1)===a); }
 function actMissions(a){ const ids=new Set(actZones(a).map(z=>z.id)); return MISSIONS.filter(m=>ids.has(m.z)); }
+/* Gear earned in THIS act (by its mission ids), so a new act starts powerless —
+   the villain "stole" Teddy's gear. Mastery still persists across acts. */
+function actGearList(a){ const mids=new Set(actMissions(a).map(m=>m.id));
+  return Object.keys(GEAR_AT).filter(id=>mids.has(+id)&&S.done[id]).map(id=>GEAR_AT[id]); }
 /* Per-act map geometry — each act is its own city/map, positioned by ZONE
    membership (not flat id order) so groups slot in with appended save-ids. */
 function geomFor(a){
@@ -590,12 +601,14 @@ document.addEventListener("click",e=>{
 
 /* ---------------- ART ----------------
    heroSVG lives in art.js (loaded first); heroOpts maps game state to it. */
-function heroOpts(){ /* muscle grows from THIS act's progress, so a new act can reset his power */
-  const done=actMissions(currentAct()).filter(m=>S.done[m.id]).length;
+function heroOpts(){ /* muscle + gear come from THIS act's progress, so a new act resets his power */
+  const a=currentAct(), done=actMissions(a).filter(m=>S.done[m.id]).length, gear=actGearList(a);
+  const wmap={hammer:"Word Hammer",sword:"Gem Sword"}, eq=S.equip.weapon||"none";
   return { muscle: done>=7?2:(done>=3?1:0),
-           weapon: S.equip.weapon||"none",
+           weapon: (wmap[eq]&&!gear.includes(wmap[eq]))?"none":eq,   /* a new act steals his weapon too */
            cape: S.equip.cape||"red",
-           belt2:S.gear.includes("Power Belt"), boots2:S.gear.includes("Rocket Boots") }; }
+           theme: actInfo(a).theme||"hero",
+           belt2:gear.includes("Power Belt"), boots2:gear.includes("Rocket Boots") }; }
 function heroNow(w){ return heroSVG(w,heroOpts()); }
 /* ---------------- SCREEN MGMT ---------------- */
 const $=id=>document.getElementById(id);
@@ -1385,9 +1398,9 @@ function paintBase(){
   $("powerLbl").textContent=["HERO 💪","SUPER HERO 💪💪","MEGA HERO 💪💪💪"][o.muscle];
   /* weapons */
   const wrow=$("weaponRow"); wrow.innerHTML="";
-  const weapons=[["none","HANDS"]];
-  if(S.gear.includes("Word Hammer"))weapons.push(["hammer","WORD HAMMER 🔨"]);
-  if(S.gear.includes("Gem Sword"))weapons.push(["sword","GEM SWORD ⚔️"]);
+  const weapons=[["none","HANDS"]], actGear=actGearList(currentAct());
+  if(actGear.includes("Word Hammer"))weapons.push(["hammer","WORD HAMMER 🔨"]);
+  if(actGear.includes("Gem Sword"))weapons.push(["sword","GEM SWORD ⚔️"]);
   weapons.forEach(([k,lbl])=>{ const b=document.createElement("button");
     b.className="echip"+(S.equip.weapon===k?" onsel":""); b.textContent=lbl;
     b.onclick=()=>{S.equip.weapon=k;save();Aud.ding();paintBase();};

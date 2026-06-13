@@ -67,15 +67,24 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - GOAL / end state: by the end of ACT 2, Teddy should reach ~2nd-grade reading proficiency aligned
   to TEXAS standards (TEKS), ready to enter 3rd grade — then the app is "done." Skills ladder across
   acts: Act 1 = letters→CVC→sight→sentences (done); Act 2 = digraphs/blends→long vowels→fluency.
-- ACT 2 (planned, teased at the Act-1 finale; NOT built): villain = a smooth-talking evil VIXEN
-  (Scarlett-Overkill-coded) who can morph into a DRAGON; her dragon army = Act-2 bosses. She kidnaps
-  Miss Kendall + friends JJ, Nora, Cal and escapes through a TIME PORTAL to the MEDIEVAL age — Teddy
-  follows and becomes a KNIGHT (new theme/outfit/weapons; the villain steals his powers so muscle/
-  gear reset — keeps it fresh, fights repetition). New adult hero ally = NOAH THE RED: a powerful
-  wizard companion (Gandalf / Lord-of-the-Rings-coded; tall, red hair + red beard). He is Act 2's
-  FIRST helper and mentor-narrator — the Amelia-equivalent of Act 1 (greets/guides Teddy, encourages
-  on hard words). Real-person descriptions/images TBD (parent will provide). Likely next rescue =
-  Miss Kendall.
+- ACT 2 (FRAME scaffolded; CONTENT not built yet — no zones/missions): villain = a smooth-talking
+  evil VIXEN (Scarlett-Overkill-coded) who can morph into a DRAGON; her dragon army = Act-2 bosses.
+  She kidnaps Miss Kendall + friends JJ, Nora, Cal and escapes through a TIME PORTAL to the MEDIEVAL
+  age — Teddy follows and becomes a KNIGHT (new theme/outfit/weapons; the villain steals his powers
+  so muscle/gear reset — keeps it fresh, fights repetition). New adult hero ally = NOAH THE RED: a
+  powerful wizard companion (Gandalf / Lord-of-the-Rings-coded; tall, red hair + red beard). He is
+  Act 2's FIRST helper and mentor-narrator — the Amelia-equivalent of Act 1 (greets/guides Teddy,
+  encourages on hard words). Real-person descriptions/images TBD (parent will provide). Likely next
+  rescue = Miss Kendall.
+  - FRAME ALREADY IN CODE: ACTS[1] = {id:2, city "MEDIEVAL REALM", villain "THE VIXEN", rescue "MISS
+    KENDALL", mentor "NOAH THE RED", idBase:100, theme:"knight"}. POWER-RESET is implemented and act-
+    scoped: actGearList(act) returns only gear earned from THIS act's missions, and heroOpts() derives
+    muscle/belt/boots/weapon from it — so entering Act 2 (S.act=2) shows Teddy POWERLESS again
+    (muscle 0, no gear, no weapon). KNIGHT COSTUME is a heroSVG theme: HERO_THEMES.knight swaps the
+    blue super-suit for steel armor and the masked head for a knight HELM (placeholder art; refine
+    when parent provides references). Preview both in hero-lab.html ("ACT 2 · KNIGHT" section).
+    Mastery still persists across acts (keyed by grapheme/word). TO BUILD NEXT: Act-2 zones+missions
+    (ids 100+), Noah-the-Red mentor art/voice, Vixen/dragon art, the Act-1→Act-2 interlude handoff.
 - Possible mechanic for Act 2: mad-lib / scrambled-sentence WORD-ORDER + Maze/Cloze tasks (validate
   against research for Teddy's profile first; sentence-building supports syntax/comprehension once
   decoding is solid, sequenced AFTER word reading).

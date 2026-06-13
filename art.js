@@ -5,9 +5,17 @@
    Currently: heroSVG (parametric: muscle / weapon / cape / gear).
 ========================================================= */
 let __huid=0;
+/* THEMES — per-act costume palette. "hero" = Act-1 blue super-suit; "knight" =
+   Act-2 medieval steel armor (the Vixen stole his powers, so he re-suits as a
+   knight). Only the suit gradient + the head (super-mask vs helm) differ. */
+const HERO_THEMES={
+  hero:  {suit:["#3b82f0","#2257c4"], muscle:"#173f8f", sheen:"#6ea4f7"},
+  knight:{suit:["#cfd6e0","#79828f"], muscle:"#5b6470", sheen:"#eef2f7"}
+};
 function heroSVG(w=200,o={}){
 const u="h"+(__huid++);
 const m=o.muscle||0, sx=1+0.07*m;
+const th=HERO_THEMES[o.theme||"hero"]||HERO_THEMES.hero;
 const capes={red:["#ef5348","#b92f33"],gold:["#ffd75e","#e08f1f"],purple:["#a06ae8","#6b2fa0"]};
 const cp=capes[o.cape||"red"]||capes.red;
 let weapon="";
@@ -29,7 +37,7 @@ const bootFx=o.boots2?`<g stroke="#ff8a3d" stroke-width="5" stroke-linecap="roun
 <path d="M86 472 q4 12 -2 22"/><path d="M104 472 q0 14 -4 24"/>
 <path d="M148 472 q4 12 -2 22"/><path d="M166 472 q0 14 -4 24"/></g>`:"";
 return `<svg viewBox="-30 -150 310 660" width="${w}" aria-hidden="true">
-<defs><linearGradient id="${u}suit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b82f0"/><stop offset="1" stop-color="#2257c4"/></linearGradient>
+<defs><linearGradient id="${u}suit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${th.suit[0]}"/><stop offset="1" stop-color="${th.suit[1]}"/></linearGradient>
 <linearGradient id="${u}cape" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${cp[0]}"/><stop offset="1" stop-color="${cp[1]}"/></linearGradient>
 <linearGradient id="${u}gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd75e"/><stop offset="1" stop-color="#f0a82b"/></linearGradient></defs>
 ${o.weapon==="hammer"||o.weapon==="sword"?weapon:""}
@@ -44,9 +52,9 @@ ${o.weapon==="hammer"||o.weapon==="sword"?weapon:""}
 ${bootFx}
 <g transform="translate(123 0) scale(${sx} 1) translate(-123 0)">
 <path d="M64 142 Q123 120 182 142 L174 238 Q170 272 152 284 L96 284 Q76 272 72 238Z" fill="url(#${u}suit)" stroke="#150f2e" stroke-width="6"/>
-<path d="M74 150 Q96 136 122 134 L120 170 Q96 172 80 184Z" fill="#6ea4f7" opacity=".55"/>
-${m>=1?'<path d="M92 168 Q123 152 154 168" stroke="#173f8f" stroke-width="5" fill="none" stroke-linecap="round"/>':''}
-${m>=2?'<path d="M100 206 Q123 196 146 206 M104 232 Q123 224 142 232" stroke="#173f8f" stroke-width="4.5" fill="none" stroke-linecap="round"/>':''}
+<path d="M74 150 Q96 136 122 134 L120 170 Q96 172 80 184Z" fill="${th.sheen}" opacity=".55"/>
+${m>=1?`<path d="M92 168 Q123 152 154 168" stroke="${th.muscle}" stroke-width="5" fill="none" stroke-linecap="round"/>`:''}
+${m>=2?`<path d="M100 206 Q123 196 146 206 M104 232 Q123 224 142 232" stroke="${th.muscle}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`:''}
 </g>
 <g stroke="#150f2e" stroke-width="6" stroke-linejoin="round">
 <path d="M66 152 Q34 170 28 212 Q34 242 62 252 L84 264 L92 244 L72 232 Q58 220 60 198 Q66 172 78 162Z" fill="url(#${u}suit)"/>
@@ -58,7 +66,15 @@ ${biceps}
 ${beltGlow}
 <g transform="translate(123 198)"><path d="M0 -32 L29 -16 L29 16 L0 32 L-29 16 L-29 -16Z" fill="url(#${u}gold)" stroke="#150f2e" stroke-width="5"/>
 <path d="M-15 -15 L15 -15 L15 -6 L5 -6 L5 17 L-5 17 L-5 -6 L-15 -6Z" fill="#d23a31" stroke="#150f2e" stroke-width="3"/></g>
-<!-- ===== head (refined Style C) ===== -->
+${o.theme==="knight"?`<!-- ===== knight helm (Act-2 placeholder) ===== -->
+<rect x="111" y="110" width="26" height="20" rx="6" fill="#aeb6c2" stroke="#150f2e" stroke-width="5"/>
+<path d="M84 36 Q124 4 164 36 L172 96 Q172 124 124 130 Q76 124 76 96Z" fill="url(#${u}suit)" stroke="#150f2e" stroke-width="6"/>
+<path d="M84 36 Q124 4 164 36 L160 50 Q124 26 88 50Z" fill="${th.sheen}" opacity=".5"/>
+<rect x="92" y="58" width="64" height="13" rx="5" fill="#1b2330" stroke="#150f2e" stroke-width="4"/>
+<g stroke="#150f2e" stroke-width="4"><line x1="124" y1="74" x2="124" y2="120"/><line x1="106" y1="78" x2="106" y2="118"/><line x1="142" y1="78" x2="142" y2="118"/></g>
+<g stroke="none"><circle cx="110" cy="64" r="3.4" fill="#9fe0ff"/><circle cx="138" cy="64" r="3.4" fill="#9fe0ff"/></g>
+<path d="M124 4 Q124 -24 150 -30 Q138 -16 142 0 Q132 -8 124 4Z" fill="${cp[0]}" stroke="#150f2e" stroke-width="5" stroke-linejoin="round"/>
+</svg>`:`<!-- ===== head (refined Style C) ===== -->
 <rect x="111" y="110" width="26" height="26" rx="7" fill="#ffd9b8" stroke="#150f2e" stroke-width="5"/>
 <circle cx="124" cy="66" r="54" fill="#ffd9b8" stroke="#150f2e" stroke-width="6"/>
 <circle cx="70" cy="70" r="11" fill="#ffd9b8" stroke="#150f2e" stroke-width="5"/>
@@ -75,7 +91,7 @@ ${beltGlow}
 <g stroke="none" fill="#d99a6c" opacity=".9"><circle cx="108" cy="91" r="2"/><circle cx="116" cy="94" r="2"/><circle cx="132" cy="94" r="2"/><circle cx="140" cy="91" r="2"/></g>
 <path d="M98 97 Q124 120 150 97 Q146 113 124 117 Q102 113 98 97Z" fill="#7c3a3a" stroke="#150f2e" stroke-width="4" stroke-linejoin="round"/>
 <path d="M103 99 Q124 110 145 99 Q124 105 103 99Z" fill="#fff" stroke="none"/>
-</svg>`;}
+</svg>`}`;}
 
 /* ---- LORD VEX / VEXBOT (refined: angled glowing visor, sharper menace) ---- */
 function inkblotSVG(w=240){
