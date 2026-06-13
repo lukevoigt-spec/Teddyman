@@ -422,3 +422,135 @@ As of this review, the existing regression checks pass:
 
 - `node tests/curriculum.test.js` — 13 passed, 0 failed.
 - `node tests/save.test.js` — 25 passed, 0 failed.
+
+---
+
+## 2026-06-13 SVG / CSS / Visualization Deep Dive — Suggestions, Not Mandates
+
+### Overall assessment
+
+The current visual approach is directionally strong for a static, no-build reading app: SVG-string character functions give the project crisp scaling, small asset footprint, easy color/theme swaps, and state-driven costumes/weapons without needing a sprite pipeline. The latest art pass also moved the characters closer to the painted backgrounds by adding gradients, specular lighting, glows, clip paths, motion, and stronger silhouettes.
+
+The biggest visual risk is not "SVG vs. raster"; SVG is a good fit here. The risk is **complexity discipline**: the character SVGs are becoming mini illustration programs embedded in JavaScript strings. That can produce great results, but only if future agents keep reusable art rules, animation budgets, and test/preview workflows tight.
+
+### What is working well in the SVG approach
+
+- **Parametric hero art is the right call.** One `heroSVG()` can express muscle growth, weapons, cape colors, and Act 2 theming. That is far better than managing many static image variants.
+- **Per-instance SVG IDs are good.** The `__huid`-style ID prefixing avoids many gradient/filter collisions when multiple characters render on the same screen.
+- **The style target is appropriate:** bold ink outlines, saturated gradients, drop shadows, glints, and simple idle motion match the comic/superhero premise and Teddy's ADHD-friendly need for visual energy.
+- **`prefers-reduced-motion` is being respected.** This keeps the default juicy without blocking calmer behavior when requested.
+- **The current hybrid art pipeline makes sense.** Painted raster backgrounds + crisp SVG foreground characters/UI is probably the best quality/maintenance tradeoff for GitHub Pages.
+
+### Cautions for future visual work
+
+- Treat every new SVG filter as a performance cost. `feSpecularLighting`, `feTurbulence`, large blur/glow regions, and multiple animated inline SVGs can get expensive on iPad Safari.
+- Keep the learning content visually dominant. Character beauty should frame the task; it should not compete with the letter/word tile the child must attend to.
+- Avoid turning every SVG into a unique one-off. The app needs a small shared visual language: outline weight, light direction, shadow style, eye style, material palettes, and animation timing.
+- Keep dynamic/user-provided text out of SVG/template strings unless it is escaped or inserted with `textContent`.
+- Prefer transforms and opacity for animation. Avoid animating filter parameters, path data, layout, or large blur regions during gameplay.
+
+### Suggested SVG/CSS art direction improvements
+
+1. **Create a tiny internal SVG design system.**
+   - Suggested helpers: `defsLighting(id, palette)`, `inkPath(...)`, `softShadow(id)`, `gemGlow(id,color)`, `faceParts(kind)`, `motionStyle(id, profile)`.
+   - Goal: make new characters look like the same studio drew them without copy/pasting hundreds of SVG lines.
+
+2. **Standardize light direction across characters and UI.**
+   - Pick one main light, e.g. upper-left warm key + lower-right cool bounce.
+   - Apply it consistently to hero, Vex, Vixen, Noah, dragon, ally faces, buttons, and tiles.
+   - This will make SVG foregrounds sit better on the painted scenes.
+
+3. **Add a character scale/pose contract.**
+   - Define canonical viewBox, foot baseline, head height, eye line, and stroke widths for small/medium/large renders.
+   - This prevents map sprites, win-screen heroes, and title heroes from feeling like different art sets.
+
+4. **Separate "portrait" and "gameplay token" variants.**
+   - Full character SVGs can be rich for title/win/base screens.
+   - Map markers and tiny ally pops should use simplified low-detail variants with fewer filters and bolder silhouettes.
+   - This can improve performance and readability without reducing beauty where it matters.
+
+5. **Add a small visual regression gallery.**
+   - `hero-lab.html` already points in this direction. Expand it into a stable visual checklist page showing every character in all major states: Act 1 hero, Act 2 knight, no weapon, hammer, sword, muscle levels, Vex, Vixen, dragon, Noah, ally faces, map markers.
+   - Future agents can screenshot this before/after visual changes.
+
+6. **Use CSS custom properties for character palettes where practical.**
+   - The SVG strings can still inline gradients, but palette values should come from named theme objects or CSS variables instead of scattered hexes.
+   - This keeps Act 3/future theming possible without another large art rewrite.
+
+7. **Keep filters in shared `<defs>` where possible.**
+   - Per-instance IDs are safe, but many repeated filters increase DOM and GPU work.
+   - If a character appears many times on one screen, consider a simpler no-filter variant or shared global filter definitions for common shadows/glows.
+
+8. **Introduce an animation budget.**
+   - Suggested rule of thumb: one idle transform animation per large character, one glow/pulse if meaningful, no more than a few small particles unless on title/win screens.
+   - Gameplay screens should save motion budget for answer feedback.
+
+9. **Make outlines responsive to render size.**
+   - Very thick strokes look great large but can crush details small. For tiny map/ally/token renders, consider simplified shapes or a `detail:"low"` option rather than scaling down the full SVG.
+
+10. **Prefer semantic class names inside SVG.**
+   - Classes like `.hero-cape`, `.hero-face`, `.hero-weapon`, `.villain-eye-glow` are easier to maintain than many anonymous nested groups.
+   - This also makes future CSS-driven themes and debug overlays easier.
+
+### Top 10 enhancement ideas the team may not have considered yet
+
+1. **Hero emotion states tied to pedagogy.**
+   - Add optional expressions: focused/listening, celebrating, gentle-try-again, determined boss-face.
+   - Use them sparingly to support feedback without adding harsh failure states.
+
+2. **Mouth-shape micro animation for audio playback.**
+   - During narration/TTS/voicepack playback, a simple two- or three-frame SVG mouth toggle could make mentors feel alive.
+   - Keep it transform/opacity-based and disable under reduced motion.
+
+3. **Letter-gem light reflection on the hero.**
+   - When a child is working on a specific grapheme, tint a subtle rim light or glasses glint with that gem's color.
+   - This reinforces "letter gems power the hero" without showing target text in sound-ID prompts.
+
+4. **Act-specific material language.**
+   - Act 1: glossy comic tech, blue/gold energy, city-neon reflections.
+   - Act 2: engraved metal, parchment glow, rune sparks, dragon-fire rim light.
+   - Keep Andika/learning tiles consistent, but let non-learning chrome and characters shift theme.
+
+5. **Tiny victory pose variations.**
+   - Randomly choose from 3–5 hero poses on win screens: fist up, sword raised, hammer shoulder, cape flourish, glasses glint.
+   - This adds delight without changing curriculum.
+
+6. **Readable silhouette test.**
+   - Add a preview mode or manual checklist where every character is viewed as a black silhouette at small size.
+   - If Teddy cannot tell hero/Vex/dragon/Noah apart by silhouette, simplify the pose.
+
+7. **Foreground/background color harmonizer.**
+   - Add per-screen CSS variables like `--scene-key`, `--scene-rim`, `--scene-shadow` that characters/UI can use for glows and rim lights.
+   - This would make SVGs feel less pasted onto painted backgrounds.
+
+8. **Diegetic UI frames.**
+   - Instead of generic panels everywhere, some screens could use in-world frames: comic speech bubble, hero comms screen, spellbook page, forge anvil plaque, dragon shield.
+   - Keep the answer tiles standardized; vary the container/story dressing.
+
+9. **Collectible art upgrades with zero gameplay advantage.**
+   - Cosmetic unlocks could change hero aura, cape trim, gem sparkle shape, base trophies, or victory confetti style.
+   - This supports Teddy's collection motivation without affecting reading difficulty.
+
+10. **Performance quality tiers.**
+   - Add a parent-facing or automatic "visual detail" setting: Full / Calm / Lite.
+   - Full uses filters/particles; Lite swaps to simplified SVG variants and fewer shadows for older iPads or battery-sensitive use.
+
+### Suggested process for the next visual pass
+
+1. Pick one representative screen from each category: Title, Map, Learn/Find, Forge/Boss, Win, Base.
+2. For each, define the visual hierarchy: what must Teddy look at first, second, third?
+3. Screenshot before changes.
+4. Change one layer at a time: background integration, character, panel, tile, effects.
+5. Screenshot after changes on iPad dimensions.
+6. Run `node tests/curriculum.test.js` and `node tests/save.test.js` even for visual-only work, because art changes often touch `game.js` rendering paths.
+
+### Highest-value next visual task
+
+If only one visual improvement is prioritized next, make it **foreground/background integration**:
+
+- Give characters a shared grounding shadow/contact shadow.
+- Add scene-colored rim light.
+- Reduce mismatched raw web-control surfaces.
+- Ensure answer tiles remain the clearest, highest-contrast objects on learning screens.
+
+That will likely improve perceived quality more than adding more detail to any single character.
