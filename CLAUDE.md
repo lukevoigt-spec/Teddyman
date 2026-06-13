@@ -18,6 +18,10 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   dependency order, prepend it in both tests/*.test.js, then run the suites + a runtime boot check.
 - `data-content.js` — reading content tables (CLOZE/FORTMAZE/SCRAMBLE/SENTENCES/SIGHT/READWORDS/
   READWORDS2/TRACE), pure literals, no deps. Modular-split slice 2; loaded before game.js.
+- `data-missions.js` — campaign structure: MISSIONS (the ladder), GEAR_AT (rewards), autoNodes()
+  (map node layout), ZONES, ACTS. Slice 3; loaded before game.js. game.js is now ~1780 lines (was
+  ~2315). The three DATA layers are extracted; remaining split slices (state-save, audio, map,
+  mission handlers) are LOGIC with more coupling — do those carefully, same verify loop.
 - `voicepack.js` — optional shipped audio clips (`window.VOICEPACK = {lineId: dataURI}`).
   NEVER regenerate, rename IDs, or delete it. New narration = add new line IDs to the LINES
   manifest with TTS fallback text (they appear in the in-app studio automatically).
