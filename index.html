@@ -301,37 +301,69 @@
     </div>
 
     <div id="tabAudio" class="tabpane">
-      <div class="read" style="font-size:14px;max-width:640px;text-align:center;color:#cfc6f2;">
-        Record or generate the game's voices right here. Clips save to <b>this iPad</b> and play
-        immediately. Tap <b>Export</b> to make them permanent for every device.</div>
-      <div class="audrow">
-        <input id="elKey" type="password" placeholder="ElevenLabs API key (sk-…) — used now, never saved">
-        <button class="btn ghost sm" id="btnElLoad">Load voices</button>
+      <div id="audDash"></div>
+
+      <div class="vsec">
+        <div class="vsec-h"><span class="vsec-n">1</span> Letter Sounds
+          <span class="vsec-sub">your voice — the most important audio for learning to read</span></div>
+        <div id="phonBar" class="phonbar"></div>
+        <button class="btn blue" id="btnGuided">Guided record</button>
+        <div id="phonGrid" class="phongrid"></div>
       </div>
-      <div id="elVoices" class="audrow" style="display:none;"></div>
-      <div class="audrow">
-        <button class="btn ghost sm" id="btnGenAll">Generate spoken lines</button>
-        <button class="btn ghost sm" id="btnExportVP">Export voicepack.js</button>
-        <button class="btn ghost sm" id="btnImportVP">Import</button>
-        <input id="vpFile" type="file" accept=".js,text/javascript,application/javascript" style="display:none">
-        <div class="audfilter">
-          <button class="chipbtn on" data-filter="sounds">Letter sounds</button>
-          <button class="chipbtn" data-filter="all">All lines</button>
+
+      <div class="vsec">
+        <div class="vsec-h"><span class="vsec-n">2</span> Talking Lines
+          <span class="vsec-sub">mentors &amp; story — generate with ElevenLabs, or record your own</span></div>
+        <div class="audrow">
+          <input id="elKey" type="password" placeholder="ElevenLabs API key — remembered on this iPad only">
+          <button class="btn ghost sm" id="btnElLoad">Load voices</button>
+          <button class="btn ghost sm" id="btnElForget" style="display:none;">Forget key</button>
+        </div>
+        <div id="elVoices" class="audrow" style="display:none;"></div>
+        <button class="btn blue" id="btnGenAll">Generate all talking lines</button>
+        <div id="talkGrid" class="talkgrid"></div>
+      </div>
+
+      <div class="vsec">
+        <div class="vsec-h"><span class="vsec-n">3</span> Save to all devices</div>
+        <div class="read" style="font-size:13px;color:#9b94c9;max-width:620px;text-align:center;">
+          Publish writes your voices to the project so <b>every</b> device gets them — needs a GitHub
+          fine-grained token (Contents: write; see <b>cloud/README.md</b>). Or download a backup file
+          you can Restore on any device.</div>
+        <div class="audrow">
+          <input id="ghToken" type="password" placeholder="GitHub token (Contents: write)">
+          <button class="btn blue" id="btnPublish">Publish to all devices</button>
+        </div>
+        <div class="audrow">
+          <button class="btn ghost sm" id="btnExportVP">Download backup</button>
+          <button class="btn ghost sm" id="btnImportVP">Restore backup</button>
+          <input id="vpFile" type="file" accept=".js,text/javascript,application/javascript" style="display:none">
         </div>
       </div>
-      <div class="audrow" style="border-top:2px solid #3a2d72;padding-top:12px;margin-top:2px;">
-        <input id="ghToken" type="password" placeholder="GitHub fine-grained token (Contents: write) — used now, never saved">
-        <button class="btn ghost sm" id="btnPublish">Publish to all devices</button>
-      </div>
-      <div class="read" style="font-size:12px;color:#9b94c9;max-width:640px;">
-        Publish writes your voices to the project so <b>every</b> device gets them. Make a token at
-        github.com ▸ Settings ▸ Developer settings ▸ Fine-grained tokens, scoped to this repo with
-        <b>Contents: Read and write</b>, short expiry. It is never saved.</div>
+
       <div id="audStatus" class="vpstatus"></div>
-      <div id="audList" class="audlist"></div>
     </div>
 
     <button class="btn ghost" id="btnCloseSettings">Close</button>
+  </div>
+</div>
+
+<!-- GUIDED LETTER-SOUND RECORDER (overlay) -->
+<div id="recOverlay">
+  <div id="recCard">
+    <div class="recprog" id="recProg"></div>
+    <div class="recgraph read" id="recGraph"></div>
+    <div class="reckw" id="recKw"></div>
+    <div class="rectip" id="recTip"></div>
+    <div class="recstate" id="recState"></div>
+    <div class="recbtns">
+      <button class="btn ghost sm" id="recPrev">‹ Back</button>
+      <button class="btn blue" id="recBtn"><span class="recdot idle"></span> Record</button>
+      <button class="btn" id="recKeep" style="display:none;">Keep ✓</button>
+      <button class="btn ghost sm" id="recPlay">Hear it</button>
+      <button class="btn ghost sm" id="recNext">Next ›</button>
+    </div>
+    <button class="btn ghost sm" id="recClose">Done</button>
   </div>
 </div>
 
