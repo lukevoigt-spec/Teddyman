@@ -106,9 +106,10 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   Single screen (no scroll). A node is done(✓)/current(pulse)/locked(padlock); the hero stands on the
   current zone, captured friends (mapFriends) wait nearby, and a Hero Base button sits bottom-left.
   Tapping the CURRENT zone plays its next mission (zoneNext); locked zones are gated. The OLD scrolling
-  vector map (mapSVG/geomFor/nodeOf/skyline/trail) is now DEAD CODE kept only so setAct/geomFor calls
-  don't break — safe to delete later. Adding an act = push to ACTS + act-tagged zones/missions + a
-  ZONESPOTS[act] row + (optionally) a painted bg-map-a<N>.
+  vector map (mapSVG + its helpers skyline/windowsRow/gemDeco/trailPath/pmod/allyTeasers/heroMarker) is
+  now DELETED — only the painted map remains. geomFor/GEO/nodeOf/setAct STAY (still live: setAct, cloud
+  pull, the level-override + restore paths all recompute GEO). Adding an act = push to ACTS + act-tagged
+  zones/missions + a ZONESPOTS[act] row + (optionally) a painted bg-map-a<N>.
 - NO SKIPPING AHEAD (foundation can't be rushed): zone nodes are done/current/locked (current = first
   zone whose missions aren't all done; earlier zones done, later locked). The lock is ENFORCED — toMap's
   click handler ignores `.locked` nodes (plays a gentle locked_tip cue). Done/current stay replayable.
