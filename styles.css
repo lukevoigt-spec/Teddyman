@@ -25,6 +25,7 @@ body{
 .btn{
   font-family:'Bangers',cursive;font-size:clamp(26px,4.5vw,40px);letter-spacing:.06em;line-height:1.15;white-space:nowrap;
   color:var(--ink);background:linear-gradient(180deg,#ffd75e,#f0a82b);
+  background-clip:padding-box;-webkit-background-clip:padding-box;
   border:5px solid var(--ink);border-radius:26px;padding:16px 38px;cursor:pointer;
   box-shadow:0 8px 0 #9c6a12, 0 14px 24px rgba(0,0,0,.35);
   transition:transform .12s ease, box-shadow .12s ease;
@@ -59,6 +60,7 @@ body{
 .tile{
   width:clamp(96px,16vw,150px);height:clamp(96px,16vw,150px);
   background:linear-gradient(180deg,#5ea0ff,#2257c4);
+  background-clip:padding-box;-webkit-background-clip:padding-box;
   border:6px solid var(--ink);border-radius:24px;color:#fff;
   font-family:'Andika',sans-serif;font-weight:700;font-size:clamp(54px,9vw,84px);
   display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;

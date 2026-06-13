@@ -63,18 +63,39 @@ function mapPaintSVG(){
       </g></g>`;
     if(zi===cur) hero=`<g transform="translate(${x-30} ${y-150}) scale(.26)">${heroNow(250).replace(/<svg[^>]*>|<\/svg>/g,"")}</g>`;
   });
+  /* TIME PORTAL — opens once the Act-1 finale is cleared (story canon: Teddy follows
+     the Vixen through it). Tapping it time-travels between Star Force City (Act 1) and
+     the Magic Kingdom (Act 2): swaps map, music, and Teddy's outfit. */
+  const portalOn = !!(S.done && S.done[48]) && (actMissions(a===1?2:1).length>0);
+  let portal="";
+  if(portalOn){ const PX=884, PY=624, PR=36, toCity=(a===1?"MAGIC KINGDOM":"STAR FORCE CITY");
+    portal=`<g class="portalnode"><title>Time Portal → ${toCity}</title>
+      <ellipse cx="${PX}" cy="${PY+34}" rx="30" ry="7" fill="#0a0414" opacity=".5"/>
+      <circle class="pbloom" cx="${PX}" cy="${PY}" r="52" fill="url(#portalGrad)" opacity=".5" filter="url(#mglow)"/>
+      <circle cx="${PX}" cy="${PY}" r="${PR}" fill="url(#portalGrad)" stroke="#0c0820" stroke-width="3"/>
+      <g class="pspin" style="transform-box:fill-box;transform-origin:${PX}px ${PY}px">
+        <path d="M${PX} ${PY-26} A26 26 0 0 1 ${PX+26} ${PY}" fill="none" stroke="#dff3ff" stroke-width="4" stroke-linecap="round" opacity=".85"/>
+        <path d="M${PX} ${PY+26} A26 26 0 0 1 ${PX-26} ${PY}" fill="none" stroke="#cdeaff" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+        <path d="M${PX} ${PY-15} A15 15 0 0 1 ${PX+15} ${PY}" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".95"/></g>
+      <circle cx="${PX}" cy="${PY}" r="6" fill="#fffbe0"/>
+      <g transform="translate(${PX},${PY+PR+22})" filter="url(#mpill)">
+        <rect x="-74" y="-17" width="148" height="34" rx="13" fill="rgba(10,5,24,.82)" stroke="#b78bff" stroke-width="2.2"/>
+        <text x="0" y="6" text-anchor="middle" font-family="${lblFont}" font-size="16" fill="#e6d2ff" letter-spacing="1">TIME PORTAL</text>
+      </g></g>`; }
   return `<svg viewBox="0 0 1000 750" preserveAspectRatio="xMidYMid meet">
     <defs>
       <radialGradient id="node_done" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#bdffdc"/><stop offset=".5" stop-color="#3ec97e"/><stop offset="1" stop-color="#0f6a40"/></radialGradient>
       <radialGradient id="node_current" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#fff1b8"/><stop offset=".5" stop-color="#ffce3a"/><stop offset="1" stop-color="#b9760f"/></radialGradient>
       <radialGradient id="node_locked" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#5b5384"/><stop offset=".5" stop-color="#3b3360"/><stop offset="1" stop-color="#211c3a"/></radialGradient>
+      <radialGradient id="portalGrad" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fffbe0"/><stop offset=".35" stop-color="#9be8ff"/><stop offset=".7" stop-color="#7a4fd6"/><stop offset="1" stop-color="#1a0e3a"/></radialGradient>
       <filter id="mglow" x="-90%" y="-90%" width="280%" height="280%"><feGaussianBlur stdDeviation="8"/></filter>
       <filter id="mpill" x="-15%" y="-60%" width="130%" height="220%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity=".55"/></filter>
-      <style>@media (prefers-reduced-motion: no-preference){.mnode.current .obloom{animation:opul 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}}@keyframes opul{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.8;transform:scale(1.14)}}</style>
+      <style>@media (prefers-reduced-motion: no-preference){.mnode.current .obloom{animation:opul 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}.pbloom{animation:opul 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}.pspin{animation:pspin 6s linear infinite}}@keyframes opul{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.8;transform:scale(1.14)}}@keyframes pspin{to{transform:rotate(360deg)}}.portalnode{cursor:pointer}</style>
     </defs>
     <image href="${MAPIMG[a]||MAPIMG[1]}" x="0" y="0" width="1000" height="750" preserveAspectRatio="xMidYMid meet"/>
     ${mapFriends(a, zs, spots)}
     ${nodes}
+    ${portal}
     ${hero}
   </svg>`;
 }
@@ -89,5 +110,7 @@ function toMap(){ sessionTick();
       if(n.classList.contains("locked")){ Aud.play("locked_tip"); return; }  /* no skipping ahead */
       const z=zs[+n.dataset.zi]; const m=z&&zoneNext(z); if(m)startMission(m); });
   });
+  const pn=document.querySelector("#mapSVGwrap .portalnode");
+  if(pn)pn.addEventListener("click",portalSwitch);
   Aud.play("pick");
 }

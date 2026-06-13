@@ -85,6 +85,19 @@ function geomFor(a){
   return { act:a, zones:zs, missions:ms, base, nodeby, mapH:maxY+152, minY, fort, viewTop:fort[1]-330 }; }
 let GEO=geomFor(1);   /* S isn't defined yet at module load; toMap() recomputes for currentAct() */
 function setAct(a){ S.act=a; GEO=geomFor(a); save(); }
+/* TIME PORTAL — hop between Star Force City (1) and the Magic Kingdom (2); swaps
+   the map, the music, and Teddy's outfit (hero costume follows the world he's in).
+   Only reachable once the Act-1 finale opens the portal (story canon). */
+function portalSwitch(){
+  if(!(S.done&&S.done[48]))return;
+  const other = currentAct()===1 ? 2 : 1;
+  if(!actMissions(other).length)return;           /* nothing to travel to yet */
+  if(typeof Sfx!=="undefined" && Sfx.whoosh)Sfx.whoosh();
+  flashScreen("rgba(150,90,255,.45)"); shakeStage();
+  setAct(other);
+  if(typeof Music!=="undefined" && Music.setAct)Music.setAct(other);
+  toMap();
+}
 function nodeOf(id){ return GEO.nodeby[id]||GEO.base; }
 
 /* ---------- VOICE LINE MANIFEST (ids shared with Voice Studio) ---------- */
@@ -261,6 +274,10 @@ function confetti(n){ const s=stageEl(); if(!s)return; n=REDUCE?12:(n||64);
     if(Math.random()<.5)c.style.borderRadius="50%";
     s.appendChild(c); setTimeout(()=>c.remove(),2300); } }
 let combo=0;
+/* Lock every answer tile in a row once the round is decided, so a rapid-tapping
+   child can't re-fire the SAME correct tile and farm phantom combos / skip reps —
+   the lock auto-resets when the next prompt rebuilds the row. */
+function lockRow(row){ if(row)row.querySelectorAll("button").forEach(b=>{ b.style.pointerEvents="none"; }); }
 function comboPop(n){ if(typeof Sfx!=="undefined")Sfx.combo(n);   /* sound plays even in reduced-motion */
   const s=stageEl(); if(!s||REDUCE)return; const c=document.createElement("div");
   c.className="combochip"; c.textContent="COMBO ×"+n+" 🔥"; s.appendChild(c); setTimeout(()=>c.remove(),950); }
@@ -355,7 +372,7 @@ const INTRO=[
  {art:inkblotSVG(300), id:"panel2", fx:"villain"},
  {art:`<div style="display:flex;justify-content:center;padding:24px;">${mentorChips(280)}</div>`, id:"panel3"},
  {art:`<div style="display:flex;justify-content:center;padding:20px;"><svg viewBox="0 0 200 90" width="300"><g stroke="#1d4fb8" stroke-width="9" fill="#cfe6ff" fill-opacity=".4" stroke-linejoin="round"><rect x="20" y="20" width="62" height="50" rx="12"/><rect x="116" y="20" width="62" height="50" rx="12"/><line x1="82" y1="42" x2="116" y2="42"/></g></svg></div>`, id:"panel4"},
- {art:`<div style="display:flex;justify-content:center;">${heroNow(220)}</div>`, id:"panel5", fx:"heroic"}
+ {art:`<div style="display:flex;justify-content:center;">${heroSVG(220,{theme:"hero",muscle:1,cape:"red",weapon:"none"})}</div>`, id:"panel5", fx:"heroic"}  /* the Act-1 ORIGIN superhero — never the knight, even if he's reached Act 2 */
 ];
 let introIx=0;
 function startIntro(){ introIx=0; show("scrIntro"); paintIntro(); }
@@ -426,7 +443,7 @@ function nextScan(){ if(scanIx>=SCAN_SET.length){ S.scan=true; save();
   narrate("scan",$("scanText"),["scan_prompt","snd_"+target],"Tap the gem that makes the sound\u2026");
   const row=$("scanTiles"); row.innerHTML="";
   opts.forEach(g=>{ const t=document.createElement("button"); t.className="tile read"; t.textContent=g;
-    t.onclick=()=>{ const ok=(g===target);
+    t.onclick=()=>{ lockRow(row); const ok=(g===target);
       mast(target).str=ok?2:0; mast(target).seen++; if(ok)mast(target).ok++; save();
       Aud.ding(); t.classList.add("win"); burstAt(t);
       scanIx++; setTimeout(nextScan,650); };
@@ -598,7 +615,7 @@ function nextFind(){
   const row=$("findTiles"); row.innerHTML="";
   opts.forEach(o=>{ const t=document.createElement("button"); t.className="tile read";
     const upperRound=(findRep%3===2); t.textContent=upperRound?o.toUpperCase():o; t.dataset.g=o;
-    t.onclick=()=>{ if(o===g){ record(g,true); t.classList.add("win"); burstAt(t); Aud.ding();
+    t.onclick=()=>{ if(o===g){ lockRow(row); record(g,true); t.classList.add("win"); burstAt(t); Aud.ding();
         findRep++; let lead="yes";
         if(patrolSet&&allyFreed("sunny")&&Math.random()<0.55){ lead=allyLine("sunny"); allyPop("sunny"); }  /* William owns patrols */
         flow(Aud.play([lead,"snd_"+g]),()=>setTimeout(nextFind,160)); }
@@ -626,7 +643,7 @@ function bossRound(g){
   opts.forEach(o=>{ const t=document.createElement("button"); t.className="tile read";
     t.textContent=((3-bossHP)%3===2)?o.toUpperCase():o;   /* an uppercase round each fight (recognise both cases) */
     t.dataset.g=o;
-    t.onclick=()=>{ if(o===g){ record(g,true); bossHP--; paintPips("bossPips",bossHP,3);
+    t.onclick=()=>{ if(o===g){ lockRow(row); record(g,true); bossHP--; paintPips("bossPips",bossHP,3);
         const bs=$("bossSprite"); bs.classList.add("hitfx"); setTimeout(()=>bs.classList.remove("hitfx"),380);
         burstAt(bs,"ZAP!"); Aud.ding();
         if(bossHP<=0){ bs.classList.add("flee");
