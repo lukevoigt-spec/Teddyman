@@ -273,11 +273,11 @@ function allyFace(kind){
     `<path d="M19 -8 Q30 6 23 22 Q19 8 15 -2Z" fill="#a87f50" stroke="#150f2e" stroke-width="2.5"/>`+
     allyEyes()+ smile+
     `<path d="M0 22 q3 -4 6 -1 q3 3 -1 6 l-5 4 -5 -4 q-4 -3 -1 -6 q3 -3 6 1z" fill="#e6453c" stroke="#150f2e" stroke-width="1.6"/>`;
-  if(kind==="tank")return head+   /* Archie — golden-blond, tousled, side-swept fringe (from his photo) */
-    `<path d="M-26 -2 Q-30 -32 0 -34 Q30 -32 26 -2 Q23 -15 16 -14 Q19 -26 4 -25 Q-2 -26 -8 -24 Q-14 -26 -20 -16 Q-25 -10 -26 -2Z" fill="#ddb968" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>`+
-    `<path d="M18 -23 Q3 -7 -21 -13 Q-9 -11 -1 -15 Q-14 -9 -19 -3 Q-4 -17 13 -16 Q17 -21 18 -23Z" fill="#e9ce80" stroke="#150f2e" stroke-width="2.4" stroke-linejoin="round"/>`+
-    `<path d="M-24 -5 Q-31 7 -25 16 L-19 -10Z" fill="#ddb968" stroke="#150f2e" stroke-width="2.2"/>`+
-    `<path d="M25 -7 Q31 3 26 12 L20 -11Z" fill="#ddb968" stroke="#150f2e" stroke-width="2.2"/>`+
+  if(kind==="tank")return head+   /* Archie — golden-blond, longer tousled/shaggy, side-swept (from his photo) */
+    `<path d="M-28 4 Q-35 -35 -2 -38 Q31 -37 29 0 Q25 -13 18 -13 Q23 -28 8 -26 Q14 -35 -2 -31 Q4 -37 -13 -29 Q-9 -35 -23 -25 Q-28 -14 -28 4Z" fill="#ddb968" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>`+
+    `<path d="M-27 -3 Q-35 15 -26 30 Q-23 17 -18 9 L-21 -11Z" fill="#ddb968" stroke="#150f2e" stroke-width="2.4" stroke-linejoin="round"/>`+
+    `<path d="M27 -3 Q35 15 26 30 Q23 17 18 9 L21 -11Z" fill="#d6af60" stroke="#150f2e" stroke-width="2.4" stroke-linejoin="round"/>`+
+    `<path d="M21 -25 Q2 -8 -23 -14 Q-11 -12 -2 -16 Q-17 -10 -22 -2 Q-5 -18 15 -17 Q20 -23 21 -25Z" fill="#e9ce80" stroke="#150f2e" stroke-width="2.4" stroke-linejoin="round"/>`+
     allyEyes()+ smile;
   if(kind==="kendall")return head+   /* Miss Kendall — kind teacher (brown hair in a low bun) — placeholder until a photo */
     `<path d="M-25 -2 Q-27 -30 0 -30 Q27 -30 25 -2 Q25 18 18 26 L15 -6 Q14 -22 0 -20 Q-14 -22 -15 -6 L-18 26 Q-25 18 -25 -2Z" fill="#7a5230" stroke="#150f2e" stroke-width="3"/>`+
@@ -351,7 +351,78 @@ const BODY_CFG={
    the generic caped super-suit template. */
 function allyBody(kind,w=200){
   if(kind==="tank")return archieBody(w);
+  if(kind==="flip")return ellieBody(w);
+  if(kind==="heart")return ameliaBody(w);
+  if(kind==="leighton")return leightonBody(w);
   return genericBody(kind,w);
+}
+function _flower(x,y,s,c){ let p=""; for(let i=0;i<5;i++){ const a=i/5*6.283; p+=`<circle cx="${(Math.cos(a)*s).toFixed(1)}" cy="${(Math.sin(a)*s).toFixed(1)}" r="${(s*0.62).toFixed(1)}" fill="${c}"/>`; }
+  return `<g transform="translate(${x} ${y})">${p}<circle r="${(s*0.5).toFixed(1)}" fill="#ffd75e"/></g>`; }
+/* ELLIE — gymnast: sparkly leotard, graceful arms-up finish pose, ballet slippers. */
+function ellieBody(w=200){ const u="el"+(__huid++), skin="#ffd9bd", leo="#e84d9c", leoD="#a8276b";
+  const armS=d=>`<path d="${d}" fill="none" stroke="#150f2e" stroke-width="14" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${skin}" stroke-width="9" stroke-linecap="round"/>`;
+  return `<svg viewBox="-72 -116 144 256" width="${w}" aria-hidden="true">
+<defs>
+<linearGradient id="${u}l" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${leo}"/><stop offset="1" stop-color="${leoD}"/></linearGradient>
+<radialGradient id="${u}au" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff7ec0" stop-opacity=".4"/><stop offset="1" stop-color="#ff7ec0" stop-opacity="0"/></radialGradient>
+</defs>
+<ellipse cx="0" cy="116" rx="38" ry="9" fill="#000" opacity=".32"/>
+<ellipse cx="0" cy="-6" rx="78" ry="116" fill="url(#${u}au)"/>
+${armS("M-25 -38 Q-44 -64 -52 -92")}${armS("M25 -38 Q44 -64 52 -92")}
+<circle cx="-53" cy="-94" r="5.5" fill="${skin}" stroke="#150f2e" stroke-width="3"/>
+<circle cx="53" cy="-94" r="5.5" fill="${skin}" stroke="#150f2e" stroke-width="3"/>
+<path d="M-15 34 Q-13 82 -8 104 L-1 104 L-2 34Z" fill="${skin}" stroke="#150f2e" stroke-width="4"/>
+<path d="M15 34 Q13 82 8 104 L1 104 L2 34Z" fill="${skin}" stroke="#150f2e" stroke-width="4"/>
+<path d="M-10 102 Q-15 114 -5 116 Q1 114 0 106Z" fill="${leoD}" stroke="#150f2e" stroke-width="3"/>
+<path d="M10 102 Q15 114 5 116 Q-1 114 0 106Z" fill="${leoD}" stroke="#150f2e" stroke-width="3"/>
+<path d="M-26 -42 Q-33 -8 -18 24 Q-10 40 0 40 Q10 40 18 24 Q33 -8 26 -42 Q12 -50 0 -50 Q-12 -50 -26 -42Z" fill="url(#${u}l)" stroke="#150f2e" stroke-width="5"/>
+<path d="M-24 -34 L22 10" stroke="#ffd75e" stroke-width="5" stroke-linecap="round" opacity=".9"/>
+<g fill="#fff"><circle cx="-10" cy="-18" r="1.7"/><circle cx="9" cy="-6" r="1.7"/><circle cx="-3" cy="8" r="1.5"/><circle cx="14" cy="-28" r="1.4"/><circle cx="2" cy="-30" r="1.3"/></g>
+<g transform="translate(0 -80) scale(1.02)">${allyFace("flip")}</g>
+</svg>`;
+}
+/* AMELIA — petite, cute teal dress with a pink sash + hair bow (not a super-suit). */
+function ameliaBody(w=200){ const u="am"+(__huid++), skin="#ffdcc2", dr="#37b8c4", drD="#1d7e8c", bow="#ff7d9c";
+  const armS=d=>`<path d="${d}" fill="none" stroke="#150f2e" stroke-width="12" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${skin}" stroke-width="7.5" stroke-linecap="round"/>`;
+  return `<svg viewBox="-72 -116 144 256" width="${w}" aria-hidden="true">
+<defs>
+<linearGradient id="${u}d" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${dr}"/><stop offset="1" stop-color="${drD}"/></linearGradient>
+<radialGradient id="${u}au" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#7fe8f0" stop-opacity=".4"/><stop offset="1" stop-color="#7fe8f0" stop-opacity="0"/></radialGradient>
+</defs>
+<ellipse cx="0" cy="104" rx="36" ry="8" fill="#000" opacity=".32"/>
+<ellipse cx="0" cy="4" rx="68" ry="100" fill="url(#${u}au)"/>
+<rect x="-12" y="40" width="10" height="34" rx="5" fill="${skin}" stroke="#150f2e" stroke-width="3.5"/>
+<rect x="2" y="40" width="10" height="34" rx="5" fill="${skin}" stroke="#150f2e" stroke-width="3.5"/>
+<path d="M-14 70 Q-16 78 -7 79 L-1 79 L-1 70Z" fill="${bow}" stroke="#150f2e" stroke-width="3"/>
+<path d="M14 70 Q16 78 7 79 L1 79 L1 70Z" fill="${bow}" stroke="#150f2e" stroke-width="3"/>
+<path d="M-18 -4 Q-36 32 -30 50 Q0 42 30 50 Q36 32 18 -4Z" fill="url(#${u}d)" stroke="#150f2e" stroke-width="5"/>
+<path d="M-20 -38 Q-23 -18 -18 -4 L18 -4 Q23 -18 20 -38 Q10 -45 0 -45 Q-10 -45 -20 -38Z" fill="url(#${u}d)" stroke="#150f2e" stroke-width="5"/>
+<rect x="-18" y="-8" width="36" height="6" rx="3" fill="${bow}" stroke="#150f2e" stroke-width="2.5"/>
+${armS("M-22 -30 Q-32 -8 -13 11")}${armS("M22 -30 Q32 -8 13 11")}
+<circle cx="0" cy="13" r="6.5" fill="${skin}" stroke="#150f2e" stroke-width="3"/>
+<g transform="translate(0 -80) scale(.98)">${allyFace("heart")}</g>
+<g transform="translate(-13 -100)"><path d="M0 0 Q-9 -6 -9 2 Q-9 7 0 4 Q9 7 9 2 Q9 -6 0 0Z" fill="${bow}" stroke="#150f2e" stroke-width="2.4"/><circle r="2.2" fill="#fff"/></g>
+</svg>`;
+}
+/* LEIGHTON — flowery princess: flowing lavender gown, flower crown + bouquet (not a super-suit). */
+function leightonBody(w=200){ const u="lg"+(__huid++), skin="#ffdcc2", gown="#c89be6", gownD="#8e5fc0", petal="#ff9ec7";
+  const armS=d=>`<path d="${d}" fill="none" stroke="#150f2e" stroke-width="13" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${skin}" stroke-width="8" stroke-linecap="round"/>`;
+  return `<svg viewBox="-72 -116 144 256" width="${w}" aria-hidden="true">
+<defs>
+<linearGradient id="${u}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${gown}"/><stop offset="1" stop-color="${gownD}"/></linearGradient>
+<radialGradient id="${u}au" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#d9aef0" stop-opacity=".45"/><stop offset="1" stop-color="#d9aef0" stop-opacity="0"/></radialGradient>
+</defs>
+<ellipse cx="0" cy="116" rx="48" ry="11" fill="#000" opacity=".34"/>
+<ellipse cx="0" cy="-4" rx="82" ry="120" fill="url(#${u}au)"/>
+<path d="M-22 -36 Q-30 22 -46 106 Q0 96 46 106 Q30 22 22 -36 Q10 -44 0 -44 Q-10 -44 -22 -36Z" fill="url(#${u}g)" stroke="#150f2e" stroke-width="5.5"/>
+<path d="M-15 2 Q-19 56 -22 102 M0 2 L0 100 M15 2 Q19 56 22 102" stroke="${gownD}" stroke-width="2.4" fill="none" opacity=".55"/>
+<path d="M-20 -38 Q-22 -16 -16 -2 L16 -2 Q22 -16 20 -38 Q10 -45 0 -45 Q-10 -45 -20 -38Z" fill="url(#${u}g)" stroke="#150f2e" stroke-width="5"/>
+<g>${_flower(-14,-4,4,petal)}${_flower(0,-1,4,"#fff")}${_flower(14,-4,4,petal)}</g>
+${armS("M-22 -32 Q-34 -8 -20 14")}${armS("M22 -32 Q33 -6 16 16")}
+<g transform="translate(18 18)">${_flower(0,0,5,petal)}${_flower(-9,4,4.5,"#fff")}${_flower(8,5,4.5,petal)}<path d="M-2 6 L-4 22 M4 6 L6 22" stroke="#7bd08a" stroke-width="2.4"/></g>
+<g transform="translate(0 -80) scale(1.03)">${allyFace("leighton")}</g>
+<g transform="translate(0 -104)">${_flower(-12,2,4,petal)}${_flower(0,-2,4.5,"#fff")}${_flower(12,2,4,petal)}</g>
+</svg>`;
 }
 /* ARCHIE — sporty athlete: team jersey (#7), athletic shorts, crew socks + sneakers. */
 function archieBody(w=200){ const u="ar"+(__huid++), skin="#f3c79c",
