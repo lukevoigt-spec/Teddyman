@@ -39,7 +39,18 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   pickFoils; extract last & carefully), base/shop/training, settings, win/reward screens. Same one-bite,
   rigorous-verify loop (node --check + both test suites + a puppeteer runtime boot exercising the moved
   code). Load order in index.html: art → data-missions → data-content → data-lines → state-save → audio
-  → allies → game → map → audio-studio.
+  → allies → game → map → music → audio-studio.
+- `music.js` — BACKGROUND MUSIC: an act-aware looping soundtrack engine (`Music`). Loaded AFTER game.js
+  (uses S/currentAct/$/Aud at runtime). Plays a gentle per-act theme (superhero Act 1, medieval Act 2)
+  that AUTO-DUCKS to ~26% under any narration (hooked from Aud.play in audio.js: duck on start, unduck
+  when the play() race settles) so the audio-first instructions are never masked (hard constraint #8).
+  Has its OWN on/off + volume (S.musicOn / S.musicVol — defaults on, 0.34), independent of voice (S.vol)
+  and SFX; the parent controls live in Settings ▸ Sound (musicSlider / btnMusicToggle). DROP-IN tracks:
+  art/bgm-a1.<mp3|ogg|m4a|wav> (Act 1) + art/bgm-a2.* (Act 2); the engine probes formats and stays SILENT
+  if none present, so the module is inert until the parent adds (or Publishes) the music. Autoplay-safe
+  (starts on the first user gesture; pauses when the tab is hidden). show() calls Music.setAct on every
+  screen change. NOTE: studio voice clips (record + ElevenLabs) are DEVICE-only (IndexedDB) until
+  Published to voicepack.js — the Cloudflare cloud sync carries only the save (S), never audio.
 - `voicepack.js` — optional shipped audio clips (`window.VOICEPACK = {lineId: dataURI}`).
   NEVER regenerate, rename IDs, or delete it. New narration = add new line IDs to the LINES
   manifest with TTS fallback text (they appear in the in-app studio automatically).

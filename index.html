@@ -324,6 +324,13 @@
           <span id="volPct" class="setval">100%</span>
           <button class="btn ghost sm" id="btnVoiceTest">Test</button>
         </div>
+        <div class="setrow">
+          <label for="musicSlider">Music volume</label>
+          <input type="range" id="musicSlider" class="setrange" min="0" max="100" value="34">
+          <span id="musicPct" class="setval">34%</span>
+          <button class="btn ghost sm" id="btnMusicToggle">On</button>
+        </div>
+        <div class="setcard-sub">Background music has its own volume &amp; on/off, separate from the voice. It gently dips while a character is speaking so instructions are always clear. (Drop a track at <b>art/bgm-a1</b> for Act 1 and <b>art/bgm-a2</b> for Act 2 — silent until then.)</div>
       </div>
       <div class="setcard">
         <div class="setcard-h">Display</div>
@@ -442,6 +449,7 @@
 <script src="allies.js"></script>
 <script src="game.js"></script>
 <script src="map.js"></script>
+<script src="music.js"></script>
 <script src="audio-studio.js"></script>
 </body>
 </html>

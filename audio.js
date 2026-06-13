@@ -51,6 +51,7 @@ const Aud={
   play(ids){ this.stop(); const my=this.token;
     const seq=Array.isArray(ids)?ids.slice():[ids];
     const cap=4000+2600*seq.length;
+    if(typeof Music!=="undefined" && Music.duck) Music.duck();   /* dip the music under narration */
     const core=new Promise(res=>{
       const next=()=>{ if(my!==this.token){res();return;}
         if(!seq.length){res();return;}
@@ -63,7 +64,9 @@ const Aud={
         } else { this._tts(L,my).then(next); }
       }; next();
     });
-    return Promise.race([core,new Promise(r=>setTimeout(r,cap))]);
+    const race=Promise.race([core,new Promise(r=>setTimeout(r,cap))]);
+    race.then(()=>{ if(typeof Music!=="undefined" && Music.unduck) Music.unduck(); });   /* restore after */
+    return race;
   },
   _tts(L,my){ return new Promise(res=>{
       const guard=setTimeout(res,8000);

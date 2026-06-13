@@ -227,6 +227,7 @@ function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.r
   /* diegetic corner-bracket frame on the gameplay/learning screens only (not the
      title/map/base/cutscenes, where it'd crowd or clash) */
   document.body.classList.toggle("framed", FRAME_SLOTS.has(BG_MAP[id]));
+  if(typeof Music!=="undefined" && Music.setAct) Music.setAct(currentAct());   /* swap the act's theme */
   $("hud").style.display=(id==="scrTitle")?"none":"flex"; refreshHUD();
   const dm=$("dailyMeter"); if(dm){ dm.style.display=(id==="scrMap")?"block":"none"; if(id==="scrMap")updateDailyMeter(); } }
 function refreshHUD(){ $("hudStars").textContent="⚡ "+S.stars; }
