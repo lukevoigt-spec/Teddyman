@@ -22,6 +22,9 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - `STYLE.md` — the DESIGN SYSTEM: real CSS tokens (`:root` vars), the "premium studio"
   target palette/components, and a gap checklist. Read before any styling/visual change;
   keep using the CSS variables (never raw hexes). Andika stays mandatory for letter content.
+- `QA.md` — periodic EXTERNAL review notes (advisory, not binding). On conflict, CLAUDE.md /
+  STYLE.md / the spec / direct parent instructions win. Read it after the above for product /
+  pedagogy / architecture / visual guidance; update it only for durable observations.
 
 ## HARD CONSTRAINTS — never violate, even if asked casually
 1. NO timers as failure conditions. No countdowns on tasks. Personal-best flair only, if ever.
@@ -269,8 +272,12 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - Small, reviewable commits with plain-English messages the parent can read.
 - After changes, sanity-check: fresh-save playthrough boot → intro → scan → mission 1, plus
   a loaded-save boot. Verify no console errors and that audio flows can't hang.
-- SAVE SAFETY IS REGRESSION-TESTED: `node tests/save.test.js` (no deps; exit 0 = pass) exercises
-  migrate() on old/partial/corrupt saves, primary+backup recovery, the no-clobber rule, the snapshot
-  ring, and a save→load round-trip. Run it after any change to the save layer (KEY/BAKKEY/migrate/
-  load/save/snapshot) before shipping.
+- REGRESSION TESTS (no deps; exit 0 = pass) — run before shipping:
+  • `node tests/save.test.js` — migrate() on old/partial/corrupt saves, primary+backup recovery,
+    no-clobber rule, snapshot ring, save→load round-trip, profile isolation. Run after any save-layer
+    change (KEY/BAKKEY/migrate/load/save/snapshot/profiles).
+  • `node tests/curriculum.test.js` — unique mission ids, per-act id ranges, every type handled +
+    zone exists, the grapheme model, and THE BIG ONE: no forge/read word uses a letter/grapheme
+    before it's taught (play order). Run after ANY mission/word/zone/grapheme change. (This caught a
+    real bug: "rub" used "b" before it was taught — now "rug".)
 - When in doubt about a design tradeoff, optimize for: reading reps per minute, then delight.
