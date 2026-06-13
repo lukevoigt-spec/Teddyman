@@ -94,6 +94,19 @@ body{
   font-family:'Andika',sans-serif;font-weight:700;font-size:clamp(48px,8vw,74px);
 }
 .slot.filled{border-style:solid;background:#3ec97e;color:var(--ink);animation:pop .45s ease;}
+/* ----- Magic-E (long vowels) ----- */
+.magtile{ width:clamp(78px,13vw,112px); height:clamp(78px,13vw,112px); border-radius:20px;
+  border:5px solid var(--ink); background:#ffe9a8; color:var(--ink);
+  display:flex; align-items:center; justify-content:center; font-weight:700; font-size:clamp(42px,7vw,64px); }
+.magtile.vowelt{ background:#cfe6ff; }                          /* the vowel about to go long */
+.magtile.longv{ background:linear-gradient(180deg,#ffd75e,#f0a82b); box-shadow:0 0 18px var(--gold); }
+.magtile.longv.flip{ animation:magflip .5s ease; }
+@keyframes magflip{ 0%{transform:scale(1)} 45%{transform:scale(1.35) rotate(-6deg)} 100%{transform:scale(1)} }
+.magtile.silente{ opacity:.5; border-style:dashed; color:var(--purp); }   /* silent E (also used on read/forge tiles+slots) */
+.magtile.silente.flyin{ animation:magflyin .5s ease; }
+@keyframes magflyin{ 0%{transform:translateX(70px) scale(.4); opacity:0} 60%{opacity:1} 100%{transform:translateX(0) scale(1); opacity:.5} }
+.rletter.silente, .slot.silente{ opacity:.55; border-style:dashed; }       /* silent E in read tiles / forge slots */
+.rletter.longv{ background:linear-gradient(180deg,#ffd75e,#f0a82b); }
 /* heart-word slot: the irregular "remember it" letter, marked with a ♥ */
 .slot.heartslot{position:relative;border-color:var(--red);background:#ffd9e4;}
 .slot.heartslot::after{content:"♥";position:absolute;top:-14px;right:-6px;font-size:30px;color:var(--red);-webkit-text-stroke:3px var(--ink);paint-order:stroke;}

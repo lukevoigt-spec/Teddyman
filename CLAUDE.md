@@ -98,9 +98,21 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   118 = stomp/blend/crust/drink (initial+final blends). READWORDS2 extended with blend-word pics
   (frog/drum/flag/crab/star/hand/jump/lamp/tent/mask/sled/gift/trap/milk). No blend word contains a
   digraph sequence, so toGraphemes tokenises them as single letters (verified).
-- TO BUILD NEXT (Act 2): LONG VOWELS / magic-e (needs a small split-grapheme extension a_e), then
-  fluency; Act-2 gear/power-up rewards; an Act-2 FINALE + Miss-Kendall rescue; real Vixen/dragon/Noah/
-  friend art.
+- ACT 2 ZONE 3 IS LIVE (THE SPELLERY, LONG VOWELS via MAGIC-E): missions 119–127. The split grapheme
+  a_e/i_e/o_e/u_e is NOT tokenised as a discontinuous gem — words still build/decode letter-by-letter
+  (cake=c,a,k,e). magicE(word) detects the V-C-e pattern → {v,e,unit}; graphemeSounds(word) sounds the
+  vowel LONG (snd_<v>_long = the vowel's NAME) and SKIPS the silent E. Backward-compatible: magicE
+  returns null for every Act-1/digraph/blend word (verified). NEW MISSION TYPE "magic" (startMagic):
+  Noah's transformation demo — show a short word (cap), tap CAST MAGIC-E, the silent E flies in, the
+  vowel flips short→long with sound (cap→cape); credits the unit. scrMagic screen + .magtile/.longv/
+  .silente/.flyin/.flip CSS (transform/opacity only). Practiced in forge/read, which are magic-e aware
+  (long-vowel audio, silent-E dimmed via .silente on slots/tiles). MAGICE_MISSION maps unit→teach
+  mission; taughtMagicE feeds actGraphemes so the finale gates on digraphs+magic-e (cumulative). Words:
+  cap→cape/tap→tape, kit→kite/pin→pine, hop→hope/not→note, cub→cube/tub→tube (demos); cake/kite/time,
+  home/rope/cube/tube (forge); cake/bike/gate/kite, home/cube/nose/rose (read); cape/kite/rose/cute
+  (Vowel Wyrm finale). LONG-VOWEL CLIPS (snd_a_long…) are critical audio the parent may record later.
+- TO BUILD NEXT (Act 2): more long-vowel spellings (vowel teams ai/ee/oa, then fluency); Act-2 gear/
+  power-up rewards; an Act-2 FINALE + Miss-Kendall rescue; real Vixen/dragon/Noah/friend art.
 - ACT 2 (FRAME + Zone 1 done; later zones TBD): villain = a smooth-talking
   evil VIXEN (Scarlett-Overkill-coded) who can morph into a DRAGON; her dragon army = Act-2 bosses.
   She kidnaps Miss Kendall + friends JJ, Nora, Cal and escapes through a TIME PORTAL to the MEDIEVAL

@@ -28,6 +28,30 @@ Object.assign(LETTERS,{
   sh:{kw:"ship",icon:"🚢"}, ch:{kw:"cheese",icon:"🧀"}, th:{kw:"thumb",icon:"👍"},
   wh:{kw:"whale",icon:"🐳"}, ck:{kw:"duck",icon:"🦆"}, ng:{kw:"ring",icon:"💍"}
 });
+/* ---- ACT 2: LONG VOWELS via MAGIC-E (split grapheme). A silent E at the end
+   reaches back over one consonant and flips the vowel from short to long
+   (cap→cape). We DON'T tokenize it as a discontinuous gem — the word still
+   builds/decodes letter-by-letter (cake = c,a,k,e). magicE(word) detects the
+   V-C-e pattern and returns {v: long-vowel index, e: silent-e index} so audio
+   plays the LONG vowel + marks the silent E. Backward-compatible: returns null
+   for every Act-1/digraph/blend word (none are a CVCe word). ---- */
+const VOWELS=["a","e","i","o","u"];
+const MAGICE_UNITS=["a_e","i_e","o_e","u_e"];
+function isVowel(c){ return VOWELS.includes(c); }
+function magicE(w){ const n=w.length;
+  if(n<3 || w[n-1]!=="e") return null;
+  const c=w[n-2], v=w[n-3];
+  if(isVowel(v) && !isVowel(c) && "wxy".indexOf(c)<0) return { v:n-3, e:n-1, unit:v+"_e" };
+  return null; }
+/* audio id sequence for sounding out a word, magic-e aware: the vowel says its
+   LONG name and the silent E makes no sound (it's skipped). */
+function graphemeSounds(w){ const me=magicE(w); const gs=toGraphemes(w); const out=[]; let i=0;
+  for(const g of gs){ const end=i+g.length;
+    if(me && i===me.e){ /* silent e — no sound */ }
+    else if(me && i===me.v) out.push("snd_"+g+"_long");
+    else out.push("snd_"+g);
+    i=end; }
+  return out; }
 /* z = letter-group zone. Foil pools and forge words only ever use letters from
    zones <= the mission's zone — material not yet taught never appears. */
 const MISSIONS=[
@@ -117,7 +141,17 @@ const MISSIONS=[
   {id:115,type:"read", words:["hand","jump","lamp","tent","mask"],lbl:"Blend Reading II",z:102},
   {id:116,type:"forge",words:["sled","gift","trap","belt"],lbl:"Blend Smith: Master Blades",z:102},
   {id:117,type:"read", words:["sled","gift","trap","frog","jump","milk"],lbl:"Blend Reading Rally",z:102},
-  {id:118,type:"forge",words:["stomp","blend","crust","drink"],lbl:"Dragon Duel: The Iron Wyrm!",finale:true,z:102}
+  {id:118,type:"forge",words:["stomp","blend","crust","drink"],lbl:"Dragon Duel: The Iron Wyrm!",finale:true,z:102},
+  /* === ACT 2 · ZONE 3 · THE SPELLERY — LONG VOWELS / magic-e (the Magic-E Spell) === */
+  {id:119,type:"magic",vowel:"a",unit:"a_e",pairs:[["cap","cape"],["tap","tape"]],lbl:"Magic-E Spell: Long A",z:103},
+  {id:120,type:"magic",vowel:"i",unit:"i_e",pairs:[["kit","kite"],["pin","pine"]],lbl:"Magic-E Spell: Long I",z:103},
+  {id:121,type:"forge",words:["cake","kite","time"],lbl:"Spell Forge: A & I",z:103},
+  {id:122,type:"read", words:["cake","bike","gate","kite"],lbl:"Spellery Reading I",z:103},
+  {id:123,type:"magic",vowel:"o",unit:"o_e",pairs:[["hop","hope"],["not","note"]],lbl:"Magic-E Spell: Long O",z:103},
+  {id:124,type:"magic",vowel:"u",unit:"u_e",pairs:[["cub","cube"],["tub","tube"]],lbl:"Magic-E Spell: Long U",z:103},
+  {id:125,type:"forge",words:["home","rope","cube","tube"],lbl:"Spell Forge: O & U",z:103},
+  {id:126,type:"read", words:["home","cube","nose","rose","bike","cake"],lbl:"Spellery Reading Rally",z:103},
+  {id:127,type:"forge",words:["cape","kite","rose","cute"],lbl:"Dragon Duel: The Vowel Wyrm!",finale:true,z:103}
 ];
 const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield",22:"Gem Gauntlet",47:"Alphabet Star",30:"Reading Crown",33:"Spell Tome",36:"Story Key",52:"Fluency Badge"};
 /* Cloze (read the sentence, pick the word that fits the blank — picture-anchored,
@@ -181,7 +215,8 @@ const READWORDS2={
   ship:"🚢", fish:"🐟", chip:"🍟", duck:"🦆", sock:"🧦", ring:"💍",
   king:"🤴", shop:"🏪", bath:"🛁", chin:"🧔", wing:"🪽", dish:"🍽️",
   frog:"🐸", drum:"🥁", flag:"🚩", crab:"🦀", star:"⭐", hand:"✋",
-  jump:"🦘", lamp:"💡", tent:"⛺", mask:"😷", sled:"🛷", gift:"🎁", trap:"🪤", milk:"🥛"
+  jump:"🦘", lamp:"💡", tent:"⛺", mask:"😷", sled:"🛷", gift:"🎁", trap:"🪤", milk:"🥛",
+  cake:"🎂", bike:"🚲", gate:"🚪", kite:"🪁", home:"🏠", cube:"🧊", nose:"👃", rose:"🌹"
 };
 const TRACE={
   s:[[[205,80],[150,58],[102,86],[106,132],[160,152],[196,188],[172,236],[102,232]]],
@@ -260,7 +295,12 @@ const ZONES=[
      model, the new skill is blending more phonemes. ===== */
   { id:102, name:"THE IRON FORGE", bg:"forge2", act:2,
     letters:[],   /* no new graphemes — blend practice on known letters */
-    nodes:autoNodes(9,{y0:120,step:104,phase:3.2}) }
+    nodes:autoNodes(9,{y0:120,step:104,phase:3.2}) },
+  /* ===== ACT 2 · zone 3: LONG VOWELS via MAGIC-E (split grapheme a_e i_e o_e u_e).
+     Noah's "Magic-E Spell" — a silent E flips a short vowel to its long name. ===== */
+  { id:103, name:"THE SPELLERY", bg:"spellery", act:2,
+    letters:[],   /* the long-vowel "units" are taught via type:"magic" missions */
+    nodes:autoNodes(9,{y0:-820,step:104,phase:1.5}) }
 ];
 /* ---------------- ACTS / CAMPAIGN ----------------
    The long game is a series of ACTS: each is a city with its own villain and a
@@ -371,6 +411,16 @@ const LINES={
   word_drum:{t:"drum!"}, word_flag:{t:"flag!"}, word_crab:{t:"crab!"}, word_star:{t:"star!"}, word_lamp:{t:"lamp!"},
   word_tent:{t:"tent!"}, word_mask:{t:"mask!"}, word_stomp:{t:"stomp!"}, word_blend:{t:"blend!"}, word_crust:{t:"crust!"}, word_drink:{t:"drink!"},
   blend_intro:{t:"To the Iron Forge, Sir Teddy! Here we BLEND sounds — two letters, side by side, said quickly together. Listen, then build!"},
+  /* Act-2 zone 3 — LONG VOWELS / Magic-E. Long-vowel sounds = the vowel's NAME. */
+  snd_a_long:{t:"ay",r:.7}, snd_e_long:{t:"ee",r:.7}, snd_i_long:{t:"eye",r:.7}, snd_o_long:{t:"oh",r:.7}, snd_u_long:{t:"you",r:.7},
+  magic_intro:{t:"A new spell, Sir Teddy — the MAGIC E! A short vowel says its little sound... but add a silent E at the end, and the vowel says its NAME!"},
+  magic_short:{t:"This word says..."},
+  magic_cast:{t:"MAGIC E! The silent E flips the vowel — now it says its name!"},
+  magic_done:{t:"Spell mastered! You can hear the long vowel sing. Noah the Red salutes you!"},
+  word_cape:{t:"cape!"}, word_tape:{t:"tape!"}, word_kit:{t:"kit!"}, word_kite:{t:"kite!"}, word_pine:{t:"pine!"},
+  word_hope:{t:"hope!"}, word_not:{t:"not!"}, word_note:{t:"note!"}, word_cub:{t:"cub!"}, word_cube:{t:"cube!"},
+  word_tub:{t:"tub!"}, word_tube:{t:"tube!"}, word_cake:{t:"cake!"}, word_time:{t:"time!"}, word_home:{t:"home!"},
+  word_rope:{t:"rope!"}, word_bike:{t:"bike!"}, word_gate:{t:"gate!"}, word_nose:{t:"nose!"}, word_rose:{t:"rose!"}, word_cute:{t:"cute!"},
   /* Noah the Red — Act-2 mentor intro */
   noah1:{t:"Greetings, young hero. I am Noah the Red, wizard of the old realm. The Vixen has dragged your friends here, to the age of knights and dragons."},
   noah2:{t:"Your gem-powers are gone — but together we will earn new magic: RUNES. Two letters that join to make ONE sound. Master them, and the dragons cannot stand against you."},
@@ -768,7 +818,7 @@ const $=id=>document.getElementById(id);
 /* Painted-scene slots: screen -> art/bg-<name>.* . Add an image to swap a scene;
    if the file is missing the layer stays transparent and the original look shows.
    Several screens intentionally share one scene (e.g. learn/trace, boss/forge). */
-const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrInter:"intro", scrScan:"lab", scrMap:"city", scrRead:"learn", scrSpell:"learn", scrSent:"learn", scrCloze:"learn", scrScramble:"learn", scrFortress:"battle",
+const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrInter:"intro", scrScan:"lab", scrMap:"city", scrRead:"learn", scrSpell:"learn", scrMagic:"learn", scrSent:"learn", scrCloze:"learn", scrScramble:"learn", scrFortress:"battle",
   scrBase:"base", scrTrain:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
   scrBoss:"battle", scrForge:"battle", scrWin:"victory", scrRest:"rest" };
 const __bgCache={};
@@ -1172,11 +1222,13 @@ function taughtLetters(){ return ORDER.filter(g=>S.done[LETTER_MISSION[g]]); }
    mission; taughtGraphemes() = every grapheme taught so far (letters + digraphs)
    and is used for foil pools so a digraph can appear among the distractor gems. */
 const DIGRAPH_MISSION={sh:100,ch:101,th:103,wh:105,ck:106,ng:107};
+const MAGICE_MISSION={a_e:119,i_e:120,o_e:123,u_e:124};   /* unit -> its "Magic-E Spell" teach mission */
 function taughtDigraphs(){ return DIGRAPHS.filter(d=>S.done[DIGRAPH_MISSION[d]]); }
+function taughtMagicE(){ return MAGICE_UNITS.filter(u=>S.done[MAGICE_MISSION[u]]); }
 function taughtGraphemes(){ return taughtLetters().concat(taughtDigraphs()); }
-/* graphemes taught in the CURRENT act (Act-2 milestones gate on digraphs, since
-   the 26 letters are already mastered and carried over) */
-function actGraphemes(){ return currentAct()===2 ? taughtDigraphs() : taughtLetters(); }
+/* graphemes/rules taught in the CURRENT act (Act-2 milestones gate on digraphs +
+   magic-e units, since the 26 letters are already mastered and carried over) */
+function actGraphemes(){ return currentAct()===2 ? taughtDigraphs().concat(taughtMagicE()) : taughtLetters(); }
 /* Adaptive pick: weight toward the child's weakest graphemes (low strength /
    low accuracy / fewest reps) so patrols self-target what needs work. */
 function pickWeak(pool){ if(!pool.length)return null;
@@ -1203,6 +1255,7 @@ function startMission(m){ clearFlow(); combo=0; CUR=m; $("hudTitle").textContent
   else if(m.type==="cloze")startCloze(m);
   else if(m.type==="scramble")startScramble(m);
   else if(m.type==="fortress")startFortress(m);
+  else if(m.type==="magic")startMagic(m);
   else startForge(m); }
 function missionComplete(){
   /* MASTERY GATE: a milestone only counts once its core items are truly mastered.
@@ -1344,7 +1397,7 @@ function startRead(m){ show("scrRead");
   readWords=m.words.slice(); readIx=0; readGoal=readWords.length; readMiss=0;
   flow(narrate("read",$("readText"),["read_intro"]),()=>nextRead()); }
 function readPool(){ return currentAct()===2 ? READWORDS2 : READWORDS; }   /* Act-2 decode uses digraph words */
-function readSoundOut(w){ return Aud.play([...toGraphemes(w).map(c=>"snd_"+c),"word_"+w]); }
+function readSoundOut(w){ return Aud.play([...graphemeSounds(w),"word_"+w]); }
 function nextRead(){
   if(readIx>=readWords.length){
     const champ = CUR.id===30;
@@ -1352,17 +1405,20 @@ function nextRead(){
   const w=readWords[readIx]; readMiss=0; const POOL=readPool();
   $("readProg").textContent="📖 "+readIx+" / "+readGoal;
   narrate("read",$("readText"),["read_prompt"],"Read the word… then tap what it means! 📖");
-  /* the word, as tappable grapheme tiles (a digraph is ONE tile = one sound) */
-  const wr=$("readWord"); wr.innerHTML="";
-  toGraphemes(w).forEach(c=>{ const t=document.createElement("button"); t.className="tile read rletter"; t.textContent=c;
-    t.onclick=()=>Aud.play("snd_"+c); wr.appendChild(t); });
+  /* the word, as tappable grapheme tiles (a digraph is ONE tile = one sound;
+     in a magic-e word the silent E is dimmed and the vowel marked "long") */
+  const wr=$("readWord"); wr.innerHTML=""; const me=magicE(w), snds=graphemeSounds(w);
+  toGraphemes(w).forEach((c,j)=>{ const t=document.createElement("button"); t.className="tile read rletter"; t.textContent=c;
+    if(me&&j===me.e)t.classList.add("silente"); if(me&&j===me.v)t.classList.add("longv");
+    const s=snds[j]; t.onclick=()=>Aud.play(s); wr.appendChild(t); });
   /* three picture choices: the word + two other picture-words */
   const foils=Object.keys(POOL).filter(x=>x!==w).sort(()=>Math.random()-.5).slice(0,2);
   const opts=[w,...foils].sort(()=>Math.random()-.5);
   const cr=$("readChoices"); cr.innerHTML="";
   opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.textContent=POOL[o]; b.dataset.w=o;
     b.onclick=()=>{ if(o===w){ record("w_"+w,true); b.classList.add("win"); burstAt(b); Aud.ding();
-        readIx++; flow(Aud.play(["read_yes",...toGraphemes(w).map(c=>"snd_"+c),"word_"+w]),()=>setTimeout(nextRead,200)); }
+        if(magicE(w))record(magicE(w).unit,true);   /* credit the long-vowel rule */
+        readIx++; flow(Aud.play(["read_yes",...graphemeSounds(w),"word_"+w]),()=>setTimeout(nextRead,200)); }
       else { record("w_"+w,false); readMiss++; b.classList.add("dim");
         if(readMiss>=2){ cr.querySelectorAll(".picktile").forEach(x=>{ if(x.dataset.w===w)x.classList.add("hint"); }); }
         readSoundOut(w); } };
@@ -1426,7 +1482,7 @@ function practiceSpell(){
    (foil differs by a key word, so guessing fails). Each word is tappable to
    hear it; a Read-it-all button plays the whole sentence as scaffold. */
 function wordAudio(w){ return LINES["word_"+w]?["word_"+w]
-  : (LINES["sw_"+w]?["sw_"+w] : [...toGraphemes(w).map(c=>"snd_"+c)].concat(LINES["word_"+w]?["word_"+w]:[])); }
+  : (LINES["sw_"+w]?["sw_"+w] : [...graphemeSounds(w)].concat(LINES["word_"+w]?["word_"+w]:[])); }
 function sentenceAudio(s){ return s.t.flatMap(w=>wordAudio(w)); }
 let sentList,sentIx,sentGoal,sentMiss,sentCur,sentMission;
 function startSentence(m){ show("scrSent"); sentMission=m; sentList=m.sents.slice(); sentIx=0; sentGoal=sentList.length;
@@ -1625,9 +1681,10 @@ function forgeWord(){
     flow(Aud.play(["forge_win1","forge_win2"]),missionComplete); return; }
   const w=forgeWords[forgeWordIx]; forgeSlotIx=0;
   const gs=toGraphemes(w);   /* tokenise so digraphs (sh) are ONE build slot, one gem */
-  narrate("forge",$("forgeText"),["forge_build",...gs.map(c=>"snd_"+c),"word_"+w],"Build the word! Listen\u2026 \ud83d\udd0a");
+  const me=magicE(w), snds=graphemeSounds(w);
+  narrate("forge",$("forgeText"),["forge_build",...snds,"word_"+w],"Build the word! Listen\u2026 \ud83d\udd0a");
   const slots=$("forgeSlots"); slots.innerHTML="";
-  gs.forEach(()=>{ const s=document.createElement("div"); s.className="slot read"; slots.appendChild(s); });
+  gs.forEach((g,j)=>{ const s=document.createElement("div"); s.className="slot read"; if(me&&j===me.e)s.classList.add("silente"); if(me&&j===me.v)s.classList.add("longv"); slots.appendChild(s); });
   const pool=taughtGraphemes().filter(x=>!gs.includes(x));   /* distractor: taught graphemes only */
   const foil=pool[Math.floor(Math.random()*pool.length)];
   const choices=[...new Set(gs)].concat(foil?[foil]:[]).sort(()=>Math.random()-.5);
@@ -1639,15 +1696,49 @@ function forgeWord(){
         const slot=slots.children[forgeSlotIx]; slot.textContent=c; slot.classList.add("filled");
         Aud.ding(); forgeSlotIx++;
         if(forgeSlotIx>=gs.length){
+          if(me)record(me.unit,true);   /* credit the long-vowel rule */
           forgeHP--; paintPips("forgePips",forgeHP,forgeWords.length);
           const fs=$("forgeSprite"); fs.classList.add("hitfx"); setTimeout(()=>fs.classList.remove("hitfx"),380);
           burstAt(fs,w.toUpperCase()+"!");
-          flow(Aud.play([...gs.map(x=>"snd_"+x),"word_"+w,"blast"]),()=>{forgeWordIx++;setTimeout(forgeWord,350);});
-        } else Aud.play(["snd_"+c,"forge_next"]); }
+          flow(Aud.play([...snds,"word_"+w,"blast"]),()=>{forgeWordIx++;setTimeout(forgeWord,350);});
+        } else Aud.play([snds[forgeSlotIx-1],"forge_next"]); }
       else { record(need,false); t.classList.add("dim");
         Aud.play(["forge_listen","snd_"+need]);
         setTimeout(()=>t.classList.remove("dim"),2400); } };
     row.appendChild(t); }); }
+
+/* ---------------- MAGIC-E SPELL (long vowels, type:"magic") ----------------
+   Noah's signature teach: show a short word (cap), then CAST the silent E — it
+   flies in, the vowel flips short→long (cap→cape) with sound. A demo + a tap to
+   cast for each pair; credits the long-vowel unit (a_e…). Practiced afterward in
+   forge/read, which are magic-e aware (long vowel sound, silent-E dimmed). */
+let magicPairs,magicIx,magicM;
+function startMagic(m){ show("scrMagic"); magicM=m; magicPairs=m.pairs.slice(); magicIx=0;
+  $("magicCast").style.display="none"; $("magicNext").style.display="none"; $("magicWord").innerHTML="";
+  flow(narrate("magic",$("magicText"),["magic_intro","snd_"+m.vowel,"snd_"+m.vowel+"_long"]),()=>magicStep()); }
+function magicStep(){
+  if(magicIx>=magicPairs.length){ record(magicM.unit,true); flow(Aud.play(["magic_done"]),missionComplete); return; }
+  const pair=magicPairs[magicIx], sh=pair[0], lo=pair[1], me=magicE(lo);
+  $("magicProg").textContent="✨ "+magicIx+" / "+magicPairs.length;
+  const wr=$("magicWord"); wr.innerHTML="";
+  toGraphemes(sh).forEach((c,j)=>{ const t=document.createElement("div"); t.className="tile read magtile"+(j===me.v?" vowelt":"");
+    t.textContent=c; if(j===me.v)t.dataset.vowel="1"; wr.appendChild(t); });
+  $("magicNext").style.display="none";
+  $("magicCast").style.display="inline-block"; $("magicCast").textContent="CAST MAGIC-E ✨";
+  $("magicCast").onclick=()=>castMagicE(sh,lo);
+  narrate("magic",$("magicText"),["magic_short",...graphemeSounds(sh),"word_"+sh],"This word says… then CAST the spell!");
+}
+function castMagicE(sh,lo){ const wr=$("magicWord");
+  $("magicCast").style.display="none";
+  const e=document.createElement("div"); e.className="tile read magtile silente flyin"; e.textContent="e"; wr.appendChild(e);
+  const vt=wr.querySelector('[data-vowel="1"]'); if(vt){ vt.classList.remove("vowelt"); vt.classList.add("longv","flip"); }
+  shakeStage(); flashScreen("rgba(187,119,255,.45)"); confetti(28);
+  record(magicM.unit,true);
+  flow(Aud.play(["magic_cast","snd_"+magicM.vowel+"_long","word_"+lo]),()=>{
+    $("magicNext").style.display="inline-block";
+    $("magicNext").textContent=(magicIx>=magicPairs.length-1)?"DONE ✓":"NEXT ➜";
+    $("magicNext").onclick=()=>{ magicIx++; magicStep(); }; });
+}
 
 /* ---------------- WIN / REST ---------------- */
 function showWin(firstTime){ show("scrWin");
