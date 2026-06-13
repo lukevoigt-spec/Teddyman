@@ -113,9 +113,11 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
    so NO per-device pasting is ever needed — paste it there once and every device auto-syncs. Save +
    profile layer is regression-tested in tests/save.test.js (25 assertions). LIVE: DEFAULT_CLOUD_URL
    is baked to the parent's Worker; cloud confirmed syncing on-device.
-   PARKED (low priority): add an optional baked-in PASSPHRASE so the public Worker URL can't be
-   read/written by strangers (key = hash(passphrase+profile) instead of bare profile id). Low stakes
-   (a child's reading save), so deferred.
+   DONE (opt-in): set CLOUD_PASSPHRASE (top of state-save.js) and the cloud slot key becomes
+   "p"+hash(passphrase+profile) (cloudKey/__cloudHash) instead of the bare profile id, so strangers
+   can't read/write a child's save by guessing the public Worker URL. BACKWARD-COMPATIBLE + no Worker
+   change (the Worker stores whatever ?k= it gets): default "" keeps the bare id (existing sync
+   untouched); setting it on every device shares a private slot (one-time re-sync). save.test guards it.
 8. All instructions are audio-first (the player cannot read yet). Every prompt has a replay
    button. Any flow that waits on audio MUST use the flow()/watchdog pattern so the game can
    never hang — there is always a ⏭ skip and a Home button.
@@ -357,8 +359,9 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   preferentially seeds the target's twin as a distractor in find/boss/fortress, so every review
   round trains discrimination once both are taught. Learning a letter whose twin is already known
   shows a side-by-side contrast cue (#letterCue, green✓ vs struck-out twin) + a cue_<letter> tip.
-- Uppercase+lowercase paired, lowercase weighted; deliberate uppercase rounds every 3rd rep (TODO
-  beyond find's every-3rd-rep upper round).
+- Uppercase+lowercase paired, lowercase weighted; deliberate uppercase rounds every 3rd rep — now in
+  find + patrol (via find) + boss ((3-bossHP)%3===2) + the fortress sound phase, so both cases are
+  trained across every sound-ID task.
 - DIRECTION NOTE (prime objective = reading): scan/find/boss/forge train sound→letter (ID + spell).
   "Read It" adds letter→sound (decode). Keep growing the decode side (sight words, sentences).
 - Mastery model: per-grapheme strength scores recorded on every answer. Patrols are ADAPTIVE

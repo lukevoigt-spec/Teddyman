@@ -614,7 +614,9 @@ function bossRound(g){
   const foils=pickFoils(g, taughtGraphemes(), 2);   /* boss: include the confusable twin */
   const opts=[g,...foils].sort(()=>Math.random()-.5);
   const row=$("bossTiles"); row.innerHTML="";
-  opts.forEach(o=>{ const t=document.createElement("button"); t.className="tile read"; t.textContent=o;
+  opts.forEach(o=>{ const t=document.createElement("button"); t.className="tile read";
+    t.textContent=((3-bossHP)%3===2)?o.toUpperCase():o;   /* an uppercase round each fight (recognise both cases) */
+    t.dataset.g=o;
     t.onclick=()=>{ if(o===g){ record(g,true); bossHP--; paintPips("bossPips",bossHP,3);
         const bs=$("bossSprite"); bs.classList.add("hitfx"); setTimeout(()=>bs.classList.remove("hitfx"),380);
         burstAt(bs,"ZAP!"); Aud.ding();

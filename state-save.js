@@ -27,6 +27,16 @@
    keeps the ORIGINAL save keys + cloud key, so existing progress is never lost
    and an existing Worker URL keeps working unchanged. */
 const DEFAULT_CLOUD_URL="https://teddy-saves.lukevoigt.workers.dev";   /* baked-in Worker URL → every device auto-syncs, zero per-device setup */
+/* OPTIONAL cloud privacy: set a passphrase here and the cloud slot key becomes an
+   unguessable hash(passphrase+profile) instead of the bare profile id, so strangers
+   can't read/write a child's save by guessing the public Worker URL. BACKWARD-
+   COMPATIBLE + needs NO Worker change (the Worker stores whatever ?k= it's given):
+   leave it "" and keys stay the bare id (existing sync untouched); set it once on
+   every device and they share the private slot (a one-time re-sync to the new slot). */
+const CLOUD_PASSPHRASE="";
+function __cloudHash(s){ let h1=5381,h2=52711; for(let i=0;i<s.length;i++){ const c=s.charCodeAt(i);
+  h1=((h1<<5)+h1+c)>>>0; h2=((h2<<5)+h2^c)>>>0; } return h1.toString(36)+h2.toString(36); }
+function cloudKey(){ return CLOUD_PASSPHRASE ? "p"+__cloudHash(CLOUD_PASSPHRASE+"::"+ACTIVE) : ACTIVE; }
 const PROFKEY="teddyProfiles", ACTIVEKEY="teddyActiveProfile";
 function readJSON(k,f){ try{ const v=JSON.parse(localStorage.getItem(k)); return v==null?f:v; }catch(e){ return f; } }
 function profiles(){ let p=readJSON(PROFKEY,null);
@@ -93,7 +103,7 @@ function snapshots(){ try{ const a=JSON.parse(localStorage.getItem(SNAPKEY)||"[]
    is the URL. Never blocks play; failures fall back to device-only.          */
 let cloudURL=""; try{ cloudURL=localStorage.getItem("teddyCloudURL")||""; }catch(e){}
 if(!cloudURL && DEFAULT_CLOUD_URL) cloudURL=DEFAULT_CLOUD_URL;   /* baked-in URL = no per-device pasting */
-function cloudEndpoint(){ return cloudURL ? cloudURL.replace(/\/+$/,"")+"?k="+ACTIVE : null; }   /* each player = its own cloud slot */
+function cloudEndpoint(){ return cloudURL ? cloudURL.replace(/\/+$/,"")+"?k="+cloudKey() : null; }   /* each player = its own cloud slot (hashed if a passphrase is set) */
 function cloudStatus(s){ const el=document.getElementById("cloudState"); if(el)el.textContent=s; }
 let __cloudT=null;
 function cloudPush(){ const u=cloudEndpoint(); if(!u)return; clearTimeout(__cloudT);

@@ -125,6 +125,13 @@ ok("escHTML(profileName) neutralises an injected name", (function(){
   var bad=addProfile('<img src=x onerror=alert(1)>'); applyProfile("teddy");
   var s=escHTML(profileName(bad)); removeProfile(bad);
   return s.indexOf("<")<0 && s.indexOf(">")<0; })());
+
+grp("cloud key: optional passphrase is backward-compatible + unguessable when set");
+applyProfile("teddy");
+ok("with NO passphrase (default), the cloud slot key stays the bare profile id", cloudKey()==="teddy");
+ok("cloudEndpoint keys by ?k=teddy by default (existing sync untouched)", (cloudEndpoint()||"").indexOf("?k=teddy")>0);
+ok("__cloudHash is deterministic and input-sensitive (so a passphrase yields a stable, distinct slot)",
+  __cloudHash("pass::teddy")===__cloudHash("pass::teddy") && __cloudHash("pass::teddy")!==__cloudHash("other::teddy"));
 `;
 vm.runInContext(fs.readFileSync(path.join(ROOT, "data-missions.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-content.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-lines.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "state-save.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "audio.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "allies.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "map.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "sfx.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "music.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 
