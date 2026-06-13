@@ -72,7 +72,22 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - GOAL / end state: by the end of ACT 2, Teddy should reach ~2nd-grade reading proficiency aligned
   to TEXAS standards (TEKS), ready to enter 3rd grade — then the app is "done." Skills ladder across
   acts: Act 1 = letters→CVC→sight→sentences (done); Act 2 = digraphs/blends→long vowels→fluency.
-- ACT 2 (FRAME scaffolded; CONTENT not built yet — no zones/missions): villain = a smooth-talking
+- ACT 2 ZONE 1 IS LIVE (first vertical slice — STONEKEEP VILLAGE, consonant DIGRAPHS): missions 100–110
+  teach sh ch th wh ck ng as "RUNES" (one gem = one sound). GRAPHEME MODEL: DIGRAPHS[] + toGraphemes()
+  tokenises words longest-match (ship=[sh,i,p]); backward-compatible (no Act-1 non-sight word contains
+  a digraph sequence; sight words stay letter-split). Reused/rethemed Act-1 mechanics, made grapheme-
+  aware: learn (digraphs SKIP handwriting trace → straight to sound work), find/boss (foils from
+  taughtGraphemes incl. digraphs; boss sprite = dragonSVG in Act 2 via bossSprite()), forge (slots =
+  toGraphemes, a digraph is ONE slot), read (READWORDS2 digraph-word pool via readPool()). DIGRAPH_
+  MISSION maps each digraph→its learn mission; taughtDigraphs/taughtGraphemes/actGraphemes drive foils
+  + the milestone gate (Act-2 finale gates on digraph mastery, since the 26 letters carry over). Words:
+  ship/chat/this, duck/sock/ring/king (forge), ship/fish/chip/duck/sock/ring (read), shop/chin/bath/
+  wing (Dragon Duel finale). Onboarding: NOAH THE RED intro cutscene (startAct2Intro, noahSVG, lines
+  noah1-3, plays once via S.act2intro) runs after the Act-1→Act-2 handoff, then opens the medieval map.
+  Map machinery already act-scopes; vexDone guarded to Act-1 only. ART: noahSVG + dragonSVG placeholders
+  (art.js, preview in hero-lab.html). TO BUILD NEXT: more Act-2 zones (blends → long vowels/magic-e →
+  fluency), Act-2 gear/power-up rewards, real Vixen/dragon/Noah/Miss-Kendall art, an Act-2 finale.
+- ACT 2 (FRAME + Zone 1 done; later zones TBD): villain = a smooth-talking
   evil VIXEN (Scarlett-Overkill-coded) who can morph into a DRAGON; her dragon army = Act-2 bosses.
   She kidnaps Miss Kendall + friends JJ, Nora, Cal and escapes through a TIME PORTAL to the MEDIEVAL
   age — Teddy follows and becomes a KNIGHT (new theme/outfit/weapons; the villain steals his powers

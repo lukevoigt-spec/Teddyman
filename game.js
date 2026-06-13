@@ -16,6 +16,18 @@ const LETTERS={
   z:{kw:"zebra",icon:"🦓"}, q:{kw:"queen",icon:"👑"}
 };
 const ORDER=["s","a","t","p","i","n","m","d","g","o","c","k","e","u","r","h","b","f","l","j","v","w","x","y","z","q"];
+/* ---- ACT 2: DIGRAPHS (one gem = one sound). Two letters, a single phoneme.
+   The grapheme system is multi-letter-aware via toGraphemes(): words tokenize
+   into graphemes (longest-match), so "ship" = [sh,i,p] not [s,h,i,p]. Backward-
+   compatible — no Act-1 (non-sight) word contains a digraph sequence. ---- */
+const DIGRAPHS=["sh","ch","th","wh","ck","ng"];
+function isDigraph(g){ return DIGRAPHS.includes(g); }
+function toGraphemes(w){ const out=[]; for(let i=0;i<w.length;){ const two=w.substr(i,2);
+  if(DIGRAPHS.includes(two)){ out.push(two); i+=2; } else { out.push(w[i]); i++; } } return out; }
+Object.assign(LETTERS,{
+  sh:{kw:"ship",icon:"🚢"}, ch:{kw:"cheese",icon:"🧀"}, th:{kw:"thumb",icon:"👍"},
+  wh:{kw:"whale",icon:"🐳"}, ck:{kw:"duck",icon:"🦆"}, ng:{kw:"ring",icon:"💍"}
+});
 /* z = letter-group zone. Foil pools and forge words only ever use letters from
    zones <= the mission's zone — material not yet taught never appears. */
 const MISSIONS=[
@@ -84,7 +96,19 @@ const MISSIONS=[
   {id:52,type:"scramble",items:[3,4,5],lbl:"Reading Dojo: Sentence Master",z:9},
   /* --- ZONE 8 · VEX'S FORTRESS — Act 1 FINALE: a long multi-phase boss that
      makes Teddy prove letter sounds AND reading to free Leighton --- */
-  {id:48,type:"fortress",lbl:"Vex's Fortress: Free Leighton!",finale:true,climax:true,z:8}
+  {id:48,type:"fortress",lbl:"Vex's Fortress: Free Leighton!",finale:true,climax:true,z:8},
+  /* ===== ACT 2 (ids 100+) · STONEKEEP VILLAGE — digraphs sh ch th wh ck ng ===== */
+  {id:100,type:"learn",letter:"sh",lbl:"Quest: the SH Rune",z:101},
+  {id:101,type:"learn",letter:"ch",lbl:"Quest: the CH Rune",z:101},
+  {id:102,type:"patrol",set:["sh","ch"],lbl:"Castle Patrol",z:101},
+  {id:103,type:"learn",letter:"th",lbl:"Quest: the TH Rune",z:101},
+  {id:104,type:"forge",words:["ship","chat","this"],lbl:"Rune Forge: First Runes",z:101},
+  {id:105,type:"learn",letter:"wh",lbl:"Quest: the WH Rune",z:101},
+  {id:106,type:"learn",letter:"ck",lbl:"Quest: the CK Rune",z:101},
+  {id:107,type:"learn",letter:"ng",lbl:"Quest: the NG Rune",z:101},
+  {id:108,type:"forge",words:["duck","sock","ring","king"],lbl:"Rune Forge: Power Runes",z:101},
+  {id:109,type:"read",words:["ship","fish","chip","duck","sock","ring"],lbl:"Dragon Reading Rally",z:101},
+  {id:110,type:"forge",words:["shop","chin","bath","wing"],lbl:"Dragon Duel!",finale:true,z:101}
 ];
 const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield",22:"Gem Gauntlet",47:"Alphabet Star",30:"Reading Crown",33:"Spell Tome",36:"Story Key",52:"Fluency Badge"};
 /* Cloze (read the sentence, pick the word that fits the blank — picture-anchored,
@@ -141,6 +165,11 @@ const READWORDS={
   cat:"🐱", dog:"🐶", hen:"🐔", pig:"🐷", bug:"🐛", sun:"☀️", hat:"🎩", cup:"🥤",
   bus:"🚌", bag:"🎒", cap:"🧢", pan:"🍳", nut:"🥜", fan:"🪭", mug:"☕", pot:"🍲",
   hug:"🤗", bed:"🛏️", net:"🥅", bun:"🍞"
+};
+/* Act-2 decode words (DIGRAPHS) — each uses only taught graphemes, clear picture. */
+const READWORDS2={
+  ship:"🚢", fish:"🐟", chip:"🍟", duck:"🦆", sock:"🧦", ring:"💍",
+  king:"🤴", shop:"🏪", bath:"🛁", chin:"🧔", wing:"🪽", dish:"🍽️"
 };
 const TRACE={
   s:[[[205,80],[150,58],[102,86],[106,132],[160,152],[196,188],[172,236],[102,232]]],
@@ -208,7 +237,12 @@ const ZONES=[
     nodes:autoNodes(4,{y0:-3860,step:112,phase:2.0}) },
   { id:8, name:"VEX'S FORTRESS", bg:"fortress",
     letters:[],   /* the Act-1 finale boss */
-    nodes:[[400,-4400]] }
+    nodes:[[400,-4400]] },
+  /* ===== ACT 2 · MEDIEVAL REALM — zone 1: consonant DIGRAPHS (sh ch th wh ck ng) ===== */
+  { id:101, name:"STONEKEEP VILLAGE", bg:"keep", act:2,
+    letters:["sh","ch","th","wh","ck","ng"],
+    base:[470,1408],
+    nodes:autoNodes(11,{y0:1280,step:104,phase:1.0}) }
 ];
 /* ---------------- ACTS / CAMPAIGN ----------------
    The long game is a series of ACTS: each is a city with its own villain and a
@@ -300,6 +334,23 @@ const LINES={
   intro_y:{t:"Mission! A Vexbot trapped the Letter Gem Y! This is Y. It says..."},
   intro_z:{t:"Mission! A Vexbot trapped the Letter Gem Z! This is Z. It says..."},
   intro_q:{t:"Mission! A Vexbot trapped the Letter Gem Q! This is Q. It says..."},
+  /* --- ACT 2: digraph sounds, keywords, intros, words (one gem = one sound) --- */
+  snd_sh:{t:"sh",r:.6}, snd_ch:{t:"ch",r:.7}, snd_th:{t:"th",r:.6}, snd_wh:{t:"wh",r:.6}, snd_ck:{t:"k",r:.75}, snd_ng:{t:"ng",r:.6},
+  like_sh:{t:"Like ship!"}, like_ch:{t:"Like cheese!"}, like_th:{t:"Like thumb!"}, like_wh:{t:"Like whale!"}, like_ck:{t:"Like duck!"}, like_ng:{t:"Like ring!"},
+  intro_sh:{t:"New rune, brave knight! S and H join to make ONE sound... sh! Like ship."},
+  intro_ch:{t:"New rune! C and H together say... ch! Like cheese."},
+  intro_th:{t:"New rune! T and H together say... th! Like thumb."},
+  intro_wh:{t:"New rune! W and H together say... wh! Like whale."},
+  intro_ck:{t:"New rune! C and K at the end of a word say... k! Like duck."},
+  intro_ng:{t:"New rune! N and G together say... ng! Like ring."},
+  word_ship:{t:"ship!"}, word_chat:{t:"chat!"}, word_this:{t:"this!"}, word_duck:{t:"duck!"}, word_sock:{t:"sock!"},
+  word_ring:{t:"ring!"}, word_king:{t:"king!"}, word_fish:{t:"fish!"}, word_chip:{t:"chip!"}, word_shop:{t:"shop!"},
+  word_chin:{t:"chin!"}, word_bath:{t:"bath!"}, word_wing:{t:"wing!"}, word_dish:{t:"dish!"},
+  /* Noah the Red — Act-2 mentor intro */
+  noah1:{t:"Greetings, young hero. I am Noah the Red, wizard of the old realm. The Vixen has dragged your friends here, to the age of knights and dragons."},
+  noah2:{t:"Your gem-powers are gone — but together we will earn new magic: RUNES. Two letters that join to make ONE sound. Master them, and the dragons cannot stand against you."},
+  noah3:{t:"Welcome to Stonekeep Village, Sir Teddy. Your first runes await. Onward!"},
+  act2_win:{t:"A dragon falls! Your runes grow stronger, Sir Teddy. Noah the Red is proud."},
   word_at:{t:"at!"}, word_sat:{t:"sat!"}, word_tap:{t:"tap!"}, word_pin:{t:"pin!"}, word_nap:{t:"nap!"},
   word_dad:{t:"dad!"}, word_mad:{t:"mad!"}, word_dig:{t:"dig!"},
   word_cat:{t:"cat!"}, word_dog:{t:"dog!"}, word_mom:{t:"mom!"}, word_kid:{t:"kid!"},
@@ -436,7 +487,8 @@ const GEARLINE={ "Power Belt":"gear_belt","Rocket Boots":"gear_boots","Word Hamm
 const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#ffc93c",
   m:"#f06292",d:"#9c2f2f",g:"#1abc9c",o:"#5dade2",c:"#7d3c98",k:"#aab7c4",
   e:"#27ae60",u:"#e67e22",r:"#ff5e57",h:"#5f6dff",b:"#3742fa",f:"#16a085",
-  l:"#e84393",j:"#00b894",v:"#6c5ce7",w:"#0984e3",x:"#d63031",y:"#fdcb6e",z:"#636e72",q:"#a29bfe"};
+  l:"#e84393",j:"#00b894",v:"#6c5ce7",w:"#0984e3",x:"#d63031",y:"#fdcb6e",z:"#636e72",q:"#a29bfe",
+  sh:"#16a085",ch:"#e67e22",th:"#2980b9",wh:"#8e44ad",ck:"#c0392b",ng:"#27ae60"};
 
 /* ---------------- SAVE (hardened: redundant + self-healing) ----------------
    Teddy's progress is precious — losing it could make him stop playing. So the
@@ -577,7 +629,7 @@ function masteredItem(key){ const m=S.mastery[key];
   return !!(m && m.str>=MASTER_STR && m.seen>=MASTER_SEEN && (m.ok/m.seen)>=MASTER_ACC); }
 function letterMastered(g){ return masteredItem(g); }
 /* what a milestone certifies = every letter taught so far must be mastered */
-function coreWeak(m){ return (m&&(m.finale||m.rescue)) ? taughtLetters().filter(g=>!letterMastered(g)) : []; }
+function coreWeak(m){ return (m&&(m.finale||m.rescue)) ? actGraphemes().filter(g=>!letterMastered(g)) : []; }
 
 /* ---------------- CUSTOM CLIP STORE ----------------
    Parent-made clips (recorded or generated in the in-app Audio studio) live
@@ -808,9 +860,24 @@ function paintInter(){ const p=INTERLUDE[interIx];
   $("btnInterNext").textContent = interIx<INTERLUDE.length-1?"NEXT ➜":"INTO THE PORTAL! ➜";
   $("btnInterNext").onclick=()=>{ interIx++;
     if(interIx<INTERLUDE.length)paintInter(); else finishInterlude(); }; }
-function finishInterlude(){ Aud.stop(); setAct(2); save(); actComingSoon(); }
-/* Shown when the current act has no missions yet (the safe landing for the
-   flip to Act 2 until its content ships). Knight Teddy + "to be continued". */
+function finishInterlude(){ Aud.stop(); setAct(2); save();
+  actMissions(2).length ? startAct2Intro() : actComingSoon(); }
+/* Act-2 onboarding: NOAH THE RED greets Sir Teddy and explains RUNES (digraphs),
+   then opens the medieval map. Plays once (S.act2intro). */
+const ACT2_INTRO=[
+ {art:()=>`<div style="display:flex;justify-content:center;">${noahSVG(240)}</div>`, id:"noah1"},
+ {art:()=>`<div style="display:flex;justify-content:center;gap:8px;align-items:center;">${noahSVG(160)}<div style="display:flex;gap:8px;">${["sh","ch","th"].map(d=>`<span style="font-family:Andika;font-weight:700;font-size:46px;color:#ffd75e;-webkit-text-stroke:5px #150f2e;paint-order:stroke;">${d}</span>`).join("")}</div></div>`, id:"noah2"},
+ {art:()=>`<div style="display:flex;justify-content:center;">${heroNow(220)}</div>`, id:"noah3"}
+];
+let a2Ix=0;
+function startAct2Intro(){ a2Ix=0; show("scrInter"); paintA2(); }
+function paintA2(){ const p=ACT2_INTRO[a2Ix];
+  $("interArt").innerHTML=(typeof p.art==="function")?p.art():p.art;
+  narrate("inter",$("interText"),[p.id]);
+  $("btnInterNext").textContent = a2Ix<ACT2_INTRO.length-1?"NEXT ➜":"ENTER THE REALM! ➜";
+  $("btnInterNext").onclick=()=>{ a2Ix++;
+    if(a2Ix<ACT2_INTRO.length)paintA2(); else { S.act2intro=true; save(); Aud.stop(); toMap(); } }; }
+/* Shown when the current act has no missions yet (safe fallback). */
 function actComingSoon(){ show("scrInter");
   $("interArt").innerHTML=`<div style="display:flex;justify-content:center;">${heroNow(220)}</div>`;
   narrate("inter",$("interText"),["interlude5"]);
@@ -883,7 +950,7 @@ function mapSVG(){
         <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="20" fill="${done(m.id)?"#9fe870":"#ffc93c"}" letter-spacing="1">${m.lbl.toUpperCase()}</text>
       </g></g>`;
   });
-  const vexDone=done(48);   /* Act-1 finale beaten */
+  const vexDone=currentAct()===1 && done(48);   /* Act-1 finale beaten (Act-1 map only) */
   /* zone divider bands between groups within the act */
   let dividers="";
   for(let i=1;i<az.length;i++){
@@ -1076,6 +1143,15 @@ let CUR=null;
 /* Letters actually taught so far (gem rescued) — progress-accurate, so review
    never shows a letter that hasn't been introduced yet. */
 function taughtLetters(){ return ORDER.filter(g=>S.done[LETTER_MISSION[g]]); }
+/* Act-2 digraphs (one gem, one sound). DIGRAPH_MISSION maps each to its learn
+   mission; taughtGraphemes() = every grapheme taught so far (letters + digraphs)
+   and is used for foil pools so a digraph can appear among the distractor gems. */
+const DIGRAPH_MISSION={sh:100,ch:101,th:103,wh:105,ck:106,ng:107};
+function taughtDigraphs(){ return DIGRAPHS.filter(d=>S.done[DIGRAPH_MISSION[d]]); }
+function taughtGraphemes(){ return taughtLetters().concat(taughtDigraphs()); }
+/* graphemes taught in the CURRENT act (Act-2 milestones gate on digraphs, since
+   the 26 letters are already mastered and carried over) */
+function actGraphemes(){ return currentAct()===2 ? taughtDigraphs() : taughtLetters(); }
 /* Adaptive pick: weight toward the child's weakest graphemes (low strength /
    low accuracy / fewest reps) so patrols self-target what needs work. */
 function pickWeak(pool){ if(!pool.length)return null;
@@ -1142,7 +1218,8 @@ function startLearn(m){ learnLetter=m.letter; const L=LETTERS[learnLetter];
   const ids=["intro_"+learnLetter,"snd_"+learnLetter,"like_"+learnLetter];
   if(LINES["cue_"+learnLetter] && (CONFUSE[learnLetter]||[]).some(t=>S.done[LETTER_MISSION[t]])) ids.push("cue_"+learnLetter);
   narrate("letter",$("letterText"),ids); }
-$("btnLetterGo").onclick=()=>startTrace(learnLetter);
+/* digraphs skip handwriting trace (the child already writes s + h) — straight to sound work */
+$("btnLetterGo").onclick=()=>{ isDigraph(learnLetter) ? startFind(learnLetter) : startTrace(learnLetter); };
 
 /* ---------------- TRACE ---------------- */
 let strokes,strokeIx,dotIx,trail;
@@ -1191,7 +1268,7 @@ function nextFind(){
   $("findProg").textContent="⭐ "+findRep+" / "+findGoal;
   narrate("find",$("findText"),["find_prompt","snd_"+g],"Find the gem that makes the sound\u2026 \ud83d\udd0a");
   /* patrol foils come only from letters already taught; learn-mission foils from the zone */
-  const foilPool=patrolSet||taughtLetters();   /* only already-taught letters as distractors */
+  const foilPool=patrolSet||taughtGraphemes();   /* only already-taught graphemes (incl. digraphs) as distractors */
   const foils=pickFoils(g, foilPool, 3);       /* biases toward the confusable twin (b/d…) */
   const opts=[g,...foils].sort(()=>Math.random()-.5);
   const row=$("findTiles"); row.innerHTML="";
@@ -1208,15 +1285,16 @@ function nextFind(){
 
 /* ---------------- BOSS ---------------- */
 let bossHP;
+function bossSprite(w){ return currentAct()===2 ? dragonSVG(w) : inkblotSVG(w); }
 function startBoss(g){ show("scrBoss"); bossHP=3;
-  $("bossArt").innerHTML=`<div class="boss" id="bossSprite">${inkblotSVG(240)}</div>`;
+  $("bossArt").innerHTML=`<div class="boss" id="bossSprite">${bossSprite(240)}</div>`;
   paintPips("bossPips",bossHP,3);
   narrate("boss",$("bossText"),["boss_intro","snd_"+g],"Blast the Vexbot! Tap the gem that makes the sound\u2026 \ud83d\udd0a");
   bossRound(g); }
 function paintPips(id,hp,max){ const p=$(id); p.innerHTML="";
   for(let i=0;i<max;i++){const d=document.createElement("div");d.className="pip"+(i<hp?"":" off");p.appendChild(d);} }
 function bossRound(g){
-  const foils=pickFoils(g, taughtLetters(), 2);   /* boss: include the confusable twin */
+  const foils=pickFoils(g, taughtGraphemes(), 2);   /* boss: include the confusable twin */
   const opts=[g,...foils].sort(()=>Math.random()-.5);
   const row=$("bossTiles"); row.innerHTML="";
   opts.forEach(o=>{ const t=document.createElement("button"); t.className="tile read"; t.textContent=o;
@@ -1240,25 +1318,26 @@ let readWords,readIx,readGoal,readMiss;
 function startRead(m){ show("scrRead");
   readWords=m.words.slice(); readIx=0; readGoal=readWords.length; readMiss=0;
   flow(narrate("read",$("readText"),["read_intro"]),()=>nextRead()); }
-function readSoundOut(w){ return Aud.play([...w.split("").map(c=>"snd_"+c),"word_"+w]); }
+function readPool(){ return currentAct()===2 ? READWORDS2 : READWORDS; }   /* Act-2 decode uses digraph words */
+function readSoundOut(w){ return Aud.play([...toGraphemes(w).map(c=>"snd_"+c),"word_"+w]); }
 function nextRead(){
   if(readIx>=readWords.length){
     const champ = CUR.id===30;
     flow(Aud.play(champ?["rally_champ"]:["read_yes"]), missionComplete); return; }
-  const w=readWords[readIx]; readMiss=0;
+  const w=readWords[readIx]; readMiss=0; const POOL=readPool();
   $("readProg").textContent="📖 "+readIx+" / "+readGoal;
   narrate("read",$("readText"),["read_prompt"],"Read the word… then tap what it means! 📖");
-  /* the word, as tappable letter tiles (tap = hear that sound) */
+  /* the word, as tappable grapheme tiles (a digraph is ONE tile = one sound) */
   const wr=$("readWord"); wr.innerHTML="";
-  w.split("").forEach(c=>{ const t=document.createElement("button"); t.className="tile read rletter"; t.textContent=c;
+  toGraphemes(w).forEach(c=>{ const t=document.createElement("button"); t.className="tile read rletter"; t.textContent=c;
     t.onclick=()=>Aud.play("snd_"+c); wr.appendChild(t); });
   /* three picture choices: the word + two other picture-words */
-  const foils=Object.keys(READWORDS).filter(x=>x!==w).sort(()=>Math.random()-.5).slice(0,2);
+  const foils=Object.keys(POOL).filter(x=>x!==w).sort(()=>Math.random()-.5).slice(0,2);
   const opts=[w,...foils].sort(()=>Math.random()-.5);
   const cr=$("readChoices"); cr.innerHTML="";
-  opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.textContent=READWORDS[o]; b.dataset.w=o;
+  opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.textContent=POOL[o]; b.dataset.w=o;
     b.onclick=()=>{ if(o===w){ record("w_"+w,true); b.classList.add("win"); burstAt(b); Aud.ding();
-        readIx++; flow(Aud.play(["read_yes",...w.split("").map(c=>"snd_"+c),"word_"+w]),()=>setTimeout(nextRead,200)); }
+        readIx++; flow(Aud.play(["read_yes",...toGraphemes(w).map(c=>"snd_"+c),"word_"+w]),()=>setTimeout(nextRead,200)); }
       else { record("w_"+w,false); readMiss++; b.classList.add("dim");
         if(readMiss>=2){ cr.querySelectorAll(".picktile").forEach(x=>{ if(x.dataset.w===w)x.classList.add("hint"); }); }
         readSoundOut(w); } };
@@ -1322,7 +1401,7 @@ function practiceSpell(){
    (foil differs by a key word, so guessing fails). Each word is tappable to
    hear it; a Read-it-all button plays the whole sentence as scaffold. */
 function wordAudio(w){ return LINES["word_"+w]?["word_"+w]
-  : (LINES["sw_"+w]?["sw_"+w] : [...w.split("").map(c=>"snd_"+c),"word_"+w]); }
+  : (LINES["sw_"+w]?["sw_"+w] : [...toGraphemes(w).map(c=>"snd_"+c)].concat(LINES["word_"+w]?["word_"+w]:[])); }
 function sentenceAudio(s){ return s.t.flatMap(w=>wordAudio(w)); }
 let sentList,sentIx,sentGoal,sentMiss,sentCur,sentMission;
 function startSentence(m){ show("scrSent"); sentMission=m; sentList=m.sents.slice(); sentIx=0; sentGoal=sentList.length;
@@ -1511,7 +1590,7 @@ function startPatrol(set){ Aud.play("patrol_intro");
 let forgeWords,forgeWordIx,forgeSlotIx,forgeHP;
 function startForge(m){ show("scrForge");
   forgeWords=m.words.slice(); forgeWordIx=0; forgeHP=forgeWords.length;
-  $("forgeBoss").innerHTML=`<div class="boss" id="forgeSprite" style="width:clamp(130px,22vw,200px)">${inkblotSVG(200)}</div>`;
+  $("forgeBoss").innerHTML=`<div class="boss" id="forgeSprite" style="width:clamp(130px,22vw,200px)">${bossSprite(200)}</div>`;
   paintPips("forgePips",forgeHP,forgeWords.length);
   flow(narrate("forge",$("forgeText"),["forge_intro1","forge_intro2"]),()=>forgeWord()); }
 function forgeWord(){
@@ -1519,24 +1598,25 @@ function forgeWord(){
     const fs=$("forgeSprite"); if(fs)fs.classList.add("flee");
     flow(Aud.play(["forge_win1","forge_win2"]),missionComplete); return; }
   const w=forgeWords[forgeWordIx]; forgeSlotIx=0;
-  narrate("forge",$("forgeText"),["forge_build",...w.split("").map(c=>"snd_"+c),"word_"+w],"Build the word! Listen\u2026 \ud83d\udd0a");
+  const gs=toGraphemes(w);   /* tokenise so digraphs (sh) are ONE build slot, one gem */
+  narrate("forge",$("forgeText"),["forge_build",...gs.map(c=>"snd_"+c),"word_"+w],"Build the word! Listen\u2026 \ud83d\udd0a");
   const slots=$("forgeSlots"); slots.innerHTML="";
-  w.split("").forEach(()=>{ const s=document.createElement("div"); s.className="slot read"; slots.appendChild(s); });
-  const pool=taughtLetters().filter(x=>!w.includes(x));   /* forge distractor: taught letters only */
+  gs.forEach(()=>{ const s=document.createElement("div"); s.className="slot read"; slots.appendChild(s); });
+  const pool=taughtGraphemes().filter(x=>!gs.includes(x));   /* distractor: taught graphemes only */
   const foil=pool[Math.floor(Math.random()*pool.length)];
-  const choices=[...new Set(w.split(""))].concat(foil?[foil]:[]).sort(()=>Math.random()-.5);
+  const choices=[...new Set(gs)].concat(foil?[foil]:[]).sort(()=>Math.random()-.5);
   const row=$("forgeChoices"); row.innerHTML="";
   choices.forEach(c=>{ const t=document.createElement("button"); t.className="tile read"; t.textContent=c;
     t.style.width=t.style.height="clamp(80px,13vw,120px)"; t.style.fontSize="clamp(44px,7vw,66px)";
-    t.onclick=()=>{ const need=w[forgeSlotIx];
+    t.onclick=()=>{ const need=gs[forgeSlotIx];
       if(c===need){ record(c,true);
         const slot=slots.children[forgeSlotIx]; slot.textContent=c; slot.classList.add("filled");
         Aud.ding(); forgeSlotIx++;
-        if(forgeSlotIx>=w.length){
+        if(forgeSlotIx>=gs.length){
           forgeHP--; paintPips("forgePips",forgeHP,forgeWords.length);
           const fs=$("forgeSprite"); fs.classList.add("hitfx"); setTimeout(()=>fs.classList.remove("hitfx"),380);
           burstAt(fs,w.toUpperCase()+"!");
-          flow(Aud.play([...w.split("").map(x=>"snd_"+x),"word_"+w,"blast"]),()=>{forgeWordIx++;setTimeout(forgeWord,350);});
+          flow(Aud.play([...gs.map(x=>"snd_"+x),"word_"+w,"blast"]),()=>{forgeWordIx++;setTimeout(forgeWord,350);});
         } else Aud.play(["snd_"+c,"forge_next"]); }
       else { record(need,false); t.classList.add("dim");
         Aud.play(["forge_listen","snd_"+need]);
@@ -1555,7 +1635,7 @@ function showWin(firstTime){ show("scrWin");
   let ids;
   if(CUR.type==="fortress") ids=["leighton1","leighton2","leighton3"];  /* the Act-2 handoff is its own cutscene now */
   else if(CUR.rescue) ids=["free_heart1","free_heart2","m2_done"];
-  else if(CUR.finale) ids = CUR.z===4 ? ["m4_letters"] : (CUR.z===3 ? ["m3_done"] : ["finale1","finale2","finale3"]);
+  else if(CUR.finale) ids = currentAct()===2 ? ["act2_win"] : (CUR.z===4 ? ["m4_letters"] : (CUR.z===3 ? ["m3_done"] : ["finale1","finale2","finale3"]));
   else if(firstTime&&gear) ids=["win_grow","win_gear",GEARLINE[gear]];
   else ids=["win_grow"];
   const FREE={3:"free_tank",6:"free_flip",8:"free_sunny"};

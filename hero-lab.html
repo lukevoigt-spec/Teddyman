@@ -34,6 +34,9 @@ h2{font-family:'Bangers',cursive;color:#9fe870;font-size:24px;margin:26px 0 4px;
   <h2>ACT 2 · KNIGHT (power-reset placeholder)</h2>
   <div class="grid" id="gKnight"></div>
 
+  <h2>ACT 2 · NOAH THE RED + DRAGON (placeholders)</h2>
+  <div class="grid" id="gAct2"></div>
+
   <h2>LORD VEX · VEXBOT</h2>
   <div class="grid" id="gVex"></div>
 
@@ -62,6 +65,10 @@ card("gGear","Full kit",{muscle:2,weapon:"hammer",cape:"gold",belt2:true,boots2:
 
 card("gKnight","Knight · powerless",{muscle:0,theme:"knight",weapon:"none"});
 card("gKnight","Knight · re-powered",{muscle:2,theme:"knight",weapon:"sword",belt2:true,boots2:true,cape:"gold"});
+
+document.getElementById("gAct2").innerHTML=
+  `<div class="card" style="width:170px;"><div style="display:flex;justify-content:center;">${noahSVG(150)}</div><div class="lbl">Noah the Red</div></div>`+
+  `<div class="card" style="width:200px;background:rgba(10,8,24,.5);"><div style="display:flex;justify-content:center;">${dragonSVG(170)}</div><div class="lbl">Dragon (boss)</div></div>`;
 
 document.getElementById("gVex").innerHTML=`<div class="card" style="width:230px;background:rgba(10,8,24,.6);"><div style="width:100%;display:flex;justify-content:center;">${inkblotSVG(180)}</div><div class="lbl">Lord Vex</div></div>`;
 

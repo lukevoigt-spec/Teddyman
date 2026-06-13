@@ -255,3 +255,65 @@ return `<svg viewBox="0 0 240 180" width="${w}" aria-hidden="true">
 <text x="70" y="106">?</text><text x="120" y="94">?</text><text x="170" y="108">?</text></g>
 <rect x="20" y="20" width="200" height="150" rx="14" fill="none" stroke="#3a2d7d" stroke-width="2"/>
 </svg>`;}
+
+/* ---- NOAH THE RED — Act-2 mentor wizard (Gandalf-coded, red hair+beard).
+   Placeholder; refine when the parent provides a reference. ---- */
+function noahSVG(w=220){
+return `<svg viewBox="-20 -40 240 420" width="${w}" aria-hidden="true">
+<defs>
+<linearGradient id="nrobe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8c2f3a"/><stop offset="1" stop-color="#4a1420"/></linearGradient>
+<linearGradient id="nhat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9c3540"/><stop offset="1" stop-color="#5a1824"/></linearGradient>
+</defs>
+<!-- staff -->
+<rect x="172" y="40" width="12" height="320" rx="6" fill="#6b4a2b" stroke="#150f2e" stroke-width="5"/>
+<circle cx="178" cy="40" r="18" fill="#7fd9ff" stroke="#150f2e" stroke-width="5"/>
+<circle cx="178" cy="40" r="7" fill="#fff7c4"/>
+<!-- robe -->
+<path d="M60 150 Q40 250 30 360 L170 360 Q160 250 140 150 Q100 132 60 150Z" fill="url(#nrobe)" stroke="#150f2e" stroke-width="6"/>
+<path d="M100 150 L100 360" stroke="#3a0f18" stroke-width="4" opacity=".5"/>
+<!-- sleeves -->
+<path d="M62 168 Q30 210 36 262 L60 250 Q60 210 78 186Z" fill="url(#nrobe)" stroke="#150f2e" stroke-width="6"/>
+<path d="M138 168 Q170 210 164 262 L140 250 Q140 210 122 186Z" fill="url(#nrobe)" stroke="#150f2e" stroke-width="6"/>
+<!-- face -->
+<circle cx="100" cy="92" r="40" fill="#f6d3c0" stroke="#150f2e" stroke-width="6"/>
+<!-- long red beard -->
+<path d="M66 100 Q70 180 100 210 Q130 180 134 100 Q118 128 100 126 Q82 128 66 100Z" fill="#c0392b" stroke="#150f2e" stroke-width="6" stroke-linejoin="round"/>
+<path d="M80 112 Q100 122 120 112" stroke="#a93226" stroke-width="4" fill="none"/>
+<!-- eyes + kindly brows -->
+<g stroke="none"><circle cx="86" cy="90" r="4.5" fill="#2b2233"/><circle cx="114" cy="90" r="4.5" fill="#2b2233"/></g>
+<path d="M74 80 Q86 74 96 80 M104 80 Q114 74 126 80" stroke="#c0392b" stroke-width="4" fill="none" stroke-linecap="round"/>
+<path d="M88 102 Q100 108 112 102" stroke="#b06b54" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/>
+<!-- wizard hat -->
+<path d="M58 64 Q100 -46 150 56 Q104 40 58 64Z" fill="url(#nhat)" stroke="#150f2e" stroke-width="6" stroke-linejoin="round"/>
+<path d="M50 64 Q100 44 158 60 L150 78 Q100 60 56 80Z" fill="url(#nhat)" stroke="#150f2e" stroke-width="6"/>
+<g fill="#ffd75e"><path d="M118 6 l3 7 l7 1 l-5 5 l1 7 l-6 -4 l-6 4 l1 -7 l-5 -5 l7 -1z"/></g>
+</svg>`;}
+
+/* ---- DRAGON — Act-2 boss (the Vixen's dragon army). Placeholder. ---- */
+function dragonSVG(w=240){
+return `<svg viewBox="-30 -40 300 320" width="${w}" aria-hidden="true">
+<defs>
+<linearGradient id="dbody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fae6b"/><stop offset="1" stop-color="#1e6b3e"/></linearGradient>
+<linearGradient id="dwing" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a1442"/><stop offset="1" stop-color="#3a0f24"/></linearGradient>
+</defs>
+<!-- wings -->
+<path d="M70 110 Q-26 60 -22 170 Q24 130 52 168 Q10 150 26 200 Q60 150 96 156Z" fill="url(#dwing)" stroke="#150f2e" stroke-width="6"/>
+<path d="M170 110 Q266 60 262 170 Q216 130 188 168 Q230 150 214 200 Q180 150 144 156Z" fill="url(#dwing)" stroke="#150f2e" stroke-width="6"/>
+<!-- body/neck -->
+<path d="M86 240 Q70 170 100 140 Q120 120 120 96 Q120 120 140 140 Q170 170 154 240Z" fill="url(#dbody)" stroke="#150f2e" stroke-width="6"/>
+<!-- belly scales -->
+<g stroke="#9fe870" stroke-width="3" opacity=".5" fill="none"><path d="M108 160 H132 M106 184 H134 M108 208 H132"/></g>
+<!-- head -->
+<path d="M70 70 Q72 24 120 22 Q168 24 170 70 Q150 96 120 96 Q90 96 70 70Z" fill="url(#dbody)" stroke="#150f2e" stroke-width="6"/>
+<!-- snout -->
+<path d="M88 72 Q120 110 152 72 Q140 88 120 88 Q100 88 88 72Z" fill="#1e6b3e" stroke="#150f2e" stroke-width="5"/>
+<!-- horns -->
+<path d="M78 34 Q60 6 76 -6 Q78 14 92 26Z" fill="#e8cfa0" stroke="#150f2e" stroke-width="5"/>
+<path d="M162 34 Q180 6 164 -6 Q162 14 148 26Z" fill="#e8cfa0" stroke="#150f2e" stroke-width="5"/>
+<!-- glowing eyes -->
+<g stroke="none"><path d="M92 56 Q102 48 112 56 Q102 64 92 56Z" fill="#ffd75e"/><path d="M128 56 Q138 48 148 56 Q138 64 128 56Z" fill="#ffd75e"/>
+<circle cx="102" cy="56" r="3" fill="#150f2e"/><circle cx="138" cy="56" r="3" fill="#150f2e"/></g>
+<!-- nostrils + little flame -->
+<circle cx="110" cy="80" r="2.5" fill="#150f2e"/><circle cx="130" cy="80" r="2.5" fill="#150f2e"/>
+<path d="M120 92 q-8 14 0 26 q8 -12 0 -26Z" fill="#ff8a3d" stroke="#e6453c" stroke-width="2"/>
+</svg>`;}
