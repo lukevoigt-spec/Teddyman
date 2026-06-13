@@ -42,10 +42,17 @@ return `<svg viewBox="-30 -150 310 660" width="${w}" aria-hidden="true">
 <linearGradient id="${u}gold" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#fff0bd"/><stop offset=".45" stop-color="#ffd75e"/><stop offset="1" stop-color="#e0901f"/></linearGradient>
 <radialGradient id="${u}skin" cx=".42" cy=".34" r=".78"><stop offset="0" stop-color="#ffe6cc"/><stop offset=".65" stop-color="#ffd4af"/><stop offset="1" stop-color="#edb085"/></radialGradient>
 <radialGradient id="${u}sh" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#0a0620" stop-opacity=".55"/><stop offset="1" stop-color="#0a0620" stop-opacity="0"/></radialGradient>
-<clipPath id="${u}face"><circle cx="124" cy="66" r="54"/></clipPath></defs>
+<radialGradient id="${u}aura" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="${th.sheen}" stop-opacity=".55"/><stop offset=".5" stop-color="${th.sheen}" stop-opacity=".18"/><stop offset="1" stop-color="${th.sheen}" stop-opacity="0"/></radialGradient>
+<radialGradient id="${u}embg" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff3c4" stop-opacity=".9"/><stop offset=".55" stop-color="#ffd75e" stop-opacity=".45"/><stop offset="1" stop-color="#ffd75e" stop-opacity="0"/></radialGradient>
+<linearGradient id="${u}capeL" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".18" stop-color="#fff" stop-opacity="0"/><stop offset=".8" stop-color="#150f2e" stop-opacity="0"/><stop offset="1" stop-color="#150f2e" stop-opacity=".35"/></linearGradient>
+<clipPath id="${u}face"><circle cx="124" cy="66" r="54"/></clipPath>
+<clipPath id="${u}tor"><path d="M64 142 Q123 120 182 142 L174 238 Q170 272 152 284 L96 284 Q76 272 72 238Z"/></clipPath></defs>
+<ellipse cx="124" cy="240" rx="150" ry="220" fill="url(#${u}aura)"/>
 <ellipse cx="123" cy="470" rx="98" ry="20" fill="url(#${u}sh)"/>
 ${o.weapon==="hammer"||o.weapon==="sword"?weapon:""}
 <path d="M62 122 Q38 220 30 350 Q28 406 50 448 Q90 426 124 436 Q170 424 200 446 Q224 402 218 346 Q210 218 184 122 Q122 104 62 122Z" fill="url(#${u}cape)" stroke="#150f2e" stroke-width="6"/>
+<path d="M62 122 Q38 220 30 350 Q28 406 50 448 Q90 426 124 436 Q170 424 200 446 Q224 402 218 346 Q210 218 184 122 Q122 104 62 122Z" fill="url(#${u}capeL)"/>
+<g stroke="${cp[1]}" stroke-width="4" fill="none" opacity=".5" stroke-linecap="round"><path d="M92 150 Q86 280 78 430"/><path d="M124 142 Q124 280 124 432"/><path d="M156 150 Q162 280 170 430"/></g>
 <g stroke="#150f2e" stroke-width="6" stroke-linejoin="round">
 <path d="M96 288 L90 372 L86 412 L118 412 L124 310Z" fill="url(#${u}suit)"/>
 <path d="M150 288 L158 372 L162 412 L130 412 L126 310Z" fill="url(#${u}suit)"/>
@@ -56,6 +63,7 @@ ${o.weapon==="hammer"||o.weapon==="sword"?weapon:""}
 ${bootFx}
 <g transform="translate(123 0) scale(${sx} 1) translate(-123 0)">
 <path d="M64 142 Q123 120 182 142 L174 238 Q170 272 152 284 L96 284 Q76 272 72 238Z" fill="url(#${u}suit)" stroke="#150f2e" stroke-width="6"/>
+<g clip-path="url(#${u}tor)"><path d="M130 128 L190 142 L182 252 Q176 282 150 292 L130 292Z" fill="${th.muscle}" opacity=".32"/><ellipse cx="94" cy="158" rx="34" ry="27" fill="#fff" opacity=".22"/></g>
 <path d="M74 150 Q96 136 122 134 L120 170 Q96 172 80 184Z" fill="${th.sheen}" opacity=".55"/>
 ${m>=1?`<path d="M92 168 Q123 152 154 168" stroke="${th.muscle}" stroke-width="5" fill="none" stroke-linecap="round"/>`:''}
 ${m>=2?`<path d="M100 206 Q123 196 146 206 M104 232 Q123 224 142 232" stroke="${th.muscle}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`:''}
@@ -64,11 +72,14 @@ ${m>=2?`<path d="M100 206 Q123 196 146 206 M104 232 Q123 224 142 232" stroke="${
 <path d="M66 152 Q34 170 28 212 Q34 242 62 252 L84 264 L92 244 L72 232 Q58 220 60 198 Q66 172 78 162Z" fill="url(#${u}suit)"/>
 <path d="M180 152 Q212 170 218 212 Q214 230 202 240 L196 220 Q200 208 192 192 Q184 172 170 162Z" fill="url(#${u}suit)"/>
 <path d="M202 208 Q216 226 196 252 L168 266 L158 246 L184 232 Q192 222 190 212Z" fill="url(#${u}gold)"/>
-<circle cx="90" cy="260" r="15" fill="#e6453c"/><circle cx="158" cy="260" r="15" fill="url(#${u}gold)"/></g>
+<circle cx="90" cy="260" r="15" fill="#e6453c"/><circle cx="158" cy="260" r="15" fill="url(#${u}gold)"/>
+<path d="M83 254 a8 8 0 0 1 8 -4" stroke="#ffb3ad" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M151 254 a8 8 0 0 1 8 -4" stroke="#fff0bd" stroke-width="4" fill="none" stroke-linecap="round"/></g>
 ${biceps}
 <path d="M88 272 L158 272 L154 294 L92 294Z" fill="url(#${u}gold)" stroke="#150f2e" stroke-width="5"/>
 ${beltGlow}
+<circle cx="123" cy="198" r="46" fill="url(#${u}embg)"/>
 <g transform="translate(123 198)"><path d="M0 -32 L29 -16 L29 16 L0 32 L-29 16 L-29 -16Z" fill="url(#${u}gold)" stroke="#150f2e" stroke-width="5"/>
+<path d="M-22 -12 L-2 -24 L0 -16 L-18 -5Z" fill="#fff" opacity=".4"/>
 <path d="M-15 -15 L15 -15 L15 -6 L5 -6 L5 17 L-5 17 L-5 -6 L-15 -6Z" fill="#d23a31" stroke="#150f2e" stroke-width="3"/></g>
 ${o.theme==="knight"?`<!-- ===== knight helm (Act-2 placeholder) ===== -->
 <rect x="111" y="110" width="26" height="20" rx="6" fill="#aeb6c2" stroke="#150f2e" stroke-width="5"/>
@@ -88,6 +99,7 @@ ${o.theme==="knight"?`<!-- ===== knight helm (Act-2 placeholder) ===== -->
 <path d="M144 28 Q174 16 184 54 Q170 32 144 38Z" fill="#e8cb8e" stroke="none"/>
 <g fill="#cfe6ff" fill-opacity=".4" stroke="#1d4fb8" stroke-width="7" stroke-linejoin="round">
 <rect x="82" y="50" width="38" height="32" rx="9"/><rect x="130" y="50" width="38" height="32" rx="9"/><line x1="120" y1="64" x2="130" y2="64"/></g>
+<g stroke="#fff" stroke-width="4" fill="none" opacity=".6" stroke-linecap="round"><path d="M88 74 L104 54"/><path d="M136 74 L152 54"/></g>
 <g stroke="none"><circle cx="101" cy="66" r="8.5" fill="#fff"/><circle cx="149" cy="66" r="8.5" fill="#fff"/>
 <circle cx="103" cy="67" r="5" fill="#6fa8d8"/><circle cx="151" cy="67" r="5" fill="#6fa8d8"/>
 <circle cx="103" cy="67" r="2.4" fill="#150f2e"/><circle cx="151" cy="67" r="2.4" fill="#150f2e"/>
