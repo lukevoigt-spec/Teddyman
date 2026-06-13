@@ -609,7 +609,13 @@ body.calm .uc-rays{animation:none;}
 #hudStars{border-color:var(--gold);
   box-shadow:0 4px 14px rgba(0,0,0,.4), 0 0 14px rgba(255,206,58,.3), inset 0 1px 0 rgba(255,255,255,.18);}
 @media (prefers-reduced-motion:no-preference){
-  #winHero svg{animation:winjump .9s cubic-bezier(.2,1.45,.5,1) 1;}
+  #winHero.winpose1 svg{animation:winjump .9s cubic-bezier(.2,1.45,.5,1) 1;}
+  #winHero.winpose2 svg{animation:winspin 1s cubic-bezier(.2,1.3,.5,1) 1;}
+  #winHero.winpose3 svg{animation:winbounce 1.1s ease-out 1;}
+  #winHero.winpose4 svg{animation:winwave 1s ease-in-out 1;}
 }
 @keyframes winjump{0%{transform:translateY(26px) scale(.8)}55%{transform:translateY(-16px) scale(1.06)}100%{transform:translateY(0) scale(1)}}
-body.calm #winHero svg{animation:none;}
+@keyframes winspin{0%{transform:translateY(20px) scale(.8) rotate(-12deg)}55%{transform:translateY(-18px) scale(1.05) rotate(8deg)}100%{transform:translateY(0) scale(1) rotate(0)}}
+@keyframes winbounce{0%{transform:translateY(0) scale(.85)}30%{transform:translateY(-22px) scale(1.05)}50%{transform:translateY(0) scale(.97)}72%{transform:translateY(-10px) scale(1.02)}100%{transform:translateY(0) scale(1)}}
+@keyframes winwave{0%{transform:scale(.85) rotate(0)}25%{transform:scale(1.05) rotate(-6deg)}50%{transform:scale(1.02) rotate(6deg)}75%{transform:scale(1.02) rotate(-3deg)}100%{transform:scale(1) rotate(0)}}
+body.calm #winHero svg{animation:none!important;}

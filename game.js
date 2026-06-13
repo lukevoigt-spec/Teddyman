@@ -1964,6 +1964,7 @@ function showWin(firstTime){ show("scrWin");
   const ally=CUR.rescue?"heart":(CUR.type==="fortress"?(currentAct()===2?"kendall":"leighton"):null);
   $("winHero").innerHTML=heroNow(170)+
     (ally?`<svg viewBox="-32 -36 64 80" width="98" style="vertical-align:bottom;">${allyFace(ally)}<text y="42" text-anchor="middle" font-family="Bangers" font-size="12" fill="#ffc93c">${ally==="leighton"?"LEIGHTON":ally==="kendall"?"MISS KENDALL":"HEARTGUARD"}</text></svg>`:"");
+  $("winHero").className="winpose"+(1+Math.floor(Math.random()*4));   /* random victory celebration */
   const gear=GEAR_AT[CUR.id];
   $("winGear").innerHTML=(firstTime&&gear)?`<div class="gearbadge">NEW GEAR: ${gear}</div>`:"";
   /* viral-style reward reveal card for a brand-new piece of gear */
