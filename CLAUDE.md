@@ -83,8 +83,9 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
     (muscle 0, no gear, no weapon). KNIGHT COSTUME is a heroSVG theme: HERO_THEMES.knight swaps the
     blue super-suit for steel armor and the masked head for a knight HELM (placeholder art; refine
     when parent provides references). Preview both in hero-lab.html ("ACT 2 · KNIGHT" section).
-    Mastery still persists across acts (keyed by grapheme/word). TO BUILD NEXT: Act-2 zones+missions
-    (ids 100+), Noah-the-Red mentor art/voice, Vixen/dragon art, the Act-1→Act-2 interlude handoff.
+    Mastery still persists across acts (keyed by grapheme/word). The Act-1→Act-2 interlude HANDOFF
+    is built (see "Act 1 finale" below). TO BUILD NEXT: Act-2 zones+missions (ids 100+, digraphs/
+    blends ladder), Noah-the-Red mentor art/voice, real Vixen/dragon art + Miss-Kendall/friend faces.
 - Possible mechanic for Act 2: mad-lib / scrambled-sentence WORD-ORDER + Maze/Cloze tasks (validate
   against research for Teddy's profile first; sentence-building supports syntax/comprehension once
   decoding is solid, sequenced AFTER word reading).
@@ -165,9 +166,20 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   (FORTRESS[]) — sound shield → word-locks (decode) → spells (sight) → READ sentences → free
   Leighton. ~19 rounds, big HP bar, Vex taunts (role C). Gated on letter mastery (the gentle
   power-up patrol) so reaching the win = proven proficiency; the sentence phase makes him READ to
-  win. Frees LEIGHTON (joins the league, kind "leighton") and plays the Act-2 interlude hook
-  (interlude1/2 — a new friend, likely Miss Kendall, vanishes → next city). Sentence-reading mastery
-  is currently picture-match; research upgrade = Maze/Cloze (read sentence, pick the word that fits).
+  win. Frees LEIGHTON (joins the league, kind "leighton"). Sentence-reading mastery is currently
+  picture-match; research upgrade = Maze/Cloze (read sentence, pick the word that fits).
+- ACT-1 → ACT-2 HANDOFF (live, a real cutscene now — not just teaser audio): after Leighton's
+  rescue the fortress win screen's CONTINUE button runs startInterlude() (screen scrInter, mirrors
+  the intro pattern). Beats: Mom & Dad return (interlude1) → captured friends (interlude2,
+  captiveSVG '?' silhouettes — real faces TBD) → THE VIXEN taunts (interlude3, role V, vixenSVG
+  placeholder) → time portal + Noah the Red (interlude4, portalSVG) → KNIGHT transformation
+  (interlude_knight, heroSVG theme:"knight", powerless). The final NEXT calls finishInterlude() →
+  setAct(2) → actComingSoon(): a friendly "to be continued" panel (interlude5 + knight hero) that
+  BACK-TO-TITLEs. SAFETY: toMap() and geomFor() now guard the empty Act-2 (no zones/missions yet) —
+  toMap routes to actComingSoon, geomFor returns a safe stub — so the flip to Act 2 can never break
+  the map. When Act-2 zones/missions are appended (ids 100+), the map machinery picks them up and the
+  handoff lands on real content automatically. Placeholder art (vixenSVG/portalSVG/captiveSVG) lives
+  in art.js — refine when references arrive.
 
 ## Working agreement
 - Small, reviewable commits with plain-English messages the parent can read.

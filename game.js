@@ -230,6 +230,7 @@ function actGearList(a){ const mids=new Set(actMissions(a).map(m=>m.id));
    membership (not flat id order) so groups slot in with appended save-ids. */
 function geomFor(a){
   const zs=actZones(a), ms=actMissions(a), nodes=zs.flatMap(z=>z.nodes);
+  if(!nodes.length) return { act:a, zones:zs, missions:ms, base:[470,1408], nodeby:{}, mapH:1560, minY:200, fort:[400,200], viewTop:0 };  /* act with no content yet — safe stub */
   const base=(zs.find(z=>z.base)||{}).base||[470,1408];
   const nodeby={}; zs.forEach(z=>{ ms.filter(m=>m.z===z.id).forEach((m,i)=>{ nodeby[m.id]=z.nodes[i]||z.nodes[z.nodes.length-1]; }); });
   const maxY=Math.max(base[1], ...nodes.map(p=>p[1])), minY=Math.min(...nodes.map(p=>p[1]));
@@ -385,8 +386,9 @@ const LINES={
   interlude1:{t:"Wait, Super Teddy — an urgent message is coming in! It's your Mom and Dad!"},
   interlude2:{t:"Hero, we are SO proud of you. But there's no time to rest. A cunning new villain has appeared — and she has kidnapped Miss Kendall... and your friends JJ, Nora, and Cal!"},
   interlude3:{t:"Hello, little hero. Such a shame to spoil your party. I'm whisking your precious friends far, far away — to a time long, long ago. Do try to catch up... if you can. Ta-ta!", v:"V"},
-  interlude4:{t:"She slipped through a shimmering time portal — to the age of KNIGHTS and DRAGONS! Your Uncle Noah is already suiting up to help you, hero."},
-  interlude5:{t:"Rest now, champion Super Teddy. A brand-new adventure begins soon, in a brand-new time. TO BE CONTINUED!"},
+  interlude4:{t:"She slipped through a shimmering time portal — to the age of KNIGHTS and DRAGONS! A mighty wizard named Noah the Red is already there, waiting to help you, hero."},
+  interlude_knight:{t:"You leap into the portal! In a swirl of light your gems and gear are gone... and you rise again as SUPER TEDDY THE KNIGHT! A brave new quest awaits."},
+  interlude5:{t:"Rest now, champion. Your medieval adventure is being built, and begins very soon. TO BE CONTINUED!"},
   free_tank:{t:"CAGE DESTROYED! You freed Archie! TANK has joined the Hero League... and he is ready to SMASH!"},
   free_flip:{t:"CAGE DESTROYED! You freed Ellie! FLIP has joined the league... backflips, cartwheels, and mid-air gem grabs!"},
   free_sunny:{t:"CAGE DESTROYED! You freed William! SUNNY has joined the league... and things are about to get silly!"},
@@ -615,7 +617,7 @@ const $=id=>document.getElementById(id);
 /* Painted-scene slots: screen -> art/bg-<name>.* . Add an image to swap a scene;
    if the file is missing the layer stays transparent and the original look shows.
    Several screens intentionally share one scene (e.g. learn/trace, boss/forge). */
-const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrScan:"lab", scrMap:"city", scrRead:"learn", scrSpell:"learn", scrSent:"learn", scrCloze:"learn", scrScramble:"learn", scrFortress:"battle",
+const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrInter:"intro", scrScan:"lab", scrMap:"city", scrRead:"learn", scrSpell:"learn", scrSent:"learn", scrCloze:"learn", scrScramble:"learn", scrFortress:"battle",
   scrBase:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
   scrBoss:"battle", scrForge:"battle", scrWin:"victory", scrRest:"rest" };
 const __bgCache={};
@@ -679,6 +681,35 @@ function paintIntro(){ const p=INTRO[introIx]; $("introArt").innerHTML=p.art;
 $("btnIntroNext").onclick=()=>{ introIx++;
   if(introIx<INTRO.length)paintIntro();
   else { S.intro=true; save(); startScan(); } };
+
+/* ---------------- ACT-1 → ACT-2 INTERLUDE (handoff cutscene) ----------------
+   Plays after Leighton's rescue: Mom & Dad return, the Vixen kidnaps Miss
+   Kendall + friends and flees through a time portal, Teddy follows and becomes
+   a KNIGHT (power-reset). Ends by flipping S.act to 2; since Act-2 content isn't
+   built yet, it lands on a friendly "coming soon" panel (no empty map). */
+const INTERLUDE=[
+ {art:`<div style="display:flex;justify-content:center;padding:20px;">${mentorChips(260)}</div>`, id:"interlude1"},
+ {art:`<div style="display:flex;justify-content:center;">${captiveSVG(260)}</div>`, id:"interlude2"},
+ {art:`<div style="display:flex;justify-content:center;">${vixenSVG(220)}</div>`, id:"interlude3"},
+ {art:`<div style="display:flex;justify-content:center;">${portalSVG(220)}</div>`, id:"interlude4"},
+ {art:()=>`<div style="display:flex;justify-content:center;">${heroSVG(220,{...heroOpts(),theme:"knight",muscle:0,weapon:"none",belt2:false,boots2:false})}</div>`, id:"interlude_knight"}
+];
+let interIx=0;
+function startInterlude(){ interIx=0; show("scrInter"); paintInter(); }
+function paintInter(){ const p=INTERLUDE[interIx];
+  $("interArt").innerHTML=(typeof p.art==="function")?p.art():p.art;
+  narrate("inter",$("interText"),[p.id]);
+  $("btnInterNext").textContent = interIx<INTERLUDE.length-1?"NEXT ➜":"INTO THE PORTAL! ➜";
+  $("btnInterNext").onclick=()=>{ interIx++;
+    if(interIx<INTERLUDE.length)paintInter(); else finishInterlude(); }; }
+function finishInterlude(){ Aud.stop(); setAct(2); save(); actComingSoon(); }
+/* Shown when the current act has no missions yet (the safe landing for the
+   flip to Act 2 until its content ships). Knight Teddy + "to be continued". */
+function actComingSoon(){ show("scrInter");
+  $("interArt").innerHTML=`<div style="display:flex;justify-content:center;">${heroNow(220)}</div>`;
+  narrate("inter",$("interText"),["interlude5"]);
+  $("btnInterNext").textContent="BACK TO TITLE";
+  $("btnInterNext").onclick=()=>{ Aud.stop(); show("scrTitle"); }; }
 
 /* ---------------- POWER SCAN ----------------
    One-time baseline, zone-1 letters only (new zones are met in missions). */
@@ -912,7 +943,9 @@ function heroMarker(){ const ms=actMissions(currentAct()); let ix=0;
   const [x,y]=nodeOf(ms[ix].id);
   return `<g transform="translate(${x-44} ${y-186}) scale(.30)">${heroNow(250).replace(/<svg[^>]*>|<\/svg>/g,"")}</g>`;
 }
-function toMap(){ sessionTick(); GEO=geomFor(currentAct()); show("scrMap");
+function toMap(){ sessionTick();
+  if(!actMissions(currentAct()).length){ actComingSoon(); return; }  /* act with no content yet → safe landing */
+  GEO=geomFor(currentAct()); show("scrMap");
   $("hudTitle").textContent=actInfo(currentAct()).city;
   $("mapSVGwrap").innerHTML=mapSVG();
   document.querySelectorAll(".mnode").forEach(n=>{
@@ -1364,7 +1397,7 @@ function showWin(firstTime){ show("scrWin");
   const gear=GEAR_AT[CUR.id];
   $("winGear").innerHTML=(firstTime&&gear)?`<div class="gearbadge">NEW GEAR: ⭐ ${gear}</div>`:"";
   let ids;
-  if(CUR.type==="fortress") ids=["leighton1","leighton2","leighton3","interlude1","interlude2","interlude3","interlude4","interlude5"];
+  if(CUR.type==="fortress") ids=["leighton1","leighton2","leighton3"];  /* the Act-2 handoff is its own cutscene now */
   else if(CUR.rescue) ids=["free_heart1","free_heart2","m2_done"];
   else if(CUR.finale) ids = CUR.z===4 ? ["m4_letters"] : (CUR.z===3 ? ["m3_done"] : ["finale1","finale2","finale3"]);
   else if(firstTime&&gear) ids=["win_grow","win_gear",GEARLINE[gear]];
@@ -1375,6 +1408,12 @@ function showWin(firstTime){ show("scrWin");
   if(S.done[17]&&!CUR.rescue)ids.push("heart_cheer"+(1+(S.stars%3)));
   narrate("win",$("winText"),ids);
   const ix=MISSIONS.findIndex(x=>x.id===CUR.id);
+  if(CUR.type==="fortress"){   /* finale: the only way forward is the Act-2 handoff cutscene */
+    $("btnWinNext").style.display="none";
+    $("btnWinMap").textContent="CONTINUE ➜";
+    $("btnWinMap").onclick=()=>startInterlude();
+    return; }
+  $("btnWinMap").textContent="CITY MAP";
   $("btnWinNext").style.display=(ix<MISSIONS.length-1)?"inline-block":"none";
   $("btnWinNext").onclick=()=>{ if(S.session.count>=3&&!S.session.rest){S.session.rest=true;save();showRest(MISSIONS[ix+1]);} else startMission(MISSIONS[ix+1]); };
   $("btnWinMap").onclick=()=>{ if(S.session.count>=3&&!S.session.rest){S.session.rest=true;save();showRest(null);} else toMap(); }; }

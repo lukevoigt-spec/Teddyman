@@ -195,3 +195,63 @@ function allyFace(kind){
     `<path d="M-10 9 Q1 20 11 9 Q1 15 -10 9Z" fill="#7c3a3a" stroke="#150f2e" stroke-width="2.4"/>`+
     `<rect x="-2" y="10" width="4" height="4" fill="#fff"/>`;
 }
+
+/* =========================================================
+   ACT-2 PLACEHOLDER ART (refine when parent provides references).
+   The Vixen, the time portal, and the captured friends — used only in the
+   Act-1 finale interlude handoff. Flat-vector, no flicker (seizure-safe).
+========================================================= */
+
+/* ---- THE VIXEN (Act-2 villain; sly woman who morphs into a dragon) ---- */
+function vixenSVG(w=240){
+return `<svg viewBox="-90 -130 300 360" width="${w}" aria-hidden="true">
+<defs>
+<linearGradient id="vxhair" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e23b6d"/><stop offset="1" stop-color="#7a1442"/></linearGradient>
+<linearGradient id="vxgown" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a1840"/><stop offset="1" stop-color="#2a0c20"/></linearGradient>
+</defs>
+<!-- dragon-wing hint behind her (she morphs) -->
+<path d="M40 60 Q-70 -10 -78 90 Q-30 60 -8 96 Q-44 90 -40 150 Q-2 110 30 120Z" fill="#3a1030" stroke="#150f2e" stroke-width="5" opacity=".85"/>
+<path d="M80 60 Q190 -10 198 90 Q150 60 128 96 Q164 90 160 150 Q122 110 90 120Z" fill="#3a1030" stroke="#150f2e" stroke-width="5" opacity=".85"/>
+<!-- gown -->
+<path d="M40 150 Q60 120 96 120 Q132 120 140 150 L162 226 L18 226Z" fill="url(#vxgown)" stroke="#150f2e" stroke-width="6"/>
+<!-- flowing red hair -->
+<path d="M44 18 Q24 70 18 140 Q40 120 52 150 Q56 100 70 70Z" fill="url(#vxhair)" stroke="#150f2e" stroke-width="5"/>
+<path d="M136 18 Q156 70 162 140 Q140 120 128 150 Q124 100 110 70Z" fill="url(#vxhair)" stroke="#150f2e" stroke-width="5"/>
+<!-- face -->
+<circle cx="90" cy="64" r="46" fill="#f6d3c0" stroke="#150f2e" stroke-width="6"/>
+<path d="M44 50 Q40 -2 90 -2 Q140 -2 136 50 Q120 22 96 26 Q120 6 84 14 Q104 0 70 12 Q50 20 56 44 Q48 44 44 50Z" fill="url(#vxhair)" stroke="#150f2e" stroke-width="6" stroke-linejoin="round"/>
+<!-- cat-green sly eyes -->
+<path d="M62 58 Q72 50 84 58 Q74 66 62 58Z" fill="#fff"/><path d="M96 58 Q108 50 118 58 Q106 66 96 58Z" fill="#fff"/>
+<ellipse cx="73" cy="58" rx="3" ry="5.5" fill="#3fae6b"/><ellipse cx="107" cy="58" rx="3" ry="5.5" fill="#3fae6b"/>
+<path d="M58 52 Q72 44 86 50 M94 50 Q108 44 122 52" stroke="#150f2e" stroke-width="3" fill="none" stroke-linecap="round"/>
+<!-- sly grin -->
+<path d="M70 84 Q90 98 112 82 Q98 92 70 84Z" fill="#a3243f" stroke="#150f2e" stroke-width="3.5" stroke-linejoin="round"/>
+<!-- little dragon horns -->
+<path d="M58 8 Q50 -16 64 -20 Q60 -6 70 4Z" fill="#7a1442" stroke="#150f2e" stroke-width="4"/>
+<path d="M122 8 Q130 -16 116 -20 Q120 -6 110 4Z" fill="#7a1442" stroke="#150f2e" stroke-width="4"/>
+</svg>`;}
+
+/* ---- time portal (static swirl — NO flicker) ---- */
+function portalSVG(w=240){
+return `<svg viewBox="0 0 200 200" width="${w}" aria-hidden="true">
+<defs><radialGradient id="prt" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff7c4"/><stop offset=".35" stop-color="#7ad0ff"/><stop offset=".7" stop-color="#7a4fb6"/><stop offset="1" stop-color="#1a1030"/></radialGradient></defs>
+<circle cx="100" cy="100" r="92" fill="url(#prt)" stroke="#150f2e" stroke-width="6"/>
+<g fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".7">
+<path d="M100 28 Q150 50 160 100 Q150 150 100 172 Q50 150 40 100 Q50 50 100 28"/>
+<path d="M100 50 Q132 64 140 100 Q132 136 100 150 Q68 136 60 100 Q68 64 100 50"/>
+<path d="M100 72 Q116 80 120 100 Q116 120 100 128 Q84 120 80 100 Q84 80 100 72"/></g>
+<circle cx="100" cy="100" r="12" fill="#fff7c4"/>
+<g fill="#9fe870" opacity=".8"><circle cx="46" cy="60" r="4"/><circle cx="158" cy="74" r="4"/><circle cx="60" cy="150" r="4"/><circle cx="150" cy="146" r="4"/></g>
+</svg>`;}
+
+/* ---- captured friends (faces TBD — '?' silhouettes in a cage) ---- */
+function captiveSVG(w=240){
+return `<svg viewBox="0 0 240 180" width="${w}" aria-hidden="true">
+<rect x="20" y="20" width="200" height="150" rx="14" fill="#1a1030" stroke="#150f2e" stroke-width="6"/>
+<g stroke="#9aa3c4" stroke-width="7"><line x1="56" y1="20" x2="56" y2="170"/><line x1="98" y1="20" x2="98" y2="170"/><line x1="140" y1="20" x2="140" y2="170"/><line x1="182" y1="20" x2="182" y2="170"/></g>
+<g fill="#5a4a8c" stroke="#150f2e" stroke-width="4">
+<circle cx="70" cy="96" r="22"/><circle cx="120" cy="84" r="24"/><circle cx="170" cy="98" r="22"/></g>
+<g font-family="Bangers,sans-serif" fill="#ffc93c" text-anchor="middle" font-size="26">
+<text x="70" y="106">?</text><text x="120" y="94">?</text><text x="170" y="108">?</text></g>
+<rect x="20" y="20" width="200" height="150" rx="14" fill="none" stroke="#3a2d7d" stroke-width="2"/>
+</svg>`;}
