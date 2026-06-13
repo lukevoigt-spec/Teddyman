@@ -554,3 +554,103 @@ If only one visual improvement is prioritized next, make it **foreground/backgro
 - Ensure answer tiles remain the clearest, highest-contrast objects on learning screens.
 
 That will likely improve perceived quality more than adding more detail to any single character.
+
+---
+
+## 2026-06-13 Latest Pull Review — Progress, Bugs, Enhancements, Queries
+
+### Review context
+
+Reviewed after pulling latest `main` at commit `01a5a36` (`docs: bring CLAUDE.md current...`). This was a read-only code review except for this `QA.md` update.
+
+### Progress snapshot
+
+The project has moved forward significantly since the prior review:
+
+- The no-build modular split is now real: content/data, save/cloud, audio, allies, map, SFX, and music have been extracted from the old monolith while preserving classic `<script>` loading.
+- Act 2 now appears complete through sentence-level fluency and Dragon Keep, which means the reading ladder is much closer to the stated goal: letters → digraphs/blends → long vowels/vowel teams → word fluency → sentence-level reading.
+- Tests expanded from save/curriculum basics into stronger app invariants: act ID ranges, map spot coverage, zone locking, vowel teams, Act-2 sentence decodability, profile-name escaping, sound-ID anti-gaming, and scramble decodability.
+- PWA/offline support has landed via `manifest.json` and a network-first service worker.
+- Visual polish is now more systematic: painted map, scene harmonizer variables, Act-2 medieval chrome, detail tiers, ally glow-up, music/SFX controls, and victory pose variation.
+
+Overall: this is no longer just "feature expansion"; the project is becoming a maintainable static app with real regression protection.
+
+### Bugs / risks to investigate
+
+1. **Cloud pull after profile switching may need a UI refresh beyond the title.**
+   - `switchProfile()` reloads `S`, recomputes `GEO`, paints the title, and runs `cloudPull()`. If cloud restores newer progress, it repaints title again, but may not refresh any already-open progress/settings UI.
+   - Likely low risk because switching returns to title, but worth verifying with multiple players and cloud-enabled saves.
+
+2. **Cloud sync still uses bare profile IDs as write keys.**
+   - This remains the biggest security/accidental-write concern. The risk is acceptable for a family app, but the baked Worker URL means the optional passphrase/key-derivation idea is still worth doing before wider sharing.
+
+3. **Service worker cache version may need an explicit bump habit.**
+   - The service worker is network-first, which is the right strategy for frequent GitHub Pages deploys. Still, if the app goes offline after a deploy or if old cached assets are involved, it helps to have a documented rule: bump `CACHE` when changing core load-order files, asset names, or offline-critical behavior.
+
+4. **Classic script modularization is successful but load-order fragile.**
+   - The comments explain load order well. The remaining risk is future agents adding a cross-file top-level reference that runs before its dependency exists.
+   - Suggestion: keep the module headers explicit and add a cheap load-order smoke test that evaluates files in the exact `index.html` order.
+
+5. **Music/SFX autoplay and audio-ducking should be tested on real iPad.**
+   - Browser autoplay policies and iOS audio behavior are often different from desktop. Verify first-tap start, background/foreground pause-resume, duck/unduck after skipped narration, and volume persistence.
+
+6. **Painted map zone nodes now represent zones, not individual missions.**
+   - This is probably a UX improvement, but it changes the mental model: tapping a zone starts the next mission inside it.
+   - Query: does the child/parent need a visible "3 missions left in this zone" cue, or is the current zone-level simplification better?
+
+7. **Act 2 is complete, but progression proof should include retention/replay behavior.**
+   - Tests prove decodability and wiring, not whether weak items resurface enough after a child completes the act.
+   - Suggestion: add a review/patrol invariant for post-completion practice so completed acts remain useful.
+
+8. **`Math.random()` still makes some visual/gameplay bugs hard to reproduce.**
+   - Random victory poses, shuffles, weak picks, particles, ally pops, and reward art are fine in production.
+   - A tiny optional seeded random hook for tests/debug would help future investigations without changing normal gameplay.
+
+### Enhancement suggestions
+
+1. **Add a script-load smoke test.**
+   - Parse `index.html` script tags and `vm.runInContext()` local scripts in that exact order. This would catch load-order regressions introduced by future modularization.
+
+2. **Add a PWA/service-worker check.**
+   - A no-browser test can still assert that `manifest.json` is valid JSON, required icons exist, `start_url`/`scope` are sane for GitHub Pages, and `sw.js` parses.
+
+3. **Add a cloud newer-wins regression test.**
+   - Mock `fetch()` for older/newer cloud payloads and assert only newer cloud saves replace local progress.
+
+4. **Add a music/ducking unit-ish test if feasible.**
+   - With a stubbed `Audio`, assert `Aud.play()` calls `Music.duck()` and later `Music.unduck()`, including on timeout/error paths.
+
+5. **Add a map-zone progress label.**
+   - Optional copy could be "Next: mission name" or "2 left" on the zone pill. This may help parents understand that each painted node is a multi-mission zone.
+
+6. **Create a `tests/visual-smoke.test.js`.**
+   - Not pixel-perfect. Just render key SVG generators and assert they produce an `<svg>`, have unique gradient/filter IDs across multiple instances, and do not duplicate global IDs in dangerous ways.
+
+7. **Add an iPad QA checklist.**
+   - Include: install to Home Screen, offline launch, first audio tap, volume sliders, speech ducking, cloud restore, profile switch, service-worker update after a new commit, and full/calm/lite detail modes.
+
+8. **Add parent-facing "last cloud sync" timestamp.**
+   - The current status messages are helpful but ephemeral. A persistent `S.lastCloudOk` or local-only timestamp would reduce parent anxiety.
+
+9. **Keep expanding parent-recorded phoneme coverage before adding more content.**
+   - Now that Act 2 content is broad, real recorded phoneme/digraph/vowel-team/long-vowel audio may produce more learning value than additional mechanics.
+
+10. **Consider a post-Act-2 maintenance loop.**
+   - A daily "Hero Patrol" that mixes the weakest letters/graphemes/words/sentences from both acts could keep the app useful after story completion.
+
+### General queries for the parent / coding agent
+
+- Should the painted map stay zone-level, or should advanced/parent mode expose individual missions inside each zone?
+- Should `S.daily.missions` count every mission completion, only first-time completions, or should it be renamed to "practice rounds"?
+- Is cloud-sync hardening worth doing now, or is the current family-only Worker URL acceptable until wider sharing?
+- Are the new SFX/music tracks intended to be committed assets long-term, or should the app also support in-app music upload like voice clips?
+- Should Act 2 completion trigger a clear "app done / maintenance mode" message aligned with the stated second-grade-readiness goal?
+- Should `QA.md` eventually archive older review sections so the coding agent sees the newest priorities first?
+
+### Current verification
+
+Checks run during this review:
+
+- `node tests/curriculum.test.js` — 30 passed, 0 failed.
+- `node tests/save.test.js` — 30 passed, 0 failed.
+- `node --check` across the local JavaScript files — passed.
