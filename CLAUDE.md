@@ -19,9 +19,14 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - `data-content.js` — reading content tables (CLOZE/FORTMAZE/SCRAMBLE/SENTENCES/SIGHT/READWORDS/
   READWORDS2/TRACE), pure literals, no deps. Modular-split slice 2; loaded before game.js.
 - `data-missions.js` — campaign structure: MISSIONS (the ladder), GEAR_AT (rewards), autoNodes()
-  (map node layout), ZONES, ACTS. Slice 3; loaded before game.js. game.js is now ~1780 lines (was
-  ~2315). The three DATA layers are extracted; remaining split slices (state-save, audio, map,
-  mission handlers) are LOGIC with more coupling — do those carefully, same verify loop.
+  (map node layout), ZONES, ACTS. Slice 3; loaded before game.js.
+- `state-save.js` — the STATE + SAVE layer (slice 4, first LOGIC module): the `S` game-state object,
+  migrate/load/save (redundant + self-healing), snapshots, PROFILES (per-player saves), optional
+  CLOUD sync, daily-stats (ensureDaily/sessionTick). Loaded before game.js so `S` + the save API exist
+  before any game.js line runs (cloudConnect's geomFor/GEO refs are in its body, runtime-resolved).
+  game.js is now ~1654 lines (was ~2315; −661 across 4 slices). MODULAR SPLIT STATUS: 3 data layers +
+  state-save done & verified. Remaining: audio.js (Aud/narrate/flow), map.js, mission handlers — more
+  coupled; same one-bite, rigorous-verify loop (tests + a runtime boot exercising the moved code).
 - `voicepack.js` — optional shipped audio clips (`window.VOICEPACK = {lineId: dataURI}`).
   NEVER regenerate, rename IDs, or delete it. New narration = add new line IDs to the LINES
   manifest with TTS fallback text (they appear in the in-app studio automatically).
