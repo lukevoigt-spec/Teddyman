@@ -226,11 +226,15 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - PLAYTEST BACKLOG (parent, 2026-06-13 — explore after bugs): (A) NAVIGATION OVERHAUL — tap the city
   name (top-left chip) to drop a menu (Hero Base / Home-Rest / Settings) reachable from EVERY screen, so
   it's not all crammed on the map (where painted objects overlap the controls); Hero Base reachable from
-  the home/title too (not only the map); a parent "RESET PROFILE / erase progress" button (testing). (B)
-  HERO CARDS — tap a hero in the Base → a full-body Pokémon-style card popup (parent supplies a static
-  end-state image per character; build the card frame + flip). (C) BOSS TROPHY CAGES — every defeated boss
-  lives SHRUNKEN in a cage on a Base shelf (Bowser-in-the-Mario-movie); tap → a villain quip ("can't
-  believe I was beaten by a child who learned to READ…"). (D) STORYBOOK CUTSCENES — replace the
+  the home/title too (not only the map); a parent "RESET PROFILE / erase progress" button (testing).
+  NAV OVERHAUL + PARENT RESET = DONE (HUD city chip → dropdown menu World Map/Hero Base/Home from every
+  screen; title Hero Base shortcut; Grown-Up Corner ▸ Reset, snapshot-then-fresh, names the player). (B)
+  HERO CARDS = DONE: allyBody() full-body SVG (parametric, reuses allyFace) for every league member +
+  new friends (JJ/Cal/Nora/Mom/Dad faces added to allyFace); the Base league-shelf items are tappable →
+  a Pokémon-style flip card (front: full-body art + alias; back: bio + stats). (C) BOSS TROPHY CAGES =
+  DONE: BOSSES roster (Vex Captain/Lord Vex/the dragons/The Vixen, keyed by finale mid) → a "Captured
+  Villains" Base shelf of shrunken caged sprites (inkblot/dragon/vixen SVG behind cage bars); tap one →
+  a quip popup that speaks the villain's line (cage_* lines, role C/V). (D) STORYBOOK CUTSCENES — replace the
   slideshow cutscenes with a "once upon a time" big-book that flips pages while a narrator (or Uncle Noah)
   reads the backstory (land/villain/what Teddy will learn) — COMIC-book style for Act 1, MEDIEVAL
   storybook for Act 2; great for setting expectations in-context. (E) FULL-BODY ART for JJ (small, dark

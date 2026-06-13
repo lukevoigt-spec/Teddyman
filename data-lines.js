@@ -159,6 +159,11 @@ const LINES={
   vex_defeat:{t:"Impossible! Beaten by a child who learned to READ?! I'll get you next time, Super Teddy!", v:"C"},
   vixen_taunt:{t:"Welcome to my Dragon Keep, little knight. Miss Kendall belongs to ME now. Turn back while you can!", v:"V"},
   vixen_defeat:{t:"NO! My beautiful dragon! You have NOT seen the last of me, Sir Teddy. I'll get you next time!", v:"V"},
+  /* boss-trophy cage quips (tap a caged, shrunken villain on the Hero Base shelf) */
+  cage_captain:{t:"Bested by a little reader?! The Vexbots will NEVER let me live this down...", v:"C"},
+  cage_vex:{t:"I cannot BELIEVE I was beaten by a child who learned to READ. Impossible!", v:"C"},
+  cage_dragon:{t:"Grrr... shrunk down and caged — all because you sounded out my runes!", v:"V"},
+  cage_vixen:{t:"Darling, this cage clashes with my outfit. You read your way past my dragon... well played, little knight.", v:"V"},
   patrol_intro:{t:"Rooftop patrol! Letter Gems are hiding all over the city. Find them, hero!"},
   mastery_review:{t:"So close, hero! A few Letter Gems need more power before this rescue. Quick patrol to lock them in!"},
   cue_b:{t:"Watch out, hero! b and d are mirror twins. b has its round belly in FRONT, after the tall line. Listen: buh — like ball!"},

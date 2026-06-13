@@ -141,6 +141,10 @@
           <div class="gemshelf" id="gemShelf"></div>
         </div>
         <div class="basecard">
+          <div class="basecard-h">🦹 Captured Villains <span class="ccount" id="bossCount"></span></div>
+          <div class="gemshelf" id="bossShelf"></div>
+        </div>
+        <div class="basecard">
           <div class="basecard-h">🏆 Trophies <span class="ccount" id="trophyCount"></span></div>
           <div class="gemshelf" id="trophyShelf"></div>
         </div>
@@ -478,6 +482,17 @@
     </div>
   </div>
   <button class="btn blue" id="hcClose">CLOSE</button>
+</div>
+
+<!-- BOSS CAGE — tap a defeated, shrunken villain on the Base shelf for a quip. -->
+<div id="bossCage">
+  <div class="bc-inner">
+    <div class="bc-sub">CAPTURED VILLAIN</div>
+    <div class="bc-art"><div class="bc-boss" id="bcBoss"></div><div class="cagebars"></div></div>
+    <div class="bc-name comic" id="bcName"></div>
+    <div class="bc-quip" id="bcQuip"></div>
+    <button class="btn blue" id="bcClose">CLOSE</button>
+  </div>
 </div>
 
 <!-- Optional studio-generated voicepack. Game works without it (TTS fallback). -->

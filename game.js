@@ -1119,6 +1119,7 @@ function paintBase(){
     b.onclick=()=>openHeroCard(t.kind); lg.appendChild(b); } });
   if(!anyL)lg.innerHTML='<div class="baselbl" style="font-size:15px;">Smash Vex\u2019s cages to free your friends!</div>';
   { const freed=LEAGUE.filter(t=>S.done[t.mid]).length, lc=$("leagueCount"); if(lc)lc.textContent=freed+" / "+LEAGUE.length; }
+  paintBossShelf();   /* captured-villain cages */
   /* coins + trophy shelf (Training Room collection) */
   const cn=$("baseCoins"); if(cn)cn.textContent=S.coins||0;
   const tro=$("trophyShelf");
@@ -1165,6 +1166,32 @@ function closeHeroCard(){ $("heroCard").classList.remove("on"); }
 $("hcClose").onclick=e=>{ e.stopPropagation(); closeHeroCard(); };
 $("hcFlip").onclick=()=>$("hcFlip").classList.toggle("flip");
 $("heroCard").onclick=e=>{ if(e.target.id==="heroCard")closeHeroCard(); };
+
+/* ---------------- BOSS TROPHY CAGES ----------------
+   Every defeated, NAMED villain lives shrunken in a cage on a Base shelf
+   (Bowser-in-the-Mario-movie). Tap one for a villain quip (in its own voice).
+   Keyed by the finale/boss mission that beat it. */
+const BOSSES=[
+  {mid:26, name:"VEX CAPTAIN", quip:"cage_captain", art:w=>inkblotSVG(w)},
+  {mid:48, name:"LORD VEX",    quip:"cage_vex",     art:w=>inkblotSVG(w)},
+  {mid:110,name:"THE DRAGON",  quip:"cage_dragon",  art:w=>dragonSVG(w)},
+  {mid:118,name:"IRON WYRM",   quip:"cage_dragon",  art:w=>dragonSVG(w)},
+  {mid:127,name:"VOWEL WYRM",  quip:"cage_dragon",  art:w=>dragonSVG(w)},
+  {mid:137,name:"VOWEL CHOIR", quip:"cage_dragon",  art:w=>dragonSVG(w)},
+  {mid:128,name:"THE VIXEN",   quip:"cage_vixen",   art:w=>vixenSVG(w)}
+];
+function paintBossShelf(){ const sh=$("bossShelf"); if(!sh)return; sh.innerHTML=""; let any=false;
+  BOSSES.forEach(b=>{ if(S.done[b.mid]){ any=true;
+    const btn=document.createElement("button"); btn.className="bossfig"; btn.title="Tap "+b.name;
+    btn.innerHTML=`<div class="bf-cage">${b.art(48)}<div class="cagebars"></div></div><div class="bf-name">${b.name}</div>`;
+    btn.onclick=()=>openBossCage(b); sh.appendChild(btn); } });
+  if(!any)sh.innerHTML='<div class="baselbl" style="font-size:15px;">Defeat villains to capture them here!</div>';
+  const bc=$("bossCount"); if(bc)bc.textContent=BOSSES.filter(b=>S.done[b.mid]).length+" / "+BOSSES.length; }
+function openBossCage(b){ $("bcBoss").innerHTML=b.art(190); $("bcName").textContent=b.name;
+  $("bcQuip").textContent=(LINES[b.quip]||{t:""}).t; $("bossCage").classList.add("on"); Aud.play(b.quip); }
+function closeBossCage(){ Aud.stop(); $("bossCage").classList.remove("on"); }
+$("bcClose").onclick=e=>{ e.stopPropagation(); closeBossCage(); };
+$("bossCage").onclick=e=>{ if(e.target.id==="bossCage")closeBossCage(); };
 
 /* ---------------- TRAINING ROOM + HERO SHOP ----------------
    A supplementary DAILY practice loop, decoupled from story progression. It
