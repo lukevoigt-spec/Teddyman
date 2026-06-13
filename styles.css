@@ -596,3 +596,11 @@ body.calm .uc-rays{animation:none;}
 .basecard .gemshelf{min-height:40px;}
 .baseactions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:4px;}
 .baseactions .btn{font-size:clamp(20px,3.4vw,30px);padding:12px 26px;}
+
+/* ---- crisp letters that POP on any gem / busy graded background ---- */
+.tile{ -webkit-text-stroke:3px var(--ink); paint-order:stroke; text-shadow:0 2px 5px rgba(0,0,0,.42); }
+.tile.rletter{ -webkit-text-stroke:2.6px rgba(255,255,255,.72); }   /* light halo: dark letter on gold gem */
+.tile.picktile{ -webkit-text-stroke:0; text-shadow:0 3px 8px rgba(0,0,0,.35); }   /* pictures, not letters */
+/* big learn glyph + sight words: warm depth glow so they read over painted scenes */
+#bigGlyph{ text-shadow:0 4px 14px rgba(0,0,0,.5); }
+.spellbig{ text-shadow:0 3px 10px rgba(0,0,0,.5); }
