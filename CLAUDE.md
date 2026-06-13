@@ -39,7 +39,14 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   pickFoils; extract last & carefully), base/shop/training, settings, win/reward screens. Same one-bite,
   rigorous-verify loop (node --check + both test suites + a puppeteer runtime boot exercising the moved
   code). Load order in index.html: art → data-missions → data-content → data-lines → state-save → audio
-  → allies → game → map → music → audio-studio.
+  → allies → game → map → sfx → music → audio-studio.
+- `sfx.js` — SOUND EFFECTS: a synthesized Web-Audio kit (`Sfx`) — NO files, NO licensing, offline,
+  adds nothing to the deploy. Sounds: correct / wrong (soft low "nope", never harsh — constraint #2) /
+  combo / coin / unlock / win / gem. Own on/off + volume (S.sfxOn / S.sfxVol, default on@0.6), separate
+  from voice (S.vol) and music. Loaded AFTER game.js; controls in Settings ▸ Sound (sfxSlider /
+  btnSfxToggle). Wired at central choke points: Aud.ding() routes to Sfx.correct (so every existing
+  "correct" cue respects the SFX level), record(g,false)→Sfx.wrong, comboPop→Sfx.combo, trainWin→
+  Sfx.coin, showUnlock→Sfx.unlock, showWin→Sfx.win.
 - `music.js` — BACKGROUND MUSIC: an act-aware looping soundtrack engine (`Music`). Loaded AFTER game.js
   (uses S/currentAct/$/Aud at runtime). Plays a gentle per-act theme (superhero Act 1, medieval Act 2)
   that AUTO-DUCKS to ~26% under any narration (hooked from Aud.play in audio.js: duck on start, unduck

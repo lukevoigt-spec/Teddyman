@@ -125,7 +125,7 @@ if(typeof document!=="undefined"){
 function mast(g){ if(!S.mastery[g])S.mastery[g]={seen:0,ok:0,str:0}; return S.mastery[g]; }
 function record(g,ok){ const m=mast(g); m.seen++;
   if(ok){m.ok++;m.str=Math.min(5,m.str+1); combo++; if(combo>=3)comboPop(combo);}
-  else {m.str=Math.max(0,m.str-1); combo=0;}
+  else {m.str=Math.max(0,m.str-1); combo=0; if(typeof Sfx!=="undefined")Sfx.wrong();}   /* gentle soft cue, never harsh */
   save(); }
 /* ---- MASTERY (proficiency, not just completion) ----
    An item is MASTERED when it's strong, well-seen, and accurate. Milestones
@@ -253,7 +253,8 @@ function confetti(n){ const s=stageEl(); if(!s)return; n=REDUCE?12:(n||64);
     if(Math.random()<.5)c.style.borderRadius="50%";
     s.appendChild(c); setTimeout(()=>c.remove(),2300); } }
 let combo=0;
-function comboPop(n){ const s=stageEl(); if(!s||REDUCE)return; const c=document.createElement("div");
+function comboPop(n){ if(typeof Sfx!=="undefined")Sfx.combo(n);   /* sound plays even in reduced-motion */
+  const s=stageEl(); if(!s||REDUCE)return; const c=document.createElement("div");
   c.className="combochip"; c.textContent="COMBO ×"+n+" 🔥"; s.appendChild(c); setTimeout(()=>c.remove(),950); }
 function burstAt(el,word){ const r=el.getBoundingClientRect(),st=$("stage").getBoundingClientRect();
   const cx=r.left-st.left+r.width/2, cy=r.top-st.top+r.height/2;
@@ -979,7 +980,7 @@ function showUnlock(artHTML, name, sub, done){
   const o=$("unlockCard"); if(!o){ if(done)done(); return; }
   $("ucArt").innerHTML=artHTML; $("ucName").textContent=name; $("ucSub").textContent=sub||"NEW!";
   o.classList.add("on");
-  try{ flashScreen("rgba(255,210,90,.42)"); confetti(48); Aud.ding(); }catch(e){}
+  try{ flashScreen("rgba(255,210,90,.42)"); confetti(48); if(typeof Sfx!=="undefined")Sfx.unlock(); else Aud.ding(); }catch(e){}
   const close=()=>{ o.classList.remove("on"); o.onclick=null; $("ucBtn").onclick=null; if(done)done(); };
   $("ucBtn").onclick=e=>{ if(e)e.stopPropagation(); close(); };
   o.onclick=close;
@@ -987,6 +988,7 @@ function showUnlock(artHTML, name, sub, done){
 
 /* ---------------- WIN / REST ---------------- */
 function showWin(firstTime){ show("scrWin");
+  if(typeof Sfx!=="undefined")Sfx.win();
   flashScreen("rgba(255,255,255,.5)"); confetti(CUR.finale||CUR.rescue||CUR.type==="fortress"?110:64);
   if(CUR.finale||CUR.rescue||CUR.type==="fortress")setTimeout(()=>confetti(90),520);  /* extra pop on big milestones */
   const ally=CUR.rescue?"heart":(CUR.type==="fortress"?(currentAct()===2?"kendall":"leighton"):null);
@@ -1146,6 +1148,7 @@ function trainDecode(w){ trainCur=w; trainMiss=0;
         if(trainMiss>=2)cr.querySelectorAll(".picktile").forEach(x=>{if(x.dataset.w===w)x.classList.add("hint");}); readSoundOut(w); } };
     cr.appendChild(b); }); }
 function trainWin(el,w){ const bonus=combo>=3?2:1; S.coins=(S.coins||0)+bonus; trainReps++; save();
+  if(typeof Sfx!=="undefined")Sfx.coin();
   burstAt(el); coinFloat(el,bonus); updateTrainHUD();
   flow(Aud.play(["train_yes"].concat(wordAudio(w))),()=>setTimeout(trainRound,260)); }
 function coinFloat(el,n){ const s=$("stage"); if(!s||!el)return; const r=el.getBoundingClientRect(),st=s.getBoundingClientRect();

@@ -78,7 +78,8 @@ const Aud={
       u.onend=()=>{clearTimeout(guard);res();}; u.onerror=()=>{clearTimeout(guard);res();};
       speechSynthesis.speak(u);
   });},
-  ding(){ try{ const ctx=Aud.ctx||(Aud.ctx=new (window.AudioContext||window.webkitAudioContext)());
+  ding(){ if(typeof Sfx!=="undefined" && Sfx.correct){ Sfx.correct(); return; }   /* route to the SFX kit (respects its volume/toggle) */
+    try{ const ctx=Aud.ctx||(Aud.ctx=new (window.AudioContext||window.webkitAudioContext)());
     const o=ctx.createOscillator(),gn=ctx.createGain();
     o.frequency.value=740;o.type="sine";
     gn.gain.setValueAtTime(0.0001,ctx.currentTime);
