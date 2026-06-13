@@ -495,6 +495,13 @@ const LINES={
   dodge:{t:"He dodged! Listen..."},
   flee:{t:"SYSTEM FAILURE! VEXBOT RETREATING!", v:"C"},
   youdidit:{t:"You did it, Super Teddy!"},
+  /* ---- villain BATTLE taunts (intro monologue) + DEFEAT lines ("I'll get you next time") ---- */
+  boss_taunt:{t:"You again, Super Teddy? Hand over those Letter Gems and nobody gets zapped!", v:"C"},
+  boss_flee:{t:"This isn't over, hero! I'll be back for those gems!", v:"C"},
+  vex_taunt:{t:"So... you reached my fortress. Foolish child. You will NEVER read your way past LORD VEX!", v:"C"},
+  vex_defeat:{t:"Impossible! Beaten by a child who learned to READ?! I'll get you next time, Super Teddy!", v:"C"},
+  vixen_taunt:{t:"Welcome to my Dragon Keep, little knight. Miss Kendall belongs to ME now. Turn back while you can!", v:"V"},
+  vixen_defeat:{t:"NO! My beautiful dragon! You have NOT seen the last of me, Sir Teddy. I'll get you next time!", v:"V"},
   patrol_intro:{t:"Rooftop patrol! Letter Gems are hiding all over the city. Find them, hero!"},
   mastery_review:{t:"So close, hero! A few Letter Gems need more power before this rescue. Quick patrol to lock them in!"},
   cue_b:{t:"Watch out, hero! b and d are mirror twins. b has its round belly in FRONT, after the tall line. Listen: buh — like ball!"},
@@ -1544,7 +1551,7 @@ function bossSprite(w){ return currentAct()===2 ? dragonSVG(w) : inkblotSVG(w); 
 function startBoss(g){ show("scrBoss"); bossHP=3;
   $("bossArt").innerHTML=`<div class="boss" id="bossSprite">${bossSprite(240)}</div>`;
   paintPips("bossPips",bossHP,3);
-  narrate("boss",$("bossText"),["boss_intro","snd_"+g],"Blast the Vexbot! Tap the gem that makes the sound\u2026");
+  narrate("boss",$("bossText"),["boss_taunt","boss_intro","snd_"+g],"Blast the Vexbot! Tap the gem that makes the sound\u2026");
   bossRound(g); }
 function paintPips(id,hp,max){ const p=$(id); p.innerHTML="";
   for(let i=0;i<max;i++){const d=document.createElement("div");d.className="pip"+(i<hp?"":" off");p.appendChild(d);} }
@@ -1557,7 +1564,7 @@ function bossRound(g){
         const bs=$("bossSprite"); bs.classList.add("hitfx"); setTimeout(()=>bs.classList.remove("hitfx"),380);
         burstAt(bs,"ZAP!"); Aud.ding();
         if(bossHP<=0){ bs.classList.add("flee");
-          flow(Aud.play(["flee","youdidit"]),missionComplete); }
+          flow(Aud.play(["flee","boss_flee","youdidit"]),missionComplete); }
         else { let lead="hit_again";
           if(allyFreed("tank")&&Math.random()<0.55){ lead=allyLine("tank"); allyPop("tank"); }  /* Archie owns boss battles */
           flow(Aud.play([lead,"snd_"+g]),()=>bossRound(g)); } }
@@ -1759,7 +1766,7 @@ function startFortress(m){ show("scrFortress");
   $("fortVex").innerHTML=`<div class="boss" id="fortVexSprite">${a2?dragonSVG(220):inkblotSVG(220)}</div>`;
   $("fortBanner").textContent=a2?"DRAGON KEEP":"VEX'S FORTRESS"; fortHPset();
   $("fortWord").innerHTML=""; $("fortChoices").innerHTML="";
-  flow(narrate("fort",$("fortText"),[a2?"f2_intro":"fort_intro"]),()=>fortPhase(0)); }
+  flow(narrate("fort",$("fortText"),[a2?"vixen_taunt":"vex_taunt", a2?"f2_intro":"fort_intro"]),()=>fortPhase(0)); }
 function fortPhase(i){ if(i>=FCONF.length){ fortWin(); return; }
   fPhase=i; fRound=0; const ph=FCONF[i];
   $("fortBanner").textContent=ph.banner; $("fortWord").innerHTML=""; $("fortChoices").innerHTML="";
@@ -1845,7 +1852,8 @@ function fortSentencePic(){ const s=SENTENCES[Math.floor(Math.random()*SENTENCES
         if(fMiss>=2)row.querySelectorAll(".picktile").forEach(x=>{if(x.textContent===s.pic)x.classList.add("hint");}); Aud.play(sentenceAudio(s)); } };
     row.appendChild(b); }); }
 function fortWin(){ const bs=$("fortVexSprite"); if(bs)bs.classList.add("flee");
-  $("fortBanner").textContent="VICTORY!"; flow(Aud.play([currentAct()===2?"f2_win":"fort_win1"]),missionComplete); }
+  $("fortBanner").textContent="VICTORY!";
+  flow(Aud.play([currentAct()===2?"f2_win":"fort_win1", currentAct()===2?"vixen_defeat":"vex_defeat"]),missionComplete); }
 
 /* ---------------- PATROL ---------------- */
 function startPatrol(set){ Aud.play("patrol_intro");
