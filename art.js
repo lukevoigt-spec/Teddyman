@@ -264,6 +264,11 @@ function allyFace(kind){
     `<path d="M-26 2 Q-28 -32 0 -33 Q28 -32 26 0 Q22 -18 14 -14 Q18 -27 7 -21 Q9 -31 -3 -22 Q-6 -31 -14 -21 Q-12 -28 -22 -14 Q-26 -8 -26 2Z" fill="#c2a067" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>`+
     `<path d="M-25 -2 Q-29 16 -22 25 L-17 -8Z M25 -2 Q29 16 22 25 L17 -8Z" fill="#c2a067" stroke="#150f2e" stroke-width="2.5"/>`+
     allyEyes()+ smile;
+  if(kind==="kendall")return head+   /* Miss Kendall — kind teacher (brown hair in a low bun) — placeholder until a photo */
+    `<path d="M-25 -2 Q-27 -30 0 -30 Q27 -30 25 -2 Q25 18 18 26 L15 -6 Q14 -22 0 -20 Q-14 -22 -15 -6 L-18 26 Q-25 18 -25 -2Z" fill="#7a5230" stroke="#150f2e" stroke-width="3"/>`+
+    `<circle cx="0" cy="22" r="7" fill="#7a5230" stroke="#150f2e" stroke-width="2.5"/>`+
+    allyEyes()+
+    `<g stroke="none" fill="#d99a6c" opacity=".55"><circle cx="-9" cy="8" r="2"/><circle cx="9" cy="8" r="2"/></g>`+ smile;
   if(kind==="flip")return head+   /* Ellie — light-brown hair, half-up */
     `<path d="M-24 -2 Q-26 -29 0 -29 Q26 -29 24 -2 Q24 17 18 25 L15 -6 Q14 -20 0 -19 Q-14 -20 -15 -6 L-18 25 Q-24 17 -24 -2Z" fill="#b18253" stroke="#150f2e" stroke-width="3"/>`+
     `<path d="M-21 -10 Q-19 -29 0 -29 Q19 -29 21 -10 Q11 -20 0 -19 Q-11 -20 -21 -10Z" fill="#a3744a" stroke="#150f2e" stroke-width="2.5"/>`+

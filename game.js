@@ -151,7 +151,10 @@ const MISSIONS=[
   {id:124,type:"magic",vowel:"u",unit:"u_e",pairs:[["cub","cube"],["tub","tube"]],lbl:"Magic-E Spell: Long U",z:103},
   {id:125,type:"forge",words:["home","rope","cube","tube"],lbl:"Spell Forge: O & U",z:103},
   {id:126,type:"read", words:["home","cube","nose","rose","bike","cake"],lbl:"Spellery Reading Rally",z:103},
-  {id:127,type:"forge",words:["cape","kite","rose","cute"],lbl:"Dragon Duel: The Vowel Wyrm!",finale:true,z:103}
+  {id:127,type:"forge",words:["cape","kite","rose","cute"],lbl:"Dragon Duel: The Vowel Wyrm!",finale:true,z:103},
+  /* ===== ACT-2 FINALE — the Dragon Keep: a multi-phase boss (sound→read→spell→read)
+     that gates on Act-2 mastery (digraphs + magic-e) and frees MISS KENDALL. ===== */
+  {id:128,type:"fortress",lbl:"Dragon Keep: Free Miss Kendall!",finale:true,climax:true,z:106}
 ];
 const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield",22:"Gem Gauntlet",47:"Alphabet Star",30:"Reading Crown",33:"Spell Tome",36:"Story Key",52:"Fluency Badge",
   /* ACT 2 — the Vixen stole his powers, so he RE-EARNS gear through the medieval ladder
@@ -304,7 +307,9 @@ const ZONES=[
      Noah's "Magic-E Spell" — a silent E flips a short vowel to its long name. ===== */
   { id:103, name:"ENCHANTER'S TOWER", bg:"spellery", act:2,
     letters:[],   /* the long-vowel "units" are taught via type:"magic" missions */
-    nodes:autoNodes(9,{y0:-820,step:104,phase:1.5}) }
+    nodes:autoNodes(9,{y0:-820,step:104,phase:1.5}) },
+  /* ===== ACT 2 · FINALE zone — the Dragon Keep (Vixen's dragon boss, rescue Miss Kendall) ===== */
+  { id:106, name:"DRAGON KEEP", bg:"fortress", act:2, letters:[], nodes:[[470,-1700]] }
 ];
 /* ---------------- ACTS / CAMPAIGN ----------------
    The long game is a series of ACTS: each is a city with its own villain and a
@@ -543,6 +548,20 @@ const LINES={
   interlude4:{t:"She slipped through a shimmering time portal — to the age of KNIGHTS and DRAGONS! A mighty wizard named Noah the Red is already there, waiting to help you, hero."},
   interlude_knight:{t:"You leap into the portal! In a swirl of light your gems and gear are gone... and you rise again as SUPER TEDDY THE KNIGHT! A brave new quest awaits."},
   interlude5:{t:"Rest now, champion. Your medieval adventure is being built, and begins very soon. TO BE CONTINUED!"},
+  /* ===== ACT-2 FINALE — Dragon Keep / rescue Miss Kendall ===== */
+  f2_intro:{t:"THE DRAGON KEEP, Sir Teddy! The Vixen has Miss Kendall locked in the highest tower, guarded by her mightiest dragon. Use your RUNES, your BLENDS, and your MAGIC-E — bring it down!"},
+  f2_p1:{t:"Break the dragon ward! Tap the gem that makes the sound…"},
+  f2_p2:{t:"Shatter the rune-locks! Read the word, then tap what it means!"},
+  f2_p3:{t:"Cast your spells! Build the word you hear — sound by sound!"},
+  f2_p4:{t:"FINAL STAND — read to free Miss Kendall! Read the word and tap what it means!"},
+  f2_t1:{t:"You shall not pass, little knight!", v:"V"},
+  f2_t2:{t:"My runes will hold forever!", v:"V"},
+  f2_t3:{t:"Magic? You call THAT magic?", v:"V"},
+  f2_t4:{t:"No! My dragon — it falls!", v:"V"},
+  f2_win:{t:"The dragon is defeated! The Vixen flees in a swirl of smoke!"},
+  kendall1:{t:"You did it, Sir Teddy! You READ your way through the whole Dragon Keep!"},
+  kendall2:{t:"Teddy! My brave knight — you came for me! I always knew you would learn to read. Thank you, hero!"},
+  kendall3:{t:"MISS KENDALL is FREE! The medieval realm is safe, and you are a TRUE READER and a TRUE KNIGHT. What a champion!"},
   free_tank:{t:"CAGE DESTROYED! You freed Archie! TANK has joined the Hero League... and he is ready to SMASH!"},
   free_flip:{t:"CAGE DESTROYED! You freed Ellie! FLIP has joined the league... backflips, cartwheels, and mid-air gem grabs!"},
   free_sunny:{t:"CAGE DESTROYED! You freed William! SUNNY has joined the league... and things are about to get silly!"},
@@ -1231,10 +1250,11 @@ function allyPop(kind){ const st=$("stage"); if(!st)return;
    real = the actual person Teddy knows; name = their hero alias. */
 const LEAGUE=[...CAGED.map(t=>({mid:t.mid,kind:t.kind,name:t.name,real:t.real})),
   {mid:17,kind:"heart",name:"HEARTGUARD",real:"AMELIA"},
-  {mid:48,kind:"leighton",name:"STARLIGHT PRINCESS",real:"LEIGHTON"}];
+  {mid:48,kind:"leighton",name:"STARLIGHT PRINCESS",real:"LEIGHTON"},
+  {mid:128,kind:"kendall",name:"MISS KENDALL",real:"MISS KENDALL"}];
 /* a small LIVING friend on the map — recognizable little figure; captive ones
    wave for help with a ball-and-chain, freed ones cheer with arms up. */
-const ALLY_COL={tank:"#e6453c", flip:"#3a9bff", sunny:"#ffce3a", heart:"#ff7d9c", leighton:"#a06ae8"};
+const ALLY_COL={tank:"#e6453c", flip:"#3a9bff", sunny:"#ffce3a", heart:"#ff7d9c", leighton:"#a06ae8", kendall:"#5fa86a"};
 function allyMapFig(kind, freed){
   const c=ALLY_COL[kind]||"#7a6fb0";
   const arms = freed
@@ -1278,7 +1298,7 @@ const MAPIMG={1:"art/bg-map.jpeg", 2:"art/bg-map-a2.jpeg"};
    ZONES play order per act — calibrated by eye to sit on the painted golden path. */
 const ZONESPOTS={
   1:[[215,640],[362,432],[298,300],[322,168],[560,212],[592,352],[722,330],[772,206],[838,108]],
-  2:[[182,600],[432,430],[762,228]]
+  2:[[182,600],[432,430],[762,228],[560,108]]
 };
 function zMissions(z){ return MISSIONS.filter(m=>m.z===z.id).sort((a,b)=>a.id-b.id); }
 function zoneDone(z){ const m=zMissions(z); return m.length>0 && m.every(x=>S.done[x.id]); }
@@ -1286,8 +1306,8 @@ function zoneNext(z){ const m=zMissions(z); return m.find(x=>!S.done[x.id])||m[0
 function curZoneIx(zs){ const i=zs.findIndex(z=>!zoneDone(z)); return i<0?zs.length-1:i; }
 /* small captive/freed friend figures near their rescue zone (Act-1 league). */
 function mapFriends(a, zs, spots){
-  if(a!==1) return "";
-  const rescues=[{mid:3,kind:"tank"},{mid:6,kind:"flip"},{mid:8,kind:"sunny"},{mid:17,kind:"heart"},{mid:48,kind:"leighton"}];
+  const rescues = a===2 ? [{mid:128,kind:"kendall"}]
+    : [{mid:3,kind:"tank"},{mid:6,kind:"flip"},{mid:8,kind:"sunny"},{mid:17,kind:"heart"},{mid:48,kind:"leighton"}];
   const byZi={};
   rescues.forEach(r=>{ const m=MISSIONS.find(x=>x.id===r.mid); if(!m)return;
     const zi=zs.findIndex(z=>z.id===m.z); if(zi<0)return; (byZi[zi]=byZi[zi]||[]).push(r); });
@@ -1705,28 +1725,39 @@ const FORTRESS=[
   {kind:"spell",   n:4, banner:"CAST YOUR SPELLS!",      prompt:"fort_p3", taunt:"fort_t3"},
   {kind:"sentence",n:4, banner:"READ TO FREE LEIGHTON!", prompt:"fort_p4", taunt:"fort_t4"}
 ];
+/* ACT-2 finale phases — same proven mechanics, medieval content: sound (incl. digraphs)
+   → read (decode digraph/blend/magic-e words) → spell (sight) → read (free Miss Kendall).
+   The pools become act-aware in fortSound/fortRead below, so no Act-1 behaviour changes. */
+const FORTRESS2=[
+  {kind:"sound",n:5, banner:"BREAK THE DRAGON WARD!",     prompt:"f2_p1", taunt:"f2_t1"},
+  {kind:"read", n:5, banner:"SHATTER THE RUNE-LOCKS!",    prompt:"f2_p2", taunt:"f2_t2"},
+  {kind:"spell",n:3, banner:"CAST YOUR SPELLS!",          prompt:"f2_p3", taunt:"f2_t3"},
+  {kind:"read", n:4, banner:"READ TO FREE MISS KENDALL!", prompt:"f2_p4", taunt:"f2_t4"}
+];
+let FCONF=FORTRESS;
 let fPhase,fRound,fHP,fHPmax,fMiss;
 function fortHPset(){ const el=$("fortHPfill"); if(el)el.style.width=Math.max(0,100*fHP/fHPmax)+"%"; }
 function startFortress(m){ show("scrFortress");
-  fHPmax=FORTRESS.reduce((s,p)=>s+p.n,0); fHP=fHPmax;
-  $("fortVex").innerHTML=`<div class="boss" id="fortVexSprite">${inkblotSVG(220)}</div>`;
-  $("fortBanner").textContent="VEX'S FORTRESS"; fortHPset();
+  const a2=currentAct()===2; FCONF=a2?FORTRESS2:FORTRESS;
+  fHPmax=FCONF.reduce((s,p)=>s+p.n,0); fHP=fHPmax;
+  $("fortVex").innerHTML=`<div class="boss" id="fortVexSprite">${a2?dragonSVG(220):inkblotSVG(220)}</div>`;
+  $("fortBanner").textContent=a2?"DRAGON KEEP":"VEX'S FORTRESS"; fortHPset();
   $("fortWord").innerHTML=""; $("fortChoices").innerHTML="";
-  flow(narrate("fort",$("fortText"),["fort_intro"]),()=>fortPhase(0)); }
-function fortPhase(i){ if(i>=FORTRESS.length){ fortWin(); return; }
-  fPhase=i; fRound=0; const ph=FORTRESS[i];
+  flow(narrate("fort",$("fortText"),[a2?"f2_intro":"fort_intro"]),()=>fortPhase(0)); }
+function fortPhase(i){ if(i>=FCONF.length){ fortWin(); return; }
+  fPhase=i; fRound=0; const ph=FCONF[i];
   $("fortBanner").textContent=ph.banner; $("fortWord").innerHTML=""; $("fortChoices").innerHTML="";
   flow(Aud.play([ph.taunt,ph.prompt]),()=>fortRound()); }
 function fortHit(label){ fHP--; fortHPset();
   const bs=$("fortVexSprite"); if(bs){ bs.classList.add("hitfx"); setTimeout(()=>bs.classList.remove("hitfx"),360); burstAt(bs,label||"ZAP!"); }
   Aud.ding(); if(allyFreed("tank")&&Math.random()<0.4)allyPop("tank");
   fRound++; flow(Aud.play(["fort_hit"]),()=>fortRound()); }
-function fortRound(){ const ph=FORTRESS[fPhase];
+function fortRound(){ const ph=FCONF[fPhase];
   if(fRound>=ph.n){ fortPhase(fPhase+1); return; }
   fMiss=0;
   ({sound:fortSound,read:fortRead,spell:fortSpell,sentence:fortSentence})[ph.kind](); }
 function fortMissHint(){ fMiss++; }
-function fortSound(){ const pool=taughtLetters(); const g=pickWeak(pool)||pool[0];
+function fortSound(){ const pool=currentAct()===2?taughtGraphemes():taughtLetters(); const g=pickWeak(pool)||pool[0];
   narrate("fort",$("fortText"),["snd_"+g],"Blast the shield! Tap the gem that makes the sound…");
   $("fortWord").innerHTML="";
   const foils=pickFoils(g, pool, 3);   /* fortress shield: include the confusable twin */
@@ -1737,13 +1768,13 @@ function fortSound(){ const pool=taughtLetters(); const g=pickWeak(pool)||pool[0
       else { record(g,false); fortMissHint(); t.classList.add("dim");
         if(fMiss>=2)row.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===g)x.classList.add("hint");}); Aud.play(["snd_"+g]); } };
     row.appendChild(t); }); }
-function fortRead(){ const ws=Object.keys(READWORDS); const w=ws[Math.floor(Math.random()*ws.length)];
+function fortRead(){ const RW=readPool(); const ws=Object.keys(RW); const w=ws[Math.floor(Math.random()*ws.length)];
   narrate("fort",$("fortText"),["read_prompt"],"Read the word-lock… tap what it means!");
   const wr=$("fortWord"); wr.innerHTML="";
-  w.split("").forEach(c=>{ const t=document.createElement("button"); t.className="tile read rletter"; t.textContent=c; t.onclick=()=>Aud.play("snd_"+c); wr.appendChild(t); });
+  toGraphemes(w).forEach(c=>{ const t=document.createElement("button"); t.className="tile read rletter"; t.textContent=c; t.onclick=()=>Aud.play("snd_"+c); wr.appendChild(t); });
   const foils=ws.filter(x=>x!==w).sort(()=>Math.random()-.5).slice(0,2);
   const row=$("fortChoices"); row.innerHTML="";
-  [w,...foils].sort(()=>Math.random()-.5).forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.textContent=READWORDS[o]; b.dataset.w=o;
+  [w,...foils].sort(()=>Math.random()-.5).forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.textContent=RW[o]; b.dataset.w=o;
     b.onclick=()=>{ if(o===w){ record("w_"+w,true); b.classList.add("win"); fortHit(w.toUpperCase()+"!"); }
       else { record("w_"+w,false); fortMissHint(); b.classList.add("dim");
         if(fMiss>=2)row.querySelectorAll(".picktile").forEach(x=>{if(x.dataset.w===w)x.classList.add("hint");}); readSoundOut(w); } };
@@ -1798,7 +1829,7 @@ function fortSentencePic(){ const s=SENTENCES[Math.floor(Math.random()*SENTENCES
         if(fMiss>=2)row.querySelectorAll(".picktile").forEach(x=>{if(x.textContent===s.pic)x.classList.add("hint");}); Aud.play(sentenceAudio(s)); } };
     row.appendChild(b); }); }
 function fortWin(){ const bs=$("fortVexSprite"); if(bs)bs.classList.add("flee");
-  $("fortBanner").textContent="VICTORY!"; flow(Aud.play(["fort_win1"]),missionComplete); }
+  $("fortBanner").textContent="VICTORY!"; flow(Aud.play([currentAct()===2?"f2_win":"fort_win1"]),missionComplete); }
 
 /* ---------------- PATROL ---------------- */
 function startPatrol(set){ Aud.play("patrol_intro");
@@ -1885,13 +1916,13 @@ function castMagicE(sh,lo){ const wr=$("magicWord");
 function showWin(firstTime){ show("scrWin");
   flashScreen("rgba(255,255,255,.5)"); confetti(CUR.finale||CUR.rescue||CUR.type==="fortress"?110:64);
   if(CUR.finale||CUR.rescue||CUR.type==="fortress")setTimeout(()=>confetti(90),520);  /* extra pop on big milestones */
-  const ally=CUR.rescue?"heart":(CUR.type==="fortress"?"leighton":null);
+  const ally=CUR.rescue?"heart":(CUR.type==="fortress"?(currentAct()===2?"kendall":"leighton"):null);
   $("winHero").innerHTML=heroNow(170)+
-    (ally?`<svg viewBox="-32 -36 64 80" width="98" style="vertical-align:bottom;">${allyFace(ally)}<text y="42" text-anchor="middle" font-family="Bangers" font-size="12" fill="#ffc93c">${ally==="leighton"?"LEIGHTON":"HEARTGUARD"}</text></svg>`:"");
+    (ally?`<svg viewBox="-32 -36 64 80" width="98" style="vertical-align:bottom;">${allyFace(ally)}<text y="42" text-anchor="middle" font-family="Bangers" font-size="12" fill="#ffc93c">${ally==="leighton"?"LEIGHTON":ally==="kendall"?"MISS KENDALL":"HEARTGUARD"}</text></svg>`:"");
   const gear=GEAR_AT[CUR.id];
   $("winGear").innerHTML=(firstTime&&gear)?`<div class="gearbadge">NEW GEAR: ${gear}</div>`:"";
   let ids;
-  if(CUR.type==="fortress") ids=["leighton1","leighton2","leighton3"];  /* the Act-2 handoff is its own cutscene now */
+  if(CUR.type==="fortress") ids=currentAct()===2?["kendall1","kendall2","kendall3"]:["leighton1","leighton2","leighton3"];
   else if(CUR.rescue) ids=["free_heart1","free_heart2","m2_done"];
   else if(CUR.finale) ids = currentAct()===2 ? ["act2_win"] : (CUR.z===4 ? ["m4_letters"] : (CUR.z===3 ? ["m3_done"] : ["finale1","finale2","finale3"]));
   else if(firstTime&&gear) ids=["win_grow","win_gear",GEARLINE[gear]];
@@ -1902,10 +1933,15 @@ function showWin(firstTime){ show("scrWin");
   if(S.done[17]&&!CUR.rescue)ids.push("heart_cheer"+(1+(S.stars%3)));
   narrate("win",$("winText"),ids);
   const ix=MISSIONS.findIndex(x=>x.id===CUR.id);
-  if(CUR.type==="fortress"){   /* finale: the only way forward is the Act-2 handoff cutscene */
+  if(CUR.type==="fortress"){
     $("btnWinNext").style.display="none";
-    $("btnWinMap").textContent="CONTINUE ➜";
-    $("btnWinMap").onclick=()=>startInterlude();
+    if(currentAct()===2){   /* Act-2 finale = end of the medieval quest → back to the (now-complete) map */
+      $("btnWinMap").textContent="MEDIEVAL REALM ➜";
+      $("btnWinMap").onclick=()=>toMap();
+    } else {                /* Act-1 finale → the Act-1→Act-2 handoff cutscene */
+      $("btnWinMap").textContent="CONTINUE ➜";
+      $("btnWinMap").onclick=()=>startInterlude();
+    }
     return; }
   $("btnWinMap").textContent="CITY MAP";
   $("btnWinNext").style.display=(ix<MISSIONS.length-1)?"inline-block":"none";
