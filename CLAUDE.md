@@ -395,11 +395,14 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - Voice roles (line `v` field → a voice the parent assigns per role in the Studio): A = Mentor/Narrator,
   B = Amelia (Heartguard), C = Vexbots/Lord Vex (robotic), T = Archie (Tank), F = Ellie (Flip),
   W = William (Sunny), V = THE VIXEN (Act-2 villain), N = NOAH THE RED (Act-2 wizard mentor),
-  P = MOM & DAD. NOTE: Vixen + Noah used to SHARE role "V" (a bug — Vixen spoke in Noah's voice); now
-  split, and Noah's Act-2 lines (rune/blend/magic intros, noah1-3, act2_win, f2_intro) carry v:"N",
-  the Mom&Dad message carries v:"P". Shared prompt lines (find_prompt etc.) stay role A since they're
-  reused across both acts. Changing a role only affects FUTURE Studio generation — re-assign the N/V/P
-  voices and re-Generate+Publish those lines to hear them. The friends' lines are best recorded in the
+  P = MOM & DAD, L = LEIGHTON (Starlight Princess), K = MISS KENDALL (teacher). NOTE: Vixen + Noah used
+  to SHARE role "V" (a bug — Vixen spoke in Noah's voice); now split, and Noah's Act-2 lines (rune/blend/
+  magic intros, noah1-3, act2_win, f2_intro) carry v:"N", the Mom&Dad message carries v:"P". The two
+  RESCUED heroines also used to be mis-voiced (leighton1/3 + kendall1/3 fell to the narrator, leighton2/
+  kendall2 were tagged Amelia's role B — so Miss Kendall sounded like the narrator/Amelia in the Act-2
+  win); leighton1-3 now carry v:"L" and kendall1-3 v:"K" so they get their own voices. Shared prompt
+  lines (find_prompt etc.) stay role A since they're reused across both acts. Changing a role only affects
+  FUTURE Studio generation — re-assign the N/V/P/L/K voices and re-Generate+Publish those lines to hear them. The friends' lines are best recorded in the
   real kids' voices via the Studio's Upload button (TTS is a stand-in).
 - Ally arcs: each freed friend OWNS one mission type and cheers Teddy BY REAL NAME during it
   (Archie→boss, Ellie→trace, William→patrol, Amelia→every win). Cheers are woven into the

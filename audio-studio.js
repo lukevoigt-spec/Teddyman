@@ -15,7 +15,8 @@
   const LS_KEY="stElKey", LS_VOICES="stElVoices", LS_GH="stGhToken";   /* remembered on THIS device only */
   const ROLES=[["A","Mentor / Narrator"],["B","Amelia (Heartguard)"],["C","Vex / robots"],
     ["T","Archie (Tank)"],["F","Ellie (Flip)"],["W","William (Sunny)"],
-    ["V","The Vixen (Act 2 villain)"],["N","Noah the Red (Act 2 wizard)"],["P","Mom & Dad"]];
+    ["V","The Vixen (Act 2 villain)"],["N","Noah the Red (Act 2 wizard)"],["P","Mom & Dad"],
+    ["L","Leighton (Starlight Princess)"],["K","Miss Kendall (teacher)"]];
 
   /* ---- letter-sound order + research-based articulation coaching ----
      Coaching emphasises CLEAN phonemes: continuous sounds are held, STOP sounds
