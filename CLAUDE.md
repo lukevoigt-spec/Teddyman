@@ -229,4 +229,8 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - Small, reviewable commits with plain-English messages the parent can read.
 - After changes, sanity-check: fresh-save playthrough boot → intro → scan → mission 1, plus
   a loaded-save boot. Verify no console errors and that audio flows can't hang.
+- SAVE SAFETY IS REGRESSION-TESTED: `node tests/save.test.js` (no deps; exit 0 = pass) exercises
+  migrate() on old/partial/corrupt saves, primary+backup recovery, the no-clobber rule, the snapshot
+  ring, and a save→load round-trip. Run it after any change to the save layer (KEY/BAKKEY/migrate/
+  load/save/snapshot) before shipping.
 - When in doubt about a design tradeoff, optimize for: reading reps per minute, then delight.
