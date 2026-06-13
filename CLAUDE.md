@@ -197,7 +197,12 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   REDO — streamline + bulletproof the record/ElevenLabs/export/publish pipeline (parent flagged; highest
   learning leverage). (2) SETTINGS OVERHAUL — game-like, intuitive, add missing settings; study how real
   games lay out settings (parent flagged — current Grown-Up Corner isn't intuitive). (3) PERF "Full/Calm/
-  Lite" detail tier (the new specular/blur filters are GPU-heavy on older iPads). (4) SCENE COLOR
+  Lite" detail tier — DONE: detailLevel()/applyDetail() (game.js) drive body.calm/body.lite from S.detail.
+  FULL = idle motion + GPU filters + reward juice; CALM = body.calm (idle character animation off, premium
+  specular/blur filters KEPT); LITE = body.calm+body.lite (also strips the GPU-heavy SVG filters + bgLayer
+  blur + character rim drop-shadows for old iPads). Reward juice (DOM bursts) + learning content unaffected
+  in all tiers. The Display setting button cycles Full→Calm→Lite. Save-safe: legacy S.calm=true maps to
+  Lite (preserves existing calm users); new picks store S.detail. (4) SCENE COLOR
   HARMONIZER — DONE: SCENE_TONE/SCENE_TONE2 (game.js) map each scene slot → a dominant KEY light +
   accent RIM; show()/boot push them to body as --scene-key/--scene-rim. #sceneGrade::before/::after
   wash each painting's palette over the stage (screen-blend, low opacity, Calm-aware) and the big

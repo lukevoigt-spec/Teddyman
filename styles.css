@@ -421,12 +421,17 @@ body{
 
 @media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important;}}
 
-/* ===== CALM / performance mode (parent setting) — disables the GPU-heavy SVG
-   filters + idle character animations for older iPads or battery-sensitive use.
-   Screen transitions and learning content are unaffected; reading stays crisp. ===== */
-body.calm svg [filter]{filter:none!important;}
+/* ===== DETAIL TIER (parent setting) — Full / Calm / Lite ==========================
+   FULL  = idle motion + GPU filters + reward juice (default).
+   CALM  = body.calm: idle character animation OFF, premium filters KEPT (a calmer,
+           less-distracting look that still looks rich; some battery saving).
+   LITE  = body.calm + body.lite: also drops the GPU-heavy SVG specular/blur filters
+           for older iPads (flat but fast). Reward juice (DOM bursts) plays in all
+           tiers; learning content + screen transitions are never affected. ===== */
 body.calm svg *{animation:none!important;}
-body.calm #bgLayer{filter:none!important;}
+body.lite svg [filter]{filter:none!important;}
+body.lite #bgLayer{filter:none!important;}
+body.lite #titleHero>svg,body.lite #baseHero>svg,body.lite #winHero>svg,body.lite #restHero>svg,body.lite .boss>svg{filter:none!important;}
 
 /* ===================== VOICE STUDIO (Grown-Up Corner ▸ Audio) ===================== */
 #audDash{display:flex;flex-direction:column;gap:8px;width:min(640px,94vw);margin-bottom:4px;}

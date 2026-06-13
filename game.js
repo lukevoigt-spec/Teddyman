@@ -279,7 +279,7 @@ function paintTitle(){ const nm=$("playerName"); if(nm)nm.textContent=profileNam
   $("btnPlayer").style.display=profiles().length>1?"inline-block":"none"; }
 paintTitle();
 setBG("scrTitle");   /* the title is shown via static HTML, so load its painted background at boot */
-if(S.calm)document.body.classList.add("calm");   /* parent "Calm" visual-detail mode */
+applyDetail();   /* parent visual-detail tier: Full / Calm / Lite */
 Aud.vol = (S.vol==null?1:S.vol);                 /* parent narration volume (0–1) */
 document.body.dataset.act=currentAct();           /* scene-grade theme from boot (title is static) */
 applySceneTone("scrTitle");                        /* per-scene key/rim light for the boot title */
@@ -1284,9 +1284,17 @@ $("btnCloudConnect").onclick=()=>cloudConnect($("cloudURL").value);
 $("btnCloudOff").onclick=()=>{ cloudURL=""; try{localStorage.removeItem("teddyCloudURL");}catch(e){} $("cloudURL").value=""; cloudStatus("Cloud sync off (saved on this device)"); };
 $("btnCloseSettings").onclick=()=>$("settingsPanel").classList.remove("on");
 $("btnVoiceTest").onclick=()=>{Aud.pick();Aud.play("test");};
-/* Visual-detail toggle: Full (filters+animation) ⟷ Calm (lighter, for older iPads/battery) */
-function paintCalmBtn(){ const b=$("btnCalm"); if(b)b.textContent=(S.calm?"Calm":"Full"); }
-$("btnCalm").onclick=()=>{ S.calm=!S.calm; document.body.classList.toggle("calm",!!S.calm); save(); Aud.ding(); paintCalmBtn(); };
+/* Visual-detail TIER: Full → Calm → Lite (taps cycle). Full = motion+filters;
+   Calm = idle motion off, premium filters kept; Lite = also drops GPU filters
+   (older iPads). Derived save-safely: S.detail wins, legacy S.calm maps to Lite. */
+const DETAIL_ORDER=["full","calm","lite"], DETAIL_LABEL={full:"Full",calm:"Calm",lite:"Lite"};
+function detailLevel(){ return S.detail || (S.calm?"lite":"full"); }
+function applyDetail(){ const d=detailLevel();
+  document.body.classList.toggle("calm", d!=="full");   /* calm + lite both drop idle motion */
+  document.body.classList.toggle("lite", d==="lite"); }
+function paintCalmBtn(){ const b=$("btnCalm"); if(b)b.textContent=DETAIL_LABEL[detailLevel()]; }
+$("btnCalm").onclick=()=>{ const next=DETAIL_ORDER[(DETAIL_ORDER.indexOf(detailLevel())+1)%3];
+  S.detail=next; delete S.calm; applyDetail(); save(); Aud.ding(); paintCalmBtn(); };
 paintCalmBtn();
 /* Narration volume slider (parent setting) */
 function paintVol(){ const s=$("volSlider"),p=$("volPct"); const v=Math.round((S.vol==null?1:S.vol)*100);
