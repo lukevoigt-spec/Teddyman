@@ -24,9 +24,22 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   migrate/load/save (redundant + self-healing), snapshots, PROFILES (per-player saves), optional
   CLOUD sync, daily-stats (ensureDaily/sessionTick). Loaded before game.js so `S` + the save API exist
   before any game.js line runs (cloudConnect's geomFor/GEO refs are in its body, runtime-resolved).
-  game.js is now ~1654 lines (was ~2315; −661 across 4 slices). MODULAR SPLIT STATUS: 3 data layers +
-  state-save done & verified. Remaining: audio.js (Aud/narrate/flow), map.js, mission handlers — more
-  coupled; same one-bite, rigorous-verify loop (tests + a runtime boot exercising the moved code).
+- `audio.js` — the AUDIO engine (slice 5): CUSTOM clip store + VStore (IndexedDB), clipFor, the Aud
+  object (play/TTS-fallback/ding), and the flow()/clearFlow()/narrate() helpers + ear-tap listener.
+  Loaded before game.js; references $/LINES/refreshAudioStudio only in function bodies / callbacks.
+- `allies.js` — the HERO LEAGUE / allies (slice 7): roster data (CAGED/ALLY/LEAGUE/ALLY_COL) + helpers
+  (allyMid/allyFreed/allyLine/allyPop/allyMapFig). Loaded before game.js; uses $/S/allyFace at runtime.
+- `map.js` — the PAINTED WORLD MAP (slice 6): MAPIMG, ZONESPOTS, the zone helpers (zMissions/zoneDone/
+  zoneNext/curZoneIx), mapFriends, mapPaintSVG, toMap. Loaded AFTER game.js (it calls game.js helpers
+  heroNow/show/startMission only at runtime — the honest dependency direction). The map nav button
+  handlers stay in game.js. NOTE: the OLD scrolling vector map (mapSVG + skyline/trail/etc) was DELETED.
+  game.js is now ~1255 lines (was ~2315; −1060 across 7 slices + dead-code removal). MODULAR SPLIT
+  STATUS: data×3 + state-save + audio + map + allies done & verified. Remaining in game.js: boot/title/
+  intro flow, hero glue (heroOpts/heroNow), the MISSION HANDLERS (most coupled — share CUR/flow/record/
+  pickFoils; extract last & carefully), base/shop/training, settings, win/reward screens. Same one-bite,
+  rigorous-verify loop (node --check + both test suites + a puppeteer runtime boot exercising the moved
+  code). Load order in index.html: art → data-missions → data-content → data-lines → state-save → audio
+  → allies → game → map → audio-studio.
 - `voicepack.js` — optional shipped audio clips (`window.VOICEPACK = {lineId: dataURI}`).
   NEVER regenerate, rename IDs, or delete it. New narration = add new line IDs to the LINES
   manifest with TTS fallback text (they appear in the in-app studio automatically).
