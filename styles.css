@@ -619,3 +619,27 @@ body.calm .uc-rays{animation:none;}
 @keyframes winbounce{0%{transform:translateY(0) scale(.85)}30%{transform:translateY(-22px) scale(1.05)}50%{transform:translateY(0) scale(.97)}72%{transform:translateY(-10px) scale(1.02)}100%{transform:translateY(0) scale(1)}}
 @keyframes winwave{0%{transform:scale(.85) rotate(0)}25%{transform:scale(1.05) rotate(-6deg)}50%{transform:scale(1.02) rotate(6deg)}75%{transform:scale(1.02) rotate(-3deg)}100%{transform:scale(1) rotate(0)}}
 body.calm #winHero svg{animation:none!important;}
+
+/* ===================== ACT-2 MEDIEVAL UI SKIN =====================
+   body[data-act="2"] reskins the NON-learning chrome to a stone/bronze
+   medieval feel (buttons, narration, HUD, panels). Learning gems + Andika
+   content are deliberately untouched — readability/anti-gaming preserved. */
+body[data-act="2"] .btn{
+  background:linear-gradient(180deg,#b89668,#7a5e3a);color:#fff4e0;border-color:#241a0c;
+  box-shadow:0 8px 0 #4a3620, 0 14px 24px rgba(0,0,0,.4);text-shadow:0 2px 3px rgba(0,0,0,.5);}
+body[data-act="2"] .btn:active{box-shadow:0 2px 0 #4a3620;}
+body[data-act="2"] .btn.blue{background:linear-gradient(180deg,#6f93ac,#39576f);border-color:#16222c;
+  box-shadow:0 8px 0 #1d303f, 0 14px 24px rgba(0,0,0,.4);}
+body[data-act="2"] .btn.blue:active{box-shadow:0 2px 0 #1d303f;}
+body[data-act="2"] .btn.ghost{background:transparent;color:#f0e2c4;border-color:#caa15a;box-shadow:none;}
+body[data-act="2"] .bubble{
+  background:rgba(34,26,16,.88);border-color:#c39a54;
+  box-shadow:0 12px 30px rgba(0,0,0,.55), 0 0 22px rgba(180,145,84,.28), inset 0 1px 0 rgba(255,235,200,.12);}
+body[data-act="2"] .bubble .ear{background:#7a5e3a;border-color:#241a0c;}
+body[data-act="2"] .chip,body[data-act="2"] .roundbtn{background:rgba(30,24,14,.6);border-color:#9a7a48;color:#f0e2c4;}
+body[data-act="2"] #hudStars{border-color:#d3aa5e;box-shadow:0 4px 14px rgba(0,0,0,.4), 0 0 14px rgba(200,160,80,.32);}
+body[data-act="2"] .panelart,body[data-act="2"] .setcard,body[data-act="2"] .basecard,
+body[data-act="2"] .vsec,body[data-act="2"] .basehero,body[data-act="2"] .basecoins,body[data-act="2"] .vbar{
+  border-color:#6a5436;background:rgba(40,30,16,.52);}
+body[data-act="2"] .basecard-h,body[data-act="2"] .vsec-h,body[data-act="2"] .baserank #powerLbl,
+body[data-act="2"] .basetitle,body[data-act="2"] .basecoins{color:#e6c576;}
