@@ -208,9 +208,12 @@ A concrete checklist for a future "polish pass" commit:
 ---
 
 ## 9. Performance budget (premium ≠ heavy)
-The overhaul must look like a studio made it **without taxing the engine** — this runs on a
-child's iPad, often an older one. "Premium" comes from **craft** (consistent depth, color,
-type, spacing, timing), not from piling on expensive effects. Hard rules:
+PRIMARY TARGET DEVICE: **iPad Pro (M3)** — so we can be **generous** with blur, shadows,
+gradients, and particles; performance is not the bottleneck and "premium" effects are
+encouraged. The rules below are now **good-practice guidelines** (for graceful degradation
+on his sisters' devices / other cloud-synced iPads), **not** hard limits. "Premium" still
+comes mostly from **craft** (consistent depth, color, type, spacing, timing) rather than
+sheer effect volume — a tasteful heavy effect beats ten cheap ones. Guidelines:
 
 - **Depth via CSS, not images.** Use gradients + layered `box-shadow` + the existing extruded-
   button look. Avoid large PNG textures (bandwidth + memory); the painted `#bgLayer` is the
@@ -234,6 +237,7 @@ type, spacing, timing), not from piling on expensive effects. Hard rules:
 - **Respect `prefers-reduced-motion`** — it already softens/disables the heavy FX; keep new
   effects behind that check.
 
-Litmus test for any new visual: *does it hold 60fps on a 4-year-old iPad?* If it needs blur
-on scroll, animates layout properties, or runs JS every frame — redesign it.
+Litmus test: on the **M3 target** virtually anything holds 60fps, so build the beautiful
+version first. Only if a *secondary* device (an older sister's iPad) janks should you reach
+for the degradations above (or gate them behind `prefers-reduced-motion` / a capability check).
 

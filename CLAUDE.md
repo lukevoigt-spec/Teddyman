@@ -88,8 +88,19 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   wing (Dragon Duel finale). Onboarding: NOAH THE RED intro cutscene (startAct2Intro, noahSVG, lines
   noah1-3, plays once via S.act2intro) runs after the Act-1→Act-2 handoff, then opens the medieval map.
   Map machinery already act-scopes; vexDone guarded to Act-1 only. ART: noahSVG + dragonSVG placeholders
-  (art.js, preview in hero-lab.html). TO BUILD NEXT: more Act-2 zones (blends → long vowels/magic-e →
-  fluency), Act-2 gear/power-up rewards, real Vixen/dragon/Noah/Miss-Kendall art, an Act-2 finale.
+  (art.js, preview in hero-lab.html).
+- ACT 2 ZONE 2 IS LIVE (THE IRON FORGE, consonant BLENDS): missions 111–118. IMPORTANT — a blend (st,
+  bl, cr, -nd, -mp) is NOT a new gem: it's two sounds held together, so it reuses the single-letter
+  model (no grapheme change) and the new skill is blending more phonemes. Built from forge (build the
+  cluster word) + read (decode it), reusing the same handlers (zone 102, no new letters). First blend
+  mission (id 111) plays Noah's blend_intro explainer ("two letters side by side, said quickly").
+  Words: stop/frog/clap, swim/snap/glad/plum, hand/jump/milk/nest, sled/gift/trap/belt (forge); finale
+  118 = stomp/blend/crust/drink (initial+final blends). READWORDS2 extended with blend-word pics
+  (frog/drum/flag/crab/star/hand/jump/lamp/tent/mask/sled/gift/trap/milk). No blend word contains a
+  digraph sequence, so toGraphemes tokenises them as single letters (verified).
+- TO BUILD NEXT (Act 2): LONG VOWELS / magic-e (needs a small split-grapheme extension a_e), then
+  fluency; Act-2 gear/power-up rewards; an Act-2 FINALE + Miss-Kendall rescue; real Vixen/dragon/Noah/
+  friend art.
 - ACT 2 (FRAME + Zone 1 done; later zones TBD): villain = a smooth-talking
   evil VIXEN (Scarlett-Overkill-coded) who can morph into a DRAGON; her dragon army = Act-2 bosses.
   She kidnaps Miss Kendall + friends JJ, Nora, Cal and escapes through a TIME PORTAL to the MEDIEVAL

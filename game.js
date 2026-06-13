@@ -108,7 +108,16 @@ const MISSIONS=[
   {id:107,type:"learn",letter:"ng",lbl:"Quest: the NG Rune",z:101},
   {id:108,type:"forge",words:["duck","sock","ring","king"],lbl:"Rune Forge: Power Runes",z:101},
   {id:109,type:"read",words:["ship","fish","chip","duck","sock","ring"],lbl:"Dragon Reading Rally",z:101},
-  {id:110,type:"forge",words:["shop","chin","bath","wing"],lbl:"Dragon Duel!",finale:true,z:101}
+  {id:110,type:"forge",words:["shop","chin","bath","wing"],lbl:"Dragon Duel!",finale:true,z:101},
+  /* === ACT 2 · ZONE 2 · THE IRON FORGE — consonant BLENDS (build+decode clusters) === */
+  {id:111,type:"forge",words:["stop","frog","clap"],lbl:"Blend Smith: First Blends",z:102},
+  {id:112,type:"read", words:["frog","drum","flag","crab","star"],lbl:"Blend Reading I",z:102},
+  {id:113,type:"forge",words:["swim","snap","glad","plum"],lbl:"Blend Smith: Twin Blades",z:102},
+  {id:114,type:"forge",words:["hand","jump","milk","nest"],lbl:"Blend Smith: End Blends",z:102},
+  {id:115,type:"read", words:["hand","jump","lamp","tent","mask"],lbl:"Blend Reading II",z:102},
+  {id:116,type:"forge",words:["sled","gift","trap","belt"],lbl:"Blend Smith: Master Blades",z:102},
+  {id:117,type:"read", words:["sled","gift","trap","frog","jump","milk"],lbl:"Blend Reading Rally",z:102},
+  {id:118,type:"forge",words:["stomp","blend","crust","drink"],lbl:"Dragon Duel: The Iron Wyrm!",finale:true,z:102}
 ];
 const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield",22:"Gem Gauntlet",47:"Alphabet Star",30:"Reading Crown",33:"Spell Tome",36:"Story Key",52:"Fluency Badge"};
 /* Cloze (read the sentence, pick the word that fits the blank — picture-anchored,
@@ -166,10 +175,13 @@ const READWORDS={
   bus:"🚌", bag:"🎒", cap:"🧢", pan:"🍳", nut:"🥜", fan:"🪭", mug:"☕", pot:"🍲",
   hug:"🤗", bed:"🛏️", net:"🥅", bun:"🍞"
 };
-/* Act-2 decode words (DIGRAPHS) — each uses only taught graphemes, clear picture. */
+/* Act-2 decode words — digraphs (zone 1) + blends (zone 2). Each uses only taught
+   graphemes and has a clear picture. */
 const READWORDS2={
   ship:"🚢", fish:"🐟", chip:"🍟", duck:"🦆", sock:"🧦", ring:"💍",
-  king:"🤴", shop:"🏪", bath:"🛁", chin:"🧔", wing:"🪽", dish:"🍽️"
+  king:"🤴", shop:"🏪", bath:"🛁", chin:"🧔", wing:"🪽", dish:"🍽️",
+  frog:"🐸", drum:"🥁", flag:"🚩", crab:"🦀", star:"⭐", hand:"✋",
+  jump:"🦘", lamp:"💡", tent:"⛺", mask:"😷", sled:"🛷", gift:"🎁", trap:"🪤", milk:"🥛"
 };
 const TRACE={
   s:[[[205,80],[150,58],[102,86],[106,132],[160,152],[196,188],[172,236],[102,232]]],
@@ -242,7 +254,13 @@ const ZONES=[
   { id:101, name:"STONEKEEP VILLAGE", bg:"keep", act:2,
     letters:["sh","ch","th","wh","ck","ng"],
     base:[470,1408],
-    nodes:autoNodes(11,{y0:1280,step:104,phase:1.0}) }
+    nodes:autoNodes(11,{y0:1280,step:104,phase:1.0}) },
+  /* ===== ACT 2 · zone 2: consonant BLENDS (st bl cr fr… + final -nd -mp -st).
+     NOT new gems — a blend is two sounds held together; reuses the single-letter
+     model, the new skill is blending more phonemes. ===== */
+  { id:102, name:"THE IRON FORGE", bg:"forge2", act:2,
+    letters:[],   /* no new graphemes — blend practice on known letters */
+    nodes:autoNodes(9,{y0:120,step:104,phase:3.2}) }
 ];
 /* ---------------- ACTS / CAMPAIGN ----------------
    The long game is a series of ACTS: each is a city with its own villain and a
@@ -346,6 +364,13 @@ const LINES={
   word_ship:{t:"ship!"}, word_chat:{t:"chat!"}, word_this:{t:"this!"}, word_duck:{t:"duck!"}, word_sock:{t:"sock!"},
   word_ring:{t:"ring!"}, word_king:{t:"king!"}, word_fish:{t:"fish!"}, word_chip:{t:"chip!"}, word_shop:{t:"shop!"},
   word_chin:{t:"chin!"}, word_bath:{t:"bath!"}, word_wing:{t:"wing!"}, word_dish:{t:"dish!"},
+  /* Act-2 zone 2 — BLEND words */
+  word_stop:{t:"stop!"}, word_frog:{t:"frog!"}, word_clap:{t:"clap!"}, word_swim:{t:"swim!"}, word_snap:{t:"snap!"},
+  word_glad:{t:"glad!"}, word_plum:{t:"plum!"}, word_hand:{t:"hand!"}, word_jump:{t:"jump!"}, word_milk:{t:"milk!"},
+  word_nest:{t:"nest!"}, word_sled:{t:"sled!"}, word_gift:{t:"gift!"}, word_trap:{t:"trap!"}, word_belt:{t:"belt!"},
+  word_drum:{t:"drum!"}, word_flag:{t:"flag!"}, word_crab:{t:"crab!"}, word_star:{t:"star!"}, word_lamp:{t:"lamp!"},
+  word_tent:{t:"tent!"}, word_mask:{t:"mask!"}, word_stomp:{t:"stomp!"}, word_blend:{t:"blend!"}, word_crust:{t:"crust!"}, word_drink:{t:"drink!"},
+  blend_intro:{t:"To the Iron Forge, Sir Teddy! Here we BLEND sounds — two letters, side by side, said quickly together. Listen, then build!"},
   /* Noah the Red — Act-2 mentor intro */
   noah1:{t:"Greetings, young hero. I am Noah the Red, wizard of the old realm. The Vixen has dragged your friends here, to the age of knights and dragons."},
   noah2:{t:"Your gem-powers are gone — but together we will earn new magic: RUNES. Two letters that join to make ONE sound. Master them, and the dragons cannot stand against you."},
@@ -1592,7 +1617,8 @@ function startForge(m){ show("scrForge");
   forgeWords=m.words.slice(); forgeWordIx=0; forgeHP=forgeWords.length;
   $("forgeBoss").innerHTML=`<div class="boss" id="forgeSprite" style="width:clamp(130px,22vw,200px)">${bossSprite(200)}</div>`;
   paintPips("forgePips",forgeHP,forgeWords.length);
-  flow(narrate("forge",$("forgeText"),["forge_intro1","forge_intro2"]),()=>forgeWord()); }
+  const intro = m.id===111 ? ["blend_intro"] : ["forge_intro1","forge_intro2"];   /* first Blends mission gets Noah's blend explainer */
+  flow(narrate("forge",$("forgeText"),intro),()=>forgeWord()); }
 function forgeWord(){
   if(forgeWordIx>=forgeWords.length){
     const fs=$("forgeSprite"); if(fs)fs.classList.add("flee");
