@@ -1,7 +1,9 @@
 /* =========================================================
-   SUPER TEDDY — v2.2 STAR FORCE CITY · CAGED ALLIES
-   New: voicepack audio engine (studio clips w/ TTS fallback)
-        + real scrollable Star Force City map with landmarks.
+   SUPER TEDDY — STAR FORCE CITY (Act 1) + MEDIEVAL REALM (Act 2)
+   The game core: boot/title/intro, mission handlers, base/shop/training,
+   settings, win/reward. Data/save/audio/map/allies live in their own modules
+   (see CLAUDE.md repo layout + load order). The world map is a single-screen
+   PAINTED map (map.js); voicepack audio engine has a per-line TTS fallback.
 ========================================================= */
 const NAME="Super Teddy";
 const LETTERS={
@@ -123,7 +125,7 @@ if(typeof document!=="undefined"){
 function mast(g){ if(!S.mastery[g])S.mastery[g]={seen:0,ok:0,str:0}; return S.mastery[g]; }
 function record(g,ok){ const m=mast(g); m.seen++;
   if(ok){m.ok++;m.str=Math.min(5,m.str+1); combo++; if(combo>=3)comboPop(combo);}
-  else {m.str=Math.max(0,m.str-1); combo=0;}
+  else {m.str=Math.max(0,m.str-1); combo=0; if(typeof Sfx!=="undefined")Sfx.wrong();}   /* gentle soft cue, never harsh */
   save(); }
 /* ---- MASTERY (proficiency, not just completion) ----
    An item is MASTERED when it's strong, well-seen, and accurate. Milestones
@@ -136,101 +138,8 @@ function letterMastered(g){ return masteredItem(g); }
 /* what a milestone certifies = every letter taught so far must be mastered */
 function coreWeak(m){ return (m&&(m.finale||m.rescue)) ? actGraphemes().filter(g=>!letterMastered(g)) : []; }
 
-/* ---------------- CUSTOM CLIP STORE ----------------
-   Parent-made clips (recorded or generated in the in-app Audio studio) live
-   in IndexedDB on THIS device, keyed by line id. CUSTOM mirrors them in
-   memory. Playback order is: CUSTOM clip -> shipped window.VOICEPACK -> TTS.
-   Nothing here ever overwrites a committed voicepack.js.                    */
-let CUSTOM={};
-const VStore={ db:null,
-  open(){ return new Promise(res=>{ try{
-      const r=indexedDB.open("superTeddyAudio",1);
-      r.onupgradeneeded=()=>{ if(!r.result.objectStoreNames.contains("clips"))r.result.createObjectStore("clips"); };
-      r.onsuccess=()=>{ this.db=r.result; res(this.db); };
-      r.onerror=()=>res(null);
-    }catch(e){ res(null); } }); },
-  all(){ return new Promise(res=>{ if(!this.db)return res({});
-    try{ const out={}, cur=this.db.transaction("clips").objectStore("clips").openCursor();
-      cur.onsuccess=e=>{ const c=e.target.result; if(c){ out[c.key]=c.value; c.continue(); } else res(out); };
-      cur.onerror=()=>res(out);
-    }catch(e){ res({}); } }); },
-  put(id,uri){ return new Promise(res=>{ if(!this.db)return res(false);
-    try{ const tx=this.db.transaction("clips","readwrite"); tx.objectStore("clips").put(uri,id);
-      tx.oncomplete=()=>res(true); tx.onerror=()=>res(false);
-    }catch(e){ res(false); } }); },
-  del(id){ return new Promise(res=>{ if(!this.db)return res(false);
-    try{ const tx=this.db.transaction("clips","readwrite"); tx.objectStore("clips").delete(id);
-      tx.oncomplete=()=>res(true); tx.onerror=()=>res(false);
-    }catch(e){ res(false); } }); }
-};
-VStore.open().then(()=>VStore.all()).then(m=>{ CUSTOM=m||{};
-  if(typeof refreshAudioStudio==="function")refreshAudioStudio(); });
-function clipFor(id){ return CUSTOM[id] || ((typeof VOICEPACK!=="undefined") && VOICEPACK[id]) || null; }
-
-/* ---------------- AUDIO ENGINE ----------------
-   Plays a parent clip / studio voicepack clip when present, falls back to
-   speech synthesis per line otherwise.                                     */
-const Aud={
-  voice:null, cur:null, token:0, vol:1,
-  hasVP(id){ return !!clipFor(id); },
-  pick(){ const vs=speechSynthesis.getVoices().filter(v=>v.lang&&v.lang.startsWith("en"));
-    this.voice = vs.find(v=>/samantha/i.test(v.name)) || vs.find(v=>/karen|ava|allison|female/i.test(v.name)) || vs[0]||null; },
-  stop(){ this.token++; speechSynthesis.cancel(); if(this.cur){try{this.cur.pause();}catch(e){}this.cur=null;} },
-  play(ids){ this.stop(); const my=this.token;
-    const seq=Array.isArray(ids)?ids.slice():[ids];
-    const cap=4000+2600*seq.length;
-    const core=new Promise(res=>{
-      const next=()=>{ if(my!==this.token){res();return;}
-        if(!seq.length){res();return;}
-        const id=seq.shift(); const L=LINES[id]||{t:id}; const src=clipFor(id);
-        if(src){
-          const a=new Audio(src); this.cur=a; a.volume=this.vol;
-          a.onended=()=>{this.cur=null;next();}; a.onerror=()=>{this.cur=null;ttsOne();};
-          a.play().catch(()=>ttsOne());
-          function ttsOne(){ Aud._tts(L,my).then(next); }
-        } else { this._tts(L,my).then(next); }
-      }; next();
-    });
-    return Promise.race([core,new Promise(r=>setTimeout(r,cap))]);
-  },
-  _tts(L,my){ return new Promise(res=>{
-      const guard=setTimeout(res,8000);
-      if(!("speechSynthesis" in window)){res();return;}
-      if(!this.voice)this.pick();
-      const u=new SpeechSynthesisUtterance(L.t);
-      if(this.voice)u.voice=this.voice;
-      u.rate=L.r||0.92; u.pitch=1.05; u.volume=this.vol;
-      u.onend=()=>{clearTimeout(guard);res();}; u.onerror=()=>{clearTimeout(guard);res();};
-      speechSynthesis.speak(u);
-  });},
-  ding(){ try{ const ctx=Aud.ctx||(Aud.ctx=new (window.AudioContext||window.webkitAudioContext)());
-    const o=ctx.createOscillator(),gn=ctx.createGain();
-    o.frequency.value=740;o.type="sine";
-    gn.gain.setValueAtTime(0.0001,ctx.currentTime);
-    gn.gain.exponentialRampToValueAtTime(0.18,ctx.currentTime+0.03);
-    gn.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.4);
-    o.connect(gn).connect(ctx.destination);o.start();o.stop(ctx.currentTime+0.42);
-  }catch(e){} }
-};
-if("speechSynthesis" in window){speechSynthesis.onvoiceschanged=()=>Aud.pick();
-  setInterval(()=>{try{if(speechSynthesis.speaking)speechSynthesis.resume();}catch(e){}},4000);}
-let lastSeq={};
-let __cont=null,__skipT=null;
-function flow(p,fn){ __cont=fn; clearTimeout(__skipT);
-  const sk=$("btnSkip"); sk.style.display="none";
-  __skipT=setTimeout(()=>{ if(__cont)sk.style.display="flex"; },2600);
-  p.then(()=>{ if(__cont===fn){ __cont=null; sk.style.display="none"; fn(); } });
-}
-function clearFlow(){ __cont=null; clearTimeout(__skipT); const sk=$("btnSkip"); if(sk)sk.style.display="none"; }
-function narrate(key,el,ids,display){ lastSeq[key]=ids;
-  const txt=(display!==undefined)?display:(Array.isArray(ids)?ids:[ids]).map(id=>(LINES[id]||{t:id}).t).join(" ");
-  el.querySelector("span").textContent=txt;
-  return Aud.play(ids);
-}
-document.addEventListener("click",e=>{
-  const ear=e.target.closest(".ear"); if(!ear)return;
-  const k=ear.dataset.ear; if(lastSeq[k])Aud.play(lastSeq[k]);
-});
+/* AUDIO layer (CUSTOM clip store, VStore, clipFor, Aud engine, flow/clearFlow/
+   narrate, ear-tap listener) moved to audio.js (loaded before game.js). */
 
 /* ---------------- ART ----------------
    heroSVG lives in art.js (loaded first); heroOpts maps game state to it. */
@@ -251,6 +160,37 @@ const $=id=>document.getElementById(id);
 const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrInter:"intro", scrScan:"lab", scrRead:"learn", scrSpell:"learn", scrMagic:"learn", scrSent:"learn", scrCloze:"learn", scrScramble:"learn", scrFortress:"battle",
   scrBase:"base", scrTrain:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
   scrBoss:"battle", scrForge:"battle", scrWin:"victory", scrRest:"rest" };
+/* SCENE HARMONIZER tones: each scene's dominant ambient KEY light + an accent
+   RIM, picked to match its painted background. show() pushes these to body as
+   --scene-key/--scene-rim so the grade overlay AND the foreground character art
+   read as lit by the same world (the scene's light wraps the hero's silhouette).
+   SCENE_TONE2 overrides the medieval Act-2 scenes (torch/stone/dragon-fire). */
+const SCENE_TONE={
+  title:  {key:"#ffd48c", rim:"#6db5ff"},   /* city night: gold key, cyan rim */
+  intro:  {key:"#c9a6ff", rim:"#7fd9ff"},   /* cutscene twilight */
+  lab:    {key:"#7fe3ff", rim:"#46f0c9"},   /* gem lab: cyan tech glow */
+  learn:  {key:"#ffe0a8", rim:"#9ad0ff"},   /* warm, focused classroom light */
+  city:   {key:"#9db8ff", rim:"#ffc93c"},   /* blue streets + gold gems */
+  battle: {key:"#ff8a5a", rim:"#9fe870"},   /* hot drama, toxic-green rim */
+  base:   {key:"#ffd06a", rim:"#5fa8ff"},   /* warm base interior + blue */
+  victory:{key:"#ffe27a", rim:"#ff8ad6"},   /* gold celebration + pink */
+  rest:   {key:"#b79cff", rim:"#7fd9ff"}    /* calm evening twilight */
+};
+const SCENE_TONE2={
+  title:  {key:"#e8c27a", rim:"#ff9a42"},
+  learn:  {key:"#ffd9a0", rim:"#c9b06a"},   /* parchment + stone */
+  city:   {key:"#e0c089", rim:"#ff9a42"},   /* sunlit medieval village */
+  battle: {key:"#ff7a3a", rim:"#ffd24a"},   /* dragon fire */
+  base:   {key:"#e8c27a", rim:"#9a7bff"}
+};
+/* gameplay slots that get the diegetic corner-bracket frame (mission/learning
+   activity screens — NOT title/map/base/win/rest/cutscenes). */
+const FRAME_SLOTS=new Set(["lab","learn","city","battle"]);
+function applySceneTone(id){
+  const slot=BG_MAP[id]||"learn";
+  const t=(currentAct()===2 && SCENE_TONE2[slot]) || SCENE_TONE[slot] || SCENE_TONE.learn;
+  document.body.style.setProperty("--scene-key", t.key);
+  document.body.style.setProperty("--scene-rim", t.rim); }
 const __bgCache={};
 const BG_EXTS=["jpg","jpeg","png","webp"];   /* drop any of these — no conversion needed */
 /* Painted scene loader — ACT-AWARE + format-flexible. Act 2+ prefers its own scene
@@ -280,9 +220,14 @@ function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.r
   $(id).classList.add("on"); $(id).classList.add("fadein");
   setTimeout(()=>$(id).classList.remove("fadein"),600);
   setBG(id);
-  /* scene harmonizer: per-act colour grade + hotter grade on battle/finale screens */
+  /* scene harmonizer: per-act colour grade + per-scene key/rim light + hotter grade on battle/finale */
   document.body.dataset.act=currentAct();
+  applySceneTone(id);
   document.body.classList.toggle("scene-battle", BG_MAP[id]==="battle");
+  /* diegetic corner-bracket frame on the gameplay/learning screens only (not the
+     title/map/base/cutscenes, where it'd crowd or clash) */
+  document.body.classList.toggle("framed", FRAME_SLOTS.has(BG_MAP[id]));
+  if(typeof Music!=="undefined" && Music.setAct) Music.setAct(currentAct());   /* swap the act's theme */
   $("hud").style.display=(id==="scrTitle")?"none":"flex"; refreshHUD();
   const dm=$("dailyMeter"); if(dm){ dm.style.display=(id==="scrMap")?"block":"none"; if(id==="scrMap")updateDailyMeter(); } }
 function refreshHUD(){ $("hudStars").textContent="⚡ "+S.stars; }
@@ -308,7 +253,8 @@ function confetti(n){ const s=stageEl(); if(!s)return; n=REDUCE?12:(n||64);
     if(Math.random()<.5)c.style.borderRadius="50%";
     s.appendChild(c); setTimeout(()=>c.remove(),2300); } }
 let combo=0;
-function comboPop(n){ const s=stageEl(); if(!s||REDUCE)return; const c=document.createElement("div");
+function comboPop(n){ if(typeof Sfx!=="undefined")Sfx.combo(n);   /* sound plays even in reduced-motion */
+  const s=stageEl(); if(!s||REDUCE)return; const c=document.createElement("div");
   c.className="combochip"; c.textContent="COMBO ×"+n+" 🔥"; s.appendChild(c); setTimeout(()=>c.remove(),950); }
 function burstAt(el,word){ const r=el.getBoundingClientRect(),st=$("stage").getBoundingClientRect();
   const cx=r.left-st.left+r.width/2, cy=r.top-st.top+r.height/2;
@@ -341,9 +287,10 @@ function paintTitle(){ const nm=$("playerName"); if(nm)nm.textContent=profileNam
   $("btnPlayer").style.display=profiles().length>1?"inline-block":"none"; }
 paintTitle();
 setBG("scrTitle");   /* the title is shown via static HTML, so load its painted background at boot */
-if(S.calm)document.body.classList.add("calm");   /* parent "Calm" visual-detail mode */
+applyDetail();   /* parent visual-detail tier: Full / Calm / Lite */
 Aud.vol = (S.vol==null?1:S.vol);                 /* parent narration volume (0–1) */
 document.body.dataset.act=currentAct();           /* scene-grade theme from boot (title is static) */
+applySceneTone("scrTitle");                        /* per-scene key/rim light for the boot title */
 document.body.classList.add("scene-ambient");     /* the boot title screen is ambient */
 $("btnStart").onclick=()=>{ Aud.pick(); if(!S.intro)startIntro(); else {Aud.play("welcome"); toMap();} };
 $("btnContinue").onclick=()=>{ Aud.pick(); Aud.play("welcome"); toMap(); };
@@ -366,6 +313,17 @@ $("btnPickerClose").onclick=closePicker;
 cloudPull().then(changed=>{ if(changed){ GEO=geomFor(currentAct()); paintTitle(); $("vpStatus").textContent=vpMsg();
   cloudStatus("Restored his latest progress from the cloud ✓"); } });
 
+/* While a cutscene character narrates, gently bob the portrait so the mentor
+   reads as "talking" to Teddy (face-agnostic — works for bearded Noah, the
+   dragon, the captives, etc., none of which have an animatable mouth). The
+   bob runs for the audio's duration; a token guards against a re-paint's stale
+   promise clearing the new talk state. Honours reduced-motion + Calm (CSS). */
+function faceSpeak(artEl, key, textEl, ids, display){
+  const pr=narrate(key, textEl, ids, display);
+  if(artEl){ const tok=(artEl.__sp=(artEl.__sp||0)+1); artEl.classList.add("talking");
+    pr.then(()=>{ if(artEl.__sp===tok) artEl.classList.remove("talking"); }); }
+  return pr; }
+
 /* ---------------- INTRO ---------------- */
 const INTRO=[
  {art:citySVG(), id:"panel1"},
@@ -377,7 +335,7 @@ const INTRO=[
 let introIx=0;
 function startIntro(){ introIx=0; show("scrIntro"); paintIntro(); }
 function paintIntro(){ const p=INTRO[introIx]; $("introArt").innerHTML=p.art;
-  narrate("intro",$("introText"),[p.id]);
+  faceSpeak($("introArt"),"intro",$("introText"),[p.id]);
   $("btnIntroNext").textContent = introIx<INTRO.length-1?"NEXT ➜":"I'M READY!"; }
 $("btnIntroNext").onclick=()=>{ introIx++;
   if(introIx<INTRO.length)paintIntro();
@@ -399,7 +357,7 @@ let interIx=0;
 function startInterlude(){ interIx=0; show("scrInter"); paintInter(); }
 function paintInter(){ const p=INTERLUDE[interIx];
   $("interArt").innerHTML=(typeof p.art==="function")?p.art():p.art;
-  narrate("inter",$("interText"),[p.id]);
+  faceSpeak($("interArt"),"inter",$("interText"),[p.id]);
   $("btnInterNext").textContent = interIx<INTERLUDE.length-1?"NEXT ➜":"INTO THE PORTAL! ➜";
   $("btnInterNext").onclick=()=>{ interIx++;
     if(interIx<INTERLUDE.length)paintInter(); else finishInterlude(); }; }
@@ -416,14 +374,14 @@ let a2Ix=0;
 function startAct2Intro(){ a2Ix=0; show("scrInter"); paintA2(); }
 function paintA2(){ const p=ACT2_INTRO[a2Ix];
   $("interArt").innerHTML=(typeof p.art==="function")?p.art():p.art;
-  narrate("inter",$("interText"),[p.id]);
+  faceSpeak($("interArt"),"inter",$("interText"),[p.id]);
   $("btnInterNext").textContent = a2Ix<ACT2_INTRO.length-1?"NEXT ➜":"ENTER THE REALM! ➜";
   $("btnInterNext").onclick=()=>{ a2Ix++;
     if(a2Ix<ACT2_INTRO.length)paintA2(); else { S.act2intro=true; save(); Aud.stop(); toMap(); } }; }
 /* Shown when the current act has no missions yet (safe fallback). */
 function actComingSoon(){ show("scrInter");
   $("interArt").innerHTML=`<div style="display:flex;justify-content:center;">${heroNow(220)}</div>`;
-  narrate("inter",$("interText"),["interlude5"]);
+  faceSpeak($("interArt"),"inter",$("interText"),["interlude5"]);
   $("btnInterNext").textContent="BACK TO TITLE";
   $("btnInterNext").onclick=()=>{ Aud.stop(); show("scrTitle"); }; }
 
@@ -450,319 +408,14 @@ function nextScan(){ if(scanIx>=SCAN_SET.length){ S.scan=true; save();
     row.appendChild(t); });
 }
 
-/* ---------------- STAR FORCE CITY MAP ---------------- */
-function trailPath(){ const pts=[GEO.base,...actMissions(currentAct()).map(m=>nodeOf(m.id)),[GEO.fort[0],GEO.fort[1]+170]];
-  let d="M "+pts[0][0]+" "+pts[0][1];
-  for(let i=1;i<pts.length;i++){ const a=pts[i-1],b=pts[i];
-    const mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2;
-    d+=` Q ${a[0]} ${my} ${mx} ${my} T ${b[0]} ${b[1]}`; }
-  return d; }
-/* positive modulo — JS % returns negatives for negative operands, which made
-   building widths negative and hung this loop (map-breaking bug for seed 9) */
-function pmod(v,m){ return ((v%m)+m)%m; }
-function skyline(y,h0,fill,op,seed){ let out="",x=-30;
-  while(x<840){ const w=44+pmod(seed*(x+13)*7,72), h=h0+pmod(seed*(x+5)*13,150);
-    out+=`<rect x="${x}" y="${y-h}" width="${w}" height="${h}" fill="${fill}" opacity="${op}"/>`; x+=w+10; }
-  return out; }
-function windowsRow(y,seed){ let out="",x=-10;
-  while(x<820){ if(((x*seed)|0)%4!==0) out+=`<rect x="${x}" y="${y-((x*seed)%160)-20}" width="9" height="12" fill="#ffc93c" opacity=".8"/>`; x+=34; }
-  return out; }
-function gemDeco(x,y,c,sc=1){ return `<g transform="translate(${x} ${y}) scale(${sc})">
-  <polygon points="0,-16 13,-5 8,14 -8,14 -13,-5" fill="${c}" stroke="#150f2e" stroke-width="3.4"/>
-  <polyline points="-13,-5 0,-2 13,-5 M0,-2 0,14" fill="none" stroke="#150f2e" stroke-width="2" opacity=".5"/>
-  <circle cx="-4" cy="-8" r="2.4" fill="#fff" opacity=".9"/></g>`; }
-function mapSVG(){
-  const done=id=>!!S.done[id];
-  const ms=actMissions(currentAct()), az=actZones(currentAct()), info=actInfo(currentAct());
-  const showHeart=ms.some(m=>m.id===17), hN=nodeOf(17);
-  const heartPos=[hN[0]>400?hN[0]-265:hN[0]+265, hN[1]-20];
-  const avail=i=> i===0 || done(ms[i-1].id);
-  let nodes="";
-  ms.forEach((m,i)=>{
-    const [x,y]=nodeOf(m.id);
-    const st=done(m.id)?"done":(avail(i)?"current":"locked");
-    const fill=done(m.id)?"#3ec97e":(avail(i)?"#ffc93c":"#3b3360");
-    const side = x<400 ? 1 : -1;
-    const lbl=m.lbl.toUpperCase();
-    const pw=Math.min(338, Math.max(168, lbl.length*11.5+30));      /* pill auto-fits the label */
-    let lx=x+side*(48+pw/2); lx=Math.max(pw/2+6, Math.min(800-pw/2-6, lx));   /* keep on-screen */
-    nodes+=`<g class="mnode ${st}" data-mid="${m.id}">
-      <ellipse cx="${x}" cy="${y+40}" rx="44" ry="12" fill="#0a0618" opacity=".5"/>
-      <circle cx="${x}" cy="${y}" r="50" fill="${fill}" opacity=".42" filter="url(#softGlow)"/>
-      <circle class="ring" cx="${x}" cy="${y}" r="40" fill="url(#node_${st})" stroke="#150f2e" stroke-width="6"/>
-      <ellipse cx="${x}" cy="${y-15}" rx="23" ry="14" fill="#ffffff" opacity=".32"/>
-      ${done(m.id)?`<text x="${x}" y="${y+14}" text-anchor="middle" font-family="Bangers" font-size="38" fill="#0c3f28">✓</text>`
-        : st==="locked"?`<g transform="translate(${x} ${y})" stroke="#150f2e" stroke-width="2.6"><path d="M-7 -2 v-5 a7 7 0 0 1 14 0 v5" fill="none" stroke="#cdc6ea"/><rect x="-12" y="-2" width="24" height="18" rx="4" fill="#cdc6ea"/></g>`
-        : `<circle cx="${x}" cy="${y}" r="8" fill="#fff" opacity=".92"/>`}
-      <g transform="translate(${lx},${y})" filter="url(#pillShadow)">
-        <rect x="${-pw/2}" y="-21" width="${pw}" height="42" rx="15" fill="rgba(12,7,30,.86)" stroke="#ffce3a" stroke-width="2.5"/>
-        <text x="0" y="9" text-anchor="middle" textLength="${pw-22}" lengthAdjust="spacingAndGlyphs" font-family="Bangers" font-size="20" fill="${done(m.id)?"#9fe870":"#ffe08a"}" letter-spacing="1">${lbl}</text>
-      </g></g>`;
-  });
-  const vexDone=currentAct()===1 && done(48);   /* Act-1 finale beaten (Act-1 map only) */
-  /* zone divider bands between groups within the act */
-  let dividers="";
-  for(let i=1;i<az.length;i++){
-    const dy=Math.round((Math.min(...az[i-1].nodes.map(p=>p[1]))+Math.max(...az[i].nodes.map(p=>p[1])))/2)+52;
-    dividers+=`<g transform="translate(400 ${dy})">
-      <line x1="-330" y1="0" x2="330" y2="0" stroke="#fff6e3" stroke-width="3" stroke-dasharray="10 14" opacity=".4"/>
-      <g filter="url(#pillShadow)"><rect x="-184" y="-22" width="368" height="44" rx="15" fill="rgba(12,7,30,.88)" stroke="#f2a9c4" stroke-width="2.5"/>
-      <path d="M-168 0 l9 -7 l9 7" fill="none" stroke="#f2a9c4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M150 0 l9 -7 l9 7" fill="none" stroke="#f2a9c4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-      <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="22" fill="#ffc6e0" letter-spacing="2">${az[i].name}</text></g></g>`;
-  }
-  return `<svg viewBox="0 ${GEO.viewTop} 800 ${GEO.mapH-GEO.viewTop}">
-  <defs>
-    <linearGradient id="msky" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#070418"/><stop offset=".35" stop-color="#1b1252"/>
-      <stop offset=".7" stop-color="#46297f"/><stop offset="1" stop-color="#8a4a8f"/>
-    </linearGradient>
-    <linearGradient id="trailG" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffd75e"/><stop offset="1" stop-color="#f0a82b"/>
-    </linearGradient>
-    <radialGradient id="moonG" cx=".5" cy=".5" r=".5">
-      <stop offset="0" stop-color="#fff6e3" stop-opacity=".8"/><stop offset="1" stop-color="#fff6e3" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="node_done" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#bdffdc"/><stop offset=".5" stop-color="#3ec97e"/><stop offset="1" stop-color="#0f6a40"/></radialGradient>
-    <radialGradient id="node_current" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#fff1b8"/><stop offset=".5" stop-color="#ffce3a"/><stop offset="1" stop-color="#b9760f"/></radialGradient>
-    <radialGradient id="node_locked" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#5b5384"/><stop offset=".5" stop-color="#3b3360"/><stop offset="1" stop-color="#211c3a"/></radialGradient>
-    <filter id="softGlow" x="-90%" y="-90%" width="280%" height="280%"><feGaussianBlur stdDeviation="9"/></filter>
-    <filter id="pillShadow" x="-15%" y="-60%" width="130%" height="220%"><feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity=".55"/></filter>
-  </defs>
-  <rect y="${GEO.viewTop}" width="800" height="${GEO.mapH-GEO.viewTop}" fill="url(#msky)" opacity=".5"/>
-  <circle cx="650" cy="${GEO.viewTop+150}" r="130" fill="url(#moonG)"/>
-  <circle cx="650" cy="${GEO.viewTop+150}" r="50" fill="#fff1cf" stroke="#150f2e" stroke-width="5"/>
-  <circle cx="632" cy="${GEO.viewTop+138}" r="8" fill="#ead9b4"/><circle cx="664" cy="${GEO.viewTop+162}" r="6" fill="#ead9b4"/>
-  <g fill="#fff6e3">${[[120,90],[300,60],[520,110],[80,240],[730,300],[200,180],[420,40],[600,250]].map(([sx,sy])=>`<circle cx="${sx}" cy="${GEO.viewTop+sy}" r="2.5"/>`).join("")}</g>
-  <g fill="#fff6e3"><circle cx="120" cy="90" r="3"/><circle cx="300" cy="60" r="2.4"/><circle cx="520" cy="110" r="2.6"/><circle cx="80" cy="240" r="2.2"/><circle cx="730" cy="300" r="2.4"/><circle cx="200" cy="180" r="2"/></g>
-  <g class="mcloudB" fill="#cdb8ff" opacity=".14">
-    <path d="M140 210 q18 -34 54 -27 q12 -26 47 -20 q31 -9 43 16 q32 2 27 31 z"/>
-    <path d="M560 320 q15 -28 45 -22 q10 -22 40 -16 q26 -8 36 13 q27 2 23 25 z"/>
-  </g>
-  <g class="mcloudA" fill="#e7dcff" opacity=".1">
-    <path d="M380 130 q13 -24 39 -19 q9 -18 33 -13 q22 -6 31 11 q22 2 18 21 z"/>
-  </g>
 
-  ${skyline(GEO.minY+330,70,"#241b4d",.45,6)}
-  ${skyline(GEO.minY+560,95,"#2c2158",.65,8)}
-  ${windowsRow(GEO.minY+560,13)}
-  ${skyline(700,80,"#241b4d",.55,3)}
-  ${skyline(980,110,"#2c2158",.8,5)}
-  ${windowsRow(980,7)}
-  <rect x="0" y="660" width="800" height="50" fill="#7a5aa8" opacity=".25"/>
-  ${skyline(1290,130,"#332a66",1,9)}
-  ${windowsRow(1290,11)}
-  <rect x="0" y="1290" width="800" height="270" fill="#3a2f6e"/>
-  <ellipse cx="180" cy="1340" rx="180" ry="46" fill="#2f8f5b" opacity=".9"/>
-  <ellipse cx="660" cy="1370" rx="200" ry="52" fill="#2a7d50" opacity=".9"/>
+/* HERO LEAGUE / ALLIES (CAGED, ALLY, LEAGUE, ALLY_COL + allyMid/allyFreed/
+   allyLine/allyPop/allyMapFig) moved to allies.js (loaded before game.js). */
 
-  <!-- The act's villain fortress (always at the summit) -->
-  <g transform="translate(${GEO.fort[0]} ${GEO.fort[1]})">
-    <path d="M-96 64 L-96 -32 L-64 -64 L-64 -12 L-22 -12 L-22 -86 L0 -118 L22 -86 L22 -12 L64 -12 L64 -64 L96 -32 L96 64 Z"
-      fill="#3c1763" stroke="#150f2e" stroke-width="6"/>
-    <circle cx="0" cy="-112" r="10" fill="#9fe870"/>
-    <rect x="-15" y="8" width="30" height="44" rx="6" fill="#150f2e"/>
-    <g transform="translate(0 -156)">
-      <circle r="23" fill="#bfe3ff" stroke="#150f2e" stroke-width="4"/>
-      <path d="M-9 -2 Q0 -16 9 -2 Q14 8 0 14 Q-14 8 -9 -2Z" fill="#5ea0ff" stroke="#150f2e" stroke-width="3"/>
-      <circle cx="0" cy="-4" r="7" fill="#ffd9b8" stroke="#150f2e" stroke-width="2.5"/>
-    </g>
-    <g transform="translate(0 100)">
-      <rect x="-158" y="-21" width="316" height="42" rx="14" fill="rgba(21,15,46,.92)" stroke="#9fe870" stroke-width="2.5"/>
-      <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="23" fill="#9fe870" letter-spacing="1">${vexDone?"VEX DEFEATED · LEIGHTON FREED!":info.fortressLabel}</text>
-    </g>
-  </g>
-
-  <!-- HEART TOWER (act-1 landmark, beside Amelia's rescue) -->
-  ${showHeart?`<g transform="translate(${heartPos[0]} ${heartPos[1]})">
-    <rect x="-36" y="-90" width="72" height="170" rx="10" fill="#241b4d" stroke="#150f2e" stroke-width="5"/>
-    <path d="M0 -122 q16 -20 32 -4 q14 14 -6 32 L0 -68 L-26 -94 q-20 -18 -6 -32 q16 -16 32 4z" fill="${done(17)?"#ff7d9c":"#e6453c"}" stroke="#150f2e" stroke-width="4"/>
-    ${done(17)?'<g fill="#ffd75e" opacity=".95"><path d="M0 -168 L7 -150 L-7 -150Z"/><path d="M-46 -140 L-32 -132 L-42 -122Z"/><path d="M46 -140 L32 -132 L42 -122Z"/></g>':''}
-    <g fill="#ffc93c" opacity=".85"><rect x="-22" y="-66" width="12" height="15"/><rect x="10" y="-30" width="12" height="15"/><rect x="-22" y="6" width="12" height="15"/></g>
-    <g transform="translate(0 116)">
-      <rect x="-128" y="-18" width="256" height="36" rx="12" fill="rgba(21,15,46,.92)" stroke="${done(17)?"#3ec97e":"#f2a9c4"}" stroke-width="2.5"/>
-      <text x="0" y="8" text-anchor="middle" font-family="Bangers" font-size="20" fill="${done(17)?"#9fe870":"#f2a9c4"}" letter-spacing="1">${done(17)?"HEARTGUARD JOINS THE LEAGUE!":"HEART TOWER · SAVE AMELIA"}</text>
-    </g>
-  </g>`:""}
-  ${dividers}
-
-  <!-- the golden trail -->
-  <path d="${trailPath()}" fill="none" stroke="#150f2e" stroke-width="44" stroke-linecap="round" opacity=".92"/>
-  <path d="${trailPath()}" fill="none" stroke="url(#trailG)" stroke-width="30" stroke-linecap="round"/>
-  <path d="${trailPath()}" fill="none" stroke="#fff6e3" stroke-width="5" stroke-linecap="round" stroke-dasharray="16 24" opacity=".85"/>
-
-  ${gemDeco(120,1090,"#3b82f0",1.2)} ${gemDeco(640,1010,"#3ec97e",1)} ${gemDeco(90,860,"#a06ae8",1.1)}
-  ${gemDeco(700,760,"#ff8a3d",1)} ${gemDeco(620,470,"#7fd9ff",1.2)} ${gemDeco(150,540,"#ffc93c",1)}
-
-  <!-- HERO BASE node -->
-  <g class="mnode current" id="baseNode">
-    <ellipse cx="${GEO.base[0]}" cy="${GEO.base[1]+52}" rx="86" ry="14" fill="#150f2e" opacity=".35"/>
-    <g transform="translate(${GEO.base[0]} ${GEO.base[1]})">
-      <rect x="-70" y="-30" width="140" height="78" rx="10" fill="#2257c4" stroke="#150f2e" stroke-width="6"/>
-      <path d="M-84 -26 L0 -82 L84 -26 Z" fill="#e6453c" stroke="#150f2e" stroke-width="6"/>
-      <rect x="-18" y="6" width="36" height="42" rx="6" fill="#150f2e"/>
-      <rect x="-54" y="-12" width="24" height="22" rx="4" fill="#ffc93c"/>
-      <rect x="30" y="-12" width="24" height="22" rx="4" fill="#ffc93c"/>
-      <g transform="translate(0 -50)"><path d="M0 -14 L13 -7 L13 7 L0 14 L-13 7 L-13 -7Z" fill="#ffd75e" stroke="#150f2e" stroke-width="3.4"/><text y="6" text-anchor="middle" font-family="Bangers" font-size="15" fill="#150f2e">T</text></g>
-      <text x="0" y="86" text-anchor="middle" font-family="Bangers" font-size="24" fill="#ffc93c" letter-spacing="2">HERO BASE</text>
-    </g>
-  </g>
-
-  ${allyTeasers()}
-  ${heroMarker()}
-  ${nodes}
-  <g transform="translate(400 30)">
-    <rect x="-200" y="0" width="400" height="52" rx="16" fill="rgba(21,15,46,.85)" stroke="#fff6e3" stroke-width="3"/>
-    <text x="0" y="36" text-anchor="middle" font-family="Bangers" font-size="28" fill="#ffc93c" letter-spacing="2">⚡ ${S.stars} · SUPER TEDDY'S CITY</text>
-  </g>
-  </svg>`;
-}
-
-const CAGED=[{mid:3,kind:"tank",name:"TANK",real:"ARCHIE"},{mid:6,kind:"flip",name:"FLIP",real:"ELLIE"},{mid:8,kind:"sunny",name:"SUNNY",real:"WILLIAM"}];
-/* Hero League: each friend (a REAL person Teddy knows) owns one mission type and
-   cheers him BY NAME during it, once freed. Amelia cheers on every win. */
-const ALLY={
-  tank: {real:"Archie",  owns:"boss",   lines:["cheer_archie1","cheer_archie2"]},
-  flip: {real:"Ellie",   owns:"trace",  lines:["cheer_ellie1","cheer_ellie2"]},
-  sunny:{real:"William", owns:"patrol", lines:["cheer_will1","cheer_will2"]},
-  heart:{real:"Amelia",  owns:"win",    lines:["heart_cheer1","heart_cheer2","heart_cheer3"]}
-};
-function allyMid(kind){ if(kind==="heart")return 17;
-  const c=CAGED.find(x=>x.kind===kind); return c?c.mid:-1; }
-function allyFreed(kind){ return !!S.done[allyMid(kind)]; }
-function allyLine(kind){ const L=ALLY[kind].lines; return L[Math.floor(Math.random()*L.length)]; }
-/* brief celebratory pop of the friend's face + name; auto-removes, no flash */
-function allyPop(kind){ const st=$("stage"); if(!st)return;
-  const d=document.createElement("div"); d.className="allypop";
-  d.innerHTML=`<svg viewBox="-34 -40 68 84" width="76" aria-hidden="true">${allyFace(kind)}</svg>`+
-    `<div class="allyname">${(ALLY[kind].real||"").toUpperCase()}!</div>`;
-  st.appendChild(d); setTimeout(()=>d.remove(),2200); }
-/* Full league roster for the Hero Base shelf (mid = mission that frees them).
-   real = the actual person Teddy knows; name = their hero alias. */
-const LEAGUE=[...CAGED.map(t=>({mid:t.mid,kind:t.kind,name:t.name,real:t.real})),
-  {mid:17,kind:"heart",name:"HEARTGUARD",real:"AMELIA"},
-  {mid:48,kind:"leighton",name:"STARLIGHT PRINCESS",real:"LEIGHTON"},
-  {mid:128,kind:"kendall",name:"MISS KENDALL",real:"MISS KENDALL"}];
-/* a small LIVING friend on the map — recognizable little figure; captive ones
-   wave for help with a ball-and-chain, freed ones cheer with arms up. */
-const ALLY_COL={tank:"#e6453c", flip:"#3a9bff", sunny:"#ffce3a", heart:"#ff7d9c", leighton:"#a06ae8", kendall:"#5fa86a"};
-function allyMapFig(kind, freed){
-  const c=ALLY_COL[kind]||"#7a6fb0";
-  const arms = freed
-    ? `<path d="M-15 4 q-12 -12 -8 -26" stroke="${c}" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M15 4 q12 -12 8 -26" stroke="${c}" stroke-width="8" fill="none" stroke-linecap="round"/>`
-    : `<path d="M15 2 q15 -2 14 -24" stroke="${c}" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M-15 4 q-9 8 -7 17" stroke="${c}" stroke-width="8" fill="none" stroke-linecap="round"/>`;
-  const chain = freed ? '' : `<g stroke="#5a5570" stroke-width="3"><line x1="5" y1="47" x2="20" y2="53"/></g><circle cx="24" cy="55" r="7" fill="#4a455e" stroke="#150f2e" stroke-width="2.5"/>`;
-  return `<g>
-    <ellipse cx="0" cy="50" rx="23" ry="6" fill="#000" opacity=".35"/>
-    ${arms}
-    <path d="M-15 2 q-3 30 4 42 l22 0 q7 -12 4 -42 q-15 -8 -30 0z" fill="${c}" stroke="#150f2e" stroke-width="4"/>
-    <rect x="-11" y="40" width="9" height="13" rx="4" fill="#2a2440" stroke="#150f2e" stroke-width="3"/>
-    <rect x="2" y="40" width="9" height="13" rx="4" fill="#2a2440" stroke="#150f2e" stroke-width="3"/>
-    ${chain}
-    <g transform="translate(0 -20) scale(.9)">${allyFace(kind)}</g>
-  </g>`;
-}
-function allyTeasers(){
-  let out="";
-  CAGED.forEach(t=>{ const [x,y]=nodeOf(t.mid); const side=x<400?1:-1;
-    const px=x+side*180; const freed=!!S.done[t.mid];
-    const col=freed?"#3ec97e":"#e62e2e", txt=freed?"#9fe870":"#ff9d8f", label=freed?(t.real+" FREED!"):("FREE "+t.real+"!");
-    out+=`<g transform="translate(${px} ${y-66})">
-      ${allyMapFig(t.kind, freed)}
-      <g filter="url(#pillShadow)"><rect x="-80" y="58" width="160" height="30" rx="11" fill="rgba(12,7,30,.86)" stroke="${col}" stroke-width="2.5"/>
-      <text x="0" y="79" text-anchor="middle" font-family="Bangers" font-size="16" fill="${txt}" letter-spacing="1">${label}</text></g></g>`;
-  });
-  return out;
-}
-function heroMarker(){ const ms=actMissions(currentAct()); let ix=0;
-  for(let i=0;i<ms.length;i++){ if(!S.done[ms[i].id]){ix=i;break;} ix=i; }
-  const [x,y]=nodeOf(ms[ix].id);
-  return `<g transform="translate(${x-44} ${y-186}) scale(.30)">${heroNow(250).replace(/<svg[^>]*>|<\/svg>/g,"")}</g>`;
-}
-/* ============ PAINTED WORLD MAP (interactive zone nodes over the painting) ============
-   One painted image per act (path + landmarks baked in); we overlay a glowing,
-   tappable node on each zone's painted spot. Tapping the CURRENT zone plays its next
-   mission; done zones replay; locked zones are gated (no skipping ahead). The whole
-   per-mission flow / saves / mastery / finale logic is unchanged — only the map view. */
-const MAPIMG={1:"art/bg-map.jpeg", 2:"art/bg-map-a2.jpeg"};
-/* zone landmark positions on the painted map, in a 1000x750 (4:3) space, in
-   ZONES play order per act — calibrated by eye to sit on the painted golden path. */
-const ZONESPOTS={
-  1:[[215,640],[362,432],[298,300],[322,168],[560,212],[592,352],[722,330],[772,206],[838,108]],
-  2:[[182,600],[432,430],[776,224],[712,360],[548,300],[486,128]]
-};
-function zMissions(z){ return MISSIONS.filter(m=>m.z===z.id).sort((a,b)=>a.id-b.id); }
-function zoneDone(z){ const m=zMissions(z); return m.length>0 && m.every(x=>S.done[x.id]); }
-function zoneNext(z){ const m=zMissions(z); return m.find(x=>!S.done[x.id])||m[0]; }
-function curZoneIx(zs){ const i=zs.findIndex(z=>!zoneDone(z)); return i<0?zs.length-1:i; }
-/* small captive/freed friend figures near their rescue zone (Act-1 league). */
-function mapFriends(a, zs, spots){
-  const rescues = a===2 ? [{mid:128,kind:"kendall"}]
-    : [{mid:3,kind:"tank"},{mid:6,kind:"flip"},{mid:8,kind:"sunny"},{mid:17,kind:"heart"},{mid:48,kind:"leighton"}];
-  const byZi={};
-  rescues.forEach(r=>{ const m=MISSIONS.find(x=>x.id===r.mid); if(!m)return;
-    const zi=zs.findIndex(z=>z.id===m.z); if(zi<0)return; (byZi[zi]=byZi[zi]||[]).push(r); });
-  let out="";
-  Object.keys(byZi).forEach(zi=>{ const sp=spots[zi]; if(!sp)return; const [x,y]=sp;
-    const list=byZi[zi]; const unf=list.find(r=>!S.done[r.mid]); const r=unf||list[list.length-1]; const freed=!unf;
-    const fx=x+(x<500?72:-72);
-    out+=`<g transform="translate(${fx} ${y-4}) scale(.62)">${allyMapFig(r.kind, freed)}</g>`; });
-  return out;
-}
-function mapPaintSVG(){
-  const a=currentAct(), zs=actZones(a), spots=ZONESPOTS[a]||[];
-  const cur=curZoneIx(zs);
-  let nodes="", hero="";
-  zs.forEach((z,zi)=>{
-    const [x,y]=spots[zi]||[500,375];
-    const st= zoneDone(z)?"done":(zi===cur?"current":"locked");
-    const nm=z.name.toUpperCase();
-    const pw=Math.min(300,Math.max(150,nm.length*11+26)), R=36;
-    nodes+=`<g class="mnode ${st}" data-zi="${zi}">
-      <ellipse cx="${x}" cy="${y+32}" rx="32" ry="8" fill="#0a0414" opacity=".5"/>
-      <circle class="obloom" cx="${x}" cy="${y}" r="${R+16}" fill="url(#node_${st})" opacity=".5" filter="url(#mglow)"/>
-      <circle cx="${x}" cy="${y}" r="${R}" fill="url(#node_${st})" stroke="#0c0820" stroke-width="3"/>
-      <circle cx="${x}" cy="${y}" r="${R-1}" fill="none" stroke="#fff" stroke-width="2" opacity=".35"/>
-      <ellipse cx="${x}" cy="${y+13}" rx="${R*.62}" ry="${R*.36}" fill="#fff" opacity=".1"/>
-      <ellipse cx="${x-9}" cy="${y-14}" rx="13" ry="8" fill="#fff" opacity=".5" transform="rotate(-28 ${x-9} ${y-14})"/>
-      <circle cx="${x-13}" cy="${y-13}" r="4.5" fill="#fff" opacity=".9"/>
-      ${ st==="done" ? `<text x="${x}" y="${y+13}" text-anchor="middle" font-family="Bangers" font-size="36" fill="#0c3f28">✓</text>`
-        : st==="locked" ? `<g transform="translate(${x} ${y})" stroke="#150f2e" stroke-width="2.4"><path d="M-6 -1 v-4 a6 6 0 0 1 12 0 v4" fill="none" stroke="#d7d0ee"/><rect x="-10" y="-1" width="20" height="15" rx="3.5" fill="#d7d0ee"/></g>`
-        : `<circle cx="${x}" cy="${y}" r="7" fill="#fff" opacity=".95"/>` }
-      <g transform="translate(${x},${y+R+22})" filter="url(#mpill)">
-        <rect x="${-pw/2}" y="-17" width="${pw}" height="34" rx="13" fill="rgba(10,5,24,.82)" stroke="${st==="locked"?"#6a6090":"#ffce3a"}" stroke-width="2.2"/>
-        <text x="0" y="6" text-anchor="middle" textLength="${pw-20}" lengthAdjust="spacingAndGlyphs" font-family="Bangers" font-size="17" fill="${st==="done"?"#9fe870":st==="locked"?"#9a92c0":"#ffe08a"}" letter-spacing="1">${nm}</text>
-      </g></g>`;
-    if(zi===cur) hero=`<g transform="translate(${x-30} ${y-150}) scale(.26)">${heroNow(250).replace(/<svg[^>]*>|<\/svg>/g,"")}</g>`;
-  });
-  return `<svg viewBox="0 0 1000 750" preserveAspectRatio="xMidYMid slice">
-    <defs>
-      <radialGradient id="node_done" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#bdffdc"/><stop offset=".5" stop-color="#3ec97e"/><stop offset="1" stop-color="#0f6a40"/></radialGradient>
-      <radialGradient id="node_current" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#fff1b8"/><stop offset=".5" stop-color="#ffce3a"/><stop offset="1" stop-color="#b9760f"/></radialGradient>
-      <radialGradient id="node_locked" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#5b5384"/><stop offset=".5" stop-color="#3b3360"/><stop offset="1" stop-color="#211c3a"/></radialGradient>
-      <filter id="mglow" x="-90%" y="-90%" width="280%" height="280%"><feGaussianBlur stdDeviation="8"/></filter>
-      <filter id="mpill" x="-15%" y="-60%" width="130%" height="220%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity=".55"/></filter>
-      <style>@media (prefers-reduced-motion: no-preference){.mnode.current .obloom{animation:opul 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}}@keyframes opul{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.8;transform:scale(1.14)}}</style>
-    </defs>
-    <image href="${MAPIMG[a]||MAPIMG[1]}" x="0" y="0" width="1000" height="750" preserveAspectRatio="xMidYMid slice"/>
-    ${mapFriends(a, zs, spots)}
-    ${nodes}
-    ${hero}
-  </svg>`;
-}
-function toMap(){ sessionTick();
-  if(!actMissions(currentAct()).length){ actComingSoon(); return; }  /* act with no content yet → safe landing */
-  GEO=geomFor(currentAct()); show("scrMap");
-  $("hudTitle").textContent=actInfo(currentAct()).city;
-  $("mapSVGwrap").innerHTML=mapPaintSVG();
-  const zs=actZones(currentAct());
-  document.querySelectorAll("#mapSVGwrap .mnode").forEach(n=>{
-    n.addEventListener("click",()=>{
-      if(n.classList.contains("locked")){ Aud.play("locked_tip"); return; }  /* no skipping ahead */
-      const z=zs[+n.dataset.zi]; const m=z&&zoneNext(z); if(m)startMission(m); });
-  });
-  Aud.play("pick");
-}
+/* PAINTED WORLD MAP (MAPIMG, ZONESPOTS, zMissions/zoneDone/zoneNext/curZoneIx,
+   mapFriends, mapPaintSVG, toMap) moved to map.js (loaded after game.js — it
+   uses game.js helpers like heroNow/show/startMission only at runtime). The map
+   navigation button handlers stay here (they run at game.js load, after $). */
 $("btnHome").onclick=()=>{Aud.stop();clearFlow();toMap();};
 $("mapBaseBtn").onclick=()=>{Aud.stop();clearFlow();showBase();};
 $("btnSkip").onclick=()=>{ Aud.stop(); const f=__cont; clearFlow(); if(f)f(); };
@@ -1327,7 +980,7 @@ function showUnlock(artHTML, name, sub, done){
   const o=$("unlockCard"); if(!o){ if(done)done(); return; }
   $("ucArt").innerHTML=artHTML; $("ucName").textContent=name; $("ucSub").textContent=sub||"NEW!";
   o.classList.add("on");
-  try{ flashScreen("rgba(255,210,90,.42)"); confetti(48); Aud.ding(); }catch(e){}
+  try{ flashScreen("rgba(255,210,90,.42)"); confetti(48); if(typeof Sfx!=="undefined")Sfx.unlock(); else Aud.ding(); }catch(e){}
   const close=()=>{ o.classList.remove("on"); o.onclick=null; $("ucBtn").onclick=null; if(done)done(); };
   $("ucBtn").onclick=e=>{ if(e)e.stopPropagation(); close(); };
   o.onclick=close;
@@ -1335,6 +988,7 @@ function showUnlock(artHTML, name, sub, done){
 
 /* ---------------- WIN / REST ---------------- */
 function showWin(firstTime){ show("scrWin");
+  if(typeof Sfx!=="undefined")Sfx.win();
   flashScreen("rgba(255,255,255,.5)"); confetti(CUR.finale||CUR.rescue||CUR.type==="fortress"?110:64);
   if(CUR.finale||CUR.rescue||CUR.type==="fortress")setTimeout(()=>confetti(90),520);  /* extra pop on big milestones */
   const ally=CUR.rescue?"heart":(CUR.type==="fortress"?(currentAct()===2?"kendall":"leighton"):null);
@@ -1413,7 +1067,9 @@ function paintBase(){
   const shelf=$("gemShelf"); shelf.innerHTML="";
   let any=false;
   ORDER.forEach(g=>{ if(S.done[LETTER_MISSION[g]]){ any=true;
-    shelf.innerHTML+=gemSVG(g, GEMCOLOR[g], 48); } });
+    /* earned gems twinkle; a fully-MASTERED gem earns a gold ✦ (collection meets
+       mastery — a visible "you truly own this one" reward). */
+    shelf.innerHTML+=`<span class="gembox${masteredItem(g)?" mastered":""}">${gemSVG(g, GEMCOLOR[g], 48)}</span>`; } });
   if(!any)shelf.innerHTML='<div class="baselbl" style="font-size:15px;">Rescue gems on missions to fill your shelf!</div>';
   /* league */
   const lg=$("leagueShelf"); lg.innerHTML="";
@@ -1492,6 +1148,7 @@ function trainDecode(w){ trainCur=w; trainMiss=0;
         if(trainMiss>=2)cr.querySelectorAll(".picktile").forEach(x=>{if(x.dataset.w===w)x.classList.add("hint");}); readSoundOut(w); } };
     cr.appendChild(b); }); }
 function trainWin(el,w){ const bonus=combo>=3?2:1; S.coins=(S.coins||0)+bonus; trainReps++; save();
+  if(typeof Sfx!=="undefined")Sfx.coin();
   burstAt(el); coinFloat(el,bonus); updateTrainHUD();
   flow(Aud.play(["train_yes"].concat(wordAudio(w))),()=>setTimeout(trainRound,260)); }
 function coinFloat(el,n){ const s=$("stage"); if(!s||!el)return; const r=el.getBoundingClientRect(),st=s.getBoundingClientRect();
@@ -1603,7 +1260,10 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
     apply.onclick=()=>{ const v=+sl.value; snapshot("before level change");
       pm.forEach((m,i)=>{ if(i<v)S.done[m.id]=true; else delete S.done[m.id]; });
       S.gear=Object.keys(GEAR_AT).filter(id=>S.done[id]).map(id=>GEAR_AT[id]);
-      if(v>0){ S.intro=true; S.scan=true; }
+      /* keep the tutorial flags consistent with the simulated progress: level 0 =
+         a true fresh start (intro + scan tutorials play again), any progress skips
+         them. Symmetric so the slider is predictable in both directions (QA #3). */
+      S.intro = v>0; S.scan = v>0;
       save(); GEO=geomFor(currentAct());
       $("settingsPanel").classList.remove("on"); Aud.stop&&Aud.stop(); toMap(); }; }
   /* snapshot restore buttons */
@@ -1636,9 +1296,17 @@ $("btnCloudConnect").onclick=()=>cloudConnect($("cloudURL").value);
 $("btnCloudOff").onclick=()=>{ cloudURL=""; try{localStorage.removeItem("teddyCloudURL");}catch(e){} $("cloudURL").value=""; cloudStatus("Cloud sync off (saved on this device)"); };
 $("btnCloseSettings").onclick=()=>$("settingsPanel").classList.remove("on");
 $("btnVoiceTest").onclick=()=>{Aud.pick();Aud.play("test");};
-/* Visual-detail toggle: Full (filters+animation) ⟷ Calm (lighter, for older iPads/battery) */
-function paintCalmBtn(){ const b=$("btnCalm"); if(b)b.textContent=(S.calm?"Calm":"Full"); }
-$("btnCalm").onclick=()=>{ S.calm=!S.calm; document.body.classList.toggle("calm",!!S.calm); save(); Aud.ding(); paintCalmBtn(); };
+/* Visual-detail TIER: Full → Calm → Lite (taps cycle). Full = motion+filters;
+   Calm = idle motion off, premium filters kept; Lite = also drops GPU filters
+   (older iPads). Derived save-safely: S.detail wins, legacy S.calm maps to Lite. */
+const DETAIL_ORDER=["full","calm","lite"], DETAIL_LABEL={full:"Full",calm:"Calm",lite:"Lite"};
+function detailLevel(){ return S.detail || (S.calm?"lite":"full"); }
+function applyDetail(){ const d=detailLevel();
+  document.body.classList.toggle("calm", d!=="full");   /* calm + lite both drop idle motion */
+  document.body.classList.toggle("lite", d==="lite"); }
+function paintCalmBtn(){ const b=$("btnCalm"); if(b)b.textContent=DETAIL_LABEL[detailLevel()]; }
+$("btnCalm").onclick=()=>{ const next=DETAIL_ORDER[(DETAIL_ORDER.indexOf(detailLevel())+1)%3];
+  S.detail=next; delete S.calm; applyDetail(); save(); Aud.ding(); paintCalmBtn(); };
 paintCalmBtn();
 /* Narration volume slider (parent setting) */
 function paintVol(){ const s=$("volSlider"),p=$("volPct"); const v=Math.round((S.vol==null?1:S.vol)*100);

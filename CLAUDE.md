@@ -24,9 +24,40 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   migrate/load/save (redundant + self-healing), snapshots, PROFILES (per-player saves), optional
   CLOUD sync, daily-stats (ensureDaily/sessionTick). Loaded before game.js so `S` + the save API exist
   before any game.js line runs (cloudConnect's geomFor/GEO refs are in its body, runtime-resolved).
-  game.js is now ~1654 lines (was ~2315; −661 across 4 slices). MODULAR SPLIT STATUS: 3 data layers +
-  state-save done & verified. Remaining: audio.js (Aud/narrate/flow), map.js, mission handlers — more
-  coupled; same one-bite, rigorous-verify loop (tests + a runtime boot exercising the moved code).
+- `audio.js` — the AUDIO engine (slice 5): CUSTOM clip store + VStore (IndexedDB), clipFor, the Aud
+  object (play/TTS-fallback/ding), and the flow()/clearFlow()/narrate() helpers + ear-tap listener.
+  Loaded before game.js; references $/LINES/refreshAudioStudio only in function bodies / callbacks.
+- `allies.js` — the HERO LEAGUE / allies (slice 7): roster data (CAGED/ALLY/LEAGUE/ALLY_COL) + helpers
+  (allyMid/allyFreed/allyLine/allyPop/allyMapFig). Loaded before game.js; uses $/S/allyFace at runtime.
+- `map.js` — the PAINTED WORLD MAP (slice 6): MAPIMG, ZONESPOTS, the zone helpers (zMissions/zoneDone/
+  zoneNext/curZoneIx), mapFriends, mapPaintSVG, toMap. Loaded AFTER game.js (it calls game.js helpers
+  heroNow/show/startMission only at runtime — the honest dependency direction). The map nav button
+  handlers stay in game.js. NOTE: the OLD scrolling vector map (mapSVG + skyline/trail/etc) was DELETED.
+  game.js is now ~1255 lines (was ~2315; −1060 across 7 slices + dead-code removal). MODULAR SPLIT
+  STATUS: data×3 + state-save + audio + map + allies done & verified. Remaining in game.js: boot/title/
+  intro flow, hero glue (heroOpts/heroNow), the MISSION HANDLERS (most coupled — share CUR/flow/record/
+  pickFoils; extract last & carefully), base/shop/training, settings, win/reward screens. Same one-bite,
+  rigorous-verify loop (node --check + both test suites + a puppeteer runtime boot exercising the moved
+  code). Load order in index.html: art → data-missions → data-content → data-lines → state-save → audio
+  → allies → game → map → sfx → music → audio-studio.
+- `sfx.js` — SOUND EFFECTS: a synthesized Web-Audio kit (`Sfx`) — NO files, NO licensing, offline,
+  adds nothing to the deploy. Sounds: correct / wrong (soft low "nope", never harsh — constraint #2) /
+  combo / coin / unlock / win / gem. Own on/off + volume (S.sfxOn / S.sfxVol, default on@0.6), separate
+  from voice (S.vol) and music. Loaded AFTER game.js; controls in Settings ▸ Sound (sfxSlider /
+  btnSfxToggle). Wired at central choke points: Aud.ding() routes to Sfx.correct (so every existing
+  "correct" cue respects the SFX level), record(g,false)→Sfx.wrong, comboPop→Sfx.combo, trainWin→
+  Sfx.coin, showUnlock→Sfx.unlock, showWin→Sfx.win.
+- `music.js` — BACKGROUND MUSIC: an act-aware looping soundtrack engine (`Music`). Loaded AFTER game.js
+  (uses S/currentAct/$/Aud at runtime). Plays a gentle per-act theme (superhero Act 1, medieval Act 2)
+  that AUTO-DUCKS to ~26% under any narration (hooked from Aud.play in audio.js: duck on start, unduck
+  when the play() race settles) so the audio-first instructions are never masked (hard constraint #8).
+  Has its OWN on/off + volume (S.musicOn / S.musicVol — defaults on, 0.34), independent of voice (S.vol)
+  and SFX; the parent controls live in Settings ▸ Sound (musicSlider / btnMusicToggle). DROP-IN tracks:
+  art/bgm-a1.<mp3|ogg|m4a|wav> (Act 1) + art/bgm-a2.* (Act 2); the engine probes formats and stays SILENT
+  if none present, so the module is inert until the parent adds (or Publishes) the music. Autoplay-safe
+  (starts on the first user gesture; pauses when the tab is hidden). show() calls Music.setAct on every
+  screen change. NOTE: studio voice clips (record + ElevenLabs) are DEVICE-only (IndexedDB) until
+  Published to voicepack.js — the Cloudflare cloud sync carries only the save (S), never audio.
 - `voicepack.js` — optional shipped audio clips (`window.VOICEPACK = {lineId: dataURI}`).
   NEVER regenerate, rename IDs, or delete it. New narration = add new line IDs to the LINES
   manifest with TTS fallback text (they appear in the in-app studio automatically).
@@ -106,9 +137,10 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   Single screen (no scroll). A node is done(✓)/current(pulse)/locked(padlock); the hero stands on the
   current zone, captured friends (mapFriends) wait nearby, and a Hero Base button sits bottom-left.
   Tapping the CURRENT zone plays its next mission (zoneNext); locked zones are gated. The OLD scrolling
-  vector map (mapSVG/geomFor/nodeOf/skyline/trail) is now DEAD CODE kept only so setAct/geomFor calls
-  don't break — safe to delete later. Adding an act = push to ACTS + act-tagged zones/missions + a
-  ZONESPOTS[act] row + (optionally) a painted bg-map-a<N>.
+  vector map (mapSVG + its helpers skyline/windowsRow/gemDeco/trailPath/pmod/allyTeasers/heroMarker) is
+  now DELETED — only the painted map remains. geomFor/GEO/nodeOf/setAct STAY (still live: setAct, cloud
+  pull, the level-override + restore paths all recompute GEO). Adding an act = push to ACTS + act-tagged
+  zones/missions + a ZONESPOTS[act] row + (optionally) a painted bg-map-a<N>.
 - NO SKIPPING AHEAD (foundation can't be rushed): zone nodes are done/current/locked (current = first
   zone whose missions aren't all done; earlier zones done, later locked). The lock is ENFORCED — toMap's
   click handler ignores `.locked` nodes (plays a gentle locked_tip cue). Done/current stay replayable.
@@ -183,15 +215,35 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   REDO — streamline + bulletproof the record/ElevenLabs/export/publish pipeline (parent flagged; highest
   learning leverage). (2) SETTINGS OVERHAUL — game-like, intuitive, add missing settings; study how real
   games lay out settings (parent flagged — current Grown-Up Corner isn't intuitive). (3) PERF "Full/Calm/
-  Lite" detail tier (the new specular/blur filters are GPU-heavy on older iPads). (4) SCENE COLOR
-  HARMONIZER — per-screen --scene-key/--scene-rim CSS vars so character/UI rim-light matches the painting
-  (biggest "looks pro" lift per QA). (5) ACT-2 MEDIEVAL UI SKIN (parchment/stone chrome via
-  body[data-act=2]; learning tiles stay Andika). (6) HERO EMOTION + random WIN POSES. (7) mentors
-  MOUTH-MOVE during narration. (8) DIEGETIC UI FRAMES (spellbook/forge/comms). (9) DAILY-METRIC clarity
-  fix (replays inflate S.daily.missions — QA P0). (10) cosmetic COLLECTIBLE upgrades (aura/cape-trim/
-  confetti). QA also wants app-invariant tests (locked-node enforcement, sound-ID hides target, profile-
+  Lite" detail tier — DONE: detailLevel()/applyDetail() (game.js) drive body.calm/body.lite from S.detail.
+  FULL = idle motion + GPU filters + reward juice; CALM = body.calm (idle character animation off, premium
+  specular/blur filters KEPT); LITE = body.calm+body.lite (also strips the GPU-heavy SVG filters + bgLayer
+  blur + character rim drop-shadows for old iPads). Reward juice (DOM bursts) + learning content unaffected
+  in all tiers. The Display setting button cycles Full→Calm→Lite. Save-safe: legacy S.calm=true maps to
+  Lite (preserves existing calm users); new picks store S.detail. (4) SCENE COLOR
+  HARMONIZER — DONE: SCENE_TONE/SCENE_TONE2 (game.js) map each scene slot → a dominant KEY light +
+  accent RIM; show()/boot push them to body as --scene-key/--scene-rim. #sceneGrade::before/::after
+  wash each painting's palette over the stage (screen-blend, low opacity, Calm-aware) and the big
+  character art (#titleHero/#baseHero/#winHero/#restHero/.boss > svg) gets a soft scene-rim drop-shadow,
+  so the hero reads as lit by the painting behind it. Act-2 medieval scenes get warmer torch/stone/
+  dragon-fire overrides. (5) ACT-2 MEDIEVAL UI SKIN (parchment/stone chrome via
+  body[data-act=2]; learning tiles stay Andika). (6) HERO EMOTION + random WIN POSES — win poses DONE
+  (winpose1-4); hero FACIAL emotion ABANDONED by parent decision (the Gem-Lens mask leaves too little
+  face for expression — not worth the art.js risk; do NOT revisit). (7) mentors MOUTH-MOVE
+  during narration — DONE: faceSpeak() bobs/nods the speaking cutscene portrait for the audio's duration
+  (face-agnostic; reduced-motion/Calm aware). (8) DIEGETIC UI FRAMES — DONE (light-touch, learning tiles
+  untouched): #sceneFrame draws corner-bracket "viewfinder" frames at the screen edges, tinted by
+  --scene-rim so they match the harmonizer (Act 1 = thin HUD brackets; Act 2 = bigger gold ornate corners
+  with a gem accent). pointer-events:none; shown only on gameplay screens (body.framed, FRAME_SLOTS =
+  lab/learn/city/battle in show()). The narration .bubble gets a pulsing "live comms" signal dot
+  (gold/wax-seal in Act 2). Lite flattens the glow; Calm stops the pulse.
+  (9) DAILY-METRIC clarity fix — DONE (firstTime guard on S.daily.missions + day-rollover regression
+  test). (10) cosmetic COLLECTIBLE upgrades — DONE: Base gem shelf gems twinkle and a fully-MASTERED gem
+  earns a gold ✦ (.gembox.mastered, masteredItem-gated — collection meets mastery); trophies became
+  glowing pedestal collectibles. All motion gated on body.calm. QA also wants app-invariant tests (locked-node enforcement, sound-ID hides target, profile-
   name escaping) — fold in alongside whichever enhancement touches that code.
-- ACT 2 (FRAME + Zone 1 done; later zones TBD): villain = a smooth-talking
+- ACT 2 LORE (now CONTENT-COMPLETE — see the content bullets above; this is the cast/story canon):
+  villain = a smooth-talking
   evil VIXEN (Scarlett-Overkill-coded) who can morph into a DRAGON; her dragon army = Act-2 bosses.
   She kidnaps Miss Kendall + friends JJ, Nora, Cal and escapes through a TIME PORTAL to the MEDIEVAL
   age — Teddy follows and becomes a KNIGHT (new theme/outfit/weapons; the villain steals his powers

@@ -40,6 +40,10 @@
     <i class="mote sm" style="left:50%;animation-duration:21s;animation-delay:10s"></i>
     <i class="mote sm" style="left:79%;animation-duration:22s;animation-delay:2.5s"></i>
   </div>
+  <!-- Diegetic UI frame: corner brackets that frame the play area like an in-world
+       HUD viewfinder (Act 1) / ornate corners (Act 2). Tinted by --scene-rim so it
+       matches the scene, pointer-events:none, shown only on gameplay screens. -->
+  <div id="sceneFrame" aria-hidden="true"><i class="fc tl"></i><i class="fc tr"></i><i class="fc bl"></i><i class="fc br"></i></div>
 
   <!-- Daily Training meter (shown on the map hub; gentle, never a penalty) -->
   <div id="dailyMeter" style="display:none;">
@@ -320,6 +324,19 @@
           <span id="volPct" class="setval">100%</span>
           <button class="btn ghost sm" id="btnVoiceTest">Test</button>
         </div>
+        <div class="setrow">
+          <label for="sfxSlider">Sound effects</label>
+          <input type="range" id="sfxSlider" class="setrange" min="0" max="100" value="60">
+          <span id="sfxPct" class="setval">60%</span>
+          <button class="btn ghost sm" id="btnSfxToggle">On</button>
+        </div>
+        <div class="setrow">
+          <label for="musicSlider">Music volume</label>
+          <input type="range" id="musicSlider" class="setrange" min="0" max="100" value="34">
+          <span id="musicPct" class="setval">34%</span>
+          <button class="btn ghost sm" id="btnMusicToggle">On</button>
+        </div>
+        <div class="setcard-sub">Background music has its own volume &amp; on/off, separate from the voice. It gently dips while a character is speaking so instructions are always clear. (Drop a track at <b>art/bgm-a1</b> for Act 1 and <b>art/bgm-a2</b> for Act 2 — silent until then.)</div>
       </div>
       <div class="setcard">
         <div class="setcard-h">Display</div>
@@ -327,7 +344,7 @@
           <label>Visual detail</label>
           <button class="btn ghost sm" id="btnCalm">Full</button>
         </div>
-        <div class="setcard-sub">&ldquo;Calm&rdquo; turns off the heavy glow &amp; character animation for older iPads or to save battery &mdash; reading content stays crisp.</div>
+        <div class="setcard-sub">Tap to cycle: <b>Full</b> (all the glow &amp; motion) &rarr; <b>Calm</b> (stops idle character animation, keeps the rich look) &rarr; <b>Lite</b> (also drops heavy glow for older iPads / battery). Reading content stays crisp in every mode.</div>
       </div>
       <div class="setcard">
         <div class="setcard-h">Sync &amp; Backup</div>
@@ -434,7 +451,12 @@
 <script src="data-content.js"></script>
 <script src="data-lines.js"></script>
 <script src="state-save.js"></script>
+<script src="audio.js"></script>
+<script src="allies.js"></script>
 <script src="game.js"></script>
+<script src="map.js"></script>
+<script src="sfx.js"></script>
+<script src="music.js"></script>
 <script src="audio-studio.js"></script>
 </body>
 </html>
