@@ -122,6 +122,9 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   Act 2's FIRST helper and mentor-narrator — the Amelia-equivalent of Act 1 (greets/guides Teddy,
   encourages on hard words). Real-person descriptions/images TBD (parent will provide). Likely next
   rescue = Miss Kendall.
+  - PARKED (planned): rename the Act-2 city "MEDIEVAL REALM" → "MAGIC KINGDOM" and give Act 2 its own
+    MEDIEVAL UI skin (non-learning chrome/fonts/feel, like the viral medieval mobile games) — learning
+    content keeps Andika + contrast. Theme via body[data-act] / .theme-medieval on setAct(). See STYLE.md §0.5.
   - FRAME ALREADY IN CODE: ACTS[1] = {id:2, city "MEDIEVAL REALM", villain "THE VIXEN", rescue "MISS
     KENDALL", mentor "NOAH THE RED", idBase:100, theme:"knight"}. POWER-RESET is implemented and act-
     scoped: actGearList(act) returns only gear earned from THIS act's missions, and heroOpts() derives

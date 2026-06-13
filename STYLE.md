@@ -24,6 +24,24 @@ These come from CLAUDE.md and **override** any visual rule below:
 
 ---
 
+## 0.5 Per-act theming — PARKING LOT (planned, not built)
+The game should **re-skin its non-learning chrome per act** so each act has its own world feel,
+while the **learning content keeps its ideal font (Andika) and high contrast unchanged**.
+- **Act 1 = Star Force City** — the current cosmic/superhero look (Bangers titles, neon-gold).
+- **Act 2 = "MAGIC KINGDOM"** (rename from "MEDIEVAL REALM") — a **medieval / fantasy** skin
+  like the popular medieval mobile games: parchment/stone textures, banner/shield panels,
+  a blackletter-or-chiseled **display font** for titles & UI chrome (NOT for letter content),
+  torch-gold + deep-purple palette, wax-seal/iron buttons, heraldic flourishes.
+- Implementation idea (keeps it clean + performant): theme via a `body[data-act="2"]` (or a
+  `.theme-medieval` class on `#stage`) that overrides the chrome tokens/fonts only. Swap on
+  `setAct()`. **Never** touch the `.read`/Andika literacy styling or the tile/slot legibility.
+- Display fonts are **UI-only**; load one medieval display face (e.g. a Google "Cinzel"/
+  "MedievalSharp"-style), keep Andika + Baloo for everything the child must read.
+> Status: PARKED. The `ACTS[1].city` string + this medieval skin land together in a future
+> "Act-2 look" pass. The city rename alone is a 1-line change whenever wanted.
+
+---
+
 ## 1. Color tokens
 Defined as CSS variables in `:root` (`styles.css`). **Use the variable, not the hex.**
 
