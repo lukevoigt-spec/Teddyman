@@ -931,6 +931,7 @@ function paintTitle(){ const nm=$("playerName"); if(nm)nm.textContent=profileNam
   $("btnContinue").style.display=S.intro?"inline-block":"none";
   $("btnPlayer").style.display=profiles().length>1?"inline-block":"none"; }
 paintTitle();
+setBG("scrTitle");   /* the title is shown via static HTML, so load its painted background at boot */
 $("btnStart").onclick=()=>{ Aud.pick(); if(!S.intro)startIntro(); else {Aud.play("welcome"); toMap();} };
 $("btnContinue").onclick=()=>{ Aud.pick(); Aud.play("welcome"); toMap(); };
 /* ---- player picker (select an existing player; add/remove is parent-only) ---- */
