@@ -71,16 +71,19 @@ const Aud={
         const id=seq.shift(); const L=LINES[id]||{t:id}; const src=clipFor(id);
         if(src){
           const a=new Audio(src); this.cur=a; a.volume=this.vol;
-          let advanced=false, wd=null;
-          const go=()=>{ if(advanced)return; advanced=true; if(wd)clearTimeout(wd); next(); };
-          const fail=()=>{ if(advanced)return; advanced=true; if(wd)clearTimeout(wd); Aud._tts(L,my).then(next); };
+          let advanced=false, poll=null, hard=null;
+          const cleanup=()=>{ if(poll)clearInterval(poll); if(hard)clearTimeout(hard); };
+          const go=()=>{ if(advanced)return; advanced=true; cleanup(); next(); };
+          const fail=()=>{ if(advanced)return; advanced=true; cleanup(); Aud._tts(L,my).then(next); };
           a.onended=go; a.onerror=fail;
-          wd=setTimeout(go,15000);   /* fallback until we know the real duration */
+          /* advance the instant the clip ACTUALLY finishes (a.ended) — never guesses or
+             caps the length, so a long line is never cut; works even if the onended
+             event is dropped (iPad Safari). hard timeout only catches a clip that never
+             plays/ends at all (the ⏭ skip covers that too). */
           const pr=a.play();
-          if(pr&&pr.then) pr.then(()=>{ if(advanced)return;
-              const d=(isFinite(a.duration)&&a.duration>0)? a.duration*1000+1300 : 15000;
-              if(wd)clearTimeout(wd); wd=setTimeout(go,d);
-            }).catch(fail);
+          const startPoll=()=>{ poll=setInterval(()=>{ if(a.ended)go(); }, 200); };
+          if(pr&&pr.then){ pr.then(startPoll).catch(fail); } else { startPoll(); }
+          hard=setTimeout(go, 45000);
         } else { this._tts(L,my).then(next); }
       };
       next();
@@ -89,15 +92,18 @@ const Aud={
   _tts(L,my){ return new Promise(res=>{
       if(!("speechSynthesis" in window)){res();return;}
       if(!this.voice)this.pick();
-      const txt=(L.t||"")+"";
-      const u=new SpeechSynthesisUtterance(txt);
+      const u=new SpeechSynthesisUtterance((L.t||"")+"");
       if(this.voice)u.voice=this.voice;
       u.rate=L.r||0.92; u.pitch=1.05; u.volume=this.vol;
-      /* text-proportional guard: a flaky onend (iPad) can't stall the flow, but it's
-         long enough not to clip a real spoken line. ~75ms/char, 1–11s. */
-      const guard=setTimeout(res, Math.min(11000, Math.max(1500, 900+txt.length*75)));
-      u.onend=()=>{clearTimeout(guard);res();}; u.onerror=()=>{clearTimeout(guard);res();};
-      speechSynthesis.speak(u);
+      /* resolve when speech ACTUALLY stops (poll speechSynthesis.speaking) rather than
+         a guessed length, so a long sentence isn't clipped even if onend is dropped. */
+      let done=false, started=false, poll=null, hard=null, sg=null;
+      const fin=()=>{ if(done)return; done=true; if(poll)clearInterval(poll); if(hard)clearTimeout(hard); if(sg)clearTimeout(sg); res(); };
+      u.onstart=()=>{started=true;}; u.onend=fin; u.onerror=fin;
+      try{ speechSynthesis.speak(u); }catch(e){ fin(); return; }
+      sg=setTimeout(()=>{ if(!started)fin(); }, 1800);   /* TTS never engaged (no voices) → don't stall */
+      poll=setInterval(()=>{ try{ if(speechSynthesis.speaking)started=true; else if(started)fin(); }catch(e){ fin(); } }, 250);
+      hard=setTimeout(fin, 30000);
   });},
   ding(){ if(typeof Sfx!=="undefined" && Sfx.correct){ Sfx.correct(); return; }   /* route to the SFX kit (respects its volume/toggle) */
     try{ const ctx=Aud.ctx||(Aud.ctx=new (window.AudioContext||window.webkitAudioContext)());

@@ -606,7 +606,9 @@ function bossSprite(w){ return currentAct()===2 ? dragonSVG(w) : inkblotSVG(w); 
 function startBoss(g){ show("scrBoss"); bossHP=3;
   $("bossArt").innerHTML=`<div class="boss" id="bossSprite">${bossSprite(240)}</div>`;
   paintPips("bossPips",bossHP,3);
-  narrate("boss",$("bossText"),["boss_taunt","boss_intro","snd_"+g],"Blast the Vexbot! Tap the gem that makes the sound\u2026");
+  { const a2=currentAct()===2;
+    narrate("boss",$("bossText"), a2?["drag_intro","snd_"+g]:["boss_taunt","boss_intro","snd_"+g],
+      (a2?"Blast the dragon! ":"Blast the Vexbot! ")+"Tap the gem that makes the sound\u2026"); }
   bossRound(g); }
 function paintPips(id,hp,max){ const p=$(id); p.innerHTML="";
   for(let i=0;i<max;i++){const d=document.createElement("div");d.className="pip"+(i<hp?"":" off");p.appendChild(d);} }
@@ -621,7 +623,7 @@ function bossRound(g){
         const bs=$("bossSprite"); bs.classList.add("hitfx"); setTimeout(()=>bs.classList.remove("hitfx"),380);
         burstAt(bs,"ZAP!"); Aud.ding();
         if(bossHP<=0){ bs.classList.add("flee");
-          flow(Aud.play(["flee","boss_flee","youdidit"]),missionComplete); }
+          flow(Aud.play(currentAct()===2?["drag_flee","youdidit"]:["flee","boss_flee","youdidit"]),missionComplete); }
         else { let lead="hit_again";
           if(allyFreed("tank")&&Math.random()<0.55){ lead=allyLine("tank"); allyPop("tank"); }  /* Archie owns boss battles */
           flow(Aud.play([lead,"snd_"+g]),()=>bossRound(g)); } }
@@ -886,7 +888,7 @@ function fortSpell(){ const pool=taughtSight().length?taughtSight():["the","a","
    research-validated comprehension check, so the win = real reading. */
 function fortSentence(){ if(fRound===0) fortSentencePic(); else fortMaze(); }
 function fortMaze(){ const c=FORTMAZE[Math.floor(Math.random()*FORTMAZE.length)];
-  narrate("fort",$("fortText"),["sent_prompt"],"Read it to free Leighton… tap the word that fits the blank!");
+  narrate("fort",$("fortText"),["sent_prompt"],"Read it to free "+(currentAct()===2?"Miss Kendall":"Leighton")+"… tap the word that fits the blank!");
   const wr=$("fortWord"); wr.innerHTML="";
   c.t.forEach(w=>{ if(w==="_"){ const s=document.createElement("div"); s.className="wordslot read"; s.id="fortBlank"; s.textContent="?"; wr.appendChild(s); }
     else { const t=document.createElement("button"); t.className="tile wordtile read"+(SIGHT[w]?" heartword":""); t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>Aud.play(wordAudio(w)); wr.appendChild(t); } });
@@ -899,7 +901,7 @@ function fortMaze(){ const c=FORTMAZE[Math.floor(Math.random()*FORTMAZE.length)]
         if(fMiss>=2)row.querySelectorAll(".wordtile").forEach(x=>{if(x.dataset.w===c.ans)x.classList.add("hint");}); Aud.play(["almost",...done.flatMap(wordAudio)]); } };
     row.appendChild(b); }); }
 function fortSentencePic(){ const s=SENTENCES[Math.floor(Math.random()*SENTENCES.length)];
-  narrate("fort",$("fortText"),["sent_prompt"],"Read it to free Leighton… tap the picture!");
+  narrate("fort",$("fortText"),["sent_prompt"],"Read it to free "+(currentAct()===2?"Miss Kendall":"Leighton")+"… tap the picture!");
   const wr=$("fortWord"); wr.innerHTML="";
   s.t.forEach(w=>{ const t=document.createElement("button"); t.className="tile wordtile read"+(SIGHT[w]?" heartword":""); t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>Aud.play(wordAudio(w)); wr.appendChild(t); });
   const row=$("fortChoices"); row.innerHTML="";
@@ -1031,8 +1033,8 @@ function showWin(firstTime){ show("scrWin");
   if(CUR.type==="fortress") ids=currentAct()===2?["kendall1","kendall2","kendall3"]:["leighton1","leighton2","leighton3"];
   else if(CUR.rescue) ids=["free_heart1","free_heart2","m2_done"];
   else if(CUR.finale) ids = currentAct()===2 ? ["act2_win"] : (CUR.z===4 ? ["m4_letters"] : (CUR.z===3 ? ["m3_done"] : ["finale1","finale2","finale3"]));
-  else if(firstTime&&gear) ids=["win_grow","win_gear",GEARLINE[gear]];
-  else ids=["win_grow"];
+  else if(firstTime&&gear) ids=[currentAct()===2?"win_grow2":"win_grow","win_gear",GEARLINE[gear]];
+  else ids=[currentAct()===2?"win_grow2":"win_grow"];
   const FREE={3:"free_tank",6:"free_flip",8:"free_sunny"};
   if(firstTime&&FREE[CUR.id])ids.unshift(FREE[CUR.id]);
   /* Heartguard, once rescued, is the league's cheerleader on every win */
