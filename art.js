@@ -287,6 +287,33 @@ function allyFace(kind){
     `<path d="M-21 -10 Q-19 -29 0 -29 Q19 -29 21 -10 Q11 -20 0 -19 Q-11 -20 -21 -10Z" fill="#a3744a" stroke="#150f2e" stroke-width="2.5"/>`+
     `<circle cx="0" cy="-31" r="6" fill="#b18253" stroke="#150f2e" stroke-width="2.5"/>`+
     allyEyes()+ smile;
+  if(kind==="jj")return head+   /* JJ — small, dark spiky hair, wild energy, big grin */
+    `<path d="M-25 -4 Q-27 -33 -2 -34 Q26 -35 25 -3 Q19 -22 11 -17 Q14 -29 5 -22 Q8 -33 -3 -24 Q-5 -33 -13 -22 Q-13 -30 -21 -16 Q-24 -12 -25 -4Z" fill="#2e2014" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>`+
+    allyEyes()+
+    `<path d="M-12 8 Q0 22 12 8 Q0 15 -12 8Z" fill="#7c3a3a" stroke="#150f2e" stroke-width="2.6"/>`+
+    `<path d="M-9 8 Q0 11 9 8 L9 10 Q0 12 -9 10Z" fill="#fff"/>`;
+  if(kind==="cal")return head+   /* Cal — strawberry-blonde, freckles, mischievous smirk */
+    `<path d="M-25 -2 Q-27 -31 0 -32 Q27 -31 25 -2 Q20 -20 12 -16 Q15 -27 6 -21 Q8 -31 -3 -23 Q-5 -31 -13 -21 Q-13 -28 -21 -15 Q-24 -10 -25 -2Z" fill="#e8a85e" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>`+
+    allyEyes()+
+    `<g stroke="none" fill="#d98a5a" opacity=".75"><circle cx="-12" cy="6" r="1.5"/><circle cx="-7" cy="9" r="1.5"/><circle cx="7" cy="9" r="1.5"/><circle cx="12" cy="6" r="1.5"/><circle cx="0" cy="10" r="1.4"/></g>`+
+    `<path d="M-9 9 Q2 18 12 7" stroke="#9c4a3a" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
+  if(kind==="nora")return head+   /* Nora — very petite, hair in a neat bun */
+    `<path d="M-24 -2 Q-26 -29 0 -29 Q26 -29 24 -2 Q24 14 18 22 L15 -6 Q14 -20 0 -19 Q-14 -20 -15 -6 L-18 22 Q-24 14 -24 -2Z" fill="#5a4030" stroke="#150f2e" stroke-width="3"/>`+
+    `<circle cx="0" cy="-26" r="8" fill="#5a4030" stroke="#150f2e" stroke-width="2.5"/>`+
+    allyEyes()+
+    `<path d="M-7 10 Q0 15 7 10" stroke="#9c4a3a" stroke-width="3" fill="none" stroke-linecap="round"/>`+
+    `<g fill="#ff9a8a" opacity=".3"><circle cx="-12" cy="7" r="3.4"/><circle cx="12" cy="7" r="3.4"/></g>`;
+  if(kind==="mom")return head+   /* Mom — warm, long auburn hair, kind smile */
+    `<path d="M-26 0 Q-28 -32 0 -32 Q28 -32 26 0 Q26 20 19 30 L16 -8 Q14 -22 0 -20 Q-14 -22 -16 -8 L-19 30 Q-26 20 -26 0Z" fill="#8a4b2e" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>`+
+    `<path d="M-19 18 Q-24 32 -16 38 M19 18 Q24 32 16 38" stroke="#8a4b2e" stroke-width="7" fill="none" stroke-linecap="round"/>`+
+    `<path d="M-14 -20 Q0 -30 14 -20 Q7 -16 0 -17 Q-7 -16 -14 -20Z" fill="#9c5638" stroke="#150f2e" stroke-width="2"/>`+
+    allyEyes()+ smile;
+  if(kind==="dad")return head+   /* Dad — strong jaw, short dark hair, confident */
+    `<path d="M-25 -6 Q-26 -30 0 -31 Q26 -30 25 -6 Q24 -16 18 -16 Q16 -24 6 -21 Q4 -26 -4 -22 Q-8 -25 -16 -19 Q-22 -17 -25 -6Z" fill="#2e2218" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>`+
+    `<path d="M-13 -3 Q-8 -7 -3 -3 M3 -3 Q8 -7 13 -3" stroke="#150f2e" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".55"/>`+
+    allyEyes()+
+    `<path d="M-9 10 Q0 16 9 10" stroke="#9c4a3a" stroke-width="3.4" fill="none" stroke-linecap="round"/>`+
+    `<path d="M-7 1 Q-4 5 -7 8 M7 1 Q4 5 7 8" stroke="#caa07a" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".45"/>`;
   return head+ /* William (sunny) — spiky blonde, happy squinty eyes, big gap-toothed grin */
     `<path d="M-25 -4 Q-27 -31 -2 -32 Q26 -33 25 -3 Q20 -20 12 -16 Q14 -27 6 -21 Q8 -31 -2 -23 Q-4 -31 -12 -21 Q-12 -29 -20 -16 Q-24 -12 -25 -4Z" fill="#ecd185" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>`+
     `<path d="M-13 -1 Q-8 -7 -3 -1" stroke="#150f2e" stroke-width="3" fill="none" stroke-linecap="round"/>`+
@@ -295,6 +322,60 @@ function allyFace(kind){
     `<path d="M-12 8 Q0 22 12 8 Q0 14 -12 8Z" fill="#7c3a3a" stroke="#150f2e" stroke-width="2.6"/>`+
     `<path d="M-9 8 Q0 11 9 8 L9 11 Q0 13 -9 11Z" fill="#fff"/>`+
     `<rect x="-1.5" y="8" width="3" height="4.5" fill="#7c3a3a"/>`;
+}
+
+/* =========================================================
+   FULL-BODY ALLY ART — a heroic standing figure per friend, for the
+   Hero Base "trading card" popup. Parametric (one template, per-kind config):
+   reuses allyFace(kind) for the head, draws a caped super-suit torso + arms in
+   a confident pose. Pure SVG string, no game state. ========================= */
+function _shade(hex,p){ const n=parseInt(hex.slice(1),16); const r=Math.round(((n>>16)&255)*(1-p)),
+  g=Math.round(((n>>8)&255)*(1-p)), b=Math.round((n&255)*(1-p));
+  return "#"+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1); }
+const BODY_CFG={
+  tank:    {col:"#e6453c", pose:"flex",  init:"T"},
+  flip:    {col:"#3a9bff", pose:"hips",  init:"F"},
+  sunny:   {col:"#ffce3a", pose:"stand", init:"S"},
+  heart:   {col:"#ff7d9c", pose:"hips",  init:"♥"},
+  leighton:{col:"#a06ae8", pose:"stand", init:"★"},
+  kendall: {col:"#5fa86a", pose:"stand", init:"K"},
+  jj:      {col:"#ff8a3a", pose:"flex",  init:"J"},
+  cal:     {col:"#2bb5a6", pose:"hips",  init:"C"},
+  nora:    {col:"#b79be0", pose:"stand", init:"N"},
+  mom:     {col:"#ff7a6b", pose:"stand", init:"M"},
+  dad:     {col:"#2c5fb0", pose:"flex",  init:"D"}
+};
+function allyBody(kind,w=200){
+  const cfg=BODY_CFG[kind]||BODY_CFG.tank, col=cfg.col, dk=_shade(col,.40), u="bd"+(__huid++), skin="#ffd3b0";
+  const fist=(x,y)=>`<circle cx="${x}" cy="${y}" r="6.5" fill="${skin}" stroke="#150f2e" stroke-width="3.5"/>`;
+  const limb=d=>`<path d="${d}" fill="none" stroke="#150f2e" stroke-width="17" stroke-linecap="round"/>`+
+    `<path d="${d}" fill="none" stroke="${col}" stroke-width="11" stroke-linecap="round"/>`;
+  let arms;
+  if(cfg.pose==="flex") arms=limb("M-30 -36 Q-52 -40 -50 -62 Q-49 -74 -40 -76")+limb("M30 -36 Q52 -40 50 -62 Q49 -74 40 -76")+fist(-40,-78)+fist(40,-78);
+  else if(cfg.pose==="hips") arms=limb("M-30 -36 Q-50 -18 -44 2 Q-41 9 -24 8")+limb("M30 -36 Q50 -18 44 2 Q41 9 24 8")+fist(-23,9)+fist(23,9);
+  else arms=limb("M-30 -36 Q-44 -6 -40 30")+limb("M30 -36 Q44 -6 40 30")+fist(-40,33)+fist(40,33);
+  const torso="M-36 -44 Q-46 -18 -22 38 L22 38 Q46 -18 36 -44 Q12 -52 0 -52 Q-12 -52 -36 -44Z";
+  return `<svg viewBox="-72 -116 144 256" width="${w}" aria-hidden="true">
+<defs>
+<linearGradient id="${u}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${col}"/><stop offset="1" stop-color="${dk}"/></linearGradient>
+<linearGradient id="${u}sh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".34"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".28"/></linearGradient>
+<radialGradient id="${u}au" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="${col}" stop-opacity=".5"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></radialGradient>
+</defs>
+<ellipse cx="0" cy="118" rx="46" ry="11" fill="#000" opacity=".34"/>
+<ellipse cx="0" cy="-4" rx="80" ry="118" fill="url(#${u}au)"/>
+<path d="M-28 -42 Q-56 24 -38 104 Q-6 86 0 92 Q6 86 38 104 Q56 24 28 -42 Q0 -32 -28 -42Z" fill="${dk}" stroke="#150f2e" stroke-width="5"/>
+${arms}
+<rect x="-22" y="36" width="15" height="78" rx="7.5" fill="${dk}" stroke="#150f2e" stroke-width="4.5"/>
+<rect x="7" y="36" width="15" height="78" rx="7.5" fill="${dk}" stroke="#150f2e" stroke-width="4.5"/>
+<rect x="-26" y="104" width="22" height="22" rx="7" fill="#2a2440" stroke="#150f2e" stroke-width="4.5"/>
+<rect x="4" y="104" width="22" height="22" rx="7" fill="#2a2440" stroke="#150f2e" stroke-width="4.5"/>
+<path d="${torso}" fill="url(#${u}b)" stroke="#150f2e" stroke-width="5.5"/>
+<path d="${torso}" fill="url(#${u}sh)"/>
+<rect x="-24" y="30" width="48" height="13" rx="4" fill="#ffce3a" stroke="#150f2e" stroke-width="4"/>
+<circle cx="0" cy="36.5" r="5.5" fill="${col}" stroke="#150f2e" stroke-width="3"/>
+<g transform="translate(0 -8)"><path d="M0 -13 l11 6 v13 l-11 6 -11 -6 v-13z" fill="#fff" opacity=".94" stroke="#150f2e" stroke-width="3"/><text y="5.5" text-anchor="middle" font-family="Bangers,sans-serif" font-size="15" fill="${dk}">${cfg.init}</text></g>
+<g transform="translate(0 -80) scale(1.04)">${allyFace(kind)}</g>
+</svg>`;
 }
 
 /* =========================================================

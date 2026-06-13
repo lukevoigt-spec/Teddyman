@@ -1114,7 +1114,9 @@ function paintBase(){
   const lg=$("leagueShelf"); lg.innerHTML="";
   let anyL=false;
   LEAGUE.forEach(t=>{ if(S.done[t.mid]){ anyL=true;
-    lg.innerHTML+=`<svg viewBox="-32 -36 64 86" width="54"><g>${allyFace(t.kind)}</g><text y="42" text-anchor="middle" font-family="Bangers" font-size="13" fill="#ffc93c">${t.real}</text><text y="55" text-anchor="middle" font-family="Bangers" font-size="9.5" fill="#9b94c9" letter-spacing=".5">"${t.name}"</text></svg>`; } });
+    const b=document.createElement("button"); b.className="leaguebtn"; b.title="See "+t.real+"\u2019s hero card";
+    b.innerHTML=`<svg viewBox="-32 -36 64 86" width="54"><g>${allyFace(t.kind)}</g><text y="42" text-anchor="middle" font-family="Bangers" font-size="13" fill="#ffc93c">${t.real}</text><text y="55" text-anchor="middle" font-family="Bangers" font-size="9.5" fill="#9b94c9" letter-spacing=".5">"${t.name}"</text></svg>`;
+    b.onclick=()=>openHeroCard(t.kind); lg.appendChild(b); } });
   if(!anyL)lg.innerHTML='<div class="baselbl" style="font-size:15px;">Smash Vex\u2019s cages to free your friends!</div>';
   { const freed=LEAGUE.filter(t=>S.done[t.mid]).length, lc=$("leagueCount"); if(lc)lc.textContent=freed+" / "+LEAGUE.length; }
   /* coins + trophy shelf (Training Room collection) */
@@ -1127,6 +1129,42 @@ function paintBase(){
     const tc=$("trophyCount"); if(tc)tc.textContent=owned.length+" / "+BASE_ITEMS.length; }
 }
 $("btnBaseBack").onclick=()=>{Aud.stop();toMap();};
+
+/* ---------------- HERO CARD (Pokémon-style full-body popup) ----------------
+   Tap a freed friend on the Base league shelf → a flip card: full-body art +
+   alias on the front, a short bio + stats on the back. Pure cosmetic delight. */
+const HERO_BIO={
+  tank:"Archie — Teddy’s mighty cousin. Smashes through Vexbot armies and powers up every Boss Battle.",
+  flip:"Ellie — quick and fearless. Flips past danger and guides Teddy through letter tracing.",
+  sunny:"William — the team’s ray of sunshine. Cracks jokes and keeps every patrol bright.",
+  heart:"Amelia — the Heartguard. Shields her friends and cheers Teddy on after every victory.",
+  leighton:"Leighton — the Starlight Princess, freed from Lord Vex’s Fortress at the end of the Star Force City story.",
+  kendall:"Miss Kendall — Teddy’s beloved teacher, rescued from the Vixen’s Dragon Keep.",
+  jj:"JJ — small, wild, and bursting with energy.",
+  cal:"Cal — a mischievous grin and always scheming something fun.",
+  nora:"Nora — tiny but mighty, with a heart of gold.",
+  mom:"Mom — Teddy’s real-life hero, cheering from the sidelines.",
+  dad:"Dad — strong, steady, and always ready to defend the family."
+};
+const OWNS_LBL={boss:"Boss Battles",trace:"Letter Tracing",patrol:"Patrols",win:"Every Victory"};
+function openHeroCard(kind){
+  const t=LEAGUE.find(x=>x.kind===kind); if(!t)return;
+  $("hcArt").innerHTML=allyBody(kind,170);
+  $("hcAlias").textContent=t.name;
+  $("hcName").textContent=t.real;
+  $("hcBackName").textContent=t.name;
+  $("hcBio").textContent=HERO_BIO[kind]||"";
+  const owns=(typeof ALLY!=="undefined"&&ALLY[kind])?ALLY[kind].owns:null, ownsLbl=OWNS_LBL[owns];
+  $("hcStats").innerHTML=`<div class="hc-stat"><b>Real name</b><span>${t.real}</span></div>`+
+    (ownsLbl?`<div class="hc-stat"><b>Cheers you on</b><span>${ownsLbl}</span></div>`:"")+
+    `<div class="hc-stat"><b>Freed at</b><span>Mission ${t.mid}</span></div>`;
+  $("hcFlip").classList.remove("flip");
+  $("heroCard").classList.add("on");
+}
+function closeHeroCard(){ $("heroCard").classList.remove("on"); }
+$("hcClose").onclick=e=>{ e.stopPropagation(); closeHeroCard(); };
+$("hcFlip").onclick=()=>$("hcFlip").classList.toggle("flip");
+$("heroCard").onclick=e=>{ if(e.target.id==="heroCard")closeHeroCard(); };
 
 /* ---------------- TRAINING ROOM + HERO SHOP ----------------
    A supplementary DAILY practice loop, decoupled from story progression. It

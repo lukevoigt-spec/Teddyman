@@ -457,6 +457,29 @@
   </div>
 </div>
 
+<!-- HERO CARD — Pokémon-style full-body card popup (tap a freed friend in the Base). -->
+<div id="heroCard">
+  <div class="hc-flip" id="hcFlip">
+    <div class="hc-face hc-front">
+      <div class="hc-frame">
+        <div class="hc-alias comic" id="hcAlias"></div>
+        <div class="hc-art" id="hcArt"></div>
+        <div class="hc-name" id="hcName"></div>
+        <div class="hc-hint">tap card to flip ⟳</div>
+      </div>
+    </div>
+    <div class="hc-face hc-back">
+      <div class="hc-frame">
+        <div class="hc-back-h comic" id="hcBackName"></div>
+        <div class="hc-bio" id="hcBio"></div>
+        <div class="hc-stats" id="hcStats"></div>
+        <div class="hc-hint">tap to flip back ⟳</div>
+      </div>
+    </div>
+  </div>
+  <button class="btn blue" id="hcClose">CLOSE</button>
+</div>
+
 <!-- Optional studio-generated voicepack. Game works without it (TTS fallback). -->
 <script src="voicepack.js" onerror="void(0)"></script>
 

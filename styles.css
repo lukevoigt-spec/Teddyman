@@ -701,6 +701,35 @@ body.cine-villain #sceneGrade{background:
 body.calm .panelart.beatin,body.calm .panelart.transformfx{animation:none;}
 
 /* ===================== UNLOCK CARD (reward reveal) ===================== */
+/* HERO CARD — Pokémon-style flip card for a freed friend */
+#heroCard{position:fixed;inset:0;z-index:72;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+  background:rgba(6,3,16,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);perspective:1400px;}
+#heroCard.on{display:flex;}
+.hc-flip{position:relative;width:min(330px,82vw);aspect-ratio:3/4.3;transform-style:preserve-3d;cursor:pointer;
+  transition:transform .55s cubic-bezier(.3,.9,.4,1);animation:hcpop .5s cubic-bezier(.18,1.5,.5,1) both;}
+.hc-flip.flip{transform:rotateY(180deg);animation:none;}
+@keyframes hcpop{0%{transform:scale(.5) rotateY(-12deg);opacity:0}100%{transform:scale(1) rotateY(0);opacity:1}}
+.hc-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:22px;}
+.hc-back{transform:rotateY(180deg);}
+.hc-frame{position:relative;width:100%;height:100%;box-sizing:border-box;border-radius:22px;overflow:hidden;
+  border:5px solid var(--gold);background:linear-gradient(165deg,#2c2160,#15102f);
+  box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 46px rgba(255,206,58,.3),inset 0 0 0 2px rgba(255,255,255,.08);
+  display:flex;flex-direction:column;align-items:center;padding:14px 14px 10px;gap:6px;}
+.hc-alias{font-size:clamp(22px,5vw,30px);color:var(--gold);-webkit-text-stroke:1.5px var(--ink);paint-order:stroke;text-align:center;line-height:1;}
+.hc-art{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;width:100%;
+  background:radial-gradient(circle at 50% 42%,rgba(255,255,255,.10),transparent 62%);border-radius:14px;}
+.hc-art svg{max-height:100%;width:auto;}
+.hc-name{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:clamp(15px,3.4vw,19px);color:var(--txt);
+  background:rgba(0,0,0,.28);border:2px solid #4a3a86;border-radius:12px;padding:5px 16px;}
+.hc-hint{font-size:11px;color:#9b94c9;opacity:.8;}
+.hc-back-h{font-size:clamp(20px,4.6vw,26px);color:var(--gold);-webkit-text-stroke:1.5px var(--ink);paint-order:stroke;text-align:center;margin-top:4px;}
+.hc-bio{font-family:'Baloo 2',sans-serif;font-size:14px;line-height:1.4;color:var(--txt);text-align:center;padding:2px 4px;}
+.hc-stats{width:100%;display:flex;flex-direction:column;gap:7px;margin-top:auto;margin-bottom:6px;}
+.hc-stat{display:flex;justify-content:space-between;gap:10px;background:rgba(0,0,0,.26);border:2px solid #3a2d72;border-radius:11px;padding:7px 12px;font-family:'Baloo 2',sans-serif;font-size:13px;}
+.hc-stat b{color:var(--gold);font-weight:800;}.hc-stat span{color:var(--txt);text-align:right;}
+.leaguebtn{background:none;border:none;padding:2px;margin:0;cursor:pointer;border-radius:12px;transition:transform .12s ease;}
+.leaguebtn:hover,.leaguebtn:active{transform:translateY(-3px) scale(1.06);}
+
 #unlockCard{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
   background:rgba(6,3,16,.78);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);}
 #unlockCard.on{display:flex;}
