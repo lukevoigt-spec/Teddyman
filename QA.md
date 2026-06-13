@@ -296,3 +296,9 @@ Suggested workflow:
 - `QA.md` = periodic external review notes and recommendations.
 
 That keeps the parent from being the middle man while avoiding a single giant instruction file that mixes hard rules, design specs, and casual feedback.
+
+---
+
+## 2026-06-13 Test Edit
+
+This is a small QA test edit to verify repository write and commit workflow.
