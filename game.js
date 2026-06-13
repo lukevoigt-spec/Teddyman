@@ -160,11 +160,25 @@ function coreWeak(m){ return (m&&(m.finale||m.rescue)) ? actGraphemes().filter(g
 
 /* ---------------- ART ----------------
    heroSVG lives in art.js (loaded first); heroOpts maps game state to it. */
+/* equippable WEAPON SKINS — each unlocks off a milestone gear the kid already
+   earns (no new save-critical ids) and is act-gated so the right arsenal shows
+   per world. hammer/sword stay; lasso/bow are Act-1 flavour (he loves cowboy +
+   archery); mace/lance re-arm the Act-2 knight. */
+const WEAPONS=[
+  {k:"hammer",lbl:"WORD HAMMER 🔨",gear:"Word Hammer"},
+  {k:"sword", lbl:"GEM SWORD ⚔️",  gear:"Gem Sword"},
+  {k:"lasso", lbl:"LASSO 🤠",       gear:"Gem Gauntlet", act:1},
+  {k:"bow",   lbl:"GEM BOW 🏹",     gear:"Reading Crown", act:1},
+  {k:"mace",  lbl:"WAR MACE 🔨",    gear:"Power Belt",    act:2},
+  {k:"lance", lbl:"JOUST LANCE 🛡️", gear:"Rocket Boots",  act:2}
+];
+function ownedWeapons(){ const a=currentAct(), g=actGearList(a);
+  return WEAPONS.filter(w=>(!w.act||w.act===a)&&g.includes(w.gear)); }
 function heroOpts(){ /* muscle + gear come from THIS act's progress, so a new act resets his power */
   const a=currentAct(), done=actMissions(a).filter(m=>S.done[m.id]).length, gear=actGearList(a);
-  const wmap={hammer:"Word Hammer",sword:"Gem Sword"}, eq=S.equip.weapon||"none";
+  const eq=S.equip.weapon||"none";
   return { muscle: done>=7?2:(done>=3?1:0),
-           weapon: (wmap[eq]&&!gear.includes(wmap[eq]))?"none":eq,   /* a new act steals his weapon too */
+           weapon: ownedWeapons().some(w=>w.k===eq)?eq:"none",   /* only a weapon unlocked in THIS act shows */
            cape: S.equip.cape||"red",
            theme: actInfo(a).theme||"hero",
            belt2:gear.includes("Power Belt"), boots2:gear.includes("Rocket Boots") }; }
@@ -1098,11 +1112,9 @@ function paintBase(){
   const o=heroOpts();
   $("powerLbl").textContent=(currentAct()===2?["SQUIRE","SOLDIER","KNIGHT"]:["HERO","SUPER HERO","MEGA HERO"])[o.muscle];
   const rd=$("rankDots"); if(rd)rd.innerHTML=[0,1,2].map(i=>`<i class="${i<=o.muscle?"on":""}"></i>`).join("");   /* power tier */
-  /* weapons */
+  /* weapons — HANDS + every weapon skin unlocked in THIS act */
   const wrow=$("weaponRow"); wrow.innerHTML="";
-  const weapons=[["none","HANDS"]], actGear=actGearList(currentAct());
-  if(actGear.includes("Word Hammer"))weapons.push(["hammer","WORD HAMMER 🔨"]);
-  if(actGear.includes("Gem Sword"))weapons.push(["sword","GEM SWORD ⚔️"]);
+  const weapons=[["none","HANDS"],...ownedWeapons().map(w=>[w.k,w.lbl])];
   weapons.forEach(([k,lbl])=>{ const b=document.createElement("button");
     b.className="echip"+(S.equip.weapon===k?" onsel":""); b.textContent=lbl;
     b.onclick=()=>{S.equip.weapon=k;save();Aud.ding();paintBase();};

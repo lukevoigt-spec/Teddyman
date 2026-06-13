@@ -41,7 +41,24 @@ if(o.weapon==="sword"){weapon=`<g transform="translate(206 -8) rotate(10)" strok
 <rect x="-34" y="58" width="68" height="18" rx="8" fill="url(#${u}gold)"/>
 <rect x="-9" y="74" width="18" height="46" rx="8" fill="#8a5a33"/>
 <circle cx="0" cy="128" r="11" fill="url(#${u}gold)"/></g>`;}
-const heldWeapon = o.weapon==="hammer"||o.weapon==="sword";
+if(o.weapon==="lasso"){weapon=`<g transform="translate(202 -2) rotate(8)" stroke-linejoin="round" fill="none">
+<ellipse cx="0" cy="-78" rx="46" ry="60" stroke="#150f2e" stroke-width="13"/><ellipse cx="0" cy="-78" rx="46" ry="60" stroke="#cf9a5a" stroke-width="9"/><ellipse cx="0" cy="-78" rx="46" ry="60" stroke="#e9c187" stroke-width="3"/>
+<path d="M0 -18 Q-8 52 6 132" stroke="#150f2e" stroke-width="13" stroke-linecap="round"/><path d="M0 -18 Q-8 52 6 132" stroke="#cf9a5a" stroke-width="9" stroke-linecap="round"/><path d="M0 -18 Q-8 52 6 132" stroke="#e9c187" stroke-width="3" stroke-linecap="round"/></g>`;}
+if(o.weapon==="bow"){weapon=`<g transform="translate(214 78) rotate(4)" stroke-linejoin="round">
+<path d="M0 -112 Q48 -56 0 0 Q48 56 0 112" fill="none" stroke="#150f2e" stroke-width="13"/><path d="M0 -112 Q48 -56 0 0 Q48 56 0 112" fill="none" stroke="#8a5a33" stroke-width="9"/><path d="M0 -112 Q48 -56 0 0 Q48 56 0 112" fill="none" stroke="#c98a4a" stroke-width="3"/>
+<line x1="0" y1="-112" x2="0" y2="112" stroke="#150f2e" stroke-width="5"/><line x1="0" y1="-112" x2="0" y2="112" stroke="#eef2ff" stroke-width="2.4"/>
+<line x1="-2" y1="0" x2="-66" y2="0" stroke="#150f2e" stroke-width="9"/><line x1="-2" y1="0" x2="-66" y2="0" stroke="#a0703a" stroke-width="6"/>
+<polygon points="-66,0 -52,-8 -52,8" fill="#dfe9ff" stroke="#150f2e" stroke-width="3"/><polygon points="6,0 18,-7 18,7" fill="#ff7d3a" stroke="#150f2e" stroke-width="2.5"/></g>`;}
+if(o.weapon==="mace"){weapon=`<g transform="translate(202 4) rotate(14)" stroke="#150f2e" stroke-width="6" stroke-linejoin="round">
+<rect x="-7" y="18" width="14" height="150" rx="7" fill="#6b6f7a"/>
+<polygon points="0,-82 9,-58 32,-66 16,-46 34,-30 9,-38 0,-12 -9,-38 -34,-30 -16,-46 -32,-66 -9,-58" fill="#9aa0ad"/>
+<circle cx="0" cy="-48" r="20" fill="url(#${u}gold)"/><circle cx="-7" cy="-55" r="6" fill="#fff0bd" stroke="none"/></g>`;}
+if(o.weapon==="lance"){weapon=`<g transform="translate(206 78) rotate(-26)" stroke="#150f2e" stroke-width="5" stroke-linejoin="round">
+<rect x="-6" y="-28" width="12" height="150" rx="6" fill="#8a5a33"/>
+<polygon points="0,-120 16,-74 -16,-74" fill="url(#${u}gold)"/><polygon points="0,-120 6,-92 -6,-92" fill="#fff0bd"/>
+<rect x="-19" y="-76" width="38" height="14" rx="6" fill="#b0b6c4"/>
+<rect x="-15" y="100" width="30" height="22" rx="8" fill="#6b6f7a"/></g>`;}
+const heldWeapon = ["hammer","sword","lasso","bow","mace","lance"].includes(o.weapon);
 const biceps = m>=1 ? `<ellipse cx="44" cy="196" rx="${13+5*m}" ry="${11+4*m}" fill="url(#${u}suit)" stroke="#150f2e" stroke-width="5"/>`+(heldWeapon?``:`<ellipse cx="204" cy="196" rx="${13+5*m}" ry="${11+4*m}" fill="url(#${u}suit)" stroke="#150f2e" stroke-width="5"/>`) : "";
 /* arms: left fist always on hip; right hand either on hip OR raised gripping the weapon */
 const armL=`<path d="M86 150 Q44 160 34 208 Q32 234 54 252 L84 262 L96 248 L70 236 Q54 226 60 206 Q68 172 96 162Z" fill="url(#${u}suit)"/><circle cx="84" cy="258" r="15" fill="#e6453c"/><path d="M76 252 a9 9 0 0 1 9 -5" stroke="#ffb3ad" stroke-width="4" fill="none" stroke-linecap="round"/>`;
@@ -109,7 +126,7 @@ return `<svg viewBox="-30 -150 310 660" width="${w}" aria-hidden="true">
 <g fill="#fff7d6"><path class="hmote2" d="M44 350 l2.5 7 7 2.5 -7 2.5 -2.5 7 -2.5 -7 -7 -2.5 7 -2.5z"/><path class="hmote3" d="M206 332 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2z"/><path class="hmote" d="M30 250 l2 5.5 5.5 2 -5.5 2 -2 5.5 -2 -5.5 -5.5 -2 5.5 -2z"/></g>
 <ellipse cx="123" cy="470" rx="98" ry="20" fill="url(#${u}sh)"/>
 <g class="hfloat"><g filter="url(#${u}lit)">
-${o.weapon==="hammer"||o.weapon==="sword"?weapon:""}
+${heldWeapon?weapon:""}
 ${knight?"":`<g class="hcape">
 <path d="M80 126 Q124 106 168 126 Q190 240 200 350 Q206 416 192 452 L168 426 L148 452 L124 430 L100 452 L80 426 L56 452 Q42 416 48 350 Q58 240 80 126Z" fill="url(#${u}cape)" stroke="#150f2e" stroke-width="6"/>
 <path d="M80 126 Q124 106 168 126 Q190 240 200 350 Q206 416 192 452 L168 426 L148 452 L124 430 L100 452 L80 426 L56 452 Q42 416 48 350 Q58 240 80 126Z" fill="url(#${u}capeL)"/>

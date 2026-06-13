@@ -322,6 +322,12 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   and his VEXBOT soldiers. Hero: Super Teddy (the child is "Teddy"; his hero identity is
   "Super Teddy"), blue glasses = Gem Lenses, gold hex "T" emblem,
   red cape, Word Forge gauntlet. Words forge weapons (Word Hammer, Gem Sword).
+- WEAPON SKINS (live, equippable in Hero Base ▸ Loadout): WEAPONS[] catalog in game.js, each unlocked
+  off a milestone gear the kid already earns (no new save ids) and ACT-GATED via ownedWeapons(). Act 1:
+  Word Hammer, Gem Sword, LASSO 🤠 (Gem Gauntlet/m22), GEM BOW 🏹 (Reading Crown/m30). Act 2 (knight):
+  Gem Sword, WAR MACE (Power Belt/m118), JOUST LANCE (Rocket Boots/m127). All rendered held in heroSVG
+  (art.js). heroOpts equips only a weapon unlocked in the current act, so switching worlds re-arms him.
+  PARKING LOT: a HORSE / mount (best as an Act-2 knight mount, Sir Teddy on horseback) — deferred art.
 - Hero visibly gains muscle as missions complete (3 stages). Hero Base = equip/collection hub.
 - CHARACTER ART IS NOW "PREMIUM ANIMATED SVG" (live, all in art.js — the chosen pipeline: keep
   everyone as parametric animated SVG; reserve painted images for backgrounds/maps). heroSVG = a
