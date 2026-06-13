@@ -21,12 +21,16 @@ const ORDER=["s","a","t","p","i","n","m","d","g","o","c","k","e","u","r","h","b"
    into graphemes (longest-match), so "ship" = [sh,i,p] not [s,h,i,p]. Backward-
    compatible — no Act-1 (non-sight) word contains a digraph sequence. ---- */
 const DIGRAPHS=["sh","ch","th","wh","ck","ng"];
+const VOWELTEAMS=["ai","ee","oa"];   /* vowel teams: 2 letters, ONE long-vowel sound (ai→A, ee→E, oa→O) */
+const GRAPH2=DIGRAPHS.concat(VOWELTEAMS);
 function isDigraph(g){ return DIGRAPHS.includes(g); }
+function isVowelTeam(g){ return VOWELTEAMS.includes(g); }
 function toGraphemes(w){ const out=[]; for(let i=0;i<w.length;){ const two=w.substr(i,2);
-  if(DIGRAPHS.includes(two)){ out.push(two); i+=2; } else { out.push(w[i]); i++; } } return out; }
+  if(GRAPH2.includes(two)){ out.push(two); i+=2; } else { out.push(w[i]); i++; } } return out; }
 Object.assign(LETTERS,{
   sh:{kw:"ship",icon:"🚢"}, ch:{kw:"cheese",icon:"🧀"}, th:{kw:"thumb",icon:"👍"},
-  wh:{kw:"whale",icon:"🐳"}, ck:{kw:"duck",icon:"🦆"}, ng:{kw:"ring",icon:"💍"}
+  wh:{kw:"whale",icon:"🐳"}, ck:{kw:"duck",icon:"🦆"}, ng:{kw:"ring",icon:"💍"},
+  ai:{kw:"rain",icon:"🌧️"}, ee:{kw:"bee",icon:"🐝"}, oa:{kw:"boat",icon:"⛵"}
 });
 /* ---- ACT 2: LONG VOWELS via MAGIC-E (split grapheme). A silent E at the end
    reaches back over one consonant and flips the vowel from short to long
@@ -152,6 +156,23 @@ const MISSIONS=[
   {id:125,type:"forge",words:["home","rope","cube","tube"],lbl:"Spell Forge: O & U",z:103},
   {id:126,type:"read", words:["home","cube","nose","rose","bike","cake"],lbl:"Spellery Reading Rally",z:103},
   {id:127,type:"forge",words:["cape","kite","rose","cute"],lbl:"Dragon Duel: The Vowel Wyrm!",finale:true,z:103},
+  /* === ACT 2 · ZONE 4 · THE SINGING GLADE — VOWEL TEAMS (ai/ee/oa: two vowels, one long sound;
+     "two vowels go walking, the first does the talking"). One gem = one team (longest-match). === */
+  {id:129,type:"learn",letter:"ai",lbl:"Quest: the AI Team",z:104},
+  {id:130,type:"learn",letter:"ee",lbl:"Quest: the EE Team",z:104},
+  {id:131,type:"forge",words:["rain","sail","feet","bee"],lbl:"Vowel Forge: AI & EE",z:104},
+  {id:132,type:"read", words:["rain","train","feet","tree"],lbl:"Glade Reading I",z:104},
+  {id:133,type:"learn",letter:"oa",lbl:"Quest: the OA Team",z:104},
+  {id:134,type:"forge",words:["boat","coat","goat","soap"],lbl:"Vowel Forge: OA",z:104},
+  {id:135,type:"read", words:["boat","goat","rain","feet"],lbl:"Glade Reading II",z:104},
+  {id:136,type:"forge",words:["rain","feet","boat","seed"],lbl:"Vowel Forge Rally",z:104},
+  {id:137,type:"forge",words:["sail","tree","road","goat"],lbl:"Dragon Duel: The Vowel Choir!",finale:true,z:104},
+  /* === ACT 2 · ZONE 5 · THE GREAT LIBRARY — FLUENCY: rapid mixed decoding across every Act-2
+     skill (digraphs + blends + magic-e + vowel teams) for automaticity before the finale. === */
+  {id:138,type:"read",words:["ship","frog","cake","rain"],lbl:"Fluency: Mixed Reading I",z:105},
+  {id:139,type:"read",words:["chip","jump","home","boat"],lbl:"Fluency: Mixed Reading II",z:105},
+  {id:140,type:"read",words:["king","milk","kite","feet"],lbl:"Fluency: Mixed Reading III",z:105},
+  {id:141,type:"read",words:["fish","trap","rose","goat","tree"],lbl:"Fluency Rally!",finale:true,z:105},
   /* ===== ACT-2 FINALE — the Dragon Keep: a multi-phase boss (sound→read→spell→read)
      that gates on Act-2 mastery (digraphs + magic-e) and frees MISS KENDALL. ===== */
   {id:128,type:"fortress",lbl:"Dragon Keep: Free Miss Kendall!",finale:true,climax:true,z:106}
@@ -223,7 +244,8 @@ const READWORDS2={
   king:"🤴", shop:"🏪", bath:"🛁", chin:"🧔", wing:"🪽", dish:"🍽️",
   frog:"🐸", drum:"🥁", flag:"🚩", crab:"🦀", star:"⭐", hand:"✋",
   jump:"🦘", lamp:"💡", tent:"⛺", mask:"😷", sled:"🛷", gift:"🎁", trap:"🪤", milk:"🥛",
-  cake:"🎂", bike:"🚲", gate:"🚪", kite:"🪁", home:"🏠", cube:"🧊", nose:"👃", rose:"🌹"
+  cake:"🎂", bike:"🚲", gate:"🚪", kite:"🪁", home:"🏠", cube:"🧊", nose:"👃", rose:"🌹",
+  rain:"🌧️", train:"🚂", feet:"🦶", tree:"🌳", bee:"🐝", boat:"⛵", goat:"🐐", coat:"🧥", seed:"🌱"
 };
 const TRACE={
   s:[[[205,80],[150,58],[102,86],[106,132],[160,152],[196,188],[172,236],[102,232]]],
@@ -308,6 +330,12 @@ const ZONES=[
   { id:103, name:"ENCHANTER'S TOWER", bg:"spellery", act:2,
     letters:[],   /* the long-vowel "units" are taught via type:"magic" missions */
     nodes:autoNodes(9,{y0:-820,step:104,phase:1.5}) },
+  /* ===== ACT 2 · zone 4: VOWEL TEAMS (ai/ee/oa) ===== */
+  { id:104, name:"THE SINGING GLADE", bg:"spellery", act:2,
+    letters:["ai","ee","oa"], nodes:autoNodes(9,{y0:-1240,step:104,phase:2.6}) },
+  /* ===== ACT 2 · zone 5: FLUENCY (rapid mixed decoding) ===== */
+  { id:105, name:"THE GREAT LIBRARY", bg:"spellery", act:2,
+    letters:[], nodes:autoNodes(4,{y0:-1640,step:110,phase:1.1}) },
   /* ===== ACT 2 · FINALE zone — the Dragon Keep (Vixen's dragon boss, rescue Miss Kendall) ===== */
   { id:106, name:"DRAGON KEEP", bg:"fortress", act:2, letters:[], nodes:[[470,-1700]] }
 ];
@@ -404,6 +432,13 @@ const LINES={
   /* --- ACT 2: digraph sounds, keywords, intros, words (one gem = one sound) --- */
   snd_sh:{t:"sh",r:.6}, snd_ch:{t:"ch",r:.7}, snd_th:{t:"th",r:.6}, snd_wh:{t:"wh",r:.6}, snd_ck:{t:"k",r:.75}, snd_ng:{t:"ng",r:.6},
   like_sh:{t:"Like ship!"}, like_ch:{t:"Like cheese!"}, like_th:{t:"Like thumb!"}, like_wh:{t:"Like whale!"}, like_ck:{t:"Like duck!"}, like_ng:{t:"Like ring!"},
+  /* VOWEL TEAMS (ai/ee/oa) — one long-vowel sound; phonemes the parent can record (snd_ prefix) */
+  snd_ai:{t:"ay",r:.7}, snd_ee:{t:"ee",r:.7}, snd_oa:{t:"oh",r:.7},
+  intro_ai:{t:"This is the A-I team! Two vowels — the A does the talking and says its name."}, like_ai:{t:"Like rain!"},
+  intro_ee:{t:"This is the E-E team! It says the long E — eee."}, like_ee:{t:"Like bee!"},
+  intro_oa:{t:"This is the O-A team! The O does the talking and says its name."}, like_oa:{t:"Like boat!"},
+  word_rain:{t:"rain!"}, word_train:{t:"train!"}, word_sail:{t:"sail!"}, word_feet:{t:"feet!"}, word_bee:{t:"bee!"}, word_tree:{t:"tree!"}, word_seed:{t:"seed!"},
+  word_boat:{t:"boat!"}, word_coat:{t:"coat!"}, word_goat:{t:"goat!"}, word_soap:{t:"soap!"}, word_road:{t:"road!"}, word_leaf:{t:"leaf!"},
   intro_sh:{t:"New rune, brave knight! S and H join to make ONE sound... sh! Like ship."},
   intro_ch:{t:"New rune! C and H together say... ch! Like cheese."},
   intro_th:{t:"New rune! T and H together say... th! Like thumb."},
@@ -1316,7 +1351,7 @@ const MAPIMG={1:"art/bg-map.jpeg", 2:"art/bg-map-a2.jpeg"};
    ZONES play order per act — calibrated by eye to sit on the painted golden path. */
 const ZONESPOTS={
   1:[[215,640],[362,432],[298,300],[322,168],[560,212],[592,352],[722,330],[772,206],[838,108]],
-  2:[[182,600],[432,430],[762,228],[560,108]]
+  2:[[182,600],[432,430],[776,224],[712,360],[548,300],[486,128]]
 };
 function zMissions(z){ return MISSIONS.filter(m=>m.z===z.id).sort((a,b)=>a.id-b.id); }
 function zoneDone(z){ const m=zMissions(z); return m.length>0 && m.every(x=>S.done[x.id]); }
@@ -1404,12 +1439,14 @@ function taughtLetters(){ return ORDER.filter(g=>S.done[LETTER_MISSION[g]]); }
    and is used for foil pools so a digraph can appear among the distractor gems. */
 const DIGRAPH_MISSION={sh:100,ch:101,th:103,wh:105,ck:106,ng:107};
 const MAGICE_MISSION={a_e:119,i_e:120,o_e:123,u_e:124};   /* unit -> its "Magic-E Spell" teach mission */
+const VOWELTEAM_MISSION={ai:129,ee:130,oa:133};           /* team -> its "Quest" teach mission */
 function taughtDigraphs(){ return DIGRAPHS.filter(d=>S.done[DIGRAPH_MISSION[d]]); }
 function taughtMagicE(){ return MAGICE_UNITS.filter(u=>S.done[MAGICE_MISSION[u]]); }
-function taughtGraphemes(){ return taughtLetters().concat(taughtDigraphs()); }
+function taughtVowelTeams(){ return VOWELTEAMS.filter(t=>S.done[VOWELTEAM_MISSION[t]]); }
+function taughtGraphemes(){ return taughtLetters().concat(taughtDigraphs()).concat(taughtVowelTeams()); }
 /* graphemes/rules taught in the CURRENT act (Act-2 milestones gate on digraphs +
-   magic-e units, since the 26 letters are already mastered and carried over) */
-function actGraphemes(){ return currentAct()===2 ? taughtDigraphs().concat(taughtMagicE()) : taughtLetters(); }
+   magic-e + vowel teams, since the 26 letters are already mastered and carried over) */
+function actGraphemes(){ return currentAct()===2 ? taughtDigraphs().concat(taughtMagicE()).concat(taughtVowelTeams()) : taughtLetters(); }
 /* Adaptive pick: weight toward the child's weakest graphemes (low strength /
    low accuracy / fewest reps) so patrols self-target what needs work. */
 function pickWeak(pool){ if(!pool.length)return null;
@@ -1471,6 +1508,7 @@ function startLearn(m){ learnLetter=m.letter; const L=LETTERS[learnLetter];
   show("scrLetter");
   $("bigGlyph").textContent=learnLetter+" "+learnLetter.toUpperCase();
   $("kwIcon").textContent=L.icon;
+  $("btnLetterGo").textContent=(learnLetter.length>1)?"FIND IT! ➜":"TRACE IT! ➜";   /* digraphs/teams skip the trace */
   /* confusable twins already taught? show a side-by-side contrast cue */
   const cue=$("letterCue"); if(cue){
     const twin=(CONFUSE[learnLetter]||[]).find(t=>S.done[LETTER_MISSION[t]]);
@@ -1481,7 +1519,7 @@ function startLearn(m){ learnLetter=m.letter; const L=LETTERS[learnLetter];
   if(LINES["cue_"+learnLetter] && (CONFUSE[learnLetter]||[]).some(t=>S.done[LETTER_MISSION[t]])) ids.push("cue_"+learnLetter);
   narrate("letter",$("letterText"),ids); }
 /* digraphs skip handwriting trace (the child already writes s + h) — straight to sound work */
-$("btnLetterGo").onclick=()=>{ isDigraph(learnLetter) ? startFind(learnLetter) : startTrace(learnLetter); };
+$("btnLetterGo").onclick=()=>{ (learnLetter.length>1) ? startFind(learnLetter) : startTrace(learnLetter); };   /* digraphs + vowel teams skip the handwriting trace */
 
 /* ---------------- TRACE ---------------- */
 let strokes,strokeIx,dotIx,trail;

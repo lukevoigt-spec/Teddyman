@@ -147,11 +147,21 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   (act-scoped via actGearList; weapon auto-equips on forge). RANK PROGRESSION: the knight advances
   SQUIRE→SOLDIER→KNIGHT by power tier (KNIGHT_TIER in heroSVG: leather cap → steel nose-guard cap →
   full closed helm; armor colour shifts per tier; Base/Progress power label reads the rank in Act 2).
-- TO BUILD NEXT (Act 2, for the ~2nd-grade goal): VOWEL TEAMS (ai/ee/oa) + FLUENCY zones BEFORE the
-  finale on the ladder (insert as zones 104/105; the map positions by zone order). CAUTION: adding
-  vowel teams to toGraphemes() risks mis-tokenising the sight word "said" (s-ai-d) and any ee/oa
-  word — verify sight words stay letter-split and extend tests/curriculum.test.js first. Also: real
-  Vixen/dragon/Miss-Kendall/friend art; long-vowel + digraph phoneme recordings (parent).
+- ACT 2 IS CONTENT-COMPLETE (the full ~2nd-grade ladder is live): zones 101 CASTLETON (digraphs) →
+  102 DRAGONSTEEL FORGE (blends) → 103 ENCHANTER'S TOWER (magic-e) → 104 THE SINGING GLADE (VOWEL
+  TEAMS ai/ee/oa, missions 129–137) → 105 THE GREAT LIBRARY (FLUENCY: rapid mixed decoding of every
+  Act-2 skill, missions 138–141) → 106 DRAGON KEEP (finale, rescue Miss Kendall, mission 128). VOWEL
+  TEAMS: VOWELTEAMS=["ai","ee","oa"]; GRAPH2=DIGRAPHS+VOWELTEAMS drives toGraphemes() longest-match
+  (rain=[r,ai,n], one gem = one team, the long-vowel sound snd_ai/ee/oa). Backward-compatible: the
+  ONLY words containing ai/ee/oa are the new ones + the sight word "said", which is fully sight-handled
+  (sw_said audio + spell-builder split(""), NEVER toGraphemes) — verified, and curriculum.test.js
+  guards it (24 checks incl. "said voiced whole via sw_said", team tokenisation, decodability by play
+  order). VOWELTEAM_MISSION feeds taughtVowelTeams → taughtGraphemes + actGraphemes (so the finale
+  gates on digraphs+magic-e+vowel-teams). Learn screen: 2-char graphemes SKIP the trace ("FIND IT!").
+- ACT-2 POLISH TODO (not content): real Vixen/Miss-Kendall/friend art; long-vowel + digraph + vowel-
+  team phoneme recordings (parent, via the Voice Studio — the snd_ai/ee/oa lines already appear there);
+  optional Act-2 sentence-level fluency (currently word-level). The game is now playable end-to-end
+  through the full Act-2 ladder.
 - PLANNED ENHANCEMENTS (parent-prioritized backlog — "identify 10, do best-first"): (1) AUDIO WORKFLOW
   REDO — streamline + bulletproof the record/ElevenLabs/export/publish pipeline (parent flagged; highest
   learning leverage). (2) SETTINGS OVERHAUL — game-like, intuitive, add missing settings; study how real

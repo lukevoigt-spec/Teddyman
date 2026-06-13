@@ -99,9 +99,12 @@ ok("after the first zone is finished, the second zone becomes current", curZoneI
 S.done={};
 ok("zoneNext() returns the first UNDONE mission of a zone", (function(){ var first=zMissions(z1[0])[0], m=zoneNext(z1[0]); return m && m.id===first.id; })());
 
-grp("guards for the planned vowel-teams (ai/ee/oa) work");
-ok("sight word 'said' is NOT detected as magic-e", magicE("said")===null);
-ok("sight word 'said' stays LETTER-split (4 graphemes, no team merge)", toGraphemes("said").length===4);
+grp("vowel teams (ai/ee/oa) live — sight word 'said' stays sight-handled");
+ok("'said' is NOT detected as magic-e", magicE("said")===null);
+ok("'said' is a SIGHT word, voiced WHOLE via sw_said (never grapheme-decoded)", wordAudio("said")[0]==="sw_said");
+ok("vowel teams tokenise as ONE gem (rain->r,ai,n; feet->f,ee,t; boat->b,oa,t)",
+  toGraphemes("rain").join()==="r,ai,n" && toGraphemes("feet").join()==="f,ee,t" && toGraphemes("boat").join()==="b,oa,t");
+ok("VOWELTEAM_MISSION points at the right learn missions", Object.keys(VOWELTEAM_MISSION).every(t=>{var m=MISSIONS.find(x=>x.id===VOWELTEAM_MISSION[t]); return m && m.type==="learn" && m.letter===t;}));
 
 grp("security: parent-entered profile-name escaping");
 ok("escHTML neutralises <, >, \\" and '",
