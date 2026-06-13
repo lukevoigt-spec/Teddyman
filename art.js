@@ -154,22 +154,30 @@ ${o.theme==="knight"?`<!-- ===== knight helm (Act-2 placeholder) ===== -->
 
 /* ---- LORD VEX / VEXBOT (refined: angled glowing visor, sharper menace) ---- */
 function inkblotSVG(w=240){
+const u="v"+(__huid++);
 return `<svg viewBox="-70 -130 320 360" width="${w}" aria-hidden="true">
 <defs>
-<linearGradient id="vxm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a4f6e"/><stop offset="1" stop-color="#23263b"/></linearGradient>
-<linearGradient id="vxd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b2f47"/><stop offset="1" stop-color="#15172a"/></linearGradient>
-<radialGradient id="vxr" cx=".5" cy=".5" r=".6"><stop offset="0" stop-color="#ff6b5e"/><stop offset=".6" stop-color="#e62e2e"/><stop offset="1" stop-color="#7a1010"/></radialGradient>
+<linearGradient id="vxm" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#5a6080"/><stop offset=".5" stop-color="#3a3f5c"/><stop offset="1" stop-color="#1d2034"/></linearGradient>
+<linearGradient id="vxd" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#363b58"/><stop offset="1" stop-color="#0f1122"/></linearGradient>
+<radialGradient id="vxr" cx=".42" cy=".4" r=".62"><stop offset="0" stop-color="#fff1ec"/><stop offset=".35" stop-color="#ff6b5e"/><stop offset=".7" stop-color="#e62e2e"/><stop offset="1" stop-color="#5a0c0c"/></radialGradient>
+<radialGradient id="${u}aura" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff2e2e" stop-opacity=".5"/><stop offset=".55" stop-color="#c01020" stop-opacity=".16"/><stop offset="1" stop-color="#c01020" stop-opacity="0"/></radialGradient>
+<filter id="${u}lit" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="4" result="b"/><feSpecularLighting in="b" surfaceScale="5" specularConstant=".55" specularExponent="20" lighting-color="#cfe0ff" result="s"><fePointLight x="40" y="-150" z="160"/></feSpecularLighting><feComposite in="s" in2="SourceAlpha" operator="in" result="sc"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="sc"/></feMerge></filter>
+<filter id="${u}glow" x="-90%" y="-90%" width="280%" height="280%"><feGaussianBlur stdDeviation="5"/></filter>
 </defs>
-<path d="M10 -20 Q-40 60 -28 170 L-6 150 L6 176 L26 150 L40 178 L58 150 L74 172 L96 148 Q132 60 132 -16 Q72 -52 10 -20Z" fill="#1a1030" stroke="#150f2e" stroke-width="6"/>
-<ellipse cx="72" cy="208" rx="58" ry="13" fill="#9fe870" opacity=".5"/>
+<style>@media (prefers-reduced-motion: no-preference){.vfloat{animation:${u}fl 4.5s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}.vglow{animation:${u}gl 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}}@keyframes ${u}fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes ${u}gl{0%,100%{opacity:.6}50%{opacity:1}}</style>
+<g class="vaura"><ellipse cx="72" cy="100" rx="148" ry="172" fill="url(#${u}aura)"/></g>
+<ellipse class="vglow" cx="72" cy="208" rx="58" ry="13" fill="#9fe870" opacity=".5"/>
 <ellipse cx="72" cy="204" rx="34" ry="8" fill="#d2ffb0" opacity=".8"/>
+<g class="vfloat"><g filter="url(#${u}lit)">
+<path d="M10 -20 Q-40 60 -28 170 L-6 150 L6 176 L26 150 L40 178 L58 150 L74 172 L96 148 Q132 60 132 -16 Q72 -52 10 -20Z" fill="#1a1030" stroke="#150f2e" stroke-width="6"/>
 <path d="M40 150 L104 150 L96 196 L48 196 Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="6"/>
 <rect x="52" y="160" width="40" height="10" rx="4" fill="#9fe870" opacity=".75"/>
 <path d="M16 30 L128 30 L142 70 L128 150 L16 150 L2 70 Z" fill="url(#vxm)" stroke="#150f2e" stroke-width="7"/>
 <path d="M16 30 L72 30 L72 150 L16 150 L2 70Z" fill="#150f2e" opacity=".22"/>
 <path d="M30 44 L114 44 L122 66 L112 86 L32 86 L22 66Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="5"/>
+<circle class="vglow" cx="72" cy="112" r="30" fill="#ff3b3b" filter="url(#${u}glow)"/>
 <circle cx="72" cy="112" r="21" fill="url(#vxr)" stroke="#150f2e" stroke-width="6"/>
-<circle cx="72" cy="112" r="8" fill="#ffd2c9"/>
+<circle cx="72" cy="112" r="8" fill="#fff0ec"/>
 <path d="M72 86 L72 70 M50 100 L34 92 M94 100 L110 92" stroke="#e62e2e" stroke-width="4" stroke-linecap="round" opacity=".8"/>
 <path d="M16 30 L-22 6 L10 2 L26 26Z" fill="url(#vxm)" stroke="#150f2e" stroke-width="6"/>
 <path d="M128 30 L166 6 L134 2 L118 26Z" fill="url(#vxm)" stroke="#150f2e" stroke-width="6"/>
@@ -182,6 +190,7 @@ return `<svg viewBox="-70 -130 320 360" width="${w}" aria-hidden="true">
 <path d="M40 -62 L22 -102 L52 -72Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="5"/>
 <path d="M104 -62 L122 -102 L92 -72Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="5"/>
 <ellipse cx="72" cy="-15" rx="46" ry="15" fill="#e62e2e" opacity=".25"/>
+<g class="vglow" filter="url(#${u}glow)"><path d="M32 -25 L70 -14 L66 -3 L34 -8Z" fill="#ff3b3b"/><path d="M112 -25 L74 -14 L78 -3 L110 -8Z" fill="#ff3b3b"/></g>
 <path d="M32 -25 L70 -14 L66 -3 L34 -8Z" fill="#e62e2e" stroke="#150f2e" stroke-width="4.5"/>
 <path d="M112 -25 L74 -14 L78 -3 L110 -8Z" fill="#e62e2e" stroke="#150f2e" stroke-width="4.5"/>
 <path d="M40 -19 L60 -12 M104 -19 L84 -12" stroke="#ffd2c9" stroke-width="3" stroke-linecap="round"/>
@@ -190,7 +199,7 @@ return `<svg viewBox="-70 -130 320 360" width="${w}" aria-hidden="true">
 <text x="-52" y="-40" font-size="30" transform="rotate(-18 -52 -40)">?</text>
 <text x="176" y="96" font-size="28" transform="rotate(-8 176 96)">?</text>
 </g>
-</svg>`;}
+</g></g></svg>`;}
 
 /* ---- mentors (Mom & Dad chips) — unchanged ---- */
 function mentorChips(w=120){
