@@ -548,3 +548,26 @@ body.calm #sceneParticles{display:none;}
 }
 body[data-act="2"] .mote{background:radial-gradient(circle,rgba(255,200,120,.9),rgba(255,150,60,0) 70%);}
 @media (prefers-reduced-motion:reduce){#sceneParticles{display:none!important;}}
+
+/* ===================== UNLOCK CARD (reward reveal) ===================== */
+#unlockCard{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
+  background:rgba(6,3,16,.78);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);}
+#unlockCard.on{display:flex;}
+.uc-inner{position:relative;width:min(380px,90vw);padding:26px 24px 24px;border-radius:26px;
+  background:linear-gradient(180deg,#2a2058,#171036);border:4px solid var(--gold);
+  box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 50px rgba(255,206,58,.35);
+  display:flex;flex-direction:column;align-items:center;gap:12px;overflow:hidden;
+  animation:ucpop .5s cubic-bezier(.18,1.5,.5,1) both;}
+@keyframes ucpop{0%{transform:scale(.4) rotate(-6deg);opacity:0}60%{opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
+.uc-rays{position:absolute;inset:-40% -10%;z-index:0;pointer-events:none;
+  background:conic-gradient(from 0deg, rgba(255,206,58,.16) 0 8deg, transparent 8deg 26deg);
+  animation:ucspin 14s linear infinite;}
+@keyframes ucspin{to{transform:rotate(360deg)}}
+body.calm .uc-rays{animation:none;}
+.uc-sub{position:relative;z-index:1;font-family:'Bangers',cursive;font-size:24px;letter-spacing:.08em;
+  color:var(--gold);-webkit-text-stroke:4px var(--ink);paint-order:stroke;}
+.uc-art{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;min-height:120px;}
+.uc-art svg{filter:drop-shadow(0 8px 14px rgba(0,0,0,.5));}
+.uc-name{position:relative;z-index:1;font-size:30px;color:#fff;-webkit-text-stroke:5px var(--ink);paint-order:stroke;text-align:center;line-height:1.05;}
+#ucBtn{position:relative;z-index:1;margin-top:4px;}
+@media (prefers-reduced-motion:reduce){.uc-inner{animation:none}.uc-rays{animation:none}}

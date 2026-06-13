@@ -1928,6 +1928,27 @@ function castMagicE(sh,lo){ const wr=$("magicWord");
     $("magicNext").onclick=()=>{ magicIx++; magicStep(); }; });
 }
 
+/* ---------------- UNLOCK CARD (reward reveal) ---------------- */
+/* a glowing gold faceted reward gem (no letter) for gear/trophy unlocks */
+function rewardGemArt(){ const u="rg"+Math.floor(Math.random()*1e6);
+  return `<svg viewBox="-32 -34 64 70" width="132" aria-hidden="true">
+  <defs><radialGradient id="${u}b" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffce3a" stop-opacity=".7"/><stop offset="1" stop-color="#ffce3a" stop-opacity="0"/></radialGradient>
+  <radialGradient id="${u}f" cx=".4" cy=".28" r=".85"><stop offset="0" stop-color="#fff"/><stop offset=".3" stop-color="#ffd75e"/><stop offset="1" stop-color="#9c6a12"/></radialGradient></defs>
+  <circle cx="0" cy="-1" r="31" fill="url(#${u}b)"/>
+  <polygon points="0,-25 22,-10 22,12 0,27 -22,12 -22,-10" fill="url(#${u}f)" stroke="#150f2e" stroke-width="3.5" stroke-linejoin="round"/>
+  <polygon points="0,-25 22,-10 0,4 -22,-10" fill="#fff" opacity=".3"/>
+  <path d="M-12,-15 L-3,-19 L-6,-9 L-15,-7Z" fill="#fff" opacity=".9"/>
+  <g stroke="#150f2e" stroke-width="1.2" opacity=".35" fill="none"><path d="M-22,-10 L0,4 L22,-10 M0,4 L0,27"/></g></svg>`; }
+function showUnlock(artHTML, name, sub, done){
+  const o=$("unlockCard"); if(!o){ if(done)done(); return; }
+  $("ucArt").innerHTML=artHTML; $("ucName").textContent=name; $("ucSub").textContent=sub||"NEW!";
+  o.classList.add("on");
+  try{ flashScreen("rgba(255,210,90,.42)"); confetti(48); Aud.ding(); }catch(e){}
+  const close=()=>{ o.classList.remove("on"); o.onclick=null; $("ucBtn").onclick=null; if(done)done(); };
+  $("ucBtn").onclick=e=>{ if(e)e.stopPropagation(); close(); };
+  o.onclick=close;
+}
+
 /* ---------------- WIN / REST ---------------- */
 function showWin(firstTime){ show("scrWin");
   flashScreen("rgba(255,255,255,.5)"); confetti(CUR.finale||CUR.rescue||CUR.type==="fortress"?110:64);
@@ -1937,6 +1958,8 @@ function showWin(firstTime){ show("scrWin");
     (ally?`<svg viewBox="-32 -36 64 80" width="98" style="vertical-align:bottom;">${allyFace(ally)}<text y="42" text-anchor="middle" font-family="Bangers" font-size="12" fill="#ffc93c">${ally==="leighton"?"LEIGHTON":ally==="kendall"?"MISS KENDALL":"HEARTGUARD"}</text></svg>`:"");
   const gear=GEAR_AT[CUR.id];
   $("winGear").innerHTML=(firstTime&&gear)?`<div class="gearbadge">NEW GEAR: ${gear}</div>`:"";
+  /* viral-style reward reveal card for a brand-new piece of gear */
+  if(firstTime&&gear)setTimeout(()=>showUnlock(rewardGemArt(), gear.toUpperCase(), "NEW GEAR!"), 420);
   let ids;
   if(CUR.type==="fortress") ids=currentAct()===2?["kendall1","kendall2","kendall3"]:["leighton1","leighton2","leighton3"];
   else if(CUR.rescue) ids=["free_heart1","free_heart2","m2_done"];
@@ -2100,7 +2123,8 @@ function paintShop(){ $("shopCoins").textContent=S.coins||0;
     d.innerHTML=`<div class="ic">${it.ic}</div><div class="nm">${it.nm}</div>`;
     if(owned){ const t=document.createElement("div"); t.className="owned-tag"; t.textContent="OWNED ✓"; d.appendChild(t); }
     else { const buy=document.createElement("button"); buy.className="buy"+(can?"":" cant"); buy.textContent="💰 "+it.cost;
-      buy.onclick=()=>{ if((S.coins||0)>=it.cost){ S.coins-=it.cost; S.owned[it.id]=true; save(); Aud.ding(); burstAt(d); paintShop(); }
+      buy.onclick=()=>{ if((S.coins||0)>=it.cost){ S.coins-=it.cost; S.owned[it.id]=true; save(); Aud.ding(); burstAt(d); paintShop();
+          showUnlock(`<div style="font-size:104px;line-height:1;">${it.ic}</div>`, it.nm.toUpperCase(), "NEW ITEM!"); }
         else Aud.play("shop_need"); };
       d.appendChild(buy); }
     g.appendChild(d); }); }
