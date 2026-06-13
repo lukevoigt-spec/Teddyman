@@ -11,7 +11,7 @@ body{
   display:flex;align-items:center;justify-content:center;
   -webkit-user-select:none;user-select:none;touch-action:manipulation;
 }
-#stage{width:100%;height:100dvh;max-width:1180px;position:relative;overflow:hidden;display:flex;flex-direction:column;}
+#stage{width:100%;height:100dvh;max-width:none;position:relative;overflow:hidden;display:flex;flex-direction:column;}
 /* Painted scene layer — behind all screens. No image by default (transparent),
    so the original gradient/SVG look is preserved until art files are added. */
 #bgLayer{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;
@@ -36,9 +36,12 @@ body{
 .btn:disabled{opacity:.4;pointer-events:none;}
 
 .bubble{
-  position:relative;background:var(--panel);color:var(--ink);border:5px solid var(--ink);
-  border-radius:24px;padding:16px 70px 16px 22px;max-width:min(720px,92vw);
-  font-family:'Andika',sans-serif;font-weight:700;font-size:clamp(19px,3vw,27px);line-height:1.35;
+  position:relative;background:rgba(18,11,40,.82);color:#fff6e3;border:4px solid var(--gold);
+  border-radius:22px;padding:16px 70px 16px 22px;max-width:min(760px,92vw);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  font-family:'Baloo 2',sans-serif;font-weight:700;font-size:clamp(19px,3vw,27px);line-height:1.4;
+  text-shadow:0 1px 3px rgba(0,0,0,.55);
+  box-shadow:0 12px 30px rgba(0,0,0,.55), 0 0 26px rgba(255,206,58,.3), inset 0 1px 0 rgba(255,255,255,.12);
 }
 .bubble .ear{
   position:absolute;right:12px;top:50%;transform:translateY(-50%);
@@ -196,7 +199,7 @@ body{
 .zapword{position:absolute;font-family:'Bangers',cursive;color:var(--gold);-webkit-text-stroke:6px var(--ink);paint-order:stroke;font-size:clamp(40px,8vw,72px);pointer-events:none;animation:zw .8s ease-out forwards;z-index:9;}
 @keyframes zw{0%{transform:scale(.4) rotate(-8deg);opacity:0}30%{opacity:1}100%{transform:scale(1.15) rotate(-8deg) translateY(-30px);opacity:0}}
 
-.panelart{width:min(600px,90vw);border:6px solid var(--ink);border-radius:24px;overflow:hidden;background:#241b4d;}
+.panelart{position:relative;width:min(600px,90vw);border:5px solid var(--gold);border-radius:24px;overflow:hidden;background:#241b4d;box-shadow:0 14px 30px rgba(0,0,0,.5), 0 0 24px rgba(255,206,58,.22);}
 .panelart svg{display:block;width:100%;height:auto;}
 
 /* ally cheer pop — a friend's face + name bounces in during their mission type */
@@ -334,8 +337,11 @@ body{
 .chip,.roundbtn{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(16,10,38,.5);
   box-shadow:0 4px 14px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.14);}
 
-/* instruction bubble: lift + soft glow halo (stays cream for max readability) */
-.bubble{box-shadow:0 12px 30px rgba(0,0,0,.5), 0 0 0 2px rgba(255,255,255,.22) inset, 0 0 30px rgba(255,210,90,.18);}
+/* faint film grain so buttons/panels read as painterly, not flat plastic */
+.btn::before,.bubble::before,.panelart::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:150px 150px;opacity:.08;mix-blend-mode:overlay;}
 
 /* answer tiles & word tiles: glossy top highlight + stronger lift off the art */
 .tile{box-shadow:0 8px 0 #143a85, 0 10px 18px rgba(0,0,0,.42);}
