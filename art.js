@@ -30,12 +30,12 @@ if(o.weapon==="sword"){weapon=`<g transform="translate(206 -8) rotate(10)" strok
 <rect x="-34" y="58" width="68" height="18" rx="8" fill="url(#${u}gold)"/>
 <rect x="-9" y="74" width="18" height="46" rx="8" fill="#8a5a33"/>
 <circle cx="0" cy="128" r="11" fill="url(#${u}gold)"/></g>`;}
-const biceps = m>=1 ? `<ellipse cx="38" cy="178" rx="${14+5*m}" ry="${11+4*m}" fill="#3b82f0" stroke="#150f2e" stroke-width="5"/>
-<ellipse cx="206" cy="${182}" rx="${14+5*m}" ry="${11+4*m}" fill="#3b82f0" stroke="#150f2e" stroke-width="5" opacity="${o.weapon&&o.weapon!=="none"?0:1}"/>` : "";
-const beltGlow=o.belt2?`<rect x="84" y="268" width="78" height="28" rx="10" fill="none" stroke="#fff3c4" stroke-width="5" opacity=".85"/>`:"";
+const biceps = m>=1 ? `<ellipse cx="44" cy="196" rx="${13+5*m}" ry="${11+4*m}" fill="url(#${u}suit)" stroke="#150f2e" stroke-width="5"/>
+<ellipse cx="204" cy="196" rx="${13+5*m}" ry="${11+4*m}" fill="url(#${u}suit)" stroke="#150f2e" stroke-width="5"/>` : "";
+const beltGlow=o.belt2?`<rect x="86" y="250" width="76" height="30" rx="10" fill="none" stroke="#fff3c4" stroke-width="5" opacity=".85"/>`:"";
 const bootFx=o.boots2?`<g stroke="#ff8a3d" stroke-width="5" stroke-linecap="round" opacity=".9">
-<path d="M86 472 q4 12 -2 22"/><path d="M104 472 q0 14 -4 24"/>
-<path d="M148 472 q4 12 -2 22"/><path d="M166 472 q0 14 -4 24"/></g>`:"";
+<path d="M78 470 q4 12 -2 22"/><path d="M96 470 q0 14 -4 24"/>
+<path d="M154 470 q4 12 -2 22"/><path d="M172 470 q0 14 -4 24"/></g>`:"";
 return `<svg viewBox="-30 -150 310 660" width="${w}" aria-hidden="true">
 <defs><linearGradient id="${u}suit" x1=".18" y1="0" x2=".82" y2="1"><stop offset="0" stop-color="${th.sheen}"/><stop offset=".22" stop-color="${th.suit[0]}"/><stop offset=".72" stop-color="${th.suit[1]}"/><stop offset="1" stop-color="${th.muscle}"/></linearGradient>
 <linearGradient id="${u}cape" x1=".15" y1="0" x2=".85" y2="1"><stop offset="0" stop-color="${cp[0]}"/><stop offset=".55" stop-color="${cp[1]}"/><stop offset="1" stop-color="${cp[1]}"/></linearGradient>
@@ -48,7 +48,7 @@ return `<svg viewBox="-30 -150 310 660" width="${w}" aria-hidden="true">
 <linearGradient id="${u}capeL" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".18" stop-color="#fff" stop-opacity="0"/><stop offset=".8" stop-color="#150f2e" stop-opacity="0"/><stop offset="1" stop-color="#150f2e" stop-opacity=".35"/></linearGradient>
 <clipPath id="${u}face"><circle cx="124" cy="66" r="54"/></clipPath>
 <clipPath id="${u}lens"><rect x="82" y="50" width="38" height="32" rx="9"/><rect x="130" y="50" width="38" height="32" rx="9"/></clipPath>
-<clipPath id="${u}tor"><path d="M64 142 Q123 120 182 142 L174 238 Q170 272 152 284 L96 284 Q76 272 72 238Z"/></clipPath>
+<clipPath id="${u}tor"><path d="M72 148 Q124 116 176 148 L162 226 Q156 262 124 270 Q92 262 86 226Z"/></clipPath>
 <radialGradient id="${u}mote" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff7d6"/><stop offset=".4" stop-color="#ffd75e" stop-opacity=".9"/><stop offset="1" stop-color="#ffd75e" stop-opacity="0"/></radialGradient>
 <!-- sculpted specular lighting: blurs the silhouette, lights its top, clips back to shape -->
 <filter id="${u}lit" x="-25%" y="-25%" width="150%" height="150%">
@@ -89,38 +89,37 @@ return `<svg viewBox="-30 -150 310 660" width="${w}" aria-hidden="true">
 <g class="hfloat"><g filter="url(#${u}lit)">
 ${o.weapon==="hammer"||o.weapon==="sword"?weapon:""}
 <g class="hcape">
-<path d="M62 122 Q38 220 30 350 Q28 406 50 448 Q90 426 124 436 Q170 424 200 446 Q224 402 218 346 Q210 218 184 122 Q122 104 62 122Z" fill="url(#${u}cape)" stroke="#150f2e" stroke-width="6"/>
-<path d="M62 122 Q38 220 30 350 Q28 406 50 448 Q90 426 124 436 Q170 424 200 446 Q224 402 218 346 Q210 218 184 122 Q122 104 62 122Z" fill="url(#${u}capeL)"/>
-<g stroke="${cp[1]}" stroke-width="4" fill="none" opacity=".5" stroke-linecap="round"><path d="M92 150 Q86 280 78 430"/><path d="M124 142 Q124 280 124 432"/><path d="M156 150 Q162 280 170 430"/></g></g>
+<path d="M80 126 Q124 106 168 126 Q190 240 200 350 Q206 416 192 452 L168 426 L148 452 L124 430 L100 452 L80 426 L56 452 Q42 416 48 350 Q58 240 80 126Z" fill="url(#${u}cape)" stroke="#150f2e" stroke-width="6"/>
+<path d="M80 126 Q124 106 168 126 Q190 240 200 350 Q206 416 192 452 L168 426 L148 452 L124 430 L100 452 L80 426 L56 452 Q42 416 48 350 Q58 240 80 126Z" fill="url(#${u}capeL)"/>
+<g stroke="${cp[1]}" stroke-width="4" fill="none" opacity=".5" stroke-linecap="round"><path d="M98 150 Q86 300 74 440"/><path d="M124 140 Q124 290 124 436"/><path d="M150 150 Q162 300 174 440"/></g></g>
 <g stroke="#150f2e" stroke-width="6" stroke-linejoin="round">
-<path d="M96 288 L90 372 L86 412 L118 412 L124 310Z" fill="url(#${u}suit)"/>
-<path d="M150 288 L158 372 L162 412 L130 412 L126 310Z" fill="url(#${u}suit)"/>
-<path d="M84 412 L120 412 L120 450 Q120 466 100 466 L70 466 Q60 466 62 454 Q64 440 84 434Z" fill="url(#${u}cape)"/>
-<path d="M162 412 L126 412 L126 450 Q126 466 146 466 L176 466 Q186 466 184 454 Q182 440 162 434Z" fill="url(#${u}cape)"/>
-<path d="M84 412 L120 412 L120 424 L82 424Z" fill="#ffd75e" stroke-width="4"/>
-<path d="M126 412 L162 412 L164 424 L126 424Z" fill="#ffd75e" stroke-width="4"/></g>
+<path d="M116 268 L96 366 L88 432 L120 432 L124 292Z" fill="url(#${u}suit)"/>
+<path d="M132 268 L152 366 L160 432 L128 432 L124 292Z" fill="url(#${u}suit)"/>
+<path d="M82 428 L120 428 L120 452 Q120 468 98 468 L68 468 Q58 468 60 456 Q62 440 82 434Z" fill="url(#${u}cape)"/>
+<path d="M166 428 L128 428 L128 452 Q128 468 150 468 L180 468 Q190 468 188 456 Q186 440 166 434Z" fill="url(#${u}cape)"/>
+<path d="M82 428 L120 428 L120 440 L80 440Z" fill="#ffd75e" stroke-width="4"/>
+<path d="M128 428 L166 428 L168 440 L128 440Z" fill="#ffd75e" stroke-width="4"/></g>
 ${bootFx}
 <g class="hbreath"><g transform="translate(123 0) scale(${sx} 1) translate(-123 0)">
-<path d="M64 142 Q123 120 182 142 L174 238 Q170 272 152 284 L96 284 Q76 272 72 238Z" fill="url(#${u}suit)" stroke="#150f2e" stroke-width="6"/>
-<g clip-path="url(#${u}tor)"><path d="M130 128 L190 142 L182 252 Q176 282 150 292 L130 292Z" fill="${th.muscle}" opacity=".32"/><ellipse cx="94" cy="158" rx="34" ry="27" fill="#fff" opacity=".22"/></g>
-<path d="M74 150 Q96 136 122 134 L120 170 Q96 172 80 184Z" fill="${th.sheen}" opacity=".55"/>
-${m>=1?`<path d="M92 168 Q123 152 154 168" stroke="${th.muscle}" stroke-width="5" fill="none" stroke-linecap="round"/>`:''}
-${m>=2?`<path d="M100 206 Q123 196 146 206 M104 232 Q123 224 142 232" stroke="${th.muscle}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`:''}
+<path d="M72 148 Q124 116 176 148 L162 226 Q156 262 124 270 Q92 262 86 226Z" fill="url(#${u}suit)" stroke="#150f2e" stroke-width="6"/>
+<g clip-path="url(#${u}tor)"><path d="M126 120 L184 150 L172 232 Q164 264 150 270 L126 270Z" fill="${th.muscle}" opacity=".30"/><ellipse cx="98" cy="172" rx="32" ry="26" fill="#fff" opacity=".20"/></g>
+<path d="M82 156 Q104 140 124 138 L124 176 Q102 178 88 192Z" fill="${th.sheen}" opacity=".5"/>
+${m>=1?`<path d="M96 178 Q124 162 152 178" stroke="${th.muscle}" stroke-width="5" fill="none" stroke-linecap="round"/>`:''}
+${m>=2?`<path d="M104 208 Q124 200 144 208 M108 232 Q124 226 140 232" stroke="${th.muscle}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`:''}
 </g></g>
 <g stroke="#150f2e" stroke-width="6" stroke-linejoin="round">
-<path d="M66 152 Q34 170 28 212 Q34 242 62 252 L84 264 L92 244 L72 232 Q58 220 60 198 Q66 172 78 162Z" fill="url(#${u}suit)"/>
-<path d="M180 152 Q212 170 218 212 Q214 230 202 240 L196 220 Q200 208 192 192 Q184 172 170 162Z" fill="url(#${u}suit)"/>
-<path d="M202 208 Q216 226 196 252 L168 266 L158 246 L184 232 Q192 222 190 212Z" fill="url(#${u}gold)"/>
-<circle cx="90" cy="260" r="15" fill="#e6453c"/><circle cx="158" cy="260" r="15" fill="url(#${u}gold)"/>
-<path d="M83 254 a8 8 0 0 1 8 -4" stroke="#ffb3ad" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M151 254 a8 8 0 0 1 8 -4" stroke="#fff0bd" stroke-width="4" fill="none" stroke-linecap="round"/></g>
+<path d="M86 150 Q44 160 34 208 Q32 234 54 252 L84 262 L96 248 L70 236 Q54 226 60 206 Q68 172 96 162Z" fill="url(#${u}suit)"/>
+<path d="M162 150 Q204 160 214 208 Q216 234 194 252 L164 262 L152 248 L178 236 Q194 226 188 206 Q180 172 152 162Z" fill="url(#${u}suit)"/>
+<circle cx="84" cy="258" r="15" fill="#e6453c"/><circle cx="164" cy="258" r="15" fill="url(#${u}gold)"/>
+<path d="M76 252 a9 9 0 0 1 9 -5" stroke="#ffb3ad" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M156 252 a9 9 0 0 1 9 -5" stroke="#fff0bd" stroke-width="4" fill="none" stroke-linecap="round"/></g>
 ${biceps}
-<path d="M88 272 L158 272 L154 294 L92 294Z" fill="url(#${u}gold)" stroke="#150f2e" stroke-width="5"/>
+<path d="M90 254 L158 254 L153 278 L95 278Z" fill="url(#${u}gold)" stroke="#150f2e" stroke-width="5"/>
 ${beltGlow}
-<circle cx="123" cy="198" r="46" fill="url(#${u}embg)"/>
-<circle class="haura" cx="123" cy="198" r="36" fill="none" stroke="#fff3c4" stroke-width="2.5" opacity=".5"/>
-<g transform="translate(123 198)"><path d="M0 -32 L29 -16 L29 16 L0 32 L-29 16 L-29 -16Z" fill="url(#${u}gold)" stroke="#150f2e" stroke-width="5"/>
-<path d="M-22 -12 L-2 -24 L0 -16 L-18 -5Z" fill="#fff" opacity=".4"/>
-<path d="M-15 -15 L15 -15 L15 -6 L5 -6 L5 17 L-5 17 L-5 -6 L-15 -6Z" fill="#d23a31" stroke="#150f2e" stroke-width="3"/></g>
+<circle cx="124" cy="186" r="42" fill="url(#${u}embg)"/>
+<circle class="haura" cx="124" cy="186" r="32" fill="none" stroke="#fff3c4" stroke-width="2.5" opacity=".5"/>
+<g transform="translate(124 186)"><path d="M0 -28 L25 -14 L25 14 L0 28 L-25 14 L-25 -14Z" fill="url(#${u}gold)" stroke="#150f2e" stroke-width="5"/>
+<path d="M-19 -10 L-2 -21 L0 -14 L-16 -4Z" fill="#fff" opacity=".4"/>
+<path d="M-13 -13 L13 -13 L13 -5 L4 -5 L4 15 L-4 15 L-4 -5 L-13 -5Z" fill="#d23a31" stroke="#150f2e" stroke-width="3"/></g>
 ${o.theme==="knight"?`<!-- ===== knight helm (Act-2 placeholder) ===== -->
 <rect x="111" y="110" width="26" height="20" rx="6" fill="#aeb6c2" stroke="#150f2e" stroke-width="5"/>
 <path d="M84 36 Q124 4 164 36 L172 96 Q172 124 124 130 Q76 124 76 96Z" fill="url(#${u}suit)" stroke="#150f2e" stroke-width="6"/>
