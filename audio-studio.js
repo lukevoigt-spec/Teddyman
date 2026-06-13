@@ -198,26 +198,37 @@
   }
 
   /* ================= ELEVENLABS ================= */
+  /* inline status RIGHT under the Load-voices button (the global #audStatus is at
+     the very bottom of the tab, off-screen while you're up here in section 2). */
+  function elStatus(txt,bad){ const m=$("elMsg"); if(m){ m.textContent=txt; m.style.color=bad?"#ff9d8f":"#9fe870"; }
+    setMsg(txt,bad); }
   function buildVoiceSelects(){ const wrap=$("elVoices"); if(!wrap)return;
     const saved=JSON.parse(localStorage.getItem(LS_VOICES)||"{}");
-    wrap.style.display="flex"; wrap.innerHTML="";
+    wrap.style.display="block";
+    wrap.innerHTML='<div class="elvoice-h">🎙️ Pick a voice for each character, then tap “Gen” on a line (or “Generate all”):</div>';
     ROLES.forEach(([k,lbl])=>{ const d=document.createElement("div"); d.className="elvoice";
-      const opts=elVoices.map(v=>`<option value="${esc(v.voice_id)}"${saved[k]===v.voice_id?" selected":""}>${esc(v.name)}</option>`).join("");
+      const opts='<option value="">— choose a voice —</option>'+elVoices.map(v=>`<option value="${esc(v.voice_id)}"${saved[k]===v.voice_id?" selected":""}>${esc(v.name)}</option>`).join("");
       d.innerHTML=`<label>${esc(lbl)}</label><select id="v_${k}">${opts}</select>`;
       wrap.appendChild(d); });
     ROLES.forEach(([k])=>{ const s=$("v_"+k); if(s)s.onchange=saveVoicePicks; });
+    try{ wrap.scrollIntoView({behavior:"smooth",block:"nearest"}); }catch(e){}
   }
   function saveVoicePicks(){ const m={}; ROLES.forEach(([k])=>{ const s=$("v_"+k); if(s&&s.value)m[k]=s.value; });
     localStorage.setItem(LS_VOICES, JSON.stringify(m)); }
   async function elLoad(){ elKey=($("elKey").value||elKey||"").trim();
-    if(!elKey){ setMsg("Enter your ElevenLabs API key first.",1); return; }
-    setMsg("Contacting ElevenLabs…");
-    try{ const r=await fetch("https://api.elevenlabs.io/v1/voices",{headers:{"xi-api-key":elKey}});
-      if(!r.ok)throw new Error("HTTP "+r.status); const d=await r.json();
-      elVoices=d.voices||[]; buildVoiceSelects();
-      localStorage.setItem(LS_KEY,elKey); $("btnElForget").style.display="inline-block";
-      setMsg("Loaded "+elVoices.length+" voices and remembered your key on this iPad. Pick a voice per role, then Generate.");
-    }catch(e){ setMsg("Could not load voices: "+(e.message||e)+" — check the key and connection.",1); }
+    if(!elKey){ elStatus("Paste your ElevenLabs API key in the box first.",1); return; }
+    elStatus("Contacting ElevenLabs…");
+    let r;
+    try{ r=await fetch("https://api.elevenlabs.io/v1/voices",{headers:{"xi-api-key":elKey}}); }
+    catch(e){ elStatus("Couldn’t reach ElevenLabs. Check the iPad’s internet and try again — if it keeps failing the network may be blocking it.",1); return; }
+    if(r.status===401||r.status===403){ elStatus("ElevenLabs didn’t accept that key. Re-copy the whole key from elevenlabs.io ▸ Profile ▸ API Keys (it needs Text-to-Speech access), then Load voices again.",1); return; }
+    if(!r.ok){ elStatus("ElevenLabs returned an error (HTTP "+r.status+"). Wait a moment and try again.",1); return; }
+    let d; try{ d=await r.json(); }catch(e){ elStatus("Got an unexpected reply from ElevenLabs. Try again.",1); return; }
+    elVoices=d.voices||[];
+    if(!elVoices.length){ elStatus("Connected, but this account has no voices yet. Add or pick voices in your ElevenLabs ‘Voices’ library, then Load voices again.",1); return; }
+    buildVoiceSelects();
+    localStorage.setItem(LS_KEY,elKey); const fg=$("btnElForget"); if(fg)fg.style.display="inline-block";
+    elStatus("✓ Loaded "+elVoices.length+" voices. Choose one per character below.");
   }
   function elForget(){ localStorage.removeItem(LS_KEY); localStorage.removeItem(LS_VOICES);
     elKey=""; if($("elKey"))$("elKey").value=""; $("btnElForget").style.display="none";

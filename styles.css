@@ -255,6 +255,13 @@ body{
 .audrow input[type=password],.audrow select{flex:1;min-width:180px;padding:9px 12px;border-radius:12px;
   border:2px solid #3a2d72;background:#171236;color:var(--txt);font-size:15px;font-family:inherit;}
 .audrow label{font-size:13px;color:#cfc6f2;display:block;margin-bottom:3px;}
+/* ElevenLabs per-character voice pickers (Talking Lines) */
+.elvoices{width:100%;background:rgba(16,10,38,.5);border:2px solid #3a2d72;border-radius:14px;padding:10px 14px;margin:4px 0 8px;}
+.elvoice-h{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:14px;color:var(--gold);margin:2px 0 8px;text-align:center;}
+.elvoice{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:7px 0;}
+.elvoice label{font-size:14px;font-weight:700;color:var(--txt);flex:1;}
+.elvoice select{flex:0 0 auto;min-width:170px;max-width:60%;padding:9px 12px;border-radius:12px;
+  border:2px solid #4a3a86;background:#171236;color:var(--txt);font-size:15px;font-family:inherit;}
 .audfilter{display:flex;gap:6px;margin-left:auto;}
 .chipbtn{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:14px;color:var(--txt);
   background:rgba(255,255,255,.06);border:2px solid #3a2d72;border-radius:14px;padding:6px 14px;cursor:pointer;}
