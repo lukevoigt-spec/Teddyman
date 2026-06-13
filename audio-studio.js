@@ -12,7 +12,7 @@
 ========================================================= */
 (function(){
   "use strict";
-  const LS_KEY="stElKey", LS_VOICES="stElVoices";   /* remembered on THIS device only */
+  const LS_KEY="stElKey", LS_VOICES="stElVoices", LS_GH="stGhToken";   /* remembered on THIS device only */
   const ROLES=[["A","Mentor / Narrator"],["B","Amelia (Heartguard)"],["C","Vex / robots"],
     ["T","Archie (Tank)"],["F","Ellie (Flip)"],["W","William (Sunny)"],
     ["V","The Vixen (Act 2 villain)"],["N","Noah the Red (Act 2 wizard)"],["P","Mom & Dad"]];
@@ -303,8 +303,8 @@
       const tree=await ghApi(token,"/git/trees",{method:"POST",body:JSON.stringify({base_tree:headCommit.tree.sha,tree:[{path:"voicepack.js",mode:"100644",type:"blob",sha:blob.sha}]})});
       const commit=await ghApi(token,"/git/commits",{method:"POST",body:JSON.stringify({message:"Update voicepack.js from in-app studio ("+n+" voices)",tree:tree.sha,parents:[head]})});
       await ghApi(token,"/git/refs/heads/"+GH.branch,{method:"PATCH",body:JSON.stringify({sha:commit.sha})});
-      $("ghToken").value="";
-      setMsg("Published ✓ — voicepack.js is on main ("+n+" voices). Live on every device in a minute.");
+      try{ localStorage.setItem(LS_GH, token); }catch(e){}   /* remember the token on THIS device for next time */
+      setMsg("Published ✓ — voicepack.js is on main ("+n+" voices). Token remembered on this iPad. Live on every device in a minute.");
     }catch(e){ const m=String(e.message||e);
       setMsg("Publish failed: "+(/^401/.test(m)?"token not accepted":/^403/.test(m)?"token lacks Contents: write on this repo":/^404/.test(m)?"repo/branch not found for this token":m),1);
     } finally{ if(btn)btn.disabled=false; }
@@ -332,6 +332,7 @@
     on("btnExportVP",exportVP); on("btnImportVP",()=>$("vpFile").click()); on("btnPublish",publish);
     const vf=$("vpFile"); if(vf)vf.onchange=()=>{ if(vf.files[0]){ importVP(vf.files[0]); vf.value=""; } };
     const ek=$("elKey"); if(ek&&elKey){ ek.value=elKey; const fg=$("btnElForget"); if(fg)fg.style.display="inline-block"; }
+    const gt=$("ghToken"); if(gt){ try{ const s=localStorage.getItem(LS_GH); if(s)gt.value=s; }catch(e){} }   /* restore remembered publish token */
     const gear=$("btnGear"); if(gear)gear.addEventListener("click",()=>setTimeout(refreshAll,0));
   }
   if(document.readyState!=="loading")wire(); else document.addEventListener("DOMContentLoaded",wire);

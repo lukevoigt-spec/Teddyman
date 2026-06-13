@@ -223,6 +223,21 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   team phoneme recordings (parent, via the Voice Studio — the snd_ai/ee/oa lines already appear there).
   Act-2 sentence-level fluency is now DONE (Great Library Story Stones + Word Riddles), so the full
   letter→digraph→blend→magic-e→vowel-team→word-fluency→SENTENCE ladder is live end-to-end.
+- PLAYTEST BACKLOG (parent, 2026-06-13 — explore after bugs): (A) NAVIGATION OVERHAUL — tap the city
+  name (top-left chip) to drop a menu (Hero Base / Home-Rest / Settings) reachable from EVERY screen, so
+  it's not all crammed on the map (where painted objects overlap the controls); Hero Base reachable from
+  the home/title too (not only the map); a parent "RESET PROFILE / erase progress" button (testing). (B)
+  HERO CARDS — tap a hero in the Base → a full-body Pokémon-style card popup (parent supplies a static
+  end-state image per character; build the card frame + flip). (C) BOSS TROPHY CAGES — every defeated boss
+  lives SHRUNKEN in a cage on a Base shelf (Bowser-in-the-Mario-movie); tap → a villain quip ("can't
+  believe I was beaten by a child who learned to READ…"). (D) STORYBOOK CUTSCENES — replace the
+  slideshow cutscenes with a "once upon a time" big-book that flips pages while a narrator (or Uncle Noah)
+  reads the backstory (land/villain/what Teddy will learn) — COMIC-book style for Act 1, MEDIEVAL
+  storybook for Act 2; great for setting expectations in-context. (E) FULL-BODY ART for JJ (small, dark
+  hair, thin, wild), Cal (mischievous grin, strawberry-blonde, freckles), Nora (petite, hair in a bun),
+  Miss Kendall (tall, dark hair in a low ponytail). ART CONSTRAINT: this is a 7-year-old's app and the
+  cast are his real family/friends — keep ALL character art wholesome and age-appropriate (heroic/strong
+  is fine, e.g. a superhero-fit Dad; do NOT make any character sexualized).
 - PLANNED ENHANCEMENTS (parent-prioritized backlog — "identify 10, do best-first"): (1) AUDIO WORKFLOW
   REDO — streamline + bulletproof the record/ElevenLabs/export/publish pipeline (parent flagged; highest
   learning leverage). (2) SETTINGS OVERHAUL — game-like, intuitive, add missing settings; study how real

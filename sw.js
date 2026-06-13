@@ -3,7 +3,7 @@
    lands the moment the iPad is online), falling back to the cache only when the
    network fails (offline / spotty wifi). Cross-origin (fonts, cloud sync) is left
    to the browser. Self-updating: skipWaiting + clients.claim, old caches purged. */
-const CACHE = "superteddy-v1";
+const CACHE = "superteddy-v3";
 self.addEventListener("install", e => { self.skipWaiting(); });
 self.addEventListener("activate", e => {
   e.waitUntil((async () => {
@@ -19,7 +19,7 @@ self.addEventListener("fetch", e => {
   if (url.origin !== self.location.origin) return;   /* let the browser handle CDNs / cloud sync */
   e.respondWith((async () => {
     try {
-      const fresh = await fetch(req);                 /* always prefer the network when online */
+      const fresh = await fetch(req, { cache: "no-cache" });   /* bypass the browser HTTP cache → truly fresh (so deploys land, no stale map.js) */
       if (fresh && fresh.ok) { const c = await caches.open(CACHE); c.put(req, fresh.clone()); }
       return fresh;
     } catch (err) {
