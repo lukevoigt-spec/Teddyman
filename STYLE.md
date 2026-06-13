@@ -204,3 +204,36 @@ A concrete checklist for a future "polish pass" commit:
 
 > Recommendation: do the polish pass as **one reviewable "visual refresh" commit** so the
 > before/after is clear and easy to roll back, rather than drip-changing styles.
+
+---
+
+## 9. Performance budget (premium ≠ heavy)
+The overhaul must look like a studio made it **without taxing the engine** — this runs on a
+child's iPad, often an older one. "Premium" comes from **craft** (consistent depth, color,
+type, spacing, timing), not from piling on expensive effects. Hard rules:
+
+- **Depth via CSS, not images.** Use gradients + layered `box-shadow` + the existing extruded-
+  button look. Avoid large PNG textures (bandwidth + memory); the painted `#bgLayer` is the
+  *only* heavy raster, and it's one per screen, cached.
+- **`backdrop-filter: blur()` is expensive — use it sparingly.** OK on a *static* modal scrim
+  (settings/shop). **Never** on a scrolling container (the map) or on many elements at once.
+  Provide a non-blur fallback (solid `rgba`) so it degrades gracefully.
+- **Animate only `transform` and `opacity`** (GPU-composited). Avoid animating `box-shadow`,
+  `width/height`, `top/left`, `filter`, or `background-position` in loops — they trigger
+  layout/paint every frame.
+- **No per-frame JavaScript for ambient motion.** Use CSS `@keyframes`. The only JS-driven
+  visuals are discrete, self-removing FX (`burstAt`, `confetti`, …) capped in count.
+- **Cap concurrent particles.** Confetti ≤ ~110, sparks ≤ 6/burst; everything auto-removes
+  within ~1–2.3s. Don't spawn ambient particle systems.
+- **The map is the perf hotspot** (one big inline SVG, many nodes + quadratic trail). Keep it
+  static (no animated nodes/trail); if it ever janks on-device, simplify *distant* decor
+  (fewer stars/clouds/gem-deco) rather than adding effects. Don't add blur/filters to it.
+- **Reuse, don't re-render.** Repaint a screen on entry, not on a timer. No polling loops that
+  touch the DOM (the 1s daily tick only mutates a counter, not layout).
+- **Fonts:** 3 families, already subset by Google Fonts; don't add more font weights/families.
+- **Respect `prefers-reduced-motion`** — it already softens/disables the heavy FX; keep new
+  effects behind that check.
+
+Litmus test for any new visual: *does it hold 60fps on a 4-year-old iPad?* If it needs blur
+on scroll, animates layout properties, or runs JS every frame — redesign it.
+
