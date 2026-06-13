@@ -571,3 +571,28 @@ body.calm .uc-rays{animation:none;}
 .uc-name{position:relative;z-index:1;font-size:30px;color:#fff;-webkit-text-stroke:5px var(--ink);paint-order:stroke;text-align:center;line-height:1.05;}
 #ucBtn{position:relative;z-index:1;margin-top:4px;}
 @media (prefers-reduced-motion:reduce){.uc-inner{animation:none}.uc-rays{animation:none}}
+
+/* ===================== HERO BASE — character-screen layout ===================== */
+#scrBase{justify-content:flex-start;gap:12px;padding-top:clamp(34px,6vh,64px);padding-bottom:14px;}
+.basetop{display:flex;align-items:center;gap:16px;}
+.basetitle{font-size:clamp(28px,5vw,46px);color:var(--gold);-webkit-text-stroke:5px var(--ink);paint-order:stroke;}
+.basecoins{display:flex;align-items:center;gap:6px;font-family:'Bangers',cursive;font-size:22px;color:var(--gold);
+  background:rgba(10,5,24,.62);border:2.5px solid var(--gold);border-radius:14px;padding:3px 14px;}
+.basewrap{display:flex;gap:16px;align-items:stretch;justify-content:center;width:min(1020px,96vw);flex-wrap:wrap;flex:1 1 auto;min-height:0;}
+.basehero{display:flex;flex-direction:column;align-items:center;gap:8px;background:rgba(20,12,44,.5);
+  border:2px solid #3a2d72;border-radius:18px;padding:12px 22px;flex:0 0 auto;}
+.basehero #baseHero{display:flex;align-items:flex-end;}
+.basehero #baseHero svg{height:clamp(170px,30vh,250px);width:auto;}
+.baserank{display:flex;flex-direction:column;align-items:center;}
+.baserank .rank-cap{font-size:11px;color:#9b94c9;letter-spacing:.14em;}
+.baserank #powerLbl{font-family:'Bangers',cursive;font-size:26px;color:var(--gold);-webkit-text-stroke:3px var(--ink);paint-order:stroke;}
+.basecards{flex:1 1 340px;min-width:300px;max-width:600px;display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  align-content:start;max-height:100%;overflow-y:auto;padding-right:2px;}
+.basecard{background:rgba(20,12,44,.5);border:2px solid #3a2d72;border-radius:16px;padding:10px 12px;
+  display:flex;flex-direction:column;gap:7px;min-width:0;}
+.basecard.span2{grid-column:1 / -1;}
+.basecard-h{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:15px;color:var(--gold);}
+.basecard-sub{font-size:12px;color:#9b94c9;letter-spacing:.02em;}
+.basecard .gemshelf{min-height:40px;}
+.baseactions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:4px;}
+.baseactions .btn{font-size:clamp(20px,3.4vw,30px);padding:12px 26px;}
