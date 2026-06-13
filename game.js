@@ -97,6 +97,17 @@ const CLOZE=[
   {t:["the","_","ran"],     ans:"hen", foils:["bed","mug"], pic:"🐔"},
   {t:["the","bug","is","_"],ans:"red", foils:["hot","bun"], pic:"🐛"}
 ];
+/* Fortress-finale Maze items — DISTINCT from the Dojo set so the climax doesn't
+   feel like a rerun. Only decodable CVC + taught sight words (I a the to and is
+   you said). The finale mixes one picture-match round with these Maze rounds so
+   freeing Leighton proves real sentence reading, not just picture-gist. */
+const FORTMAZE=[
+  {t:["the","dog","can","_"],     ans:"dig", foils:["bed","wax"], pic:"🦴"},
+  {t:["the","fox","is","_"],      ans:"red", foils:["hop","van"], pic:"🦊"},
+  {t:["you","can","_"],           ans:"hop", foils:["mom","jam"], pic:"🐰"},
+  {t:["the","_","is","big"],      ans:"van", foils:["bed","fox"], pic:"🚐"},
+  {t:["the","cat","and","I","_"], ans:"nap", foils:["dig","wax"], pic:"😴"}
+];
 const SCRAMBLE=[
   {words:["the","cat","sat"],      pic:"🐱"},
   {words:["a","dog","ran"],        pic:"🐶"},
@@ -381,7 +392,7 @@ const LINES={
   fort_p1:{t:"PHASE ONE — blast the GEM SHIELD! Tap the gem that makes the sound…"},
   fort_p2:{t:"PHASE TWO — smash the WORD-LOCKS! Read each word, tap what it means!"},
   fort_p3:{t:"PHASE THREE — cast your INSTANT SPELLS! Tap the word you hear!"},
-  fort_p4:{t:"FINAL PHASE — READ to free Leighton! Read the sentence, tap the picture!"},
+  fort_p4:{t:"FINAL PHASE — READ to free Leighton! Read each sentence and answer it!"},
   fort_hit:{t:"DIRECT HIT!"},
   fort_win1:{t:"VEX'S ARMOR SHATTERS! SYSTEM FAILURE!", v:"C"},
   leighton1:{t:"You did it, Super Teddy! You READ your way to victory! Lord Vex is defeated!"},
@@ -1418,7 +1429,24 @@ function fortSpell(){ const pool=taughtSight().length?taughtSight():["the","a","
       else { record("sw_"+w,false); fortMissHint(); b.classList.add("dim");
         if(fMiss>=2)row.querySelectorAll(".wordtile").forEach(x=>{if(x.dataset.w===w)x.classList.add("hint");}); Aud.play(["sw_"+w]); } };
     row.appendChild(b); }); }
-function fortSentence(){ const s=SENTENCES[Math.floor(Math.random()*SENTENCES.length)];
+/* finale reading proof = MIXED: the first round is picture-match (variety), the
+   rest are Maze/Cloze (read the sentence, pick the word that fits) — the
+   research-validated comprehension check, so the win = real reading. */
+function fortSentence(){ if(fRound===0) fortSentencePic(); else fortMaze(); }
+function fortMaze(){ const c=FORTMAZE[Math.floor(Math.random()*FORTMAZE.length)];
+  narrate("fort",$("fortText"),["sent_prompt"],"Read it to free Leighton… tap the word that fits the blank! 📖");
+  const wr=$("fortWord"); wr.innerHTML="";
+  c.t.forEach(w=>{ if(w==="_"){ const s=document.createElement("div"); s.className="wordslot read"; s.id="fortBlank"; s.textContent="?"; wr.appendChild(s); }
+    else { const t=document.createElement("button"); t.className="tile wordtile read"+(SIGHT[w]?" heartword":""); t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>Aud.play(wordAudio(w)); wr.appendChild(t); } });
+  const done=c.t.map(w=>w==="_"?c.ans:w);
+  const row=$("fortChoices"); row.innerHTML="";
+  [c.ans,...c.foils].sort(()=>Math.random()-.5).forEach(o=>{ const b=document.createElement("button"); b.className="tile wordtile read"; b.dataset.w=o; b.innerHTML=o;
+    b.onclick=()=>{ if(o===c.ans){ record("sent_fort",true); const bl=$("fortBlank"); if(bl){bl.textContent=o;bl.classList.add("filled");} b.classList.add("win");
+        flow(Aud.play([...done.flatMap(wordAudio)]),()=>fortHit("READ!")); }
+      else { record("sent_fort",false); fortMissHint(); b.classList.add("dim");
+        if(fMiss>=2)row.querySelectorAll(".wordtile").forEach(x=>{if(x.dataset.w===c.ans)x.classList.add("hint");}); Aud.play(["almost",...done.flatMap(wordAudio)]); } };
+    row.appendChild(b); }); }
+function fortSentencePic(){ const s=SENTENCES[Math.floor(Math.random()*SENTENCES.length)];
   narrate("fort",$("fortText"),["sent_prompt"],"Read it to free Leighton… tap the picture! 📖");
   const wr=$("fortWord"); wr.innerHTML="";
   s.t.forEach(w=>{ const t=document.createElement("button"); t.className="tile wordtile read"+(SIGHT[w]?" heartword":""); t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>Aud.play(wordAudio(w)); wr.appendChild(t); });

@@ -167,8 +167,12 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   (FORTRESS[]) — sound shield → word-locks (decode) → spells (sight) → READ sentences → free
   Leighton. ~19 rounds, big HP bar, Vex taunts (role C). Gated on letter mastery (the gentle
   power-up patrol) so reaching the win = proven proficiency; the sentence phase makes him READ to
-  win. Frees LEIGHTON (joins the league, kind "leighton"). Sentence-reading mastery is currently
-  picture-match; research upgrade = Maze/Cloze (read sentence, pick the word that fits).
+  win. Frees LEIGHTON (joins the league, kind "leighton"). FINALE READING PROOF is MIXED (research
+  upgrade applied): the final phase runs one picture-match round for variety, then MAZE/Cloze rounds
+  (read the sentence, tap the word that fits the blank — the CBM-validated comprehension check) so
+  the win proves real sentence reading, not picture-gist. FORTMAZE[] holds fortress-only maze items
+  (decodable + sight words), kept DISTINCT from the Dojo CLOZE[] set. fortSentence() dispatches:
+  fRound 0 → fortSentencePic (picture), else → fortMaze.
 - ACT-1 → ACT-2 HANDOFF (live, a real cutscene now — not just teaser audio): after Leighton's
   rescue the fortress win screen's CONTINUE button runs startInterlude() (screen scrInter, mirrors
   the intro pattern). Beats: Mom & Dad return (interlude1) → captured friends (interlude2,
