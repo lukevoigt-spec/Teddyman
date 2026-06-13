@@ -325,10 +325,12 @@ const LINES={
   gear_alphabet:{t:"The ALPHABET STAR! All 26 Letter Gems, rescued by you!"},
   sw_I:{t:"I"}, sw_a:{t:"a"}, sw_the:{t:"the"}, sw_to:{t:"to"}, sw_and:{t:"and"},
   sw_is:{t:"is"}, sw_you:{t:"you"}, sw_said:{t:"said"},
-  spell_intro:{t:"INSTANT SPELLS! Some words are magic — you can't sound them all out. You just KNOW them. Heart words!"},
-  spell_new:{t:"Heart word! This word says..."},
+  spell_intro:{t:"HEART WORDS! Most of each word you CAN sound out — only the heart letter is tricky, so we just remember that one bit."},
+  spell_new:{t:"Let's map the sounds. This word says..."},
+  spell_build:{t:"Build the word you hear — sound by sound!"},
+  spell_heart:{t:"Heart letter! This one's tricky — we just remember it."},
   spell_prompt:{t:"Cast the Instant Spell that says..."},
-  spell_yes:{t:"Spell cast! You knew it!"},
+  spell_yes:{t:"Spell built! You mapped the sounds!"},
   spell_done:{t:"You are a MASTER SPELL CASTER, Super Teddy! Heart words: mastered!"},
   gear_tome:{t:"The SPELL TOME! It holds every heart word you know!"},
   word_ran:{t:"ran!"}, word_hot:{t:"hot!"}, word_big:{t:"big!"}, word_can:{t:"can!"}, word_had:{t:"had!"},
@@ -343,6 +345,7 @@ const LINES={
   panel4:{t:"These are the Gem Lenses. Your glasses are superpowered! With them, you can see hidden Letter Gems nobody else can see."},
   panel5:{t:"Rescue the gems. Rebuild the words. Save Star Force City! Are you ready, Super Teddy?"},
   welcome:{t:"Welcome back, Super Teddy!"},
+  locked_tip:{t:"Not yet, hero! Finish the missions on the path first — then this one unlocks."},
   pick:{t:"Pick your mission, Super Teddy!"},
   scan_intro:{t:"Lens calibration! Let's charge your Gem Lenses. There are no wrong answers. Every tap makes them stronger!"},
   scan_prompt:{t:"Tap the gem that says..."},
@@ -1045,7 +1048,9 @@ function toMap(){ sessionTick();
   $("mapSVGwrap").innerHTML=mapSVG();
   document.querySelectorAll(".mnode").forEach(n=>{
     if(n.id==="baseNode"){ n.addEventListener("click",showBase); return; }
-    n.addEventListener("click",()=>{ const m=MISSIONS.find(x=>x.id==n.dataset.mid); if(m)startMission(m); });
+    n.addEventListener("click",()=>{
+      if(n.classList.contains("locked")){ Aud.play("locked_tip"); return; }  /* no skipping ahead — finish the path in order */
+      const m=MISSIONS.find(x=>x.id==n.dataset.mid); if(m)startMission(m); });
   });
   /* auto-scroll to the hero's current node */
   const ams=actMissions(currentAct()); let ix=0;
@@ -1259,7 +1264,12 @@ $("btnReadSound").onclick=()=>{ const w=readWords&&readWords[readIx]; if(w)readS
 function taughtSight(){ const out=[]; MISSIONS.forEach(m=>{ if(m.type==="spell"&&S.done[m.id])(m.new||[]).forEach(w=>out.push(w)); }); return out; }
 function spellWordHTML(w){ return w.split("").map((c,i)=>
   ((SIGHT[w]&&SIGHT[w].h)||[]).includes(i) ? `<span class="heartl">${c}</span>` : c).join(""); }
-let spellNew,spellPool,spellIx,spellGoal,spellMiss,spellMission;
+/* SIGHT WORDS = sound-mapping (Heart Word Method), NOT whole-word recognition.
+   The child BUILDS the word from grapheme tiles in order while hearing it: the
+   regular letters are sounded out, the irregular "heart" letter is flagged and
+   explicitly remembered. No "tap the matching word shape" mechanic anywhere. */
+let spellNew,spellPool,spellIx,spellGoal,spellMiss,spellMission,spellSlot;
+function isHeart(w,i){ return ((SIGHT[w]&&SIGHT[w].h)||[]).includes(i); }
 function startSpell(m){ show("scrSpell"); spellMission=m; spellNew=(m.new||[]).slice();
   spellPool=[...new Set([...taughtSight(), ...spellNew])];
   $("spellChoices").innerHTML=""; $("spellProg").textContent="";
@@ -1268,25 +1278,35 @@ function introSpell(i){
   if(i>=spellNew.length){ $("spellWord").innerHTML=""; spellIx=0;
     spellGoal=Math.max(5,spellPool.length+2); practiceSpell(); return; }
   const w=spellNew[i]; $("spellChoices").innerHTML="";
+  /* teach the mapping: show the word with the heart letter(s) flushed, sound out
+     the regular letters, name the heart part as "tricky — we remember it" */
   $("spellWord").innerHTML=`<div class="spellbig read">${spellWordHTML(w)}</div>`;
-  flow(narrate("spell",$("spellText"),["spell_new","sw_"+w],"Heart word! Just know it…"),
+  const seq=["spell_new","sw_"+w]; w.split("").forEach((c,j)=>seq.push(isHeart(w,j)?"spell_heart":"snd_"+c));
+  flow(narrate("spell",$("spellText"),seq,"Most of it sounds out — the ♥ part we just remember."),
     ()=>setTimeout(()=>introSpell(i+1),650)); }
 function practiceSpell(){
   if(spellIx>=spellGoal){ const champ=spellMission.id===33;
     flow(Aud.play(champ?["spell_done"]:["spell_yes"]),missionComplete); return; }
-  const w=spellPool[Math.floor(Math.random()*spellPool.length)]; spellMiss=0;
+  const w=spellPool[Math.floor(Math.random()*spellPool.length)]; spellMiss=0; spellSlot=0;
   $("spellProg").textContent="✨ "+spellIx+" / "+spellGoal;
-  narrate("spell",$("spellText"),["spell_prompt","sw_"+w],"Cast the Instant Spell that says… ✨");
-  const foils=spellPool.filter(x=>x!==w).sort(()=>Math.random()-.5).slice(0,2);
-  const opts=[w,...foils].sort(()=>Math.random()-.5);
+  narrate("spell",$("spellText"),["spell_build","sw_"+w],"Build the word you hear — sound by sound! ✨");
+  const sw=$("spellWord"); sw.innerHTML="";
+  w.split("").forEach((c,j)=>{ const s=document.createElement("div"); s.className="slot read"+(isHeart(w,j)?" heartslot":""); sw.appendChild(s); });
+  const need=w.split("");
+  const foils=shuf(taughtLetters().filter(x=>!need.includes(x))).slice(0,2);
+  const choices=shuf([...new Set(need)].concat(foils));
   const cr=$("spellChoices"); cr.innerHTML="";
-  opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile wordtile read"; b.dataset.w=o;
-    b.innerHTML=spellWordHTML(o);
-    b.onclick=()=>{ if(o===w){ record("sw_"+w,true); b.classList.add("win"); burstAt(b); Aud.ding(); spellIx++;
-        flow(Aud.play(["spell_yes","sw_"+w]),()=>setTimeout(practiceSpell,160)); }
+  choices.forEach(c=>{ const b=document.createElement("button"); b.className="tile read"; b.textContent=c; b.dataset.g=c;
+    b.style.width=b.style.height="clamp(72px,12vw,108px)"; b.style.fontSize="clamp(40px,6.5vw,60px)";
+    b.onclick=()=>{ const want=w[spellSlot];
+      if(c===want){ const slot=sw.children[spellSlot]; slot.textContent=c; slot.classList.add("filled");
+        const heart=isHeart(w,spellSlot); Aud.ding(); spellSlot++;
+        if(spellSlot>=w.length){ record("sw_"+w,true); spellIx++; burstAt(b);
+          flow(Aud.play(["spell_yes","sw_"+w]),()=>setTimeout(practiceSpell,220)); }
+        else Aud.play(heart?["spell_heart"]:["snd_"+c]); }
       else { record("sw_"+w,false); spellMiss++; b.classList.add("dim");
-        if(spellMiss>=2)cr.querySelectorAll(".wordtile").forEach(x=>{ if(x.dataset.w===w)x.classList.add("hint"); });
-        Aud.play(["almost","sw_"+w]); } };
+        if(spellMiss>=2)cr.querySelectorAll(".tile").forEach(x=>{ if(x.dataset.g===want)x.classList.add("hint"); });
+        Aud.play(["almost","sw_"+w]); setTimeout(()=>b.classList.remove("dim"),900); } };
     cr.appendChild(b); }); }
 
 /* ---------------- STORY GATE (decodable sentences) ----------------
@@ -1419,15 +1439,27 @@ function fortRead(){ const ws=Object.keys(READWORDS); const w=ws[Math.floor(Math
       else { record("w_"+w,false); fortMissHint(); b.classList.add("dim");
         if(fMiss>=2)row.querySelectorAll(".picktile").forEach(x=>{if(x.dataset.w===w)x.classList.add("hint");}); readSoundOut(w); } };
     row.appendChild(b); }); }
+/* fortress sight-word phase = BUILD it from sounds too (sound-mapping, never
+   shape-recognition) — consistent with the Spell Tower teaching. */
+let fortSpellSlot=0;
 function fortSpell(){ const pool=taughtSight().length?taughtSight():["the","a","I"]; const w=pool[Math.floor(Math.random()*pool.length)];
-  narrate("fort",$("fortText"),["spell_prompt","sw_"+w],"Cast the spell you hear! ✨");
-  $("fortWord").innerHTML="";
-  const foils=pool.filter(x=>x!==w).sort(()=>Math.random()-.5).slice(0,2);
+  fortSpellSlot=0;
+  narrate("fort",$("fortText"),["spell_build","sw_"+w],"Build the spell you hear — sound by sound! ✨");
+  const wr=$("fortWord"); wr.innerHTML="";
+  w.split("").forEach((c,j)=>{ const s=document.createElement("div"); s.className="slot read"+(isHeart(w,j)?" heartslot":""); wr.appendChild(s); });
+  const need=w.split("");
+  const foils=shuf(taughtLetters().filter(x=>!need.includes(x))).slice(0,2);
+  const choices=shuf([...new Set(need)].concat(foils));
   const row=$("fortChoices"); row.innerHTML="";
-  [w,...foils].sort(()=>Math.random()-.5).forEach(o=>{ const b=document.createElement("button"); b.className="tile wordtile read"; b.dataset.w=o; b.innerHTML=spellWordHTML(o);
-    b.onclick=()=>{ if(o===w){ record("sw_"+w,true); b.classList.add("win"); fortHit("✨"); }
+  choices.forEach(c=>{ const b=document.createElement("button"); b.className="tile read"; b.textContent=c; b.dataset.g=c;
+    b.onclick=()=>{ const want=w[fortSpellSlot];
+      if(c===want){ const slot=wr.children[fortSpellSlot]; slot.textContent=c; slot.classList.add("filled");
+        const heart=isHeart(w,fortSpellSlot); Aud.ding(); fortSpellSlot++;
+        if(fortSpellSlot>=w.length){ record("sw_"+w,true); fortHit("✨"); }
+        else Aud.play(heart?["spell_heart"]:["snd_"+c]); }
       else { record("sw_"+w,false); fortMissHint(); b.classList.add("dim");
-        if(fMiss>=2)row.querySelectorAll(".wordtile").forEach(x=>{if(x.dataset.w===w)x.classList.add("hint");}); Aud.play(["sw_"+w]); } };
+        if(fMiss>=2)row.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===want)x.classList.add("hint");}); Aud.play(["almost","sw_"+w]);
+        setTimeout(()=>b.classList.remove("dim"),900); } };
     row.appendChild(b); }); }
 /* finale reading proof = MIXED: the first round is picture-match (variety), the
    rest are Maze/Cloze (read the sentence, pick the word that fits) — the

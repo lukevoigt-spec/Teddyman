@@ -63,6 +63,10 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - The map is PER-ACT: zones carry `act`; geomFor(act) computes that act's map geometry; mapSVG /
   toMap render actMissions(currentAct()). S.act (default 1) tracks the current act. Adding an act =
   push to ACTS + add act-tagged zones/missions; the map machinery already scopes to the current act.
+- NO SKIPPING AHEAD (foundation can't be rushed): map nodes are done/current/locked (avail(i)= first
+  or prev done). The lock is ENFORCED, not just visual — toMap's click handler ignores taps on
+  `.locked` nodes (plays a gentle locked_tip cue). Done/current stay replayable. Parent level-override
+  (Grown-Up Corner) is the only way to jump.
 - Mastery persists across acts (keyed by grapheme/word, act-agnostic). Hero muscle is now
   act-scoped (heroOpts counts current-act done missions) so a new act can RESET his power.
 - GOAL / end state: by the end of ACT 2, Teddy should reach ~2nd-grade reading proficiency aligned
@@ -112,9 +116,14 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - Reading Rally (live, zone 4): DECODE direction — "Read It" missions (27–30) show a word, child
   sounds it out and taps the picture it means (READWORDS, picture-match, audio-first). This is the
   letter→sound→blend READING skill the sound-ID/forge tasks don't cover. Earns the Reading Crown.
-- Spell Tower (live, zone 5): Instant Spells — sight ("heart") words (I a the to and is you said),
-  SIGHT{} with heart-letter indices. Intro flags the tricky letters with a ♥; practice = hear the
-  word, tap the matching written word (recognition). Earns the Spell Tome. taughtSight() is cumulative.
+- Spell Tower (live, zone 6): Instant Spells — sight ("heart") words (I a the to and is you said),
+  SIGHT{} with heart-letter indices. SOUND-MAPPING (Heart Word Method), NOT whole-word recognition:
+  intro sounds out the regular letters + flags the irregular "heart" letter (♥); practice = hear the
+  word and BUILD it from grapheme tiles in order (heart slot marked, regular letters play their
+  phoneme, heart letter played as "tricky — we remember it"). isHeart(w,i) drives it. The fortress
+  sight-word phase (fortSpell) ALSO builds, not recognizes — there is NO "tap the matching word
+  shape" mechanic anywhere (it builds no durable recognition). Earns the Spell Tome; taughtSight()
+  cumulative.
 - Story Gate (live, zone 6): decodable SENTENCES (the reading goal) — read the sentence, tap the
   picture it tells about (foil differs by a key word). SENTENCES[] use only taught words + sight
   words. Earns the Story Key; mission 36 declares "you can READ." This is the M4 reading payoff.

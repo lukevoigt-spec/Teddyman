@@ -94,6 +94,10 @@ body{
   font-family:'Andika',sans-serif;font-weight:700;font-size:clamp(48px,8vw,74px);
 }
 .slot.filled{border-style:solid;background:#3ec97e;color:var(--ink);animation:pop .45s ease;}
+/* heart-word slot: the irregular "remember it" letter, marked with a ♥ */
+.slot.heartslot{position:relative;border-color:var(--red);background:#ffd9e4;}
+.slot.heartslot::after{content:"♥";position:absolute;top:-14px;right:-6px;font-size:30px;color:var(--red);-webkit-text-stroke:3px var(--ink);paint-order:stroke;}
+.slot.heartslot.filled{background:#ff9ec0;}
 /* word-sized slot (cloze blank / scramble slots hold whole words, not one letter) */
 .wordslot{min-width:clamp(90px,16vw,140px);width:auto;height:clamp(72px,12vw,108px);padding:0 14px;border-radius:18px;
   border:5px dashed var(--ink);background:#ffe9a8;color:var(--ink);display:flex;align-items:center;justify-content:center;
