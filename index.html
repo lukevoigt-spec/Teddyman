@@ -53,10 +53,16 @@
   </div>
 
   <div class="hud" id="hud" style="display:none;">
-    <div class="chip" id="hudTitle">STAR FORCE CITY</div>
+    <div class="navwrap">
+      <div class="chip navchip" id="hudTitle">STAR FORCE CITY</div>
+      <div class="navmenu" id="navMenu">
+        <button class="navitem" id="navMap">🗺️ World Map</button>
+        <button class="navitem" id="navBase">🏰 Hero Base</button>
+        <button class="navitem" id="navHome">🏠 Home</button>
+      </div>
+    </div>
     <div style="display:flex;gap:10px;align-items:center;">
       <div class="chip starsrow" id="hudStars">⚡ 0</div>
-      <div class="roundbtn" id="btnHome" title="Map"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg></div>
       <div class="roundbtn" id="btnGear" title="Grown-Up Corner — hold 3s to open"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5 5l2.1 2.1M16.9 16.9 19 19M19 5l-2.1 2.1M7.1 16.9 5 19"/></svg></div>
     </div>
   </div>
@@ -71,6 +77,7 @@
     <button class="btn" id="btnStart">START</button>
     <button class="btn ghost" id="btnContinue" style="display:none;">CONTINUE MISSION</button>
     <button class="btn ghost sm" id="btnPlayer" style="font-size:clamp(16px,2.4vw,22px);"><span id="playerName">Teddy</span> — switch</button>
+    <button class="btn ghost sm" id="btnTitleBase" style="font-size:clamp(16px,2.4vw,22px);">🏰 HERO BASE</button>
     <div class="vpstatus" id="vpStatus"></div>
   </div>
 
@@ -105,7 +112,6 @@
   <!-- MAP -->
   <div class="screen" id="scrMap" style="padding:0;">
     <div id="mapScroll"><div id="mapSVGwrap"></div></div>
-    <button id="mapBaseBtn" title="Hero Base"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9h14v-9"/><rect x="10" y="13" width="4" height="6"/></svg>HERO BASE</button>
   </div>
 
   <!-- HERO BASE -->
@@ -362,6 +368,13 @@
         <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
           <button class="btn ghost sm" id="btnCopySave">Copy backup</button>
           <button class="btn ghost sm" id="btnRestoreSave">Restore</button>
+        </div>
+      </div>
+      <div class="setcard" style="border-color:#7a2540;">
+        <div class="setcard-h" style="color:#ff9d8f;">Reset</div>
+        <div class="setcard-sub">Erase <b id="resetWho">this player</b>'s progress and start completely fresh (handy for testing). A backup snapshot is saved first so you can Restore it from the list above.</div>
+        <div style="display:flex;justify-content:center;margin-top:6px;">
+          <button class="btn ghost sm" id="btnResetProfile" style="border-color:#ff5e57;color:#ffb3ad;">Reset this player &amp; start fresh</button>
         </div>
       </div>
     </div>

@@ -442,9 +442,17 @@ function nextScan(){ if(scanIx>=SCAN_SET.length){ S.scan=true; save();
    mapFriends, mapPaintSVG, toMap) moved to map.js (loaded after game.js — it
    uses game.js helpers like heroNow/show/startMission only at runtime). The map
    navigation button handlers stay here (they run at game.js load, after $). */
-$("btnHome").onclick=()=>{Aud.stop();clearFlow();toMap();};
-$("mapBaseBtn").onclick=()=>{Aud.stop();clearFlow();showBase();};
 $("btnSkip").onclick=()=>{ Aud.stop(); const f=__cont; clearFlow(); if(f)f(); };
+/* CITY-NAME NAV MENU — tap the city chip (on any screen) to jump anywhere, so the
+   map view stays uncluttered (no more controls layered over the painting). */
+function closeNav(){ const m=$("navMenu"); if(m)m.classList.remove("on"); }
+function navGo(fn){ closeNav(); Aud.stop(); clearFlow(); fn(); }
+$("hudTitle").onclick=e=>{ e.stopPropagation(); const m=$("navMenu"); if(m)m.classList.toggle("on"); };
+$("navMap").onclick=()=>navGo(toMap);
+$("navBase").onclick=()=>navGo(showBase);
+$("navHome").onclick=()=>navGo(()=>{ paintTitle(); show("scrTitle"); });
+$("btnTitleBase").onclick=()=>{ Aud.stop(); clearFlow(); showBase(); };
+document.addEventListener("click",closeNav);   /* tap anywhere else closes the menu */
 
 /* ---------------- MISSION FLOW ---------------- */
 let CUR=null;
@@ -1314,6 +1322,7 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
 };
 function openSettings(){ $("saveBox").value=JSON.stringify(S); $("vpStatus2").textContent=vpMsg(); window.renderProgress();
   $("cloudURL").value=cloudURL; cloudStatus(cloudURL?"Cloud sync ON — same URL on any device continues his progress":"Cloud sync off (saved on this device)");
+  { const rw=$("resetWho"); if(rw)rw.textContent=profileName(ACTIVE)+"'s"; }
   paintPlayers(); paintVol(); paintCalmBtn(); $("settingsPanel").classList.add("on"); }
 /* parent-only player management (inside the gated Grown-Up Corner) */
 function paintPlayers(){ const list=$("playersList"); if(!list)return; list.innerHTML="";
@@ -1356,6 +1365,10 @@ function paintVol(){ const s=$("volSlider"),p=$("volPct"); const v=Math.round((S
     const p=$("volPct"); if(p)p.textContent=vs.value+"%"; save(); }; }
 paintVol();
 $("btnCopySave").onclick=()=>{$("saveBox").select();document.execCommand("copy");};
+$("btnResetProfile").onclick=()=>{
+  if(!confirm("Erase ALL of "+profileName(ACTIVE)+"'s progress and start fresh?\n\n• Every mission, gem, gear, coin and league member is wiped.\n• A backup snapshot is saved first — Restore it from “Backups” to undo."))return;
+  snapshot("before reset"); S=fresh(); save(); GEO=geomFor(1);
+  $("settingsPanel").classList.remove("on"); paintTitle(); show("scrTitle"); };
 $("btnRestoreSave").onclick=()=>{ try{const d=migrate(JSON.parse($("saveBox").value));
   if(d){ snapshot("before restore"); S=d; save(); $("settingsPanel").classList.remove("on"); GEO=geomFor(currentAct()); toMap(); }
   else alert("That backup code didn't work — double-check it and try again."); }
