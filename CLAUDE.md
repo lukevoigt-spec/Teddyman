@@ -48,7 +48,11 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
    title has a 👥 "switch" picker; add/remove is parent-only in the Grown-Up Corner. removeProfile
    refuses to delete "teddy". DEFAULT_CLOUD_URL (top of game.js) can be hard-coded to the Worker URL
    so NO per-device pasting is ever needed — paste it there once and every device auto-syncs. Save +
-   profile layer is regression-tested in tests/save.test.js (25 assertions).
+   profile layer is regression-tested in tests/save.test.js (25 assertions). LIVE: DEFAULT_CLOUD_URL
+   is baked to the parent's Worker; cloud confirmed syncing on-device.
+   PARKED (low priority): add an optional baked-in PASSPHRASE so the public Worker URL can't be
+   read/written by strangers (key = hash(passphrase+profile) instead of bare profile id). Low stakes
+   (a child's reading save), so deferred.
 8. All instructions are audio-first (the player cannot read yet). Every prompt has a replay
    button. Any flow that waits on audio MUST use the flow()/watchdog pattern so the game can
    never hang — there is always a ⏭ skip and a Home button.
