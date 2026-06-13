@@ -24,6 +24,22 @@
   <!-- Scene harmonizer: cinematic vignette + warm key light + per-act colour grade,
        so the painted backdrop reads as one atmospheric, lit world. -->
   <div id="sceneGrade" aria-hidden="true"></div>
+  <!-- Ambient atmosphere motes — drift behind the UI on non-learning screens only.
+       Calm-mode + reduced-motion disable them; never shown on learning screens. -->
+  <div id="sceneParticles" aria-hidden="true">
+    <i class="mote" style="left:8%;animation-duration:13s;animation-delay:0s"></i>
+    <i class="mote" style="left:19%;animation-duration:17s;animation-delay:4s"></i>
+    <i class="mote" style="left:31%;animation-duration:11s;animation-delay:2s"></i>
+    <i class="mote" style="left:43%;animation-duration:19s;animation-delay:7s"></i>
+    <i class="mote" style="left:55%;animation-duration:14s;animation-delay:1s"></i>
+    <i class="mote" style="left:64%;animation-duration:16s;animation-delay:9s"></i>
+    <i class="mote" style="left:73%;animation-duration:12s;animation-delay:5s"></i>
+    <i class="mote" style="left:84%;animation-duration:18s;animation-delay:3s"></i>
+    <i class="mote" style="left:92%;animation-duration:15s;animation-delay:8s"></i>
+    <i class="mote sm" style="left:14%;animation-duration:20s;animation-delay:6s"></i>
+    <i class="mote sm" style="left:50%;animation-duration:21s;animation-delay:10s"></i>
+    <i class="mote sm" style="left:79%;animation-duration:22s;animation-delay:2.5s"></i>
+  </div>
 
   <!-- Daily Training meter (shown on the map hub; gentle, never a penalty) -->
   <div id="dailyMeter" style="display:none;">

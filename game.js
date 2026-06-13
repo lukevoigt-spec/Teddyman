@@ -894,6 +894,7 @@ function tryBG(layer, urls, i, id){
   img.onerror=()=>{ __bgCache[url]=false; tryBG(layer,urls,i+1,id); };   /* try next candidate */
   img.src=url;
 }
+const AMBIENT_SCREENS=new Set(["scrTitle","scrMap","scrBase","scrWin","scrRest","scrIntro","scrInter"]);
 function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
   __inTraining=(id==="scrTrain");   /* daily time split: count training-room time separately */
   $(id).classList.add("on"); $(id).classList.add("fadein");
@@ -963,6 +964,7 @@ setBG("scrTitle");   /* the title is shown via static HTML, so load its painted 
 if(S.calm)document.body.classList.add("calm");   /* parent "Calm" visual-detail mode */
 Aud.vol = (S.vol==null?1:S.vol);                 /* parent narration volume (0–1) */
 document.body.dataset.act=currentAct();           /* scene-grade theme from boot (title is static) */
+document.body.classList.add("scene-ambient");     /* the boot title screen is ambient */
 $("btnStart").onclick=()=>{ Aud.pick(); if(!S.intro)startIntro(); else {Aud.play("welcome"); toMap();} };
 $("btnContinue").onclick=()=>{ Aud.pick(); Aud.play("welcome"); toMap(); };
 /* ---- player picker (select an existing player; add/remove is parent-only) ---- */
