@@ -211,6 +211,13 @@ Targets/easing: micro-feedback ~`.12s`; pops `.4–.5s ease`; nothing decorative
 ---
 
 ## 8. Gap analysis (current → target "premium")
+> ✅ CHROME POLISH PASS APPLIED (the appended "CHROME POLISH" block in styles.css):
+> palette nudged brighter; buttons got a glossy sheen + glow + crisp press; HUD
+> chips/round-buttons + ghost buttons + panel cards are frosted glass (backdrop-blur);
+> the instruction bubble lifts with a soft halo; tiles/slots got gloss highlights +
+> stronger lift (win = green glow); characters/art get a grounding drop-shadow (hero a
+> faint blue glow); a cinematic vignette sits over the painted scene; loose labels got
+> shadows for legibility; title got a warm glow. Tunable — dial in on-device.
 A concrete checklist for a future "polish pass" commit:
 - [ ] Refresh the 6 palette variables to the target hexes (§1) — single commit, verify on iPad.
 - [ ] Add `--panelDark`; convert `#settingsPanel`/`#shopPanel` scrims to blur + gem-purple glow border (§4).

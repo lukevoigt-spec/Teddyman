@@ -1,7 +1,7 @@
 :root{
-  --ink:#150f2e; --panel:#fff6e3; --sky1:#171236; --sky2:#3a2d7d; --sky3:#7a4fb6;
-  --blue:#3b82f0; --blueD:#2257c4; --red:#e6453c; --gold:#ffc93c; --goldD:#f0a82b;
-  --green:#3ec97e; --purp:#6b2fa0; --txt:#fff6e3;
+  --ink:#150f2e; --panel:#fff6e3; --sky1:#0b051f; --sky2:#2a1b5e; --sky3:#5c3a8f;
+  --blue:#3f93ff; --blueD:#2257c4; --red:#e6453c; --gold:#ffce3a; --goldD:#ff9e1f;
+  --green:#33d68a; --purp:#8a4fd0; --txt:#fff6e3; --glow:#ffcf57;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;}
@@ -214,7 +214,7 @@ body{
 .heroimg{width:clamp(150px,26vw,260px);}
 .gearlist{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
 .gearbadge{background:rgba(21,15,46,.7);border:3px solid var(--gold);color:var(--gold);border-radius:16px;padding:8px 16px;font-family:'Bangers',cursive;font-size:20px;letter-spacing:.05em;}
-#settingsPanel{position:absolute;inset:0;background-color:#0b051f;background-image:linear-gradient(rgba(11,5,31,.84),rgba(11,5,31,.92)),url("art/bg-base.jpg");background-size:cover;background-position:center;z-index:20;display:none;flex-direction:column;align-items:center;justify-content:flex-start;gap:12px;padding:24px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+#settingsPanel{position:absolute;inset:0;background-color:#0b051f;background-image:linear-gradient(rgba(11,5,31,.84),rgba(11,5,31,.92)),url("art/bg-base.jpeg");background-size:cover;background-position:center;z-index:20;display:none;flex-direction:column;align-items:center;justify-content:flex-start;gap:12px;padding:24px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 #settingsPanel.on{display:flex;}
 #saveBox{width:min(640px,90vw);height:100px;border-radius:14px;border:3px solid var(--txt);background:#171236;color:var(--txt);font-size:12px;padding:8px;}
 
@@ -272,7 +272,7 @@ body{
 .gemshelf{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;background:rgba(21,15,46,.6);
   border:3px solid #3a2d72;border-radius:18px;padding:12px 18px;min-height:64px;}
 /* Player picker (who's playing) */
-#playerPicker{position:absolute;inset:0;background-color:#0b051f;background-image:linear-gradient(rgba(11,5,31,.55),rgba(11,5,31,.68)),url("art/bg-title.jpg");background-size:cover;background-position:center;z-index:22;display:none;
+#playerPicker{position:absolute;inset:0;background-color:#0b051f;background-image:linear-gradient(rgba(11,5,31,.55),rgba(11,5,31,.68)),url("art/bg-title.jpeg");background-size:cover;background-position:center;z-index:22;display:none;
   flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:24px;}
 #playerPicker.on{display:flex;}
 #playerCards{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;align-items:flex-end;}
@@ -288,7 +288,7 @@ body{
 /* Trophy shelf items */
 .trophy{font-size:34px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.4));}
 /* Shop overlay */
-#shopPanel{position:absolute;inset:0;background-color:#0b051f;background-image:linear-gradient(rgba(11,5,31,.66),rgba(11,5,31,.80)),url("art/bg-base.jpg");background-size:cover;background-position:center;z-index:20;display:none;flex-direction:column;
+#shopPanel{position:absolute;inset:0;background-color:#0b051f;background-image:linear-gradient(rgba(11,5,31,.66),rgba(11,5,31,.80)),url("art/bg-base.jpeg");background-size:cover;background-position:center;z-index:20;display:none;flex-direction:column;
   align-items:center;justify-content:flex-start;gap:14px;padding:24px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 #shopPanel.on{display:flex;}
 #shopGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;width:min(680px,94vw);}
@@ -304,4 +304,63 @@ body{
 .mcloudA{animation:mdrift 90s linear infinite;}
 .mcloudB{animation:mdrift 140s linear infinite;}
 @keyframes mdrift{from{transform:translateX(0)}to{transform:translateX(-180px)}}
+/* ============================================================
+   CHROME POLISH — depth · gloss · glow · glass, to match the painted art.
+   Additive layer (M3 target, so filters/blur used freely). Static depth only,
+   so it doesn't fight prefers-reduced-motion.
+   ============================================================ */
+
+/* cinematic vignette over the painted scene (sits on the art, behind content) */
+#bgLayer.on{box-shadow:inset 0 0 150px 36px rgba(6,3,18,.5), inset 0 -120px 130px rgba(6,3,18,.55);}
+
+/* characters & art "sit" in the scene: soft grounding shadow (+ faint hero glow) */
+#titleHero,#baseHero,#restHero,#winHero,#introArt,#interArt,.panelart,
+.boss,#bossArt,#forgeBoss,#fortVexSprite,.playercard .pchero,.allypop{
+  filter:drop-shadow(0 16px 16px rgba(0,0,0,.5));}
+#titleHero,#baseHero{filter:drop-shadow(0 16px 16px rgba(0,0,0,.5)) drop-shadow(0 0 30px rgba(120,180,255,.32));}
+
+/* premium buttons: glossy top sheen + outer glow + crisp press */
+.btn{position:relative;overflow:hidden;border-width:6px;
+  box-shadow:0 8px 0 #9c6a12, 0 12px 26px rgba(0,0,0,.45), 0 0 22px rgba(255,206,58,.28);}
+.btn::after{content:"";position:absolute;left:0;right:0;top:0;height:48%;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(255,255,255,0));
+  border-radius:22px 22px 50% 50%/24px 24px 36% 36%;}
+.btn.blue{box-shadow:0 8px 0 #143a85, 0 12px 26px rgba(0,0,0,.45), 0 0 22px rgba(80,150,255,.32);}
+.btn.ghost{overflow:visible;background:rgba(16,10,38,.42);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  box-shadow:0 6px 16px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.14);}
+.btn.ghost::after{display:none;}
+
+/* glass HUD chips + round buttons */
+.chip,.roundbtn{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(16,10,38,.5);
+  box-shadow:0 4px 14px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.14);}
+
+/* instruction bubble: lift + soft glow halo (stays cream for max readability) */
+.bubble{box-shadow:0 12px 30px rgba(0,0,0,.5), 0 0 0 2px rgba(255,255,255,.22) inset, 0 0 30px rgba(255,210,90,.18);}
+
+/* answer tiles & word tiles: glossy top highlight + stronger lift off the art */
+.tile{box-shadow:0 8px 0 #143a85, 0 10px 18px rgba(0,0,0,.42);}
+.tile::before{content:"";position:absolute;left:0;right:0;top:0;height:46%;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,0));}
+.tile.rletter{box-shadow:0 6px 0 #9c6a12, 0 8px 14px rgba(0,0,0,.4);}
+.tile.win{box-shadow:0 8px 0 #137044, 0 0 28px rgba(60,230,160,.65);}
+.slot,.magtile,.wordslot{box-shadow:0 6px 14px rgba(0,0,0,.32);}
+.slot.filled,.wordslot.filled,.magtile.longv{box-shadow:0 0 22px rgba(60,230,160,.5), 0 6px 12px rgba(0,0,0,.3);}
+
+/* title: keep the bold stroked gold, add a warm glow */
+.title-logo{filter:drop-shadow(0 3px 0 rgba(0,0,0,.45)) drop-shadow(0 0 18px rgba(255,200,80,.55));}
+
+/* loose text labels stay legible over busy painted scenes */
+.baselbl{color:#cfc4ff;text-shadow:0 2px 6px rgba(0,0,0,.65);}
+.sub,.gearbadge,.starsrow,.dailylabel{text-shadow:0 2px 7px rgba(0,0,0,.6);}
+
+/* menu/panel cards: frosted glass so the Grown-Up Corner & Shop look designed */
+.pcard,.shopitem,.gemshelf,.audrow,.playercard,.shopitem,.tabbtn{
+  backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);}
+.pcard{background:rgba(28,20,58,.5);box-shadow:0 6px 16px rgba(0,0,0,.35);}
+.shopitem{background:rgba(20,12,44,.5);box-shadow:0 6px 16px rgba(0,0,0,.35);}
+.gemshelf{background:rgba(16,10,38,.45);}
+.playercard{box-shadow:0 10px 24px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.12);}
+.echip{box-shadow:0 4px 0 rgba(0,0,0,.4), 0 6px 12px rgba(0,0,0,.3);}
+.gearbadge{box-shadow:0 0 18px rgba(255,206,58,.35), 0 6px 14px rgba(0,0,0,.4);}
+
 @media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important;}}
