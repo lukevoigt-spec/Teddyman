@@ -1,6 +1,19 @@
 # Project Spec: "Hero Reader" — Teddy's Reading App
 **Version 1.0 — Master Specification (Locked Decisions)**
 
+> **IMPLEMENTATION NOTE (2026-06-13) — read CLAUDE.md for the authoritative current state.**
+> This spec is the original product *vision*; several "how" decisions evolved during build:
+> - **Stack:** shipped as a **vanilla no-build static site** (plain JS + classic `<script>` modules,
+>   deployed straight to GitHub Pages) — **not** the React app described in §"Locked Decisions".
+>   It IS installable/fullscreen via `manifest.json` + a service worker.
+> - **Content status:** **Act 1 is complete** (letters → CVC → sight words → sentences → fluency →
+>   Vex Fortress finale) and **Act 2 is content-complete** (digraphs → blends → magic-e → vowel teams →
+>   word fluency → **sentence-level fluency** → Dragon Keep finale, rescue Miss Kendall). The full
+>   letter→…→sentence reading ladder is live end-to-end across both acts.
+> - **Map:** a single-screen **painted world map** per act with calibrated node overlays (not a scroll map).
+> The pedagogy, hard constraints, and child profile in this doc remain the source of intent; for the
+> live architecture, mission ladder, and module layout, **CLAUDE.md** is the living source of truth.
+
 ---
 
 ## 1. Mission Statement

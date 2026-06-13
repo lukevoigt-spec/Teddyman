@@ -97,12 +97,16 @@ const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#
   sh:"#16a085",ch:"#e67e22",th:"#2980b9",wh:"#8e44ad",ck:"#c0392b",ng:"#27ae60"};
 
 /* SAVE/PROFILES/CLOUD/daily-stats layer moved to state-save.js (loaded before game.js). */
-let __lastInteract=Date.now(), __dailyDirty=0, __inTraining=false;
+let __lastInteract=Date.now(), __dailyDirty=0, __inTraining=false, __lastTick=0;
 function noteInteract(){ __lastInteract=Date.now(); }
 function dailyGoalSecs(){ return (S.goalMin||30)*60; }
 function trainTick(){ ensureDaily();
+  const now=Date.now(), gap=now-__lastTick; __lastTick=now;
   const hidden=(typeof document!=="undefined" && document.hidden);
-  if(!hidden && (Date.now()-__lastInteract)<45000){
+  /* count only genuine active seconds: not hidden, recently interacted, and the
+     tick wasn't fired late after a throttle/sleep (gap guard) — so backgrounding
+     or a slept tab never inflates the daily total. */
+  if(!hidden && (now-__lastInteract)<45000 && gap<5000){
     S.daily.secs++; if(__inTraining)S.daily.trainSecs=(S.daily.trainSecs||0)+1; __dailyDirty++;
     if(__dailyDirty>=20){ __dailyDirty=0; save(); }
     updateDailyMeter();
@@ -1283,7 +1287,9 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
   const sl=$("lvlSlide"), apply=$("lvlApply");
   if(sl){ sl.oninput=()=>{ const v=+sl.value; $("lvlNow").textContent="Level "+v+" / "+pm.length;
       $("lvlLbl").textContent=lvlLabel(v); apply.disabled=(v===doneCnt); };
-    apply.onclick=()=>{ const v=+sl.value; snapshot("before level change");
+    apply.onclick=()=>{ const v=+sl.value;
+      if(!confirm("Move "+profileName(ACTIVE)+" to Level "+v+" of "+pm.length+"?\n\n• Missions up to here are marked DONE; later ones are re-locked.\n• Gear and the intro/scan tutorials adjust to match (Level 0 = fresh start).\n• A backup is saved first — undo any time from “Backups” below."))return;
+      snapshot("before level change");
       pm.forEach((m,i)=>{ if(i<v)S.done[m.id]=true; else delete S.done[m.id]; });
       S.gear=Object.keys(GEAR_AT).filter(id=>S.done[id]).map(id=>GEAR_AT[id]);
       /* keep the tutorial flags consistent with the simulated progress: level 0 =
