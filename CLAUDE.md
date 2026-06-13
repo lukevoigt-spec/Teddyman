@@ -210,7 +210,8 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   so the hero reads as lit by the painting behind it. Act-2 medieval scenes get warmer torch/stone/
   dragon-fire overrides. (5) ACT-2 MEDIEVAL UI SKIN (parchment/stone chrome via
   body[data-act=2]; learning tiles stay Andika). (6) HERO EMOTION + random WIN POSES — win poses DONE
-  (winpose1-4); hero facial emotion still TODO (limited by the Gem-Lens mask). (7) mentors MOUTH-MOVE
+  (winpose1-4); hero FACIAL emotion ABANDONED by parent decision (the Gem-Lens mask leaves too little
+  face for expression — not worth the art.js risk; do NOT revisit). (7) mentors MOUTH-MOVE
   during narration — DONE: faceSpeak() bobs/nods the speaking cutscene portrait for the audio's duration
   (face-agnostic; reduced-motion/Calm aware). (8) DIEGETIC UI FRAMES — DONE (light-touch, learning tiles
   untouched): #sceneFrame draws corner-bracket "viewfinder" frames at the screen edges, tinted by
