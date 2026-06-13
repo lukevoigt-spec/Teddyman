@@ -1070,13 +1070,14 @@ function mapSVG(){
     const fill=done(m.id)?"#3ec97e":(avail(i)?"#ffc93c":"#3b3360");
     const side = x<400 ? 1 : -1;
     nodes+=`<g class="mnode ${st}" data-mid="${m.id}">
-      <ellipse cx="${x}" cy="${y+34}" rx="40" ry="10" fill="#150f2e" opacity=".35"/>
-      <circle class="ring" cx="${x}" cy="${y}" r="40" fill="${fill}" stroke="#150f2e" stroke-width="7"/>
-      <circle cx="${x}" cy="${y-12}" r="22" fill="#ffffff" opacity=".18"/>
-      <text x="${x}" y="${y+13}" text-anchor="middle" font-family="Bangers" font-size="38" fill="#150f2e">${done(m.id)?"✓":(avail(i)?i+1:"🔒")}</text>
-      <g transform="translate(${x+side*150},${y})">
-        <rect x="-118" y="-20" width="236" height="40" rx="14" fill="rgba(21,15,46,.88)" stroke="#fff6e3" stroke-width="2.5"/>
-        <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="20" fill="${done(m.id)?"#9fe870":"#ffc93c"}" letter-spacing="1">${m.lbl.toUpperCase()}</text>
+      <ellipse cx="${x}" cy="${y+40}" rx="44" ry="12" fill="#0a0618" opacity=".5"/>
+      <circle cx="${x}" cy="${y}" r="50" fill="${fill}" opacity=".42" filter="url(#softGlow)"/>
+      <circle class="ring" cx="${x}" cy="${y}" r="40" fill="url(#node_${st})" stroke="#150f2e" stroke-width="6"/>
+      <ellipse cx="${x}" cy="${y-15}" rx="23" ry="14" fill="#ffffff" opacity=".32"/>
+      <text x="${x}" y="${y+13}" text-anchor="middle" font-family="Bangers" font-size="36" fill="#150f2e">${done(m.id)?"✓":(avail(i)?i+1:"🔒")}</text>
+      <g transform="translate(${x+side*150},${y})" filter="url(#pillShadow)">
+        <rect x="-118" y="-21" width="236" height="42" rx="15" fill="rgba(12,7,30,.86)" stroke="#ffce3a" stroke-width="2.5"/>
+        <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="20" fill="${done(m.id)?"#9fe870":"#ffe08a"}" letter-spacing="1">${m.lbl.toUpperCase()}</text>
       </g></g>`;
   });
   const vexDone=currentAct()===1 && done(48);   /* Act-1 finale beaten (Act-1 map only) */
@@ -1086,14 +1087,14 @@ function mapSVG(){
     const dy=Math.round((Math.min(...az[i-1].nodes.map(p=>p[1]))+Math.max(...az[i].nodes.map(p=>p[1])))/2)+52;
     dividers+=`<g transform="translate(400 ${dy})">
       <line x1="-330" y1="0" x2="330" y2="0" stroke="#fff6e3" stroke-width="3" stroke-dasharray="10 14" opacity=".4"/>
-      <rect x="-180" y="-21" width="360" height="42" rx="14" fill="rgba(21,15,46,.9)" stroke="#f2a9c4" stroke-width="2.5"/>
-      <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="22" fill="#f2a9c4" letter-spacing="2">⬆ ${az[i].name} ⬆</text></g>`;
+      <g filter="url(#pillShadow)"><rect x="-184" y="-22" width="368" height="44" rx="15" fill="rgba(12,7,30,.88)" stroke="#f2a9c4" stroke-width="2.5"/>
+      <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="22" fill="#ffc6e0" letter-spacing="2">⬆ ${az[i].name} ⬆</text></g></g>`;
   }
   return `<svg viewBox="0 ${GEO.viewTop} 800 ${GEO.mapH-GEO.viewTop}">
   <defs>
     <linearGradient id="msky" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#0e0b26"/><stop offset=".35" stop-color="#2b2066"/>
-      <stop offset=".7" stop-color="#5c3a8f"/><stop offset="1" stop-color="#a4538d"/>
+      <stop offset="0" stop-color="#070418"/><stop offset=".35" stop-color="#1b1252"/>
+      <stop offset=".7" stop-color="#46297f"/><stop offset="1" stop-color="#8a4a8f"/>
     </linearGradient>
     <linearGradient id="trailG" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#ffd75e"/><stop offset="1" stop-color="#f0a82b"/>
@@ -1101,18 +1102,23 @@ function mapSVG(){
     <radialGradient id="moonG" cx=".5" cy=".5" r=".5">
       <stop offset="0" stop-color="#fff6e3" stop-opacity=".8"/><stop offset="1" stop-color="#fff6e3" stop-opacity="0"/>
     </radialGradient>
+    <radialGradient id="node_done" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#bdffdc"/><stop offset=".5" stop-color="#3ec97e"/><stop offset="1" stop-color="#0f6a40"/></radialGradient>
+    <radialGradient id="node_current" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#fff1b8"/><stop offset=".5" stop-color="#ffce3a"/><stop offset="1" stop-color="#b9760f"/></radialGradient>
+    <radialGradient id="node_locked" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#5b5384"/><stop offset=".5" stop-color="#3b3360"/><stop offset="1" stop-color="#211c3a"/></radialGradient>
+    <filter id="softGlow" x="-90%" y="-90%" width="280%" height="280%"><feGaussianBlur stdDeviation="9"/></filter>
+    <filter id="pillShadow" x="-15%" y="-60%" width="130%" height="220%"><feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity=".55"/></filter>
   </defs>
-  <rect y="${GEO.viewTop}" width="800" height="${GEO.mapH-GEO.viewTop}" fill="url(#msky)"/>
+  <rect y="${GEO.viewTop}" width="800" height="${GEO.mapH-GEO.viewTop}" fill="url(#msky)" opacity=".5"/>
   <circle cx="650" cy="${GEO.viewTop+150}" r="130" fill="url(#moonG)"/>
   <circle cx="650" cy="${GEO.viewTop+150}" r="50" fill="#fff1cf" stroke="#150f2e" stroke-width="5"/>
   <circle cx="632" cy="${GEO.viewTop+138}" r="8" fill="#ead9b4"/><circle cx="664" cy="${GEO.viewTop+162}" r="6" fill="#ead9b4"/>
   <g fill="#fff6e3">${[[120,90],[300,60],[520,110],[80,240],[730,300],[200,180],[420,40],[600,250]].map(([sx,sy])=>`<circle cx="${sx}" cy="${GEO.viewTop+sy}" r="2.5"/>`).join("")}</g>
   <g fill="#fff6e3"><circle cx="120" cy="90" r="3"/><circle cx="300" cy="60" r="2.4"/><circle cx="520" cy="110" r="2.6"/><circle cx="80" cy="240" r="2.2"/><circle cx="730" cy="300" r="2.4"/><circle cx="200" cy="180" r="2"/></g>
-  <g class="mcloudB" fill="#4b3e96" stroke="#150f2e" stroke-width="4" opacity=".8">
+  <g class="mcloudB" fill="#cdb8ff" opacity=".14">
     <path d="M140 210 q18 -34 54 -27 q12 -26 47 -20 q31 -9 43 16 q32 2 27 31 z"/>
     <path d="M560 320 q15 -28 45 -22 q10 -22 40 -16 q26 -8 36 13 q27 2 23 25 z"/>
   </g>
-  <g class="mcloudA" fill="#5a4aa6" stroke="#150f2e" stroke-width="3.4" opacity=".55">
+  <g class="mcloudA" fill="#e7dcff" opacity=".1">
     <path d="M380 130 q13 -24 39 -19 q9 -18 33 -13 q22 -6 31 11 q22 2 18 21 z"/>
   </g>
 
