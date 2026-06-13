@@ -257,17 +257,17 @@ function autoNodes(count,{y0=1280,step=100,amp=195,cx=400,phase=0}={}){
     out.push([Math.round(cx+amp*Math.sin(i*0.8+phase)), y0-i*step]);
   return out; }
 const ZONES=[
-  { id:1, name:"STAR FORCE CITY", bg:"city",
+  { id:1, name:"STARBRIGHT SQUARE", bg:"city",
     letters:["s","a","t","p","i","n"],
     base:[470,1408],
     nodes:[[420,1280],[230,1190],[520,1100],[300,1000],[560,900],[330,800],[170,700],[440,600],[300,480]] },
-  { id:2, name:"HEART HEIGHTS", bg:"heights",
+  { id:2, name:"HEARTSTONE HILL", bg:"heights",
     letters:["m","d","g","o","c","k"],
     nodes:autoNodes(9,{y0:370,step:104,phase:2.2}) },
   { id:3, name:"THUNDER RIDGE", bg:"ridge",
     letters:["e","u","r","h","b","f"],
     nodes:autoNodes(9,{y0:-570,step:104,phase:4.6}) },
-  { id:4, name:"PRISM PEAK", bg:"prism",
+  { id:4, name:"RAINBOW SUMMIT", bg:"prism",
     letters:["l","j","v","w","x","y","z","q"],
     nodes:autoNodes(11,{y0:-1500,step:104,phase:0.5}) },   /* group 4 — in the letter phase */
   { id:5, name:"READING RALLY", bg:"rally",
@@ -276,7 +276,7 @@ const ZONES=[
   { id:6, name:"SPELL TOWER", bg:"spell",
     letters:[],   /* sight-word recognition */
     nodes:autoNodes(3,{y0:-3120,step:112,phase:3.1}) },
-  { id:7, name:"STORY GATE", bg:"story",
+  { id:7, name:"STORYTELLER'S GATE", bg:"story",
     letters:[],   /* read whole sentences */
     nodes:autoNodes(3,{y0:-3490,step:114,phase:5.4}) },
   { id:9, name:"READING DOJO", bg:"dojo",
@@ -286,19 +286,19 @@ const ZONES=[
     letters:[],   /* the Act-1 finale boss */
     nodes:[[400,-4400]] },
   /* ===== ACT 2 · MEDIEVAL REALM — zone 1: consonant DIGRAPHS (sh ch th wh ck ng) ===== */
-  { id:101, name:"STONEKEEP VILLAGE", bg:"keep", act:2,
+  { id:101, name:"CASTLETON", bg:"keep", act:2,
     letters:["sh","ch","th","wh","ck","ng"],
     base:[470,1408],
     nodes:autoNodes(11,{y0:1280,step:104,phase:1.0}) },
   /* ===== ACT 2 · zone 2: consonant BLENDS (st bl cr fr… + final -nd -mp -st).
      NOT new gems — a blend is two sounds held together; reuses the single-letter
      model, the new skill is blending more phonemes. ===== */
-  { id:102, name:"THE IRON FORGE", bg:"forge2", act:2,
+  { id:102, name:"DRAGONSTEEL FORGE", bg:"forge2", act:2,
     letters:[],   /* no new graphemes — blend practice on known letters */
     nodes:autoNodes(9,{y0:120,step:104,phase:3.2}) },
   /* ===== ACT 2 · zone 3: LONG VOWELS via MAGIC-E (split grapheme a_e i_e o_e u_e).
      Noah's "Magic-E Spell" — a silent E flips a short vowel to its long name. ===== */
-  { id:103, name:"THE SPELLERY", bg:"spellery", act:2,
+  { id:103, name:"ENCHANTER'S TOWER", bg:"spellery", act:2,
     letters:[],   /* the long-vowel "units" are taught via type:"magic" missions */
     nodes:autoNodes(9,{y0:-820,step:104,phase:1.5}) }
 ];
@@ -1077,7 +1077,9 @@ function mapSVG(){
       <circle cx="${x}" cy="${y}" r="50" fill="${fill}" opacity=".42" filter="url(#softGlow)"/>
       <circle class="ring" cx="${x}" cy="${y}" r="40" fill="url(#node_${st})" stroke="#150f2e" stroke-width="6"/>
       <ellipse cx="${x}" cy="${y-15}" rx="23" ry="14" fill="#ffffff" opacity=".32"/>
-      <text x="${x}" y="${y+13}" text-anchor="middle" font-family="Bangers" font-size="36" fill="#150f2e">${done(m.id)?"✓":(avail(i)?i+1:"🔒")}</text>
+      ${done(m.id)?`<text x="${x}" y="${y+14}" text-anchor="middle" font-family="Bangers" font-size="38" fill="#0c3f28">✓</text>`
+        : st==="locked"?`<g transform="translate(${x} ${y})" stroke="#150f2e" stroke-width="2.6"><path d="M-7 -2 v-5 a7 7 0 0 1 14 0 v5" fill="none" stroke="#cdc6ea"/><rect x="-12" y="-2" width="24" height="18" rx="4" fill="#cdc6ea"/></g>`
+        : `<circle cx="${x}" cy="${y}" r="8" fill="#fff" opacity=".92"/>`}
       <g transform="translate(${lx},${y})" filter="url(#pillShadow)">
         <rect x="${-pw/2}" y="-21" width="${pw}" height="42" rx="15" fill="rgba(12,7,30,.86)" stroke="#ffce3a" stroke-width="2.5"/>
         <text x="0" y="9" text-anchor="middle" textLength="${pw-22}" lengthAdjust="spacingAndGlyphs" font-family="Bangers" font-size="20" fill="${done(m.id)?"#9fe870":"#ffe08a"}" letter-spacing="1">${lbl}</text>
@@ -1091,7 +1093,9 @@ function mapSVG(){
     dividers+=`<g transform="translate(400 ${dy})">
       <line x1="-330" y1="0" x2="330" y2="0" stroke="#fff6e3" stroke-width="3" stroke-dasharray="10 14" opacity=".4"/>
       <g filter="url(#pillShadow)"><rect x="-184" y="-22" width="368" height="44" rx="15" fill="rgba(12,7,30,.88)" stroke="#f2a9c4" stroke-width="2.5"/>
-      <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="22" fill="#ffc6e0" letter-spacing="2">⬆ ${az[i].name} ⬆</text></g></g>`;
+      <path d="M-168 0 l9 -7 l9 7" fill="none" stroke="#f2a9c4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M150 0 l9 -7 l9 7" fill="none" stroke="#f2a9c4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="0" y="9" text-anchor="middle" font-family="Bangers" font-size="22" fill="#ffc6e0" letter-spacing="2">${az[i].name}</text></g></g>`;
   }
   return `<svg viewBox="0 ${GEO.viewTop} 800 ${GEO.mapH-GEO.viewTop}">
   <defs>
@@ -1224,29 +1228,35 @@ function allyPop(kind){ const st=$("stage"); if(!st)return;
 const LEAGUE=[...CAGED.map(t=>({mid:t.mid,kind:t.kind,name:t.name,real:t.real})),
   {mid:17,kind:"heart",name:"HEARTGUARD",real:"AMELIA"},
   {mid:48,kind:"leighton",name:"STARLIGHT PRINCESS",real:"LEIGHTON"}];
+/* a small LIVING friend on the map — recognizable little figure; captive ones
+   wave for help with a ball-and-chain, freed ones cheer with arms up. */
+const ALLY_COL={tank:"#e6453c", flip:"#3a9bff", sunny:"#ffce3a", heart:"#ff7d9c", leighton:"#a06ae8"};
+function allyMapFig(kind, freed){
+  const c=ALLY_COL[kind]||"#7a6fb0";
+  const arms = freed
+    ? `<path d="M-15 4 q-12 -12 -8 -26" stroke="${c}" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M15 4 q12 -12 8 -26" stroke="${c}" stroke-width="8" fill="none" stroke-linecap="round"/>`
+    : `<path d="M15 2 q15 -2 14 -24" stroke="${c}" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M-15 4 q-9 8 -7 17" stroke="${c}" stroke-width="8" fill="none" stroke-linecap="round"/>`;
+  const chain = freed ? '' : `<g stroke="#5a5570" stroke-width="3"><line x1="5" y1="47" x2="20" y2="53"/></g><circle cx="24" cy="55" r="7" fill="#4a455e" stroke="#150f2e" stroke-width="2.5"/>`;
+  return `<g>
+    <ellipse cx="0" cy="50" rx="23" ry="6" fill="#000" opacity=".35"/>
+    ${arms}
+    <path d="M-15 2 q-3 30 4 42 l22 0 q7 -12 4 -42 q-15 -8 -30 0z" fill="${c}" stroke="#150f2e" stroke-width="4"/>
+    <rect x="-11" y="40" width="9" height="13" rx="4" fill="#2a2440" stroke="#150f2e" stroke-width="3"/>
+    <rect x="2" y="40" width="9" height="13" rx="4" fill="#2a2440" stroke="#150f2e" stroke-width="3"/>
+    ${chain}
+    <g transform="translate(0 -20) scale(.9)">${allyFace(kind)}</g>
+  </g>`;
+}
 function allyTeasers(){
   let out="";
   CAGED.forEach(t=>{ const [x,y]=nodeOf(t.mid); const side=x<400?1:-1;
     const px=x+side*180; const freed=!!S.done[t.mid];
-    if(freed){
-      out+=`<g transform="translate(${px} ${y-80})">
-        <g fill="#ffc93c" opacity=".9"><path d="M0 -52 L6 -38 L-6 -38Z"/><path d="M-38 -34 L-26 -28 L-34 -20Z"/><path d="M38 -34 L26 -28 L34 -20Z"/></g>
-        <g>${allyFace(t.kind)}</g>
-        <rect x="-78" y="34" width="156" height="30" rx="10" fill="rgba(21,15,46,.88)" stroke="#3ec97e" stroke-width="2.5"/>
-        <text x="0" y="55" text-anchor="middle" font-family="Bangers" font-size="16" fill="#9fe870" letter-spacing="1">${t.real} FREED!</text>
-        <text x="0" y="80" text-anchor="middle" font-family="Bangers" font-size="12" fill="#9fe870" opacity=".7" letter-spacing="1">"${t.name}"</text></g>`;
-    } else {
-      out+=`<g transform="translate(${px} ${y-86})">
-        <line x1="0" y1="-66" x2="0" y2="-46" stroke="#23263b" stroke-width="6"/>
-        <rect x="-42" y="-46" width="84" height="86" rx="14" fill="rgba(21,15,46,.45)" stroke="#23263b" stroke-width="7"/>
-        <g transform="translate(0 -2)">${allyFace(t.kind)}</g>
-        <g stroke="#3a3f5e" stroke-width="6"><line x1="-26" y1="-44" x2="-26" y2="38"/><line x1="-9" y1="-44" x2="-9" y2="38"/><line x1="9" y1="-44" x2="9" y2="38"/><line x1="26" y1="-44" x2="26" y2="38"/></g>
-        <rect x="-42" y="-46" width="84" height="86" rx="14" fill="none" stroke="#150f2e" stroke-width="4"/>
-        <circle cx="0" cy="42" r="9" fill="#e62e2e" stroke="#150f2e" stroke-width="3"/>
-        <rect x="-82" y="56" width="164" height="30" rx="10" fill="rgba(21,15,46,.88)" stroke="#e62e2e" stroke-width="2.5"/>
-        <text x="0" y="77" text-anchor="middle" font-family="Bangers" font-size="16" fill="#ff9d8f" letter-spacing="1">FREE ${t.real}!</text>
-        <text x="0" y="102" text-anchor="middle" font-family="Bangers" font-size="12" fill="#ff9d8f" opacity=".7" letter-spacing="1">"${t.name}"</text></g>`;
-    } });
+    const col=freed?"#3ec97e":"#e62e2e", txt=freed?"#9fe870":"#ff9d8f", label=freed?(t.real+" FREED!"):("FREE "+t.real+"!");
+    out+=`<g transform="translate(${px} ${y-66})">
+      ${allyMapFig(t.kind, freed)}
+      <g filter="url(#pillShadow)"><rect x="-80" y="58" width="160" height="30" rx="11" fill="rgba(12,7,30,.86)" stroke="${col}" stroke-width="2.5"/>
+      <text x="0" y="79" text-anchor="middle" font-family="Bangers" font-size="16" fill="${txt}" letter-spacing="1">${label}</text></g></g>`;
+  });
   return out;
 }
 function heroMarker(){ const ms=actMissions(currentAct()); let ix=0;
