@@ -1928,7 +1928,7 @@ function showBase(){ clearFlow(); show("scrBase");
 function paintBase(){
   $("baseHero").innerHTML=heroNow(Math.min(260,window.innerWidth*0.34));
   const o=heroOpts();
-  $("powerLbl").textContent=["HERO 💪","SUPER HERO 💪💪","MEGA HERO 💪💪💪"][o.muscle];
+  $("powerLbl").textContent=(currentAct()===2?["SQUIRE","SOLDIER","KNIGHT"]:["HERO","SUPER HERO","MEGA HERO"])[o.muscle];
   /* weapons */
   const wrow=$("weaponRow"); wrow.innerHTML="";
   const weapons=[["none","HANDS"]], actGear=actGearList(currentAct());
@@ -2067,7 +2067,7 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
   const sight=Object.keys(SIGHT).filter(w=>{const m=S.mastery["sw_"+w];return m&&m.ok>0;});
   const sentDone=MISSIONS.filter(m=>m.type==="sentence"&&S.done[m.id]).length;
   const sentTotal=MISSIONS.filter(m=>m.type==="sentence").length;
-  const power=["Hero 💪","Super Hero 💪💪","Mega Hero 💪💪💪"][heroOpts().muscle];
+  const power=(currentAct()===2?["Squire","Soldier","Knight"]:["Hero","Super Hero","Mega Hero"])[heroOpts().muscle];
   const lettersRow=taught.length? taught.map(g=>`<span class="pgem" style="background:${GEMCOLOR[g]||'#888'}">${g.toUpperCase()}</span>`).join(" ") : "<i>none yet</i>";
   /* ----- level-override slider: where he's unlocked to, drag to move him ----- */
   const pm=playMissions(currentAct());

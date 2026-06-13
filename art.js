@@ -15,7 +15,12 @@ const HERO_THEMES={
 function heroSVG(w=200,o={}){
 const u="h"+(__huid++);
 const m=o.muscle||0, sx=1+0.07*m;
-const th=HERO_THEMES[o.theme||"hero"]||HERO_THEMES.hero;
+/* ACT-2 RANK TIERS — power level 0/1/2 = SQUIRE (leather) → SOLDIER (mail+steel cap)
+   → KNIGHT (full steel plate). Firm medieval progression mirroring Act-1 muscle stages. */
+const KNIGHT_TIER=[{suit:["#9a6738","#5a3a1f"],muscle:"#4a2f18",sheen:"#caa06a"},
+                   {suit:["#9aa3b5","#666e7c"],muscle:"#454c5a",sheen:"#dfe6f0"},
+                   {suit:["#cfd6e0","#79828f"],muscle:"#5b6470",sheen:"#eef2f7"}];
+const th = o.theme==="knight" ? KNIGHT_TIER[Math.min(2,m)] : (HERO_THEMES[o.theme||"hero"]||HERO_THEMES.hero);
 const capes={red:["#ef5348","#b92f33"],gold:["#ffd75e","#e08f1f"],purple:["#a06ae8","#6b2fa0"]};
 const cp=capes[o.cape||"red"]||capes.red;
 let weapon="";
@@ -37,6 +42,12 @@ const armL=`<path d="M86 150 Q44 160 34 208 Q32 234 54 252 L84 262 L96 248 L70 2
 const armRhip=`<path d="M162 150 Q204 160 214 208 Q216 234 194 252 L164 262 L152 248 L178 236 Q194 226 188 206 Q180 172 152 162Z" fill="url(#${u}suit)"/><circle cx="164" cy="258" r="15" fill="url(#${u}gold)"/><path d="M156 252 a9 9 0 0 1 9 -5" stroke="#fff0bd" stroke-width="4" fill="none" stroke-linecap="round"/>`;
 const armRup=`<path d="M156 152 Q190 150 202 116 Q210 96 205 78 L183 84 Q185 104 173 122 Q165 137 146 156Z" fill="url(#${u}suit)"/><circle cx="201" cy="83" r="15" fill="url(#${u}gold)"/><path d="M193 77 a9 9 0 0 1 9 -5" stroke="#fff0bd" stroke-width="4" fill="none" stroke-linecap="round"/>`;
 const armR=heldWeapon?armRup:armRhip;
+/* SQUIRE/SOLDIER headgear (face stays visible); the full closed helm is the KNIGHT tier only */
+const kgear = (o.theme==="knight" && m<2) ? (m>=1 ?
+  `<path d="M70 46 Q124 -10 178 46 Q150 22 124 20 Q98 22 70 46Z" fill="#aeb6c2" stroke="#150f2e" stroke-width="5" stroke-linejoin="round"/><path d="M68 44 L180 44 L178 54 L70 54Z" fill="#7a828f" stroke="#150f2e" stroke-width="3"/><rect x="120" y="48" width="8" height="34" rx="3" fill="#c4ccd6" stroke="#150f2e" stroke-width="3"/><path d="M150 6 Q166 0 176 10 Q162 8 150 16Z" fill="#9c3540" stroke="#150f2e" stroke-width="3"/>`
+  :
+  `<path d="M72 46 Q124 -8 176 46 Q150 22 124 20 Q98 22 72 46Z" fill="#7a4f2e" stroke="#150f2e" stroke-width="5" stroke-linejoin="round"/><path d="M70 44 L178 44 L176 54 L72 54Z" fill="#5a3a1f" stroke="#150f2e" stroke-width="3"/>` )
+  : "";
 const beltGlow=o.belt2?`<rect x="86" y="250" width="76" height="30" rx="10" fill="none" stroke="#fff3c4" stroke-width="5" opacity=".85"/>`:"";
 const bootFx=o.boots2?`<g stroke="#ff8a3d" stroke-width="5" stroke-linecap="round" opacity=".9">
 <path d="M78 470 q4 12 -2 22"/><path d="M96 470 q0 14 -4 24"/>
@@ -121,7 +132,7 @@ ${beltGlow}
 <g transform="translate(124 186)"><path d="M0 -28 L25 -14 L25 14 L0 28 L-25 14 L-25 -14Z" fill="url(#${u}gold)" stroke="#150f2e" stroke-width="5"/>
 <path d="M-19 -10 L-2 -21 L0 -14 L-16 -4Z" fill="#fff" opacity=".4"/>
 <path d="M-13 -13 L13 -13 L13 -5 L4 -5 L4 15 L-4 15 L-4 -5 L-13 -5Z" fill="#d23a31" stroke="#150f2e" stroke-width="3"/></g>
-${o.theme==="knight"?`<!-- ===== knight helm (Act-2 placeholder) ===== -->
+${(o.theme==="knight"&&m>=2)?`<!-- ===== full KNIGHT helm (top rank) ===== -->
 <rect x="111" y="110" width="26" height="20" rx="6" fill="#aeb6c2" stroke="#150f2e" stroke-width="5"/>
 <path d="M84 36 Q124 4 164 36 L172 96 Q172 124 124 130 Q76 124 76 96Z" fill="url(#${u}suit)" stroke="#150f2e" stroke-width="6"/>
 <path d="M84 36 Q124 4 164 36 L160 50 Q124 26 88 50Z" fill="${th.sheen}" opacity=".5"/>
@@ -150,6 +161,7 @@ ${o.theme==="knight"?`<!-- ===== knight helm (Act-2 placeholder) ===== -->
 <g stroke="none" fill="#d99a6c" opacity=".9"><circle cx="108" cy="91" r="2"/><circle cx="116" cy="94" r="2"/><circle cx="132" cy="94" r="2"/><circle cx="140" cy="91" r="2"/></g>
 <path d="M98 97 Q124 120 150 97 Q146 113 124 117 Q102 113 98 97Z" fill="#7c3a3a" stroke="#150f2e" stroke-width="4" stroke-linejoin="round"/>
 <path d="M103 99 Q124 110 145 99 Q124 105 103 99Z" fill="#fff" stroke="none"/>
+${kgear}
 </g></g></svg>`}`;}
 
 /* ---- LORD VEX / VEXBOT (refined: angled glowing visor, sharper menace) ---- */
