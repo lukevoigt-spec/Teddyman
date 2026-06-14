@@ -50,6 +50,25 @@ QA agents can't generate — they spec; Neo generates + commits.)
    before other work. (Subscriptions are per-PR, so the open event can't auto-notify; the human may also
    just ping "guest pushed.")
 
+## Status discipline — keeping `QA.md` honest (added after a real stale-status miss, 2026-06-14)
+`QA.md`'s open/shipped status drifts because **Neo changes the code in his session while only Trinity edits `QA.md`** —
+so the doc lags reality. Reality lives in **git + the code**, never in prose. Five rules to stop it recurring:
+1. **Git is the source of truth for "shipped," not the doc.** Every `✅` ledger entry is **anchored to a commit hash**,
+   confirmed against the actual diff/code — **never** from memory or inference. No hash + no code check = not "done."
+2. **Reconcile BEFORE you consolidate, hand off, or re-engage.** Start any status/consolidation pass with
+   `git log --oneline <last-QA-commit>..HEAD` and spot-check the code; a consolidation only *reorganizes* — it must
+   first *re-verify*. On re-engagement, reconcile `QA.md` against new commits (same reflex as checking open PRs).
+3. **Don't mark something OPEN without checking it didn't already ship.** `git log --grep=<item-id>` (U#/M-#/H#/rec #)
+   + read the relevant function. Absence of a feature must be confirmed by **reading the code**, not assumed.
+4. **Verify by READING, never by a negative search.** A malformed/empty grep does **not** prove absence (the U11 miss:
+   `grep padding-right | grep bubble` can't match a multi-line CSS block). For "is X present / called / shipped,"
+   open the file or use a correct `rg`/Grep pattern; treat an empty result as *inconclusive*, not *false*.
+5. **Generated/guest status is a DRAFT until verified.** Subagent or guest-QA claims of "shipped/(Neo)" are
+   unverified until checked against a commit — never let them land on `main` unconfirmed.
+**Convention that makes this mechanical:** Neo already tags commit subjects with the item id (`UI audit U9…`, `(#4)`,
+`M-#2`), so reconciliation is a one-liner `git log --grep`. Keep that habit; a tiny `tools/` status-reconcile script
+(diff doc claims vs `git log --grep`) would automate it — Neo's lane.
+
 ## Design working-principle — how we "juice" (feedback & game-feel)
 Durable philosophy distilled from the game-feel research (full mechanics + architecture-feasibility in
 **`DESIGN-ENGAGEMENT.md §8`**; visual tokens in `STYLE.md`). Every agent applies these so feedback stays consistent
