@@ -121,17 +121,19 @@ discoverability + tablet ergonomics, and they converge on one move (which also g
 3. **The chip is overloaded** — it's simultaneously the location *label* (status, changes every screen) AND the nav
    *trigger* (constant). Mixing changing-status with constant-control hurts learnability; separate "where am I" from
    "where can I go."
-4. **Possible one-too-many destinations + "Home vs Base" model ambiguity** (Hick/Miller). Three jumps — Map / Base /
-   Home(title) — with **two "home-like" anchors**: Hero **Base** (his hub) and **Home** (title, which then needs PLAY
-   again). For a 7-yo, consider Map+Base as the two clear "places" and demote Home/title/profile to the parent area or a
-   quieter spot.
+4. **Destinations — RESOLVED (parent, 2026-06-14): the cluster is Map + Base ONLY.** Two clear "places" for the lowest
+   cognitive load (Hick/Miller); **Home / title / profile-switch move to the parent gear area** (Grown-Up Corner), so a
+   7-yo never juggles two "home-like" anchors. (Home/title is rarely needed mid-play — mostly profile switching, which
+   is parent-only anyway.)
 
 **🎯 Holistic recommendation (single highest-leverage move):** evolve the global nav from a **text-chip dropdown** into
-an **always-visible icon control-cluster** (🗺️ Map / 🏰 Base, + Home), each **icon + tap-to-hear** its name, parked in a
-**bottom corner** for thumb reach; keep the chip as pure **status** ("where am I"). This (a) fixes the pre-reader
-discoverability gap (#1, #3), (b) fixes the ergonomics (#2), and (c) **is exactly MR3 — so promote MR3 from "map-only"
-to the standing global-nav pattern** (one cluster, every screen, both acts). Keep ≥96px, the locked-gate, and an Act-2
-skin variant. *(Validate the cluster doesn't overlap painted landmarks — anchor to the screen, not the 1000×750 SVG.)*
+an **always-visible icon control-cluster — 🗺️ Map + 🏰 Base ONLY** (parent decision; Home/title/profile-switch live in
+the parent gear area), each **icon + tap-to-hear** its name, parked in a **bottom corner** for thumb reach; keep the
+chip as pure **status** ("where am I"). This (a) fixes the pre-reader discoverability gap (#1, #3), (b) fixes the
+ergonomics (#2), and (c) **is exactly MR3 — so promote MR3 from "map-only" to the standing global-nav pattern** (one
+2-icon cluster, every screen, both acts). Keep ≥96px, the locked-gate, an Act-2 skin variant, and the always-present
+`⏭` skip during flows. *(Anchor the cluster to the screen, not the 1000×750 map SVG, so it never overlaps painted
+landmarks.)*
 
 **Net:** the bones are right; the one change that most improves the *holistic* experience is making the global nav
 **seen, not discovered** — visible icons a non-reader recognizes, in the easy-reach zone.
@@ -188,10 +190,12 @@ session; see ledger. Open chrome below.)*
 - 📋 **MR2 — Recalibrate `ZONESPOTS`** (`map.js:17–20`, 1000×750). The golden path is BAKED into the painting; only
   node coords (or a new bg) can move. Nudge each zone coord per act onto the path (overlay via `shot.mjs`); fold in
   U12's hero-clip floor (`y ≥ ~150`); re-check portal `PX/PY` + `mapFriends` offsets. Do Act 1 + Act 2 separately.
-- 📋 **MR3 — Control cluster / "legend"** replacing the buried HUD city-chip dropdown — always-visible corner panel
-  (Home / Hero Den / parent-gated gear + optional ▶/✓/🔒 key). ⚠️ Pick ONE nav surface (cluster OR dropdown, not
-  both); Settings stays parent-gated (3s hold); anchor to the screen (not the 1000×750 SVG), corner clear of
-  painted landmarks; ≥96px.
+- 📐 **MR3 — Control cluster** (now the **standing GLOBAL nav pattern**, not map-only — see the Navigation Validation
+  above). Replace the buried HUD text-chip dropdown with an **always-visible icon cluster: 🗺️ Map + 🏰 Base ONLY**
+  (parent decision 2026-06-14), each **icon + tap-to-hear**, in a **bottom corner** (thumb reach). The chip becomes
+  pure status ("where am I"); **Home / title / profile-switch + the gear move into the parent area**. ⚠️ ONE nav
+  surface (cluster, not the dropdown too); Settings stays parent-gated (hold+math); anchor to the screen (not the
+  1000×750 SVG), corner clear of painted landmarks; ≥96px; Act-2 skin variant; `⏭` skip stays during flows.
 - 📋 **MAP REDO (parent directive — supersedes U2/U6/U12 tweaks).** Act-1 Star Force City map is the worst offender
   (wall-to-wall neon, no negative space, poor figure-ground); **Act-2 medieval map reads better — use it as the
   bar.** Plan: (1) **regenerate the painted bg** calmer (legible winding path + negative space, desaturated
