@@ -42,18 +42,18 @@ DOMAINS — what has a standard, what's partial, what's still missing — so cov
 | Data / privacy / parental controls | ✅ | cloud auth + parent gate |
 | **Accessibility (consolidated)** | ✅ **standard §10** (impl pending) | colorblind-safe, WCAG contrast, audio-redundancy, cognitive/sensory, motor — mapped to the Game Accessibility Guidelines; action checklist in §10 |
 | **Onboarding / FTUE** | ✅ **standard §11** (impl pending) | teach-through-play, I-do/we-do/you-do per new mechanic, fast first win, just-in-time, returning-kid re-entry; action checklist in §11 |
-| **Narrative & voice/tone** | ⚠️ partial | voice roles (CLAUDE.md) + the line-variation note; *no script-tone / mentor-persona / cutscene-&-storybook pacing standard* |
-| **Art-direction bible** | ⚠️ partial | art.js + CHARACTER-ART-PROMPTS.md; *no proportions / shadow-&-light / palette / animation-timing consistency spec* |
-| **Animation principles (Disney 12)** | ⚠️ partial | covered inside juice easing; *no character/UI motion standard (anticipation / staging / secondary action / settle)* |
-| **Haptics** | ❌ GAP · P2 | *build* — iPad taptic as the **3rd feedback channel** (gentle, ND-careful, own toggle) |
-| **Information architecture / screen-flow map** | ❌ GAP · P2 | *build* — canonical map of every screen + its states (empty/loading/populated) + transitions |
-| **Difficulty / flow & pacing** | ⚠️ partial | mastery model + 15/15 split; *formalize the flow channel (challenge↔skill) + session pacing* |
+| **Narrative & voice/tone** | ✅ **standard §12** (impl pending) | per-role personas + script rules (simple/contractions/one-`!`/no-scold) + cutscene pacing; action checklist in §12 |
+| **Art-direction bible** | ✅ **standard §13** (impl pending) | proportions/outline/lighting/palette/timing constants + reference render + per-character checklist; in §13 |
+| **Animation principles (Disney 12)** | ✅ **standard §14** (impl pending) | anticipation→action→settle, arcs, staging, staged screen transitions; in §14 |
+| **Haptics** | ✅ **standard §15** ⚠️ platform-limited | iOS Safari has NO Vibration API → "ready for a future native wrap," feature-detected no-op now; in §15 |
+| **Information architecture / screen-flow map** | ✅ **standard §16** (impl pending) | screen→states→transitions blueprint, shallow tree, no dead-ends; diagram action in §16 |
+| **Difficulty / flow & pacing** | ✅ **standard §17** (impl pending) | flow channel, mastery-gated difficulty, variety/novelty cadence, no spikes/grind; in §17 |
 | Localization | n/a | single child, English |
 
-**Gap build-order (best-first):** **1) Accessibility** (P0 — most aligned with Teddy's ND/dyslexia/ADHD profile;
-consolidates scattered rules + adds colorblind-safe + audio-redundancy + contrast). **2) Onboarding/FTUE** (P0).
-**3) Narrative & voice/tone.** **4) Art-direction bible.** **5) Animation principles.** **6) Haptics.** **7) IA map.**
-**8) Flow & pacing.** Build each as a standards section like §6/§6.5/§7, grounded in the cited authorities.
+**Status: all 18 design domains now have a written standard (§1–§17 + DESIGN-ENGAGEMENT + the contracts).** The design
+*system* is complete; what remains is **retro-code ALIGNMENT** — auditing the existing app against every standard and
+consolidating the fixes into one recommendation doc for Neo (`DESIGN-ALIGNMENT.md`). After that, new work builds
+**to-standard** by default — no further standardization passes on existing code.
 
 ---
 
@@ -514,4 +514,99 @@ Does a new mechanic *land* on the first solo rep, or does he stall? That observa
 *(Sources: [GameDeveloper — FTUE best practices](https://www.gamedeveloper.com/design/best-practices-for-a-successful-ftue-first-time-user-experience-),
 [Games UX — onboarding](https://uxdesign.cc/games-ux-building-the-right-onboarding-experience-a6e99cf4aaea),
 [antidote.gg — FTUE in games](https://antidote.gg/the-importance-of-first-time-user-experience-in-games/).)*
+
+---
+
+## 12. Narrative & voice/tone (standard — Trinity, 2026-06-14)
+**Voice** = each character's persona; **tone** = how it flexes per moment. For a pre-reader the script is *heard*, so
+this governs the AUDIO. House voice = **warm, encouraging, concise, hero-positive — never scolding.**
+- **Per-role personas** (CLAUDE.md voice roles): A = warm mentor/narrator · B = Amelia (caring) · N = Noah (wise, kind
+  wizard) · V = Vixen (smooth, playful villain — menacing-fun, never scary-cruel) · C = Vex/bots (robotic) · friends in
+  their own kid voices. Every new line **matches its role's persona**.
+- **Script rules:** simple words + short sentences; **contractions** ("you're") for warmth (no robotic "you are");
+  **one `!` per line max** (enthusiastic, not shouty); describe the **fun/benefit**, not the function; celebrate
+  **effort + mastery** (louder on mastery — §6.0); wrong = **gentle, never scold** (#2); address him as the hero.
+- **Anti-gaming (#4):** sound-ID prompts stay **generic** — never name/reveal the target letter.
+- **Variation:** high-frequency lines get fresh variants without breaking persona (the QA "line variations" note).
+- **Cutscene/storybook pacing:** one idea per beat, short, audio-first with `faceSpeak`; the storybook-cutscene idea
+  (CLAUDE.md backlog D) is the target for backstory.
+- **Actions (Neo):** a 1-line tone sheet per role (3 dos/don'ts + sample); audit `data-lines.js` for the simple-words /
+  one-`!` / contraction / no-scold rules + persona consistency; confirm all narration auto-advances + has 🔊 replay (#8).
+*(Sources: [NN/g — four tone dimensions](https://www.nngroup.com/videos/tone-of-voice-dimensions/),
+[UX Design Institute — tone of voice](https://www.uxdesigninstitute.com/blog/tone-of-voice-for-ux-writing/); kids
+microcopy: simple words, contractions, one exclamation per screen.)*
+
+## 13. Art-direction bible (standard — Trinity, 2026-06-14)
+Single source of truth so every character (hero, allies, villains, mentors, new friends) reads as **one world**.
+- **Define the constants** (numbers, not vibes): **proportions** (the heroic, slightly-chibi, 7-yo-friendly head-to-body
+  ratio), **outline weight** (`--ink` stroke), the shared **lighting model** (the `feSpecularLighting` sheen + contact
+  shadow + rim glow), the **palette** (reuse §1 tokens), and the **idle-animation timing budget** (breathe/blink/sway).
+- **Reference render:** keep one approved hero render the **whole cast is measured against** (contact-sheet review via
+  the shot harness).
+- **Per-character checklist:** matches proportions · lighting model · outline weight · palette · **uniform canvas**
+  (square, transparent, feet on a consistent baseline — so `rasterArt` wraps mechanically) · **warm + age-appropriate**
+  (this is a 7-yo's app — heroic/strong is great, never grim).
+- **Pipeline:** premium animated SVG for characters, painted raster for bg/maps (the chosen split); **generated** raster
+  (Kendall/JJ/Cal/Nora) must conform to the bible before it ships; the `charArt`/`RASTER` resolver wraps it.
+- **Actions (Neo):** write the proportion/lighting/palette/outline numbers into `art/CHARACTER-ART-PROMPTS.md`; run a
+  full-cast contact sheet and flag any character off-model; conform the placeholder faces to the bible when generated.
+*(Sources: art bible = single source of truth — [Athena](https://www.athena-productions.com/read/how-to-build-a-consistent-art-style-across-a-video-game-team-67),
+[Wayline — art direction](https://www.wayline.io/blog/art-direction-games-best-practices); character standards =
+proportions/silhouette/lighting.)*
+
+## 14. Animation principles (Disney 12) (standard — Trinity, 2026-06-14)
+Apply **Disney's 12 principles** (Thomas & Johnston, *The Illusion of Life*) to character + UI + transitions — beyond
+the reward juice (§6).
+- **Core for us:** **anticipation → action → settle (overshoot)** on meaningful motion (use the §6 easing tokens);
+  **arcs**, not linear; **staging** = ONE focal motion at a time so the learning content stays primary; **secondary
+  action** + **appeal** make characters feel alive (idle breathe/blink/cape-sway — already live); **timing** per the §6
+  budgets; **slow-in/slow-out** via the easing tokens.
+- **Screen transitions:** today a screen just toggles `.on`. Generalize the cutscene `beatIn` (fade + push-in) to
+  `show()` — staged **enter** (push-in) / quick **exit** — so navigation feels designed, not abrupt.
+- **All gated** on reduced-motion / Calm / Lite; never let a flourish compete with the active prompt (staging + §6).
+- **Actions (Neo):** add staged `show()` transitions; audit character idle timing vs the budget; confirm no two big
+  motions compete during a learning response window.
+*(Source: Disney's 12 principles of animation — Thomas & Johnston, *The Illusion of Life* (1981), the canonical reference.)*
+
+## 15. Haptics (standard — Trinity, 2026-06-14) ⚠️ platform-limited
+The 3rd feedback channel (after visual + audio). **HONEST CAVEAT: iOS Safari / PWA has NO reliable Vibration API** →
+haptics are effectively **unavailable on our current web/iPad stack.** So this standard is **"ready for a future native
+wrap"** (Capacitor/Core Haptics), **not a now-build** — low priority; do NOT depend on it for any required feedback.
+- **When available:** a **centralized `Haptics` service** (capability-check + respect On/Minimal/Off) — match the
+  pattern to the event (**success / selection / error**), use **sparingly** (never every tap/scroll), **never the only
+  signal** (accessibility — users disable it), **gentle** (ND sensory), with its **own toggle**.
+- **Event map:** correct = light success tick · mastery/rank-up = richer success · **wrong = none or a *very* soft tap,
+  never an error-buzz** (#2) · tile-tap = optional light selection.
+- **Actions (Neo):** build it as a **feature-detected no-op** today (so it lights up if the app is ever wrapped native);
+  ship nothing that *requires* it.
+*(Sources: Apple HIG / Core Haptics; [haptic UX best practices](https://medium.muz.li/haptic-ux-the-design-guide-for-building-touch-experiences-84639aa4a1b8) —
+centralize, sparingly, never the sole signal.)*
+
+## 16. Information architecture / screen-flow map (standard — Trinity, 2026-06-14)
+The canonical blueprint of every **screen → its states → its transitions**, so nav (§7), onboarding (§11) and
+state stay coherent. Keep the tree **shallow** (Hick — few choices per node) with **no dead-ends** (every screen exits to
+the Map/Base dock + 🔊/⏭).
+- **Screens:** title · intro/interlude (cutscene) · **map** · **base** (+ train / shop / recharge / vault) · the mission
+  types (scan, learn, trace, find, read, spell, sentence, cloze, scramble, boss/patrol, fortress, magic) · win · rest ·
+  settings (hub → sections). **Canonical flow:** title →(first-run intro)→ map → [mission] → win → map; map ⇄ base ⇄
+  sub-activities; act handoff = fortress → interlude → act 2.
+- **States per screen:** empty/zero (U7) · loading · populated · (map) current/done/locked. Every screen must define all
+  the states it can be in.
+- **Actions (Neo):** produce the one-page screen-flow diagram (entries/exits/states per screen) and **verify it against
+  `show()` routing** — use it to catch missing empty-states + orphan screens + any dead-end.
+*(Sources: IA fundamentals (NN/g); our nav model §7.)*
+
+## 17. Difficulty / flow & pacing (standard — Trinity, 2026-06-14)
+Keep Teddy in the **flow channel** (Csikszentmihalyi, *Flow*): challenge matched to skill — too hard = anxiety, too easy
+= boredom; for ADHD, stay in-channel with **frequent small wins**.
+- **Our levers (mostly live):** mastery-paced + adaptive (`pickWeak`/weak-weighting); **no time pressure** (#1), **no
+  fail** (#2); short frequent loops; the **15/15** mission/training split; scaffolding **fades** with competence (§11).
+- **Standard:** difficulty rises **only on mastery** (the gate); there's **always a winnable next step** (the current
+  node); inject **variety** to beat monotony ("heavy varied repetition disguised as new missions" — CLAUDE.md);
+  **novelty cadence** (a new mechanic/reward every so often); session = gentle daily **meter, never a quota**.
+- **Safeguards:** **no difficulty spikes** (every new mechanic scaffolded — §11); **no grind wall** (weak-weighting means
+  progress is always felt); celebrate **often**, loudest on mastery (§6.0).
+- **Actions (Neo):** audit the mission ladder for spikes; confirm every point has a winnable next step; check the variety/
+  novelty cadence; the parent-observable check = engaged vs frustrated/bored.
+*(Source: Mihály Csikszentmihalyi, *Flow* (1990) — the challenge↔skill flow channel; applied to game pacing.)*
 
