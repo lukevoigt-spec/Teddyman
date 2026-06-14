@@ -1143,6 +1143,78 @@ re-presentation via the Vault scheduler → P3 optional fluency mission + parent
 
 ---
 
+## 📐 SPEC FOR NEO — "Sound Warm-Up": oral phonemic awareness + articulatory cues (rec #3) (Trinity, 2026-06-14)
+
+Implements research-brief rec #3. Phonemic awareness (PA) **enables orthographic mapping** (the mechanism sight
+words form by), and Ehri finds OM is facilitated when learners are taught the **articulatory features** of
+phonemes ("how your mouth makes the sound"). NRP: PA instruction is foundational. ([Reading Rockets — OM](https://www.readingrockets.org/reading-101/reading-and-writing-basics/sight-words-and-orthographic-mapping),
+[NRP](https://www.readingrockets.org/topics/curriculum-and-instruction/articles/findings-national-reading-panel))
+Two parts: **(A)** an oral PA warm-up, **(B)** child-facing articulatory cues.
+
+### Reuse what exists
+- **`graphemeSounds(w)`** (game.js:54) already returns a word's separated sound clips (magic-e/digraph aware) →
+  trivial **blending** audio (/s/-/a/-/t/).
+- **`READWORDS`** (pictures) → the tap **response** for blending.
+- **`PH_COACH`** (audio-studio.js:30+) already has per-phoneme keyword + icon + mouth cue (e.g. t: "tongue tip
+  taps behind top teeth — tiny puff") — child-cue gold. The learn screen (`startLearn` game.js:582) has a
+  `#letterCue` slot (588) but **no mouth cue today**.
+
+### ⚠️ No speech recognition (same as fluency)
+Pure PA is oral, but the app can't hear the child blend/segment aloud — so **responses are TAPS** (pick the
+picture / pick the count / pick the sound). The child still says it aloud (mentor models; parent nudge); the
+tap is the measurable proxy.
+
+### (A) Sound Warm-Up — a short, gentle oral-PA drill (≤5 items)
+- **Blend** (easiest): play `graphemeSounds(w)` (sounds separated) → "what word?" → tap the **picture** of `w`
+  from 3–4 `READWORDS` options. *No letters shown* (pure oral); then **bridge** by revealing the grapheme after
+  a correct tap (connects PA→phonics = the orthographic-mapping goal).
+- **Segment**: play the whole word (`word_<w>`) → "tap out the sounds" → tap N boxes (count the phonemes) or tap
+  each box as the sound replays.
+- **Isolate**: play a word → "what's the FIRST sound?" → play 3 sound options (`snd_`), tap the first sound.
+- Sequence blend → segment → isolate; **taught graphemes/words only** (mastery-paced #5).
+
+### (B) Articulatory cue (on the Learn screen + in the warm-up)
+When a sound is taught/practiced, show a **kid-friendly mouth cue**: a small mouth illustration + the keyword/
+icon + a one-line cue (from `PH_COACH`, simplified). Add a tiny `mouthCue(phoneme)` renderer (art.js) — a handful
+of **mouth shapes** mapped by place/manner (open vowel · lips-together m/p/b · teeth f/v · tongue-tip t/d/n/l ·
+back k/g/ng), not a realistic animated mouth (low art cost).
+
+### Data model
+- **Extract a shared `PHONEMES` table** (from `PH_COACH` + base/keyword/icon) into data-content.js so BOTH the
+  studio and the game read it (today it's studio-local + adult-phrased). Add a **kid cue** string + a mouth-shape
+  id per phoneme; keep the technical adult tip for the studio only.
+- Content = `READWORDS` filtered to taught graphemes; audio = `graphemeSounds`/`word_`/`snd_`.
+- Track reps via `record()` on the graphemes (strengthens mastery + feeds the Vault); coins like the Training Room.
+
+### Where it lives
+- The **Sound Warm-Up** = a short optional activity in the **Training Room** (and/or a 20–30s pre-session warm-up).
+  Keep it SHORT (ADHD). The **articulatory cue** integrates into `startLearn` (every new sound) + the warm-up.
+
+### Constraints / gotchas
+- **No speech rec** → tap responses (above); the child should still say it aloud (parent nudge).
+- **Oral → letter bridge:** start with no letters (true PA), reveal the grapheme after — don't skip the bridge,
+  that connection IS the orthographic-mapping payoff.
+- **Anti-gaming #4:** PA prompts are SOUND-only; never show the target letter in the prompt (the isolate task's
+  on-screen text stays generic, like `find`).
+- **Magic-e units have no `snd_`** — exclude from PA (mirror finding #3); use `snd_<v>_long` for long vowels.
+- Audio-first + `flow()`/watchdog + ⏭/Home (#8); no timers/failure, wrong tap = gentle replay+retry (#1/#2);
+  ≥96px, Andika for the bridge letters, high contrast.
+- **Extract `PH_COACH` carefully** — simplify the adult phrasing for the child ("NOT 'tuh'"/"voiced" are for the
+  parent), and don't break the Voice Studio that reads it today.
+
+### Tests
+- `curriculum.test`: every warm-up word is decodable by play position; PA never serves a magic-e grapheme as a
+  sound target; the shared `PHONEMES` table covers every `snd_` phoneme.
+- `save.test`: any new `S` field round-trips; migrate untouched.
+
+### Phasing
+P1 the articulatory cue on the Learn screen (smallest, high-yield — reuse `PH_COACH` + a few mouth shapes) →
+P2 the blend warm-up (Training Room) → P3 segment + isolate + the oral→letter bridge.
+
+— Trinity, 2026-06-14
+
+---
+
 **Test commit by Grok (xAI):** Write access verified successfully! Added this line on 2026-06-13.
 
 ## 2026-06-13 Grok (xAI) Review — Latest Main (commit 060066c)
