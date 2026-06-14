@@ -784,6 +784,84 @@ recommended over PLAY→map, but low-risk if desired.
 
 ---
 
+## 🎨 UI FINDINGS — World Map revamp (Trinity, 2026-06-14)
+
+Parent: the map is busy/overstimulating, the path is slightly misaligned, and it wants a "legend"/control
+cluster. Refs: `map.js:39–100` (mapPaintSVG), `ZONESPOTS` `map.js:17–20`, `mapFriends` `:26`, bg
+`art/bg-map*.jpeg`, nav HUD `index.html:55–67`.
+
+**MR1. Overstimulation = no visual hierarchy (not "too much energy").**
+The painted bg is already very high-contrast/saturated, and EVERY node carries a blurred bloom (`obloom`,
+`#mglow`) + specular highlights, all at similar brightness — ~70+ bright elements + friend figures + hero +
+portal over a loud painting. Nothing says "go HERE next." Direction:
+- **Make the CURRENT node dominate** (bigger bloom/pulse, an arrow or "▶" beacon), **DONE** nodes quiet (small
+  ✓, low glow, slightly desaturated), **LOCKED** nodes muted. Drop the per-node specular highlights on
+  non-current nodes.
+- **Push the painting back** — a subtle scrim/vignette (or a calmer map painting) so nodes/labels/controls
+  pop as foreground.
+⚠️ **Gotchas:** Constraint #3 says loud is fine (no photosensitivity) — so the goal is **hierarchy +
+legibility of the "where do I go" affordance**, NOT blanket de-juicing; keep the reward energy elsewhere. The
+done/current/locked state is the core nav + lock-gate cue — don't let calming bury it. Extend **Lite** to
+flatten the map blooms (the pulse already gates on reduced-motion).
+
+**MR2. Path alignment — the trail is BAKED INTO the painting; only the node coords can move.**
+The golden path lives in `bg-map.jpeg`; nodes are hand-eyeballed `ZONESPOTS` (1000×750) placed on it. "Off" =
+the coords drifted. Fix: **recalibrate `ZONESPOTS`** per zone (Neo: overlay nodes on the bg via `shot.mjs`,
+nudge each coord), OR regenerate a **cleaner map bg with a clearer path** then recalibrate.
+⚠️ **Gotcha:** SVG can't "straighten" the path (it's art) — only node positions or a new bg image. A new bg =
+redo `ZONESPOTS` **for that act** (and re-check the portal `PX/PY` + `mapFriends` offsets). Do Act 1 + Act 2
+separately.
+
+**MR3. Legend / control cluster — replace the buried dropdown.**
+Today nav = the HUD **city-chip dropdown** (World Map / Hero Base / Home, index.html:58–62) + the parent-gated
+gear. Parent wants always-visible controls on the map. Direction: a compact, always-visible **control panel**
+(corner) — Home, Hero Base/"Hero Den", and the parent-gated gear — plus optionally a tiny **key** (▶ current /
+✓ done / 🔒 locked) for the parent.
+⚠️ **Gotchas:** (a) **pick ONE nav surface** — don't run the cluster AND the dropdown (confusing/duplicated);
+decide whether this replaces the HUD dropdown or generalizes to it across screens. (b) **Settings stays
+parent-gated** (3s hold). (c) Place it in a **corner clear of painted landmarks** (parent noted painted objects
+overlap controls) — anchor to the screen, not the 1000×750 SVG. (d) Touch targets ≥96px, high contrast.
+
+— Trinity, 2026-06-14
+
+---
+
+## 📐 SPEC FOR NEO — M1 map-hero raster (focused Phase-1 wire) (Trinity, 2026-06-14)
+
+The standalone quick win (raster already exists; the full `charArt` resolver in the earlier SPEC generalizes
+this in Phase 2). Goal: replace the old `heroSVG` on the map with the existing `teddyArt`, correctly placed.
+
+**Today** (`map.js:64`): `hero = heroNow(250)` (= `heroSVG`, viewBox `-30 -150 310 660`), stripped of its
+`<svg>` tags and inlined at `scale(.26)`, `translate(x-30, y-150)` — perched on the node disc.
+
+**Change — pick ONE route (align with the MR revamp):**
+- **Route A (inline, smallest diff):** build `teddyArt(250, heroOpts().muscle, heroOpts().theme)`, strip its
+  `<svg>` wrapper, inline into the map `<g>`, and **re-tune** for the `240×256` viewBox: choose an on-map
+  height H, `scale = H/256`, and translate so the **feet** (image bottom ≈ y226 in art space) sit at the
+  **node base** `(x, y)`, not the disc center. (Inlining teddyArt's `<style>`/`<image href>` inside the map
+  SVG is fine — the relative href resolves against the page.)
+- **Route B (overlay, crisper — recommended):** render `heroMarquee(H)` (or `charArt("teddy",…)` post-resolver)
+  as an **absolutely-positioned HTML element** over `#mapSVGwrap`, placed at the current node's **screen**
+  coords (map viewBox 1000×750 → px via `#mapSVGwrap.getBoundingClientRect()` ratios), feet at the node;
+  reposition on `resize`. Renders the PNG at native sharpness and decouples from the SVG scale. Use the SAME
+  system for `mapFriends` later so hero+allies share one pipeline.
+
+**Placement:** feet at the node base; if MR1 adds a **pedestal** to the current node, stand him on it.
+**Keep:** muscle tier (`heroOpts().muscle`), theme hero/knight, the float/aura (already reduced-motion gated).
+⚠️ **Gotchas:**
+- **Don't touch the Base hero** (stays parametric `heroSVG` for the weapon/cape loadout preview — audit ‡).
+- **Trade-off:** raster Teddy on the map won't show the equipped **weapon/cape** the old `heroSVG` did —
+  acceptable (weapon reads in the Base), but note it for the parent.
+- When the **resolver** lands (Phase 2), swap `teddyArt(…)` → `charArt("teddy",…)` and apply the chosen map
+  route to allies too — keep hero + allies in ONE pipeline (don't end up with the hero overlaid in HTML but
+  allies inline in SVG).
+**Verify:** `shot.mjs` map scene before/after at a couple of screen sizes; confirm feet sit on the node and the
+right muscle tier/theme shows.
+
+— Trinity, 2026-06-14
+
+---
+
 **Test commit by Grok (xAI):** Write access verified successfully! Added this line on 2026-06-13.
 
 ## 2026-06-13 Grok (xAI) Review — Latest Main (commit 060066c)
