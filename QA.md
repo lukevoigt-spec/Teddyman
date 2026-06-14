@@ -244,6 +244,16 @@ session; see ledger. Open chrome below.)*
   `flyReward` reward-visualization menu (§5/§8), the IP read (§2), build order (§7), and the settings game-feel pass
   (§9.1). **Everything there is bound by the §6.0 Mastery-not-participation contract** (the reward red-team
   formalized). Do not duplicate those specs here; this doc points to them.
+- 🔊💡 **Research: should we "juice" the SOUND EFFECTS?** (parent, 2026-06-14). The visual-juice canon (STYLE.md §6 /
+  DESIGN-ENGAGEMENT §8) has **no audio counterpart yet** — yet sound is half of "game feel." `Sfx` (sfx.js) is a
+  synthesized Web-Audio kit (correct/wrong/combo/coin/unlock/win/gem/mastery) — functional but thin. **Eval enriching
+  it:** layered/"fatter" correct + reward stings, **pitch-laddering** on streaks (combo/coins rise in pitch), per-event
+  **variation** to beat repetition fatigue, and **mastery-weighted** audio (the most satisfying sting on MASTERED! /
+  rank-up, quieter on plain coins — mirrors §6.0). ⚠️ Constraints: **never mask narration** (audio-first #8 — keep SFX
+  short; Music already ducks; SFX has its own `S.sfxVol`), **gentle wrong** (soft low "nope," never harsh — #2),
+  respect reduced-audio. Keep it **synthesized** (no files/licensing, offline — sfx.js's whole point), but weigh whether
+  a few tasteful samples earn their weight. → produce an eval + recommendation, then fold into the juice spec as an
+  "audio-feel pass."
 
 ### Pedagogy & Curriculum
 *(Research basis in DURABLE ANALYSES below. Memory Vault scheduler #1 shipped; #2/#3/#4 reuse its box/due model.)*
