@@ -1296,6 +1296,67 @@ grandfather migrate → P3 move ✦/Vault-graduation to `retainedItem` (+ option
 
 ---
 
+## 🔴 RED-TEAM — is the reward "juice" competing with the reading? (Trinity, 2026-06-14)
+
+Parent question, researched + checked vs the code. **Verdict: mostly well-designed — the juice is intentional and
+ADHD-appropriate; a few tunable dials, not alarms.** Don't remove it (constraint #3 + ADHD needs frequent
+**immediate** reinforcement — children with ADHD are unusually sensitive to reward *delay* and biased toward
+immediate reward: Tripp & Alsop 2001, PubMed PMID 11464973).
+
+### What the code already does RIGHT (don't "fix")
+- **Ambient juice is OFF on learning screens** — `sceneParticles`/motes only on `AMBIENT_SCREENS` (title/map/base/
+  win/rest/intro), never on mission/learn screens (game.js:256; index.html:29). The prompt moment is already clean. ✓
+- **Music ducks under narration** (audio-first, #8). ✓
+- **Combo = an ACCURACY streak, not speed** (`combo++` on correct, reset on wrong, no timer — game.js:144) — no
+  fast-tapping incentive. ✓
+- **Rewards fire AFTER the correct response** (`burstAt`+`Aud.ding`, game.js:470/652/720) — reinforcing, not
+  competing with the prompt. ✓
+- **Cosmetic/coin loop is decoupled** from story; **no harsh failure** — which the ADHD literature strongly
+  supports: ADHD shows **blunted reward sensitivity but ENHANCED learning from NEGATIVE feedback** (Aster et al.
+  2024, PubMed, [DOI](https://doi.org/10.1016/j.nicl.2024.103588)) — "wrong" cues bite harder, so the gentle
+  no-fail design is exactly right. ✓
+
+### The research risk
+- **Seductive details:** interesting-but-irrelevant stimulation adds **extraneous cognitive load** and lowers
+  retention/transfer ([meta-analysis](https://link.springer.com/article/10.1007/s10648-025-10099-z)) — worst under
+  high TEXT load, softer under **narration** (we're audio-first, in our favour). So the risk concentrates in the
+  **exact moment** the child must process the letter/sound.
+- **Overjustification:** expected tangible rewards can shift focus to the reward + undermine intrinsic interest
+  ([overview](https://www.structural-learning.com/post/overjustification-effect)); and ADHD reward-sensitivity skews
+  toward **"Insatiability"/fixation on a particular reward** (Pulver et al. 2020, PubMed,
+  [DOI](https://doi.org/10.1017/neu.2020.18)) — a child could **fixate on coins/cosmetics**.
+
+### Dials for Neo (tuning, not removal)
+1. **Clean beat between the reward and the NEXT prompt.** A burst/SFX bleeding into the next instruction loads
+   working memory during the new encode. Keep reward animations SHORT; `flow()`-sequence reward → settle → next
+   prompt; never let a celebration overlap the next narration.
+2. **Make the READING rewards bigger than the cosmetic ones + go INTERMITTENT.** Coins are an expected every-rep
+   tangible reward (`trainWin`, game.js:1306) — the overjustification/fixation risk. Weight rewards to
+   **mastery/accuracy** over participation; make the **★ / ally-rescue / correct-cue** feel more salient than coins;
+   and **vary** the reward magnitude — intermittent reinforcement is *both* more ADHD-engaging *and* less
+   overjustifying/satiating than identical payouts.
+3. **Verify the learning tile is the MOST salient thing in the response window.** Motes are already off on learning
+   screens — extend the check to **character idle/aura/scene-harmonizer on the Full tier**: while a prompt awaits a
+   response, the gem/letter/word should out-shine the hero's idle. (Calm/Lite already reduce this — confirm Full.)
+4. **Confirm the combo reset never reads as a loss** (#2 — no streak-loss): silent today (good); keep it
+   positive-only, and keep **zero time pressure** so a combo chase never nudges guessing over careful reading.
+5. **Keep reinforcement IMMEDIATE + CLEAR** (ADHD: immediate-reward bias + blunted sensitivity) — instant,
+   unambiguous positive cues; never delay/mute the "you got it."
+
+### "Measuring" with one child (no A/B)
+Parent-observable: is Teddy attending to the **letter/sound** or to the **burst**? Reading **to read** or **to
+earn coins/cosmetics**? If cosmetics dominate his talk/behaviour, dial coins down + make the reading wins louder.
+That behavioural read is the signal — not an in-app metric.
+
+*Sources: PubMed — Tripp & Alsop 2001 (PMID 11464973), Aster et al. 2024 ([DOI](https://doi.org/10.1016/j.nicl.2024.103588)),
+Pulver et al. 2020 ([DOI](https://doi.org/10.1017/neu.2020.18)); seductive details
+[meta-analysis](https://link.springer.com/article/10.1007/s10648-025-10099-z); overjustification
+[overview](https://www.structural-learning.com/post/overjustification-effect).*
+
+— Trinity, 2026-06-14
+
+---
+
 **Test commit by Grok (xAI):** Write access verified successfully! Added this line on 2026-06-13.
 
 ## 2026-06-13 Grok (xAI) Review — Latest Main (commit 060066c)
