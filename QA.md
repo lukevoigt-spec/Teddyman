@@ -79,6 +79,24 @@ An external review raised 5 findings. I checked each against the actual code. **
 worth fixing; 1 is already handled.** Evidence (file:line) + recommended fix below. Any fix must
 keep `node tests/save.test.js` + `node tests/curriculum.test.js` green; #2 and #3 warrant new tests.
 
+> **✅ STATUS — verified by Trinity, 2026-06-14 (Neo's fix commit `7cfcce6`):**
+> - **#2 reset-resurrection — FIXED + verified.** `clearBackup()` (state-save.js) now drops the backup
+>   on reset + Level-0; snapshots kept for undo. Test is real and even includes a *contrast* case proving
+>   the original bug (stale backup out-scores the empty primary without `clearBackup`).
+> - **#3 magic-e remediation — FIXED + verified.** `masteryReview` now splits the weak list: magic-e units
+>   route to `startMagic` (which ends `record(unit,true)…missionComplete`, so it still drives mastery + loops
+>   the gate), letters/digraphs/teams go to `startFind`. Tests confirm magic-e units have no `snd_` clip and
+>   never appear in find/boss foils, and that every foil grapheme IS voiced. *Minor follow-up (optional, not a
+>   bug):* the magic-e path replays the FULL Magic-E teach mission once per loop (≈1 rep each), so reaching
+>   mastery can mean several full-cutscene replays — less efficient/more repetitive than the sound path's
+>   multi-rep round. Consider a short magic-e **practice** round (forge/read of a magic-e word) for faster,
+>   gentler mastery. — Trinity
+> - **#4 cloud-off persistence — FIXED + verified.** `resolveCloudURL()` + an `"off"` sentinel keep sync
+>   disabled across reloads; tests cover off→disabled, unset→baked default, custom→preserved.
+> - **#5 locked capes — correctly left alone** (CSS `pointer-events:none` already guards).
+> - **#1 cloud auth — STILL PENDING the parent's decision** (see the proposed fix below). Not yet implemented.
+> - Suites green at time of verification: **curriculum 40, save 39.**
+
 **1. Cloud saves are world-readable/writable — CONFIRMED (serious).**
 Evidence: `state-save.js:29` bakes the Worker URL into this PUBLIC repo; `:36` `CLOUD_PASSPHRASE=""`;
 `:39` `cloudKey()` returns the bare profile id (e.g. `teddy`); `cloud/worker.js:11–26` does
