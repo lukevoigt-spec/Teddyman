@@ -123,6 +123,22 @@ ok("sentence/cloze missions reference valid pool indices", ix.length===0, ix);
 ok("Act 2 now has sentence-level reading before the Dragon Keep finale",
   actMissions(2).some(function(m){ return m.type==="sentence"; }) && actMissions(2).some(function(m){ return m.type==="cloze"; }));
 
+grp("bug #3: magic-e units never reach a sound-ID (snd_) round");
+// magic-e (a_e/i_e/o_e/u_e) is a SPLIT grapheme with no phoneme clip — it must never be a find/boss gem
+ok("magic-e units have NO snd_ clip (so they can't be sound-ID targets)",
+  MAGICE_UNITS.every(u=>!LINES["snd_"+u]), MAGICE_UNITS.filter(u=>LINES["snd_"+u]));
+ok("soundReviewSet drops magic-e units (they route to startMagic, not startFind)",
+  soundReviewSet(["a_e","sh","i_e","ee"]).join()==="sh,ee", soundReviewSet(["a_e","sh","i_e","ee"]));
+ok("magicReviewSet keeps only the magic-e units",
+  magicReviewSet(["a_e","sh","i_e","ee"]).join()==="a_e,i_e", magicReviewSet(["a_e","sh","i_e","ee"]));
+// teach EVERYTHING, then the find/boss foil pool must be magic-e-free and fully voiced
+S.done={}; MISSIONS.forEach(m=>{ S.done[m.id]=true; });
+ok("find/boss foils (taughtGraphemes) exclude magic-e units",
+  MAGICE_UNITS.every(u=>!taughtGraphemes().includes(u)));
+ok("every find/boss foil grapheme has a snd_ clip",
+  taughtGraphemes().every(g=>!!LINES["snd_"+g]), taughtGraphemes().filter(g=>!LINES["snd_"+g]));
+S.done={};
+
 grp("security: parent-entered profile-name escaping");
 ok("escHTML neutralises <, >, \\" and '",
   (function(){ var s=escHTML("<img src=x onerror=1>\\"'"); return s.indexOf("<")<0 && s.indexOf(">")<0 && s.indexOf('"')<0 && s.indexOf("'")<0; })());

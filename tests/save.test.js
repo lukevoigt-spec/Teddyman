@@ -80,6 +80,17 @@ ok("fresh/empty save writes NO backup", __store["heroTeddySave_v1_bak"]===undefi
 S.done = {0:true}; save();
 ok("save WITH progress writes the backup", __store["heroTeddySave_v1_bak"]!==undefined);
 
+grp("reset / Level-0 is NOT resurrected by a stale backup on reload (QA #2)");
+clearStore();
+S = fresh(); S.done = {0:true,1:true,3:true}; save();            // real progress -> primary + backup
+S = fresh(); save(); clearBackup();                              // intentional reset: empty primary, backup dropped
+ok("reset+clearBackup removes the backup", __store["heroTeddySave_v1_bak"]===undefined);
+ok("load() after a reset returns a FRESH save (old progress not resurrected)", Object.keys(load().done||{}).length===0);
+clearStore();
+S = fresh(); S.done = {0:true,1:true}; save();                   // progress mirrored to primary + backup
+S = fresh(); save();                                             // the OLD buggy path: reset without clearBackup
+ok("WITHOUT clearBackup the stale backup out-scores the empty primary (the bug clearBackup fixes)", Object.keys(load().done||{}).length>0);
+
 grp("snapshot ring is capped at 6");
 clearStore();
 S = fresh();
@@ -132,6 +143,11 @@ ok("with NO passphrase (default), the cloud slot key stays the bare profile id",
 ok("cloudEndpoint keys by ?k=teddy by default (existing sync untouched)", (cloudEndpoint()||"").indexOf("?k=teddy")>0);
 ok("__cloudHash is deterministic and input-sensitive (so a passphrase yields a stable, distinct slot)",
   __cloudHash("pass::teddy")===__cloudHash("pass::teddy") && __cloudHash("pass::teddy")!==__cloudHash("other::teddy"));
+
+grp("cloud sync OFF survives reload via the 'off' sentinel (QA #4)");
+ok("'off' sentinel resolves to disabled/empty (not the baked default)", resolveCloudURL("off")==="");
+ok("unset/empty resolves to the baked DEFAULT_CLOUD_URL", resolveCloudURL("")===DEFAULT_CLOUD_URL);
+ok("a custom URL is preserved as-is", resolveCloudURL("https://x.workers.dev")==="https://x.workers.dev");
 `;
 vm.runInContext(fs.readFileSync(path.join(ROOT, "data-missions.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-content.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-lines.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "state-save.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "audio.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "allies.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "map.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "sfx.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "music.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 

@@ -89,6 +89,11 @@ function save(){ S.ts=Date.now(); const json=JSON.stringify(S);
   if(hasProgress(S)){ try{ localStorage.setItem(BAKKEY,json); }catch(e){} }
   if(!ok && !__saveFailed){ __saveFailed=true; const w=document.getElementById("saveWarn"); if(w)w.style.display="block"; }
   cloudPush(); }
+/* intentional fresh start: drop the BACKUP mirror too. load() keeps whichever copy has MORE
+   progress, and save() never overwrites a good backup with an empty state — so without this a
+   reset/Level-0 leaves the old backup, which then out-scores the empty primary on the next reload
+   and silently resurrects the wiped save. Snapshots (SNAPKEY) are untouched, so undo still works. */
+function clearBackup(){ try{ localStorage.removeItem(BAKKEY); }catch(e){} }
 /* milestone snapshots — a small ring the parent can roll back to */
 function snapshot(label){ try{ let arr=JSON.parse(localStorage.getItem(SNAPKEY)||"[]"); if(!Array.isArray(arr))arr=[];
   arr.push({ts:Date.now(), label:label||"", data:JSON.stringify(S)});
@@ -101,8 +106,10 @@ function snapshots(){ try{ const a=JSON.parse(localStorage.getItem(SNAPKEY)||"[]
    and on boot the newer of {cloud, device} wins — so the SAME url on any
    device just continues his progress. Fixed key, so the only thing to paste
    is the URL. Never blocks play; failures fall back to device-only.          */
-let cloudURL=""; try{ cloudURL=localStorage.getItem("teddyCloudURL")||""; }catch(e){}
-if(!cloudURL && DEFAULT_CLOUD_URL) cloudURL=DEFAULT_CLOUD_URL;   /* baked-in URL = no per-device pasting */
+/* "off" = parent EXPLICITLY disabled sync (stays off across reloads); ""/unset = use the baked-in
+   default (zero per-device setup); anything else = that custom URL. */
+function resolveCloudURL(stored){ if(stored==="off") return ""; if(!stored && DEFAULT_CLOUD_URL) return DEFAULT_CLOUD_URL; return stored||""; }
+let cloudURL=""; try{ cloudURL=resolveCloudURL(localStorage.getItem("teddyCloudURL")||""); }catch(e){}
 function cloudEndpoint(){ return cloudURL ? cloudURL.replace(/\/+$/,"")+"?k="+cloudKey() : null; }   /* each player = its own cloud slot (hashed if a passphrase is set) */
 function cloudStatus(s){ const el=document.getElementById("cloudState"); if(el)el.textContent=s; }
 let __cloudT=null;

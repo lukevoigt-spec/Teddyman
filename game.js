@@ -560,9 +560,21 @@ function missionComplete(){
 }
 /* Gentle, mastery-locking review: a focused adaptive patrol of the weak items,
    then back to the milestone check. Loops (a few short rounds) until mastered. */
+/* magic-e units (a_e/i_e/o_e/u_e) are SPLIT graphemes with NO snd_ phoneme clip — they can
+   never be a sound-ID "find the gem" target. Split a weak list into sound-ID-able graphemes
+   (letters/digraphs/vowel-teams, all voiced) vs magic-e units (re-taught via their Magic-E mission). */
+function soundReviewSet(weak){ return weak.filter(g=>!MAGICE_UNITS.includes(g)); }
+function magicReviewSet(weak){ return weak.filter(g=>MAGICE_UNITS.includes(g)); }
 function masteryReview(weak){ $("hudTitle").textContent="POWER-UP PATROL";
+  /* re-teach a weak magic-e unit via its own Magic-E mission (records the unit -> clears the gate);
+     startFind would play a non-existent snd_a_e and show a nonsensical a_e gem. */
+  const mw=magicReviewSet(weak);
+  if(mw.length){ const mm=MISSIONS.find(x=>x.id===MAGICE_MISSION[mw[0]]);
+    if(mm){ flow(Aud.play("mastery_review"),()=>startMagic(mm)); return; } }
+  const sw=soundReviewSet(weak);
+  if(!sw.length){ missionComplete(); return; }   /* nothing sound-ID-able left (defensive) */
   flow(Aud.play("mastery_review"),
-    ()=> startFind(weak[0], Math.max(6, weak.length*3), weak.slice(), ()=>missionComplete()) );
+    ()=> startFind(sw[0], Math.max(6, sw.length*3), sw.slice(), ()=>missionComplete()) );
 }
 
 /* ---------------- LEARN ---------------- */
@@ -1415,7 +1427,8 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
          a true fresh start (intro + scan tutorials play again), any progress skips
          them. Symmetric so the slider is predictable in both directions (QA #3). */
       S.intro = v>0; S.scan = v>0;
-      save(); GEO=geomFor(currentAct());
+      save(); if(!hasProgress(S))clearBackup();   /* Level 0 = true fresh start: drop the backup so it can't resurrect old progress */
+      GEO=geomFor(currentAct());
       $("settingsPanel").classList.remove("on"); Aud.stop&&Aud.stop(); toMap(); }; }
   /* snapshot restore buttons */
   document.querySelectorAll(".snapRestore").forEach(b=>{ b.onclick=()=>{ const arr=snapshots(); const s=arr[+b.dataset.i];
@@ -1445,7 +1458,7 @@ $("btnAddPlayer").onclick=()=>{ const nm=prompt("New player name?"); if(nm&&nm.t
   g.addEventListener("pointerdown",start);
   ["pointerup","pointerleave","pointercancel"].forEach(ev=>g.addEventListener(ev,cancel)); })();
 $("btnCloudConnect").onclick=()=>cloudConnect($("cloudURL").value);
-$("btnCloudOff").onclick=()=>{ cloudURL=""; try{localStorage.removeItem("teddyCloudURL");}catch(e){} $("cloudURL").value=""; cloudStatus("Cloud sync off (saved on this device)"); };
+$("btnCloudOff").onclick=()=>{ cloudURL=""; try{localStorage.setItem("teddyCloudURL","off");}catch(e){} $("cloudURL").value=""; cloudStatus("Cloud sync off (saved on this device)"); };   /* "off" sentinel: boot keeps it disabled instead of re-applying DEFAULT_CLOUD_URL */
 $("btnCloseSettings").onclick=()=>$("settingsPanel").classList.remove("on");
 $("btnVoiceTest").onclick=()=>{Aud.pick();Aud.play("test");};
 /* Visual-detail TIER: Full → Calm → Lite (taps cycle). Full = motion+filters;
@@ -1468,7 +1481,7 @@ paintVol();
 $("btnCopySave").onclick=()=>{$("saveBox").select();document.execCommand("copy");};
 $("btnResetProfile").onclick=()=>{
   if(!confirm("Erase ALL of "+profileName(ACTIVE)+"'s progress and start fresh?\n\n• Every mission, gem, gear, coin and league member is wiped.\n• A backup snapshot is saved first — Restore it from “Backups” to undo."))return;
-  snapshot("before reset"); S=fresh(); save(); GEO=geomFor(1);
+  snapshot("before reset"); S=fresh(); save(); clearBackup(); GEO=geomFor(1);   /* clearBackup: an empty reset must not be resurrected by the old backup on reload */
   $("settingsPanel").classList.remove("on"); paintTitle(); show("scrTitle"); };
 $("btnRestoreSave").onclick=()=>{ try{const d=migrate(JSON.parse($("saveBox").value));
   if(d){ snapshot("before restore"); S=d; save(); $("settingsPanel").classList.remove("on"); GEO=geomFor(currentAct()); toMap(); }
