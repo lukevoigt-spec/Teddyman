@@ -137,12 +137,19 @@ ok("escHTML(profileName) neutralises an injected name", (function(){
   var s=escHTML(profileName(bad)); removeProfile(bad);
   return s.indexOf("<")<0 && s.indexOf(">")<0; })());
 
-grp("cloud key: optional passphrase is backward-compatible + unguessable when set");
+grp("cloud auth: sync requires the parent-entered family code, keyed to an unguessable slot (QA #1)");
 applyProfile("teddy");
-ok("with NO passphrase (default), the cloud slot key stays the bare profile id", cloudKey()==="teddy");
-ok("cloudEndpoint keys by ?k=teddy by default (existing sync untouched)", (cloudEndpoint()||"").indexOf("?k=teddy")>0);
-ok("__cloudHash is deterministic and input-sensitive (so a passphrase yields a stable, distinct slot)",
+cloudOff();
+ok("no family code => cloud is INACTIVE (fail closed, no endpoint)", cloudEndpoint()===null);
+cloudConnect("fam-code-123");
+ok("with a code, cloudEndpoint is active and keyed by an UNGUESSABLE hashed slot (not ?k=teddy)",
+  (function(){ var e=cloudEndpoint()||""; return e.indexOf("?k=p")>0 && e.indexOf("?k=teddy")<0; })());
+ok("cloudKey() derives from the family code + player, never the bare profile id",
+  cloudKey()==="p"+__cloudHash("fam-code-123::teddy") && cloudKey()!=="teddy");
+ok("__cloudHash is deterministic and input-sensitive (stable, distinct slot per code)",
   __cloudHash("pass::teddy")===__cloudHash("pass::teddy") && __cloudHash("pass::teddy")!==__cloudHash("other::teddy"));
+cloudOff();
+ok("turning sync off clears the code => inactive again", cloudEndpoint()===null);
 
 grp("cloud sync OFF survives reload via the 'off' sentinel (QA #4)");
 ok("'off' sentinel resolves to disabled/empty (not the baked default)", resolveCloudURL("off")==="");

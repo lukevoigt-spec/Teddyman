@@ -113,11 +113,16 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
    so NO per-device pasting is ever needed — paste it there once and every device auto-syncs. Save +
    profile layer is regression-tested in tests/save.test.js (25 assertions). LIVE: DEFAULT_CLOUD_URL
    is baked to the parent's Worker; cloud confirmed syncing on-device.
-   DONE (opt-in): set CLOUD_PASSPHRASE (top of state-save.js) and the cloud slot key becomes
-   "p"+hash(passphrase+profile) (cloudKey/__cloudHash) instead of the bare profile id, so strangers
-   can't read/write a child's save by guessing the public Worker URL. BACKWARD-COMPATIBLE + no Worker
-   change (the Worker stores whatever ?k= it gets): default "" keeps the bare id (existing sync
-   untouched); setting it on every device shares a private slot (one-time re-sync). save.test guards it.
+   CLOUD AUTH (DONE — QA #1, supersedes the old CLOUD_PASSPHRASE which is REMOVED): cloud is now
+   secured by a parent-entered FAMILY SYNC CODE (localStorage "teddyCloudSecret"), never committed
+   (a public static site can't hold a secret). Sync is ACTIVE only when cloudActive()= URL && secret;
+   the code (a) authenticates every request — cloud/worker.js requires Authorization: Bearer ==
+   env.AUTH_SECRET (a Cloudflare SECRET binding, fail-closed 401 otherwise) — and (b) derives an
+   unguessable slot cloudKey()="p"+__cloudHash(secret+"::"+profile), so ?k=teddy guessing is dead.
+   Grown-Up Corner ▸ Sync shows ONE field "Family sync code" (cloudConnect(secret)); "Turn off" =
+   cloudOff() (clears the code + tombstones the URL so boot stays off — also closes QA #4). Offline-
+   first preserved (missing/wrong code → local save, never blocks). Parent setup: set AUTH_SECRET on
+   the Worker once, then type the same code per device (see cloud/README.md). save.test guards it.
 8. All instructions are audio-first (the player cannot read yet). Every prompt has a replay
    button. Any flow that waits on audio MUST use the flow()/watchdog pattern so the game can
    never hang — there is always a ⏭ skip and a Home button.

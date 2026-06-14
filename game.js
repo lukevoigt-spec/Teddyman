@@ -1366,7 +1366,7 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
   const standalone = (window.navigator&&window.navigator.standalone) || (window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches);
   const safetyHTML=`<div class="psec"><b>Save safety</b>
       <div class="pnote" style="margin:4px 0 8px;">His progress is kept in two copies on this iPad and repaired automatically if one is damaged. For real peace of mind:</div>
-      <div class="pnote">${cloudURL?'<span style="color:#39d98a;font-weight:800;">✓</span> Cloud sync is ON — his progress is backed up off-device.':'<span style="color:#ff5e57;font-weight:800;">✗</span> <b>Cloud sync is OFF.</b> Turn it on (Backup tab) so progress is safe even if this iPad is lost or cleared.'}</div>
+      <div class="pnote">${cloudActive()?'<span style="color:#39d98a;font-weight:800;">✓</span> Cloud sync is ON — his progress is backed up off-device.':'<span style="color:#ff5e57;font-weight:800;">✗</span> <b>Cloud sync is OFF.</b> Turn it on (Backup tab) so progress is safe even if this iPad is lost or cleared.'}</div>
       <div class="pnote" style="margin-top:4px;">${standalone?'<span style="color:#39d98a;font-weight:800;">✓</span> Running as a Home-Screen app — storage is durable.':'<span style="color:#ff5e57;font-weight:800;">✗</span> <b>Add to Home Screen</b> (Safari Share ▸ Add to Home Screen). Otherwise Safari can erase saved progress after about a week unused.'}</div>
       <div style="margin-top:8px;"><b class="pnote">Safety snapshots</b> ${snapRows}</div></div>`;
   /* daily training: today + last-7-days history */
@@ -1436,7 +1436,7 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
     $("settingsPanel").classList.remove("on"); GEO=geomFor(currentAct()); toMap(); }; });
 };
 function openSettings(){ $("saveBox").value=JSON.stringify(S); $("vpStatus2").textContent=vpMsg(); window.renderProgress();
-  $("cloudURL").value=cloudURL; cloudStatus(cloudURL?"Cloud sync ON — same URL on any device continues his progress":"Cloud sync off (saved on this device)");
+  $("cloudSecret").value=cloudSecret; cloudStatus(cloudActive()?"Cloud sync ON — the same family code on any device continues his progress":"Cloud sync off (saved on this device)");
   { const rw=$("resetWho"); if(rw)rw.textContent=profileName(ACTIVE)+"'s"; }
   paintPlayers(); paintVol(); paintDetailSeg(); $("settingsPanel").classList.add("on"); }
 /* parent-only player management (inside the gated Grown-Up Corner) */
@@ -1457,8 +1457,8 @@ $("btnAddPlayer").onclick=()=>{ const nm=prompt("New player name?"); if(nm&&nm.t
   const cancel=()=>{ clearTimeout(t); g.classList.remove("holding"); };
   g.addEventListener("pointerdown",start);
   ["pointerup","pointerleave","pointercancel"].forEach(ev=>g.addEventListener(ev,cancel)); })();
-$("btnCloudConnect").onclick=()=>cloudConnect($("cloudURL").value);
-$("btnCloudOff").onclick=()=>{ cloudURL=""; try{localStorage.setItem("teddyCloudURL","off");}catch(e){} $("cloudURL").value=""; cloudStatus("Cloud sync off (saved on this device)"); };   /* "off" sentinel: boot keeps it disabled instead of re-applying DEFAULT_CLOUD_URL */
+$("btnCloudConnect").onclick=()=>cloudConnect($("cloudSecret").value);
+$("btnCloudOff").onclick=()=>{ cloudOff(); $("cloudSecret").value=""; };
 $("btnCloseSettings").onclick=()=>$("settingsPanel").classList.remove("on");
 $("btnVoiceTest").onclick=()=>{Aud.pick();Aud.play("test");};
 /* Visual-detail TIER: Full → Calm → Lite (taps cycle). Full = motion+filters;

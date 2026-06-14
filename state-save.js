@@ -33,10 +33,14 @@ const DEFAULT_CLOUD_URL="https://teddy-saves.lukevoigt.workers.dev";   /* baked-
    COMPATIBLE + needs NO Worker change (the Worker stores whatever ?k= it's given):
    leave it "" and keys stay the bare id (existing sync untouched); set it once on
    every device and they share the private slot (a one-time re-sync to the new slot). */
-const CLOUD_PASSPHRASE="";
+/* FAMILY SYNC CODE — a parent-entered secret, cached per device (localStorage "teddyCloudSecret"),
+   NEVER committed (the client is a public static site, so a baked secret would be worthless). It both
+   (a) authenticates every Worker request (Authorization: Bearer) and (b) derives an unguessable slot
+   key, so the cloud save is no longer readable/writable by anyone who knows the public Worker URL. */
+let cloudSecret=""; try{ cloudSecret=localStorage.getItem("teddyCloudSecret")||""; }catch(e){}
 function __cloudHash(s){ let h1=5381,h2=52711; for(let i=0;i<s.length;i++){ const c=s.charCodeAt(i);
   h1=((h1<<5)+h1+c)>>>0; h2=((h2<<5)+h2^c)>>>0; } return h1.toString(36)+h2.toString(36); }
-function cloudKey(){ return CLOUD_PASSPHRASE ? "p"+__cloudHash(CLOUD_PASSPHRASE+"::"+ACTIVE) : ACTIVE; }
+function cloudKey(){ return "p"+__cloudHash(cloudSecret+"::"+ACTIVE); }   /* per-family, per-player private slot */
 const PROFKEY="teddyProfiles", ACTIVEKEY="teddyActiveProfile";
 function readJSON(k,f){ try{ const v=JSON.parse(localStorage.getItem(k)); return v==null?f:v; }catch(e){ return f; } }
 function profiles(){ let p=readJSON(PROFKEY,null);
@@ -110,27 +114,38 @@ function snapshots(){ try{ const a=JSON.parse(localStorage.getItem(SNAPKEY)||"[]
    default (zero per-device setup); anything else = that custom URL. */
 function resolveCloudURL(stored){ if(stored==="off") return ""; if(!stored && DEFAULT_CLOUD_URL) return DEFAULT_CLOUD_URL; return stored||""; }
 let cloudURL=""; try{ cloudURL=resolveCloudURL(localStorage.getItem("teddyCloudURL")||""); }catch(e){}
-function cloudEndpoint(){ return cloudURL ? cloudURL.replace(/\/+$/,"")+"?k="+cloudKey() : null; }   /* each player = its own cloud slot (hashed if a passphrase is set) */
+/* sync is ACTIVE only when BOTH the URL (baked default) and the family code are present */
+function cloudActive(){ return !!(cloudURL && cloudSecret); }
+function cloudEndpoint(){ return cloudActive() ? cloudURL.replace(/\/+$/,"")+"?k="+cloudKey() : null; }
+function cloudAuth(extra){ const h=Object.assign({},extra||{}); if(cloudSecret)h["Authorization"]="Bearer "+cloudSecret; return h; }
 function cloudStatus(s){ const el=document.getElementById("cloudState"); if(el)el.textContent=s; }
 let __cloudT=null;
 function cloudPush(){ const u=cloudEndpoint(); if(!u)return; clearTimeout(__cloudT);
   __cloudT=setTimeout(()=>{ cloudStatus("Saving to cloud…");
-    fetch(u,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(S)})
-      .then(r=>cloudStatus(r.ok?"Synced to cloud ✓":"Cloud error — saved on device"))
+    fetch(u,{method:"PUT",headers:cloudAuth({"Content-Type":"application/json"}),body:JSON.stringify(S)})
+      .then(r=>cloudStatus(r.ok?"Synced to cloud ✓":(r.status===401?"Wrong family code — saved on device":"Cloud error — saved on device")))
       .catch(()=>cloudStatus("Offline — saved on device")); },2500); }
 async function cloudPull(){ const u=cloudEndpoint(); if(!u)return false;
-  try{ const r=await fetch(u); if(!r.ok)return false; const t=(await r.text()).trim(); if(!t)return false;
+  try{ const r=await fetch(u,{headers:cloudAuth()}); if(!r.ok)return false; const t=(await r.text()).trim(); if(!t)return false;
     const d=migrate(JSON.parse(t));
     if(d&&(d.ts||0)>(S.ts||0)){ S=d;
       try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} return true; } }
   catch(e){} return false; }
-function cloudConnect(url){ cloudURL=(url||"").trim();
-  try{ localStorage.setItem("teddyCloudURL",cloudURL); }catch(e){}
-  if(!cloudURL){ cloudStatus("Cloud sync off (device only)"); return; }
+/* parent enters the family code (Grown-Up Corner ▸ Sync). Cached per device, then silent forever. */
+function cloudConnect(secret){ cloudSecret=(secret||"").trim();
+  try{ if(cloudSecret){ localStorage.setItem("teddyCloudSecret",cloudSecret); localStorage.removeItem("teddyCloudURL"); }
+       else localStorage.removeItem("teddyCloudSecret"); }catch(e){}
+  let stored=""; try{ stored=localStorage.getItem("teddyCloudURL")||""; }catch(e){}
+  cloudURL=resolveCloudURL(stored);
+  if(!cloudActive()){ cloudStatus("Cloud sync off (saved on this device)"); return; }
   cloudStatus("Connecting…");
   cloudPull().then(changed=>{ if(changed){ GEO=geomFor(currentAct()); if(S.intro){const c=document.getElementById("btnContinue"); if(c)c.style.display="inline-block";} }
     cloudStatus(changed?"Connected ✓ — restored his cloud progress":"Connected ✓ — this device now backs up to the cloud");
     cloudPush(); }); }
+/* parent turns sync off: drop the cached code (the gate) AND tombstone the URL so boot stays off. */
+function cloudOff(){ cloudSecret=""; cloudURL="";
+  try{ localStorage.removeItem("teddyCloudSecret"); localStorage.setItem("teddyCloudURL","off"); }catch(e){}
+  cloudStatus("Cloud sync off (saved on this device)"); }
 function today(){return new Date().toDateString();}
 function sessionTick(){ if(S.session.day!==today()){S.session={count:0,day:today(),rest:false};save();} }
 

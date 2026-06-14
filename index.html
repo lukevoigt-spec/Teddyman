@@ -363,8 +363,8 @@
       <div class="setcard">
         <div class="setcard-h"><span class="sc-ic">☁️</span> Sync &amp; Backup</div>
         <div id="saveWarn" style="display:none;background:#5a1530;border:2px solid #ff5e57;color:#ffd0cb;border-radius:12px;padding:8px 14px;font-size:13px;text-align:center;">This iPad blocked saving (storage full or private mode). Turn on cloud sync or copy a backup so progress isn't lost.</div>
-        <div class="setcard-sub"><b>Cloud sync</b> &mdash; his progress follows him to any device. Paste your Cloudflare Worker URL once; the <i>same URL</i> on another iPad continues right where he left off. (Setup: <b>cloud/README.md</b>.)</div>
-        <input id="cloudURL" type="text" placeholder="https://teddy-save.your-name.workers.dev" class="setinput">
+        <div class="setcard-sub"><b>Cloud sync</b> &mdash; his progress follows him to any device. Enter your <b>Family sync code</b> once on each iPad; the <i>same code</i> continues his progress everywhere, and keeps his save private. (Setup: <b>cloud/README.md</b>.)</div>
+        <input id="cloudSecret" type="text" placeholder="Family sync code" class="setinput" autocomplete="off" autocapitalize="none" spellcheck="false">
         <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
           <button class="btn ghost sm" id="btnCloudConnect">Connect / Sync now</button>
           <button class="btn ghost sm" id="btnCloudOff">Turn off</button>
