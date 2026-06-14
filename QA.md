@@ -1,5 +1,8 @@
 # QA.md — External Review Notes for Super Teddy
 
+> **Maintained by Trinity (QA / Docs).** Crew & workflow live in `AGENTS.md`. Only **Neo** (Lead
+> Coder) edits code & merges to `main`; QA agents write here only. **Sign every entry** `— name, date`.
+
 ---
 
 ## ⭐ CURRENT LIVE STATE & HANDOFF — 2026-06-14 (read this first)
