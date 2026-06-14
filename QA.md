@@ -120,10 +120,12 @@ Every UI finding/spec logged so far, by screen. Full detail in the dated section
 **Ship-now quick wins:** H3, H4, M1-wire, B1(b) shade `heroSVG`.
 
 **🆕 GOLD-STANDARD UI/UX AUDIT (real-screen, U-series) — see the dated section below.** Highest-leverage:
-- **U1** 🔴 **P0 touch targets below spec** — the audio **replay/ear button is 52px** and the **round nav/gear is
-  54px**, vs the project's ~96px mandate (CLAUDE.md #6) and the kids-UX ≥64px floor. U1 is a HARD-CONSTRAINT
-  regression (#6, and #8 since the replay button is the audio-first lifeline). **Ship-now quick win.**
-- **U2** 🟠 Low-contrast text — map zone labels (locked `#9a92c0`), subtitle (`#cfc6f2`), progress counters.
+- **U1** ✅ **SHIPPED+verified (Neo, 1d4ce8c)** — ear 52→72px with a ~96px hit-area (the audio-first lifeline,
+  constraints #6/#8) + round nav/gear 54→72px. Re-shot on a real screen: replay/coin/nav chrome reads larger. ✔
+- **U2** ✅ **SHIPPED+verified (Neo, 1d4ce8c)** — map zone labels brighter (locked `#9a92c0`→`#c7c0e6`) on opaque
+  pills, glyph-distorting `textLength` stretch removed, subtitle ink-stroked, progress counter bigger+stroked.
+  Re-shot: map labels read **clearly** now, distortion gone. ✔ *(Busiest-spot map contrast = the structural MR1/U6
+  rework, not this fix.)*
 - **U3** 🟠 Grown-Up Corner layout — vast empty lower half + 12–15px text (cross-refs **P1**).
 - **U4** 🟡 Emoji picture-tiles amid premium painted/raster art (style clash); intro/scan/forge = one tiny
   floating control on a vast empty scene (weak affordance). U5 consistency + map clutter fold into **MR1/M2**.
