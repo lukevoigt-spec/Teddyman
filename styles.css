@@ -193,7 +193,8 @@ body[data-act="2"] .navitem{border-color:#6a5436;background:rgba(50,38,18,.55);c
 .tnum{fill:var(--gold);font-family:'Bangers',cursive;font-size:24px;stroke:var(--ink);stroke-width:3.5;paint-order:stroke;}
 .tdot.next{animation:hintpulse 1.4s infinite;transform-origin:center;transform-box:fill-box;}
 .tdot.hit{fill:var(--green);}
-.guide{font-family:'Andika',sans-serif;font-weight:700;fill:rgba(255,246,227,.34);}   /* brighter trace-me letter (was .16 — too faint on the painted ground) */
+/* U15: ghost stroke = faint thick polyline of the TRACE points (aligns with the dots by construction, shows the true stroke) */
+.guideline{fill:none;stroke:rgba(255,246,227,.30);stroke-width:30;stroke-linecap:round;stroke-linejoin:round;}
 
 .boss{width:clamp(170px,30vw,280px);transition:transform .35s ease;}
 .boss.hitfx{animation:shake .38s ease;}
@@ -1008,11 +1009,13 @@ body.lite .obloom,body.lite .pbloom{display:none;}   /* old iPads: flatten the G
 /* U4: a big, friendly primary CTA for the intro-narration phase of scan/forge — an obvious first
    action on the otherwise-bare painted stage. Audio-first preserved: narration still auto-advances
    (constraint #8); tapping just starts the round early. */
-.tapstart{position:absolute;left:50%;top:66%;transform:translate(-50%,-50%);z-index:7;
-  width:clamp(112px,20vw,150px);height:clamp(112px,20vw,150px);border-radius:50%;
-  border:6px solid var(--ink);color:var(--ink);display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(70% 60% at 32% 24%, #fff0b0, #ffce3a 52%, #e08f1f);cursor:pointer;
-  box-shadow:0 10px 22px rgba(0,0,0,.5), inset 0 4px 0 rgba(255,255,255,.6), inset 0 -12px 20px rgba(120,68,8,.42), inset 0 0 0 2px rgba(255,255,255,.18);}
+/* U14: YouTube-style play affordance — translucent dark disc + white triangle (was an opaque gold
+   orb that covered the art). A 7yo reads it as "play"; the scene shows through behind it. */
+.tapstart{position:absolute;left:50%;top:64%;transform:translate(-50%,-50%);z-index:7;
+  width:clamp(100px,17vw,132px);height:clamp(100px,17vw,132px);border-radius:50%;
+  border:3px solid rgba(255,255,255,.8);color:#fff;display:flex;align-items:center;justify-content:center;
+  background:rgba(12,8,26,.5);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);cursor:pointer;
+  box-shadow:0 8px 20px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.16);}
 .tapstart .ts-orb{display:flex;align-items:center;justify-content:center;}
 .tapstart .ts-orb svg{margin-left:6px;}   /* optically centre the play triangle */
 @media (prefers-reduced-motion:no-preference){.tapstart{animation:tapbob 1.45s ease-in-out infinite;}}

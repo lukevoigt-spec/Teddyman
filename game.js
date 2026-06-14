@@ -746,7 +746,11 @@ function startTrace(g){ show("scrTrace");
   narrate("trace",$("traceText"),["trace_prompt"]);
   strokes=TRACE[g].map(s=>s.slice()); strokeIx=0; dotIx=0; trail=[];
   const svg=$("traceSVG");
-  svg.innerHTML=`<text class="guide" x="150" y="232" text-anchor="middle" font-size="260">${g}</text><polyline id="trailLine" fill="none" stroke="#ffc93c" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>`;
+  /* U15: ghost letterform built from the SAME TRACE[g] points the dots use (was an Andika <text>
+     glyph from an independent source → misaligned). Faint thick stroke = aligns by construction +
+     shows the true handwriting stroke to follow. */
+  const ghost=strokes.map(st=>`<polyline class="guideline" points="${st.map(p=>p[0]+","+p[1]).join(" ")}"/>`).join("");
+  svg.innerHTML=ghost+`<polyline id="trailLine" fill="none" stroke="#ffc93c" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>`;
   paintDots();
   svg.onpointerdown=svg.onpointermove=ev=>{ if(ev.buttons===0&&ev.type==="pointermove")return; handleTracePoint(ev); }; }
 /* U9: O-G trace guide — a faint DASHED path through each remaining stroke (shows the direction to
