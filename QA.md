@@ -98,6 +98,10 @@ Every UI finding/spec logged so far, by screen. Full detail in the dated section
 - **B1** 📋 Base hero must stay **parametric** (loadout weapon/cape) → shade `heroSVG` so it's not "lesser".
 - **B2/B3** ↪ cross-ref the character-art resolver + H2 buttons.
 
+**Parent / Grown-Up Corner**
+- **P1** 📋 Nav flaky — refactor IA into a parent **hub + drill-down**, pull the **Voice Studio** out as its own
+  tool, add a **cognitive parent gate** (research-backed). Preserves every feature.
+
 **Cross-cutting — characters & chrome**
 - **🖼️ UI Glow-up Audit** — inventory: only Teddy + Vixen are raster; everyone else old SVG (+ Neo's
   visual-audit instructions: extend `shot.mjs` scenes, rollout order, uniform-canvas spec).
@@ -940,6 +944,60 @@ and **M1** (hero raster). Full reasoning + gotchas are in those entries above �
   (acceptable); at resolver time swap `teddyArt→charArt` and put **hero + allies on the same pipeline**.
 - **Verify** each step with `shot.mjs` (map scene, **both acts**, Chromium + WebKit); keep `save`+`curriculum`
   green.
+
+— Trinity, 2026-06-14
+
+---
+
+## 🔎 RESEARCH + REFACTOR — Grown-Up Corner (Parent) UX (Trinity, 2026-06-14)
+
+Parent: nav still feels flaky despite loving the flexibility. I researched settings + parent-area UX — the
+problem is **information architecture**, not the features. Refs: panel `index.html:305–434` (4 flat tabs:
+Players / Progress / Settings / Voices), gate `game.js:1454` (3-second press-and-hold).
+
+### What the research says
+- **Group by macro-function, card-sorted to the user's mental model; visual hierarchy + whitespace; don't stuff
+  one screen** — mixed concerns + long flat lists are the #1 "can't find it" cause. ([Toptal](https://www.toptal.com/designers/ux/settings-ux),
+  [Setproduct](https://www.setproduct.com/blog/settings-ui-design), [uiux.studio](https://uiux.studio/2023/07/24/8-steps-to-improve-app-settings-ux/))
+- **Progressive disclosure** — top-level categories that **drill into** detail — beats one giant scroll.
+- **Kids' apps need a hard Child-Space ↔ Parent-Space boundary**; "complicated navigation with hidden menus or
+  excessive scrolling frustrates." ([Ramotion](https://www.ramotion.com/blog/ux-design-for-kids/), [Gapsy](https://gapsystudio.com/blog/ux-design-for-kids/))
+- **Parent gates must be COGNITIVE** (e.g., "tap 18 + 5"): a button/"are you an adult"/a timed hold gives "no real
+  protection because children will tap [or hold] whatever lets them continue." ([UX Collective](https://uxdesign.cc/designing-apps-for-young-kids-part-1-ff54c46c773b), Gapsy)
+- **Parent dashboards lead with an OVERVIEW** (who's playing, progress, time, status), then drill into controls.
+  ([Amazon Kids](https://apps.apple.com/us/app/-/id6471528064), [Boomerang](https://useboomerang.com/article/parental-control-apps/))
+
+### Diagnosis — why it feels flaky
+1. **Four heterogeneous jobs as peer tabs:** Players (account), Progress (a data dashboard), Settings
+   (preferences), Voices (a full content-production **studio**). The Studio dwarfs the rest — hopping between a
+   sound toggle and a recording workflow is jarring.
+2. **Flat tabs hide content + lose your place** (Settings = long card scroll; Voices = long studio); no
+   landing/hierarchy to orient the parent.
+3. **Weak gate:** a 3-second hold is doable by a 7yo — not a real parent/child boundary.
+4. **No parent "home"** — you land on Players, not an at-a-glance overview.
+
+### Recommended refactor (PRESERVES every feature — IA, not removal)
+- **A parent HUB landing (dashboard):** active player, today's mins + missions, cloud on/off, voice-coverage % —
+  then big cards that **drill into** sections (hub → section → Back).
+- **Separate the jobs:** (1) **Overview** (hub), (2) **Players**, (3) **Progress/Reports** ("what Teddy can read
+  now" + export), (4) **Settings** (Sound / Display / Sync+Backup / Reset — iOS-style grouped list), (5) **Voice
+  Studio pulled OUT as its own labeled tool** (a workflow, not a "setting").
+- **Upgrade the gate to a light cognitive challenge** ("tap the answer: 14 + 9") in front of the hold.
+- Reuse the icon/card system from the settings overhaul; tidy whitespace + scannable microcopy.
+
+### Gotchas for Neo
+- **Don't remove capability** — keep every control + the whole Studio; just re-home them (the parent loves the
+  options).
+- **Gate-friction trade-off:** a cognitive gate every entry annoys a frequent parent → **remember it for the
+  session** (re-challenge after background/idle), and definitely gate the destructive bits (Reset, Publish/token,
+  cloud) behind it.
+- **Preserve element IDs / wiring** (`volSlider`, `btnSfxToggle`, `detailSeg`, `cloud*`, `btnResetProfile`, the
+  audio-studio ids, `renderProgress`) or migrate carefully — lots of JS binds to them; a blind re-layout breaks
+  handlers.
+- **Drill-down needs a reliable Back + state/scroll reset** — part of today's "flaky" feel may be tab state not
+  resetting; fix it in the refactor.
+- **Studio is heavy** (IndexedDB, ElevenLabs key, GitHub token) — keep it lazy/contained in its own space.
+- Accessibility: ≥96px targets, high contrast even in the parent area.
 
 — Trinity, 2026-06-14
 
