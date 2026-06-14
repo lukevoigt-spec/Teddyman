@@ -318,6 +318,44 @@ Source of truth = the `RASTER` manifest (`art.js:198-200`) + the `rasterArt()` c
   placeholders. None block gameplay; all are art-lane polish (cross-refs the character-art resolver + **U8** boss
   escalation).
 
+### 🔧 U10–U13 — READY-TO-SHIP FIX SPECS (Neo, exact targets) — 2026-06-14
+All four are small + low-risk. Verify each with `node tools/shot-cloud.mjs <scene>` (scenes: `intro`, `recharge`/
+`inter`, `a2map`, `a2base`) + keep `save`/`curriculum` green.
+
+**U11 — bubble text clips behind the 🔊 ear (🟠 CSS one-liner; ship first — it's a regression from U1).**
+*Root cause:* `.bubble` reserves `padding:16px 70px 16px 22px` (`styles.css:41`) — that **70px right pad was tuned for
+the OLD 52px ear**. The U1 fix enlarged the ear to `width:72px; right:12px` (`styles.css:49`), so it now needs
+`72+12+gap ≈ 92px` and overflows the 70px reserve, clipping the last word (seen on Recharge + Interlude).
+*Fix:* bump `.bubble` padding-right **70px → 92px**. That's it. (`max-width:min(760px,92vw)` stays fine down to ~320px.)
+
+**U10 — Intro "boxy" skyline = crude clip-art on premium art (🟠; the parent's complaint).**
+*Root cause:* `INTRO[0].art = citySVG()` (the flat-rectangle skyline, defined in `art.js`) and `INTRO[3].art` (the
+inline "two boxes + line" letter-pairing SVG at `game.js:475`) are placeholder vector clip-art injected into
+`#introArt` over the painted bg. *Fix (pick one, lowest-effort first):* (a) replace `citySVG()` with a **full-bleed
+painted `art/intro-city.png`** via the gen pipeline (house style in `art/CHARACTER-ART-PROMPTS.md`), wrapped like the
+other raster art so the cine letterbox/grade still apply; (b) at minimum, **drop the gold `.panelart` frame** on the
+skyline beat and let the painted `#sceneGrade` background carry it (the Interlude frame STAYS — it wraps raster Mom &
+Dad and reads fine). Replace the panel4 boxes-SVG with a simple painted "two gems join" motif or real letter tiles.
+*Don't* touch the cutscene flow/`faceSpeak`/`cutsceneFX` — art swap only.
+
+**U12 — Act-2 map hero clipped by the top HUD (🟡; `map.js`).**
+*Root cause:* the current-zone hero seats feet at the node and extends UP by `s*226 ≈ 140px`: `const s=.62,
+hx=x-s*120, hy=(y+4)-s*226;` (`map.js:~70`). When the current node sits high (Act-2 Dragon Keep), `hy` goes
+negative and the figure is cut by the top training/HUD bar. *Fix (keeps feet on the node, shrinks to fit):*
+```js
+const topPad = 70;                 // clear the HUD chip / training bar
+let s = .62;
+if ((y+4) - s*226 < topPad) s = Math.max(.4, ((y+4) - topPad) / 226);
+const hx = x - s*120, hy = (y+4) - s*226;
+```
+(Alternatively/additionally, **MR2 ZONESPOTS** can keep every act's current-path nodes at `y ≥ ~150` — same lane.)
+
+**U13 — league-shelf names truncate ("MISS KENDALL" → "SS KENDA") (🟡; `game.js:1257`).**
+*Root cause:* the league button renders `t.real` and `"t.name"` as `<text text-anchor="middle">` inside a 64-unit-wide
+`viewBox="-32 -36 64 86"` with **no fit**, so long names overflow and the button clips both ends. *Fix:* add a fit to
+both `<text>` elements: `textLength="60" lengthAdjust="spacingAndGlyphs"`. (Name labels can squeeze slightly — unlike
+learning letters, distortion here is acceptable. Optional: only apply `textLength` when the name is long.)
+
 ### Recommended sequence for Neo
 1. **U1 touch targets** (ear 52→≥72/96, roundbtn 54→≥72) — CSS-only, hard-constraint, ship today.
 2. **U2 contrast** (map labels + subtitle + progress pips) — CSS/`map.js`, low risk.
