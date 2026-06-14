@@ -115,6 +115,37 @@ Every UI finding/spec logged so far, by screen. Full detail in the dated section
 
 ---
 
+## 🧠 PEDAGOGY BACKLOG INDEX — at a glance (Trinity, 2026-06-14)
+
+The evidence-based reading-science upgrades from the **🧠 RESEARCH BRIEF**, with status (📐 spec ready · 📋
+proposed · ✅ done · 💡 advisory). Detail in the dated specs/brief below; grounded in PubMed/NRP/Ehri.
+
+**Confirmed strengths — keep, don't "fix":** systematic synthetic-phonics core · sound-mapped "Heart Word" sight
+words (= orthographic mapping) · the decodability invariant · the no-failure/adaptive loop.
+
+| # | Rec | Status | One-liner |
+|---|---|---|---|
+| **1** | **Memory Vault** | 📐 spec | Expanding-interval **spaced review** of mastered items (box/due on `S.mastery`). *Highest retention leverage — and the scheduler #2/#3/#4 reuse.* |
+| **2** | **Spell Scroll** | 📐 spec | **Repeated reading + listening preview** (fluency); Training Room; reuses the Vault scheduler. |
+| **3** | **Sound Warm-Up** | 📐 spec | Oral **phonemic awareness** + child **articulatory cues** (reuses `PH_COACH`/`graphemeSounds`). |
+| **4** | **Mastery-threshold tune** | 📋 proposed | Raise the accuracy bar + require one **spaced-correct** + light overlearning so "mastered" = *retained*. |
+| **5** | OG/"multisensory" caveat | 💡 advisory | Keep see/hear/trace/find, but invest in #1–3, not MORE multisensory ornament (not the active ingredient). |
+| **6** | Morphology + comprehension | 📋 roadmap | Word-crafting (prefix/suffix/base) + richer comprehension — the 2nd-grade rung / Act 3. Decoding first. |
+
+### Sequenced roadmap (dependencies)
+- **Quick wins (independent):** **#3 articulatory cue** on the Learn screen (cheap; reuses `PH_COACH`); **#4**
+  threshold tune (mostly constants).
+- **Foundation:** **#1 Memory Vault scheduler** (box/due) — the spaced engine #2, #3's warm-up, and #4's
+  spaced-correct all reuse. Build before stacking the rest.
+- **Build on the scheduler:** **#2 Spell Scroll** · **#3 blend/segment warm-up** · **#4 spaced-correct**.
+- **Later/roadmap:** **#6** morphology + comprehension (after decoding + fluency are solid).
+- **Adjacent (motivation, not reading science):** progression pacing — muscle ✅ done; **gear/friend-rescue
+  spread** still 📋 proposed.
+
+— Trinity, 2026-06-14
+
+---
+
 ## 🔍 CODE-REVIEW FINDINGS — verified by Claude 2026-06-14 (for the coding agent)
 
 An external review raised 5 findings. I checked each against the actual code. **4 are real and
