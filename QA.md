@@ -130,7 +130,7 @@ words (= orthographic mapping) · the decodability invariant · the no-failure/a
 | **3** | **Sound Warm-Up** | 📐 spec | Oral **phonemic awareness** + child **articulatory cues** (reuses `PH_COACH`/`graphemeSounds`). |
 | **4** | **Mastery-threshold tune** | 📐 spec | Split **proficient** (gates finales) vs **retained** (proficient + spaced-correct); gentle bar bump (0.8/seen5). |
 | **5** | OG/"multisensory" caveat | 💡 advisory | Keep see/hear/trace/find, but invest in #1–3, not MORE multisensory ornament (not the active ingredient). |
-| **6** | Morphology + comprehension | 📋 roadmap | Word-crafting (prefix/suffix/base) + richer comprehension — the 2nd-grade rung / Act 3. Decoding first. |
+| **6** | Morphology + comprehension | 📐 spec | "Word Crafting" (base+affix recipes) + literal comprehension Qs — **capstone** after fluency. Spec ready. |
 
 ### Sequenced roadmap (dependencies)
 - **Quick wins (independent):** **#3 articulatory cue** on the Learn screen (cheap; reuses `PH_COACH`); **#4**
@@ -1352,6 +1352,63 @@ That behavioural read is the signal — not an in-app metric.
 Pulver et al. 2020 ([DOI](https://doi.org/10.1017/neu.2020.18)); seductive details
 [meta-analysis](https://link.springer.com/article/10.1007/s10648-025-10099-z); overjustification
 [overview](https://www.structural-learning.com/post/overjustification-effect).*
+
+— Trinity, 2026-06-14
+
+---
+
+## 📐 SPEC FOR NEO — "Word Crafting": morphology + richer comprehension (rec #6, capstone) (Trinity, 2026-06-14)
+
+Implements rec #6 — the **2nd-grade-rung capstone**. Morphological awareness (MA) improves reading + spelling
+for children with dyslexia (Ardanouy et al. 2024, PubMed, [DOI](https://doi.org/10.1177/00222194231223526)),
+explains reading speed/fluency + spelling at 2nd grade beyond phonological awareness (Volkmer et al. 2019,
+PubMed, [DOI](https://doi.org/10.1024/1422-4917/a000652)), and **builds ON the PA/phonics foundation** (Kirk &
+Gillon 2007, PubMed, [DOI](https://doi.org/10.1044/0161-1461(2007/036))).
+
+### ⚠️ Framing: this is a CAPSTONE, not a now-item
+Decoding can't be rushed (constraint #5). Morphology training works best *after* decoding + fluency are solid,
+and the dyslexia evidence is for ages ~9–14 — a 7yo is at the **early edge**. So gate it behind the Great Library
+fluency, keep it gentle, and start with the simplest morphology. Slot it as a **new capstone zone after the Act-2
+Great Library** (or Act 3).
+
+### A. Morphology = "Word Crafting" (lean into his Minecraft crafting love)
+Build longer words from meaningful PARTS — base + affix → new word — as **crafting recipes**. Reuse the existing
+**forge mechanic** (`startForge`, game.js:985) but at **morpheme granularity** (a base tile + an affix tile →
+forge → read it) and **teach the MEANING** (the vocab/comprehension payoff: "lock → un-lock = NOT locked").
+Audio: base + affix + whole word. `toGraphemes` (game.js:30) still decodes each part letter-by-letter.
+**Sequence (easy→hard):** compounds (sun+shine) → inflectional `-ing`/`-s` → prefixes `un-`/`re-` → `-ed` →
+derivational `-ful`/`-less`/`-er` (latest).
+
+### B. Comprehension upgrade (richer than picture-match)
+After reading a **Spell Scroll** (rec #2) or sentence, ask a **literal question** (who/what/where) → tap the
+answer (picture or word); later add **simple inference** ("how does she feel?") + **sequencing** (order the
+events). Reuses the Spell Scroll passages → **ties #2 + #6**. No speech rec → tap answers.
+
+### Data model
+- **`MORPHEMES`** (data-content.js): bases + affixes, each with meaning + audio. **`WORDCRAFT`** recipes:
+  `{base, affix, result, meaning}`. Explicit recipes (no morphological parser needed initially).
+- **Comprehension `QUESTIONS`** keyed to scroll/sentence ids: `{passageId, q, answer, foils}`.
+- `S` tracking: reuse `record()` on the crafted words + the Vault scheduler; additive/save-safe.
+
+### ⚠️ Gotchas (the ones Neo will hit)
+1. **Spelling-change rules** — adding suffixes triggers drop-e (hope→hop**ing**), doubling (hop→ho**pp**ing),
+   y→i (happy→happ**ier**). These are **3rd-grade+**. **Slice 1 must use affixes that DON'T change spelling**
+   (cat+s, jump+ing, un+lock, compounds). Teach the change rules explicitly, much later.
+2. **Affix pronunciation variants** — `-ed` = /t//d//ɪd/ (jumped/played/wanted); `-s` = /s//z/ (cats/dogs); `-es`.
+   Start with **invariant** affixes (compounds, `-ing`, `un-`) before the variant ones; teach variants explicitly.
+3. **Decodability still holds** — bases + results use taught graphemes; an affix may add a pattern — `curriculum.test`
+   must guard (mirror the SENTENCES2 check).
+4. **Capstone gate** — only after decoding+fluency mastery; gentle, no-failure; ≥96px, Andika, audio-first.
+
+### Tests
+- `curriculum.test`: every `WORDCRAFT` result is decodable; slice-1 recipes have **no spelling change**; affixes
+  introduce no untaught grapheme; comprehension answers/foils are decodable. ids unique.
+- `save.test`: new `S` fields round-trip; migrate untouched.
+
+### Phasing
+P1 **compounds** via the reused forge (easiest, no spelling change, concrete meaning) → P2 inflectional
+`-ing`/`-s` + the **comprehension question** on Spell Scrolls → P3 prefixes `un-`/`re-` + `-ed` (explicit
+variants) → P4 derivational + spelling-change rules (likely Act 3).
 
 — Trinity, 2026-06-14
 
