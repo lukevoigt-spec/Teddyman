@@ -36,7 +36,10 @@ const Sfx={
   /* the kit */
   correct(){ this._go(()=>{ this.note(660,0,0.12,"sine",0.5); this.note(990,0.085,0.16,"sine",0.42); }); },
   wrong(){   this._go(()=>{ this.glide(330,235,0,0.20,"sine",0.30); }); },              /* soft, low, gentle */
-  combo(n){  this._go(()=>{ const b=620+Math.min(8,n||3)*42; this.note(b,0,0.10,"triangle",0.4); this.note(b*1.5,0.055,0.12,"triangle",0.32); }); },
+  combo(n){  this._go(()=>{ n=n||3; const b=620+Math.min(12,n)*40; this.note(b,0,0.10,"triangle",0.4); this.note(b*1.5,0.055,0.12,"triangle",0.32); if(n>=5)this.note(b*2,0.11,0.13,"triangle",0.28); }); },
+  /* MASTERY — the most triumphant cue (a rising arpeggio + sparkle top); louder/sweeter than coin/gem
+     so "you mastered it" out-sings any cosmetic reward (mastery > participation). */
+  mastery(){ this._go(()=>{ [659,880,1047,1319].forEach((f,i)=>this.note(f,i*0.07,0.20,"sine",0.46)); this.note(1760,0.30,0.34,"triangle",0.3); }); },
   coin(){    this._go(()=>{ this.note(988,0,0.07,"triangle",0.34); this.note(1319,0.07,0.14,"triangle",0.34); }); },
   unlock(){  this._go(()=>{ [523,659,784,1047].forEach((f,i)=>this.note(f,i*0.085,0.18,"sine",0.42)); }); },
   win(){     this._go(()=>{ [523,659,784,1047,1319].forEach((f,i)=>this.note(f,i*0.09,0.22,"sine",0.46)); this.note(1568,0.52,0.4,"sine",0.26); }); },

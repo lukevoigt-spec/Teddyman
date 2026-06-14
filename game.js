@@ -162,11 +162,14 @@ if(typeof document!=="undefined"){
   setInterval(trainTick,1000);
 }
 function mast(g){ if(!S.mastery[g])S.mastery[g]={seen:0,ok:0,str:0}; return S.mastery[g]; }
-function record(g,ok){ const m=mast(g); m.seen++;
+function record(g,ok){ const m=mast(g); const wasMastered=masteredItem(g); m.seen++;
   if(ok){m.ok++;m.str=Math.min(5,m.str+1); combo++; if(combo>=3)comboPop(combo);
     /* #4 RETENTION: count CORRECT CALENDAR DAYS (once per day, never same-day repeats) — the
        "retained" signal (correct across >=2 days) layered on top of in-session "proficient". */
-    if(dayKey()!==m.lastOkDay){ m.okDayCount=(m.okDayCount||0)+1; m.lastOkDay=dayKey(); } }
+    if(dayKey()!==m.lastOkDay){ m.okDayCount=(m.okDayCount||0)+1; m.lastOkDay=dayKey(); }
+    /* MASTERY > PARTICIPATION: the biggest micro-celebration fires the moment an item crosses into
+       "mastered" (~5 solid reps) — a genuine, intermittent reward, louder than any coin/cosmetic. */
+    if(!wasMastered && masteredItem(g)) masteryFlash(); }
   else {m.str=Math.max(0,m.str-1); combo=0; if(typeof Sfx!=="undefined")Sfx.wrong();}   /* gentle soft cue, never harsh */
   vaultTouch(g,ok);   /* Memory Vault: enroll on first mastery / advance the spaced schedule on a due review */
   save(); }
@@ -380,8 +383,18 @@ let combo=0;
    the lock auto-resets when the next prompt rebuilds the row. */
 function lockRow(row){ if(row)row.querySelectorAll("button").forEach(b=>{ b.style.pointerEvents="none"; }); }
 function comboPop(n){ if(typeof Sfx!=="undefined")Sfx.combo(n);   /* sound plays even in reduced-motion */
-  const s=stageEl(); if(!s||REDUCE)return; const c=document.createElement("div");
-  c.className="combochip"; c.textContent="COMBO ×"+n+" 🔥"; s.appendChild(c); setTimeout(()=>c.remove(),950); }
+  const s=stageEl(); if(!s||REDUCE)return; const big=n>=5; const c=document.createElement("div");
+  c.className="combochip"+(big?" big":"");
+  c.textContent=(n>=8?"UNSTOPPABLE ×"+n+" 🔥":n>=5?"ON FIRE ×"+n+" 🔥":"COMBO ×"+n+" 🔥");
+  s.appendChild(c); setTimeout(()=>c.remove(),big?1200:950);
+  if(n>=8)confetti(18); }   /* a real high-accuracy streak earns a confetti pop (no timer — pure correctness) */
+/* MASTERY flourish — the loudest, most rewarding micro-moment (fires from record() on a fresh master).
+   Short + fire-and-forget so it never blocks flow()/the next prompt; Calm/reduced-motion soften it. */
+function masteryFlash(){ if(typeof Sfx!=="undefined")Sfx.mastery();
+  const s=stageEl(); if(!s)return;
+  const c=document.createElement("div"); c.className="masterpop"; c.innerHTML='<span class="mp-star">✦</span> MASTERED!';
+  s.appendChild(c); setTimeout(()=>c.remove(),1100);
+  if(!REDUCE)confetti(22); }
 function burstAt(el,word){ const r=el.getBoundingClientRect(),st=$("stage").getBoundingClientRect();
   const cx=r.left-st.left+r.width/2, cy=r.top-st.top+r.height/2;
   const b=document.createElement("div"); b.className="burst";
