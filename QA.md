@@ -177,6 +177,81 @@ save.test assertion that cloud stays inactive without a cached secret.
 
 ---
 
+## 🧠 RESEARCH BRIEF — does our skill-ladder + review pacing fit Teddy's profile? (Trinity, 2026-06-14)
+
+Profile: 7yo, ADHD front-and-center, possible dyslexia (assessment pending). Evidence below is from
+peer-reviewed sources (PubMed) + the National Reading Panel / orthographic-mapping literature. These are
+**advisory recommendations for Neo**, not bugs — each is a design proposal, ranked at the end.
+
+### Bottom line
+Our **core is right and well-evidenced** — systematic synthetic phonics, decodable-only sequencing, and
+sound-mapped sight words are exactly what the strongest studies endorse for a possibly-dyslexic child.
+The biggest *upside* is in **review pacing** (true spacing), **fluency** (repeated reading), and making
+**phonemic awareness** explicit. Don't over-invest in "multisensory" for its own sake — the evidence
+favors the phonics+PA engine, not the bells.
+
+### What the evidence strongly endorses about what we already do ✅
+- **Systematic phonics as the spine.** A meta-analysis of RCTs for children with reading disabilities found
+  phonics instruction is *the only* approach with statistically confirmed efficacy on reading + spelling
+  (coloured overlays, auditory training, etc. did not reach significance) — Galuschka et al. 2014, PubMed,
+  [DOI](https://doi.org/10.1371/journal.pone.0089900). A Cochrane review confirms phonics training improves
+  real/non-word reading accuracy + fluency and irregular-word accuracy — McArthur et al. 2018, PubMed,
+  [DOI](https://doi.org/10.1002/14651858.CD009115.pub3). The NRP likewise: systematic > unsystematic phonics.
+- **Sound-mapped sight words (our "Heart Word Method"), NOT whole-word shape matching.** This *is*
+  orthographic mapping — bonding spellings↔pronunciations via phoneme-grapheme links, the mechanism by
+  which sight vocabulary actually forms (Ehri). Our explicit choice to BUILD heart words from graphemes
+  (and the absence of any "match the word shape" mechanic) is the research-aligned approach.
+- **Decodability invariant** (never use an untaught grapheme; curriculum.test enforces it) = textbook
+  structured-literacy fidelity.
+- **No timers / no failure states / adaptive-to-weakest.** The NRP notes K–1 children respond well when
+  instruction is delivered in a "vibrant, imaginative, entertaining" way — our juicy, low-threat loop is an
+  asset for an ADHD learner, not a compromise.
+
+### Evidence-based upside (proposals for Neo) 🔧
+1. **Add TRUE spaced review (expanding intervals), not just weakest-weighted patrols.** The spacing effect
+   (longer gaps between repetitions → better long-term retention) is one of the most robust findings in
+   learning science — Kim et al. 2020, PubMed, [DOI](https://doi.org/10.1016/j.neuropsychologia.2020.107550)
+   (building on Cepeda et al. 2006). Our mastery model targets *weak* items within sessions (good: retrieval
+   practice + desirable difficulty) but doesn't deliberately resurface *mastered* items at **growing gaps
+   across days**. Proposal: a "memory vault" that re-tests a mastered grapheme/word after 1→3→7→… day gaps.
+   Highest-leverage retention upgrade.
+2. **Repeated reading for fluency, with a listening-passage preview.** Meta-analysis: repeated reading
+   improves fluency for students with reading disabilities, and **RR + listening passage preview is the most
+   effective variant** — Lee & Yoon 2016, PubMed, [DOI](https://doi.org/10.1177/0022219415605194). We have
+   sentence/cloze/maze reading but no *repeated* reading of the same passage. Proposal (also a delight idea):
+   re-read a short "spell scroll" across days to "charge a power move," with the mentor reading it first
+   (= the listening preview); track speed as personal-best *power*, never a timer/fail.
+3. **Make phonemic awareness explicit + add articulatory cues for the child.** PA enables orthographic
+   mapping; Ehri notes OM is facilitated when learners are taught the **articulatory features of phonemes**
+   ("how your mouth makes the sound"). The Voice Studio already coaches articulation for the *parent* — surface
+   a child-facing version: a quick oral blend/segment warm-up ("what sounds are in /s/-/a/-/t/?") + a mouth-cue
+   on the learn screen. High-yield for a possibly-dyslexic reader, low art cost.
+4. **Revisit the mastery threshold (tuning question).** Current gate: `str≥4 & seen≥4 & acc≥0.75`. For durable
+   mastery in reading disability, the literature leans toward a higher accuracy bar (~0.8–0.9) + a little
+   *overlearning* (reps beyond first success) + at least one **spaced**-correct (correct on a *later* day)
+   before "mastered." `seen≥4` is thin. Tune gently so it never becomes grindy — but a spaced-correct
+   requirement would make "mastered" mean *retained*, not *recently-correct*.
+5. **Mind the OG/"multisensory" caveat.** An OG meta-analysis found Orton-Gillingham interventions did **not**
+   reach statistical significance (positive but ns) — Stevens et al. 2021, PubMed,
+   [DOI](https://doi.org/10.1177/0014402921993406). Read: keep our see/hear/trace/find structure (motivating,
+   harmless, plausibly helpful), but the evidence-bearing ingredients are *systematic phonics + PA + practice
+   scheduling*. Invest effort in #1–#3, not in more multisensory ornamentation.
+6. **(Roadmap, lower priority) comprehension + morphology for the 2nd-grade rung.** NRP's 5 pillars include
+   vocabulary + comprehension, currently light (picture-match is gist-level). Morphology (build words from
+   prefixes/suffixes/bases — the "crafting tech tree" idea) breaks the phonics ceiling and is strong for
+   dyslexic readers. Decoding first; queue these for Act 3 / a side-system.
+
+### Note on dosage
+Cochrane (above) couldn't pin optimal intensity/duration/group-size — so "more reps" isn't assumed better.
+Our short, frequent, gentle daily loop (and the ~15/15 missions/training split) fits BOTH ADHD attention and
+the spacing effect. Keep it short and frequent; let spacing (#1) do the heavy lifting, not volume.
+
+*Sources: PubMed (DOIs above); National Reading Panel via [Reading Rockets](https://www.readingrockets.org/topics/curriculum-and-instruction/articles/findings-national-reading-panel) / [NICHD](https://www.nichd.nih.gov/publications/pubs/nrp/findings); orthographic mapping via [Reading Rockets](https://www.readingrockets.org/reading-101/reading-and-writing-basics/sight-words-and-orthographic-mapping) (Ehri 2014).*
+
+— Trinity, 2026-06-14
+
+---
+
 **Test commit by Grok (xAI):** Write access verified successfully! Added this line on 2026-06-13.
 
 ## 2026-06-13 Grok (xAI) Review — Latest Main (commit 060066c)
