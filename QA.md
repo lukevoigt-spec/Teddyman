@@ -46,13 +46,18 @@ open PRs first on every re-engagement.
 sync code + fail-closed Worker, verified), #2 reset, #3 magic-e, #4 cloud-off; **H3** generic subtitle + **H4**
 one-PLAY title; the **`charArt`/`RASTER` resolver** + raster **Teddy / Vixen / Archie / Sunny**; the **map raster
 hero** (M1, partial); muscle pacing spread; the settings overhaul; equippable weapons; villain shading.
-**Open for Neo (code):** **MAP-1** — decorative map figures (hero + `mapFriends` allies) intercept node taps; add
-`pointer-events:none` (NOT on `.mnode`/`.portalnode`). **CLOUD-1** — a wrong family code is cached + briefly shows
-"Connected" (`cloudPull` collapses `401`→`false`). **MAP-2** — `.mnode.locked{pointer-events:none}` silences the
-`locked_tip` cue. Plus the UI punch-list (buttons **H2**, map revamp **MR1–3**, intro **I1**, parent-hub **P1**…)
-and the pedagogy specs (Vault #1 onward).
-**Approved to build (grandfathered):** gear / friend-rescue **pacing spread** 📐 — parent GREENLIT; Neo builds
-the grandfather plumbing FIRST (S.gear act-union + `S.freed` + migrate, prove no regression), then re-maps. (Muscle done.)
+**✅ Shipped + Trinity-verified (post-scramble, 2026-06-14):** **MAP-1** (hero + ally figures `pointer-events:none`),
+**CLOUD-1** (401 flagged distinctly; wrong code reported + cleared, not cached), **MAP-2** (locked zones stay
+tappable so the gentle `locked_tip` cue plays; lock still JS-enforced), **pacing P1** (grandfather plumbing —
+durable `S.freed` + `S.gearByAct`, migrate-safe, plumbing-only so no regression yet), **Memory Vault #1** (Leitner
+box/due scheduler on `S.mastery`, additive). Tests **save 73 · curriculum 47**, all parse, tree clean, no scramble
+dupes.
+**Open for Neo (code):** the UI punch-list (buttons **H2**, map revamp **MR1–3**, intro **I1**, parent-hub **P1**…)
+and the pedagogy specs (Vault surfacing + #2/#3/#4 onward).
+**Approved (grandfathered), plumbing DONE → next is the re-map:** gear / friend-rescue **pacing spread** — P1
+grandfather plumbing shipped; **P2/P3 = re-map GEAR_AT keys + ally rescue ids.** ⚠️ Before the re-map ships, the
+durable seed (`grandfather()` boot, game.js:155, not `save()`d) must be persisted for active saves first (happens
+via normal play; worth a guard) so the re-map can't un-earn current gear/league. (Muscle done.)
 
 ### Guardrails
 - `node tests/curriculum.test.js` + `node tests/save.test.js` must pass before any push (exit 0). Latest:
