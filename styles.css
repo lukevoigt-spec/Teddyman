@@ -948,3 +948,17 @@ body.calm .btn.vaultdue{animation:none;}
 @keyframes mbeacon{0%,100%{opacity:.9;transform:scale(1);}50%{opacity:.3;transform:scale(1.16);}}
 body.calm .mnode .mbeacon{animation:none;}
 body.lite .obloom,body.lite .pbloom{display:none;}   /* old iPads: flatten the GPU-blurred map glows */
+
+/* U4: a big, friendly primary CTA for the intro-narration phase of scan/forge — an obvious first
+   action on the otherwise-bare painted stage. Audio-first preserved: narration still auto-advances
+   (constraint #8); tapping just starts the round early. */
+.tapstart{position:absolute;left:50%;top:66%;transform:translate(-50%,-50%);z-index:7;
+  width:clamp(112px,20vw,150px);height:clamp(112px,20vw,150px);border-radius:50%;
+  border:6px solid var(--ink);color:var(--ink);display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(70% 60% at 32% 24%, #fff0b0, #ffce3a 52%, #e08f1f);cursor:pointer;
+  box-shadow:0 10px 22px rgba(0,0,0,.5), inset 0 4px 0 rgba(255,255,255,.6), inset 0 -12px 20px rgba(120,68,8,.42), inset 0 0 0 2px rgba(255,255,255,.18);}
+.tapstart .ts-orb{display:flex;align-items:center;justify-content:center;}
+.tapstart .ts-orb svg{margin-left:6px;}   /* optically centre the play triangle */
+@media (prefers-reduced-motion:no-preference){.tapstart{animation:tapbob 1.45s ease-in-out infinite;}}
+@keyframes tapbob{0%,100%{transform:translate(-50%,-50%) scale(1);}50%{transform:translate(-50%,-50%) scale(1.07);}}
+body.calm .tapstart{animation:none;}

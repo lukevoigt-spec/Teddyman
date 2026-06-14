@@ -52,6 +52,8 @@ const SCENES = {
   learn_r: `(startLearn({letter:"r"}), 1)`,
   find:    `(function(){ CUR={id:1}; startFind("a",4); return 1; })()`,
   trace:   `(startTrace("s"), 1)`,
+  scancta: `(function(){ show('scrScan'); narrate('scan',document.getElementById('scanText'),['scan_intro']); clearFlow(); showTapStart('72%'); return 1; })()`,
+  forgecta:`(function(){ CUR={id:10}; startForge({id:10,words:["cat","dog"]}); clearFlow(); showTapStart('50%'); return 1; })()`,
   basefull:`(function(){ [1,3,4,6,8].forEach(function(i){S.done[i]=true;}); S.coins=40; S.owned={banner:1}; paintBase(); show('scrBase'); return 1; })()`,
 };
 
