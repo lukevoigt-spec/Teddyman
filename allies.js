@@ -38,6 +38,13 @@ const LEAGUE=[...CAGED.map(t=>({mid:t.mid,kind:t.kind,name:t.name,real:t.real}))
    wave for help with a ball-and-chain, freed ones cheer with arms up. */
 const ALLY_COL={tank:"#e6453c", flip:"#3a9bff", sunny:"#ffce3a", heart:"#ff7d9c", leighton:"#a06ae8", kendall:"#5fa86a"};
 function allyMapFig(kind, freed){
+  /* RESCUED ally with generated art -> show the raster token (feet grounded at ~y50, centred at x0),
+     same footprint as the SVG figure so map placement is unchanged. Captive (or no-raster) allies keep
+     the SVG figure (the raster is a happy standing pose, wrong for a caged captive). */
+  if(freed && typeof RASTER!=="undefined" && RASTER["ally-"+kind]){
+    return `<g><ellipse cx="0" cy="50" rx="20" ry="5.5" fill="#000" opacity=".3"/>`
+      +`<g transform="translate(-50.4 -42.9) scale(.42)"><image x="8" y="2" width="224" height="224" href="art/ally-${kind}.png"/></g></g>`;
+  }
   const c=ALLY_COL[kind]||"#7a6fb0", u="mf"+(__huid++);
   const arms = freed
     ? `<path d="M-15 4 q-12 -12 -8 -26" stroke="${c}" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M15 4 q12 -12 8 -26" stroke="${c}" stroke-width="8" fill="none" stroke-linecap="round"/>`

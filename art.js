@@ -197,7 +197,7 @@ ${kgear}
    inkblotSVG/vixenSVG. ---- */
 const RASTER={ "teddy-m0":true,"teddy-m1":true,"teddy-m2":true,
   "teddy-knight-m0":true,"teddy-knight-m1":true,"teddy-knight-m2":true,
-  "ally-tank":true, "ally-sunny":true, "ally-heart":true };
+  "ally-tank":true, "ally-sunny":true, "ally-heart":true, "ally-flip":true };
 function rasterArt(file,w=210,a0="#ffce3a",a1="#3a7bff"){
 const u="r"+(__huid++);
 return `<svg viewBox="0 0 240 256" width="${w}" aria-hidden="true">
