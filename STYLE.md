@@ -40,7 +40,7 @@ DOMAINS — what has a standard, what's partial, what's still missing — so cov
 | Pedagogy / learning design | ✅ | CLAUDE.md · QA pedagogy specs |
 | Error / no-fail states | ✅ | hard constraint #2 (gentle wrong) |
 | Data / privacy / parental controls | ✅ | cloud auth + parent gate |
-| **Accessibility (consolidated)** | ❌ **GAP · P0** | *build* — colorblind-safe, WCAG contrast, **audio-redundancy** (every cue has a visual twin), cognitive/sensory, motor; map to the **Game Accessibility Guidelines** (visual/auditory/motor/cognitive) |
+| **Accessibility (consolidated)** | ✅ **standard §10** (impl pending) | colorblind-safe, WCAG contrast, audio-redundancy, cognitive/sensory, motor — mapped to the Game Accessibility Guidelines; action checklist in §10 |
 | **Onboarding / FTUE** | ❌ **GAP · P0** | *build* — teach-through-play, **one mechanic at a time, audio-first, no text**; covers every new task type + a returning-kid re-entry |
 | **Narrative & voice/tone** | ⚠️ partial | voice roles (CLAUDE.md) + the line-variation note; *no script-tone / mentor-persona / cutscene-&-storybook pacing standard* |
 | **Art-direction bible** | ⚠️ partial | art.js + CHARACTER-ART-PROMPTS.md; *no proportions / shadow-&-light / palette / animation-timing consistency spec* |
@@ -426,4 +426,52 @@ sheer effect volume — a tasteful heavy effect beats ten cheap ones. Guidelines
 Litmus test: on the **M3 target** virtually anything holds 60fps, so build the beautiful
 version first. Only if a *secondary* device (an older sister's iPad) janks should you reach
 for the degradations above (or gate them behind `prefers-reduced-motion` / a capability check).
+
+---
+
+## 10. Accessibility (consolidated standard — Trinity, 2026-06-14)
+Maps to the **Game Accessibility Guidelines** (visual / auditory / motor / cognitive) + **WCAG**, tuned for Teddy
+(pre-reader, dyslexia, ADHD, ND sensory). **Consolidates + extends the §0 non-negotiables.** Core principle: **never
+rely on a single channel** — every meaningful cue is carried by **≥2 of {shape/glyph, motion, sound, color}** (color is
+an *accent*, never the sole signal). Audio-first means audio is primary, **not** that audio is alone.
+
+**Visual**
+- **Never color alone (GAG core).** Today correct = `.win` (green pop + `burstAt` + ding) and wrong = `.dim` (grey +
+  replayed sound) — multi-modal already, but the win/lose split leans on **green-vs-grey + burst-presence.** → **add an
+  explicit non-color correctness mark** (a ✓ on `.win`; a distinct shape/settle on the `.hint`) so a colorblind child
+  reads it without hue. `GEMCOLOR` graphemes always render the **Andika glyph** on the gem (so color isn't the sole id
+  — good); **action: run `GEMCOLOR` + the token palette through a colorblind simulator** (deutan/protan/tritan), fix any
+  color-only distinction (a few hues are close, e.g. s/i blues).
+- **Contrast: target WCAG AA** (4.5:1 text · 3:1 large/UI). White + `--ink`-outline on panels already aims high; **add
+  the `.txt-outline` utility** (still a §8 gap) for text on painted art; keep `.dim` legible (don't dim below readable).
+- ✅ Large targets **≥96px** child controls · **Andika** for all letters · **reduced-motion** honored.
+
+**Auditory** (audio-first → must be visually redundant)
+- **Every audio FEEDBACK/STATUS cue needs a visual twin** (GAG visual-indicator rule). correct/wrong/coin/win/unlock
+  already pair with burst/dim/confetti/cards — **audit that NONE is sound-only.** The 🔊 replay ear is the lifeline (on
+  every prompt). The narration **bubble mirrors the script as on-screen text** (a parent/over-shoulder caption) — keep.
+- ⚠️ **Designed exception:** the *learning target* in sound-ID is deliberately NOT shown (anti-gaming #4). Redundancy
+  applies to **feedback/status**, never the target. The app must stay fully playable **muted** (visual path intact).
+- ✅ Independent **voice / SFX / music** volumes + off toggles.
+
+**Motor**
+- ✅ Large targets + generous hit-areas (U1 gave the ear a ~96px hit-area); **no timing, no precision drag, no fast
+  multi-tap** (constraint #1); trace is forgiving (dot snapping). **Action: confirm no interaction needs fine motor
+  precision** after UI changes.
+
+**Cognitive / sensory (the ND core)**
+- ✅ One focal point + minimal simultaneous choices (the nav work / Hick), **no time pressure** (#1), **no harsh fail**
+  (#2), predictable + consistent (nav / Jakob), short frequent loops.
+- **Sensory-overload control = the Full/Calm/Lite detail tiers** — treat these as the official "reduce stimulation"
+  accessibility setting; **surface them (+ the audio toggles) as an explicit "Comfort" group** in the parent area.
+- **Auditory sensitivity (ND):** SFX + line variation stay **gentle + predictable + bounded** (§6.5); Calm/Lite + the
+  volume toggles are the "turn it down" path.
+
+**Action checklist (for Neo):**
+- [ ] Non-color correctness signal (✓ on `.win`; distinct `.hint`). · [ ] CB-simulator pass on `GEMCOLOR` + palette.
+- [ ] `.txt-outline` for text on painted art (contrast). · [ ] Audit every `Sfx`/`Aud` cue has a visual twin.
+- [ ] A "Comfort/Accessibility" group in the parent area (detail tier + 3 volumes + reduced-motion). · [ ] Re-confirm
+  ≥96px hit-areas after UI changes. · [ ] Confirm fully-muted playability.
+*(Sources: [Game Accessibility Guidelines — full list](https://gameaccessibilityguidelines.com/full-list/),
+[Xbox Accessibility Guidelines](https://learn.microsoft.com/en-us/gaming/accessibility/xbox-accessibility-guidelines/103); WCAG 2.x AA.)*
 
