@@ -212,67 +212,15 @@ return `<svg viewBox="0 0 240 256" width="${w}" aria-hidden="true">
 /* ---- LORD VEX / VEXBOT (refined: angled glowing visor, sharper menace) ---- */
 function inkblotSVG(w=240){
 const u="v"+(__huid++);
-return `<svg viewBox="-70 -130 320 360" width="${w}" aria-hidden="true">
-<defs>
-<linearGradient id="vxm" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#5a6080"/><stop offset=".5" stop-color="#3a3f5c"/><stop offset="1" stop-color="#1d2034"/></linearGradient>
-<linearGradient id="vxd" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#363b58"/><stop offset="1" stop-color="#0f1122"/></linearGradient>
-<radialGradient id="vxr" cx=".42" cy=".4" r=".62"><stop offset="0" stop-color="#fff1ec"/><stop offset=".35" stop-color="#ff6b5e"/><stop offset=".7" stop-color="#e62e2e"/><stop offset="1" stop-color="#5a0c0c"/></radialGradient>
-<radialGradient id="${u}aura" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff2e2e" stop-opacity=".66"/><stop offset=".55" stop-color="#c01020" stop-opacity=".22"/><stop offset="1" stop-color="#c01020" stop-opacity="0"/></radialGradient>
-<linearGradient id="${u}form" x1=".82" y1="1" x2=".25" y2="0"><stop offset="0" stop-color="#05060f" stop-opacity=".5"/><stop offset=".6" stop-color="#05060f" stop-opacity="0"/></linearGradient>
-<linearGradient id="${u}sheen" x1=".2" y1="0" x2=".7" y2="1"><stop offset="0" stop-color="#cfe0ff" stop-opacity=".3"/><stop offset=".5" stop-color="#cfe0ff" stop-opacity="0"/></linearGradient>
-<filter id="${u}soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4.5"/></filter>
-<filter id="${u}lit" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="4" result="b"/><feSpecularLighting in="b" surfaceScale="5" specularConstant=".55" specularExponent="20" lighting-color="#cfe0ff" result="s"><fePointLight x="40" y="-150" z="160"/></feSpecularLighting><feComposite in="s" in2="SourceAlpha" operator="in" result="sc"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="sc"/></feMerge></filter>
-<filter id="${u}glow" x="-90%" y="-90%" width="280%" height="280%"><feGaussianBlur stdDeviation="5"/></filter>
-</defs>
-<style>@media (prefers-reduced-motion: no-preference){.vfloat{animation:${u}fl 4.5s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}.vglow{animation:${u}gl 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}}@keyframes ${u}fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes ${u}gl{0%,100%{opacity:.6}50%{opacity:1}}</style>
-<g class="vaura"><ellipse cx="72" cy="100" rx="148" ry="172" fill="url(#${u}aura)"/></g>
-<ellipse class="vglow" cx="72" cy="208" rx="58" ry="13" fill="#9fe870" opacity=".5"/>
-<ellipse cx="72" cy="204" rx="34" ry="8" fill="#d2ffb0" opacity=".8"/>
-<g class="vfloat"><g filter="url(#${u}lit)">
-<path d="M10 -20 Q-40 60 -28 170 L-6 150 L6 176 L26 150 L40 178 L58 150 L74 172 L96 148 Q132 60 132 -16 Q72 -52 10 -20Z" fill="#1a1030" stroke="#150f2e" stroke-width="6"/>
-<path d="M40 150 L104 150 L96 196 L48 196 Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="6"/>
-<rect x="52" y="160" width="40" height="10" rx="4" fill="#9fe870" opacity=".75"/>
-<path d="M16 30 L128 30 L142 70 L128 150 L16 150 L2 70 Z" fill="url(#vxm)" stroke="#150f2e" stroke-width="7"/>
-<path d="M16 30 L72 30 L72 150 L16 150 L2 70Z" fill="#150f2e" opacity=".22"/>
-<path d="M30 44 L114 44 L122 66 L112 86 L32 86 L22 66Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="5"/>
-<circle class="vglow" cx="72" cy="112" r="30" fill="#ff3b3b" filter="url(#${u}glow)"/>
-<circle cx="72" cy="112" r="21" fill="url(#vxr)" stroke="#150f2e" stroke-width="6"/>
-<circle cx="72" cy="112" r="8" fill="#fff0ec"/>
-<path d="M72 86 L72 70 M50 100 L34 92 M94 100 L110 92" stroke="#e62e2e" stroke-width="4" stroke-linecap="round" opacity=".8"/>
-<path d="M16 30 L-22 6 L10 2 L26 26Z" fill="url(#vxm)" stroke="#150f2e" stroke-width="6"/>
-<path d="M128 30 L166 6 L134 2 L118 26Z" fill="url(#vxm)" stroke="#150f2e" stroke-width="6"/>
-<path d="M8 56 Q-34 78 -38 122 Q-36 142 -20 148 L-10 128 Q-22 118 -18 102 Q-12 80 12 70Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="6"/>
-<g stroke="#150f2e" stroke-width="5" fill="#6e7494"><path d="M-22 144 L-38 168 L-26 166 L-30 184 L-14 164 L-8 178 L-2 150Z"/></g>
-<path d="M136 56 Q178 78 182 122 Q180 142 164 148 L154 128 Q166 118 162 102 Q156 80 132 70Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="6"/>
-<g stroke="#150f2e" stroke-width="5" fill="#6e7494"><path d="M166 144 L182 168 L170 166 L174 184 L158 164 L152 178 L146 150Z"/></g>
-<path d="M38 -64 L106 -64 L118 -36 L114 14 L100 30 L44 30 L30 14 L26 -36Z" fill="url(#vxm)" stroke="#150f2e" stroke-width="7"/>
-<path d="M38 -64 L72 -64 L72 30 L44 30 L30 14 L26 -36Z" fill="#150f2e" opacity=".22"/>
-<path d="M40 -62 L22 -102 L52 -72Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="5"/>
-<path d="M104 -62 L122 -102 L92 -72Z" fill="url(#vxd)" stroke="#150f2e" stroke-width="5"/>
-<ellipse cx="72" cy="-15" rx="46" ry="15" fill="#e62e2e" opacity=".25"/>
-<g class="vglow" filter="url(#${u}glow)"><path d="M32 -25 L70 -14 L66 -3 L34 -8Z" fill="#ff3b3b"/><path d="M112 -25 L74 -14 L78 -3 L110 -8Z" fill="#ff3b3b"/></g>
-<path d="M32 -25 L70 -14 L66 -3 L34 -8Z" fill="#e62e2e" stroke="#150f2e" stroke-width="4.5"/>
-<path d="M112 -25 L74 -14 L78 -3 L110 -8Z" fill="#e62e2e" stroke="#150f2e" stroke-width="4.5"/>
-<path d="M40 -19 L60 -12 M104 -19 L84 -12" stroke="#ffd2c9" stroke-width="3" stroke-linecap="round"/>
-<g stroke="#150f2e" stroke-width="4"><line x1="56" y1="6" x2="56" y2="22"/><line x1="72" y1="6" x2="72" y2="24"/><line x1="88" y1="6" x2="88" y2="22"/></g>
-</g>
-<g class="vshade" stroke="none">
-<path d="M38 -64 L106 -64 L118 -36 L114 14 L100 30 L44 30 L30 14 L26 -36Z" fill="url(#${u}form)"/>
-<path d="M16 30 L128 30 L142 70 L128 150 L16 150 L2 70 Z" fill="url(#${u}form)"/>
-<path d="M40 150 L104 150 L96 196 L48 196 Z" fill="url(#${u}form)"/>
-<path d="M40 -60 Q34 -34 40 26 L58 26 Q52 -34 58 -60Z" fill="url(#${u}sheen)"/>
-<path d="M18 34 Q8 70 22 146 L44 146 Q34 70 44 34Z" fill="url(#${u}sheen)"/>
-<ellipse cx="72" cy="32" rx="42" ry="6" fill="#070710" opacity=".42" filter="url(#${u}soft)"/>
-<ellipse cx="72" cy="-32" rx="30" ry="5" fill="#070710" opacity=".34" filter="url(#${u}soft)"/>
-<g fill="none" stroke="#cfe0ff" stroke-linecap="round" opacity=".7" filter="url(#${u}glow)">
-<path d="M42 -61 L102 -61" stroke-width="3"/>
-<path d="M30 -58 Q24 -34 30 22" stroke-width="2.4" opacity=".55"/>
-<path d="M18 31 L82 31" stroke-width="2.6" opacity=".5"/>
-<path d="M2 70 L16 32" stroke-width="2.4" opacity=".55"/>
-</g>
-<g fill="#dfeaff" opacity=".85"><circle cx="33" cy="-88" r="1.6"/><circle cx="111" cy="-88" r="1.6"/><circle cx="-18" cy="14" r="1.4"/></g>
-</g>
-</g></svg>`;}
+/* Lord Vex marquee: generated raster (art/vex.png, transparent). Wrapped in an <svg> so it keeps a
+   sinister red aura, contact shadow + idle bob and the same sizing API the intro/boss/cage all call. */
+return `<svg viewBox="0 0 240 252" width="${w}" aria-hidden="true">
+<defs><radialGradient id="${u}a" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff2e2e" stop-opacity=".5"/><stop offset=".5" stop-color="#c01020" stop-opacity=".18"/><stop offset="1" stop-color="#c01020" stop-opacity="0"/></radialGradient></defs>
+<style>@media (prefers-reduced-motion: no-preference){.vfloat{animation:${u}fl 4.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}}@keyframes ${u}fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}</style>
+<g class="vaura"><ellipse cx="120" cy="116" rx="130" ry="142" fill="url(#${u}a)"/></g>
+<ellipse cx="120" cy="240" rx="64" ry="13" fill="#0a0510" opacity=".42"/>
+<g class="vfloat"><image x="6" y="0" width="228" height="228" href="art/vex.png"/></g>
+</svg>`;}
 
 /* ---- mentors (Mom & Dad chips) — unchanged ---- */
 function mentorChips(w=120){
