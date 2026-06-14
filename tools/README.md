@@ -34,8 +34,11 @@ global nav functions, and writes `shots/<engine>-<scene>.png`. Add scenes by edi
 setx XAI_API_KEY "xai-..."      # Grok  (grok-2-image)   — or
 setx OPENAI_API_KEY "sk-..."    # OpenAI (gpt-image-1, transparent bg)
 node gen.mjs vixen "PASTE PROMPT (include the HOUSE STYLE block)"
+node gen.mjs vixen --openai --file prompt.txt   # force gpt-image-1 (transparent cutout)
 ```
-Writes `art/incoming/<name>.png`. No key? Generate manually in ChatGPT/Grok and drop the
+Provider: defaults to Grok if `XAI_API_KEY` is set, else OpenAI. **For character art
+prefer `--openai`** — only `gpt-image-1` produces a transparent background, which the
+masking/compositing step needs (`--grok` forces Grok). Writes `art/incoming/<name>.png`. No key? Generate manually in ChatGPT/Grok and drop the
 PNG in `art/incoming/` — Claude integrates from there either way. See
 `../art/CHARACTER-ART-PROMPTS.md` for the house style + per-character prompts.
 

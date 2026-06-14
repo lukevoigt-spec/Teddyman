@@ -22,14 +22,22 @@ fs.mkdirSync(OUT, { recursive: true });
 
 const [name, ...rest] = process.argv.slice(2);
 if (!name) { console.error('usage: node tools/gen.mjs <name> "<prompt>"   (or --file prompt.txt)'); process.exit(1); }
-let prompt = rest.join(" ");
-const fi = rest.indexOf("--file");
-if (fi >= 0) prompt = fs.readFileSync(rest[fi + 1], "utf8");
+// provider flags: --openai forces gpt-image-1 (transparent bg, best for cutouts);
+// --grok forces grok-2-image. Default: Grok if its key is set, else OpenAI.
+const forceOpenAI = rest.includes("--openai");
+const forceGrok = rest.includes("--grok");
+const words = rest.filter(a => a !== "--openai" && a !== "--grok");
+let prompt = words.join(" ");
+const fi = words.indexOf("--file");
+if (fi >= 0) prompt = fs.readFileSync(words[fi + 1], "utf8");
 if (!prompt.trim()) { console.error("empty prompt"); process.exit(1); }
+
+const provider = forceOpenAI ? "openai" : forceGrok ? "grok"
+  : (process.env.XAI_API_KEY ? "grok" : process.env.OPENAI_API_KEY ? "openai" : null);
 
 const save = (buf) => { const f = path.join(OUT, `${name}.png`); fs.writeFileSync(f, buf); console.log("wrote", f); };
 
-if (process.env.XAI_API_KEY) {
+if (provider === "grok" && process.env.XAI_API_KEY) {
   console.log("generating via Grok (grok-2-image)…");
   const r = await fetch("https://api.x.ai/v1/images/generations", {
     method: "POST",
@@ -39,7 +47,7 @@ if (process.env.XAI_API_KEY) {
   const j = await r.json();
   if (!r.ok) { console.error("xAI error:", JSON.stringify(j)); process.exit(1); }
   save(Buffer.from(j.data[0].b64_json, "base64"));
-} else if (process.env.OPENAI_API_KEY) {
+} else if (provider === "openai" && process.env.OPENAI_API_KEY) {
   console.log("generating via OpenAI (gpt-image-1)…");
   const r = await fetch("https://api.openai.com/v1/images/generations", {
     method: "POST",

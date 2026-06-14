@@ -10,8 +10,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Syntax-check every JS file
-        run: for f in *.js; do echo "checking $f"; node --check "$f"; done
+      - name: Syntax-check every JS/MJS file (game + tests + tools)
+        # cloud/ is excluded: cloud/worker.js is a Cloudflare Worker (ES-module
+        # syntax in a .js file) and runs in the Workers runtime, not Node, so
+        # `node --check` would mis-parse it as CommonJS and fail spuriously.
+        run: |
+          find . -name node_modules -prune -o -path ./cloud -prune -o \
+            \( -name '*.js' -o -name '*.mjs' \) -print \
+            | while read -r f; do echo "checking $f"; node --check "$f" || exit 1; done
       - name: Curriculum + invariant tests
         run: node tests/curriculum.test.js
       - name: Save-layer tests
