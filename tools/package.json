@@ -1,0 +1,17 @@
+{
+  "name": "teddyman-tools",
+  "private": true,
+  "type": "module",
+  "description": "Dev-only harness (screenshots, SVG render, image-gen). NOT part of the deployed static site.",
+  "scripts": {
+    "svg": "node svg-shot.mjs",
+    "shot": "node shot.mjs",
+    "gen": "node gen.mjs"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "pixelmatch": "^6.0.0",
+    "playwright": "^1.45.0",
+    "pngjs": "^7.0.0"
+  }
+}

@@ -1,0 +1,11 @@
+# Dev tooling (tools/) — never affects the deployed static site
+tools/node_modules/
+tools/shots/
+tools/package-lock.json
+
+# Secrets — API keys live on the local machine only, NEVER in git
+.env
+*.local
+
+# Generated art waiting to be integrated (drop files here)
+art/incoming/
