@@ -99,8 +99,8 @@ Every UI finding/spec logged so far, by screen. Full detail in the dated section
 - **B2/B3** ↪ cross-ref the character-art resolver + H2 buttons.
 
 **Parent / Grown-Up Corner**
-- **P1** 📋 Nav flaky — refactor IA into a parent **hub + drill-down**, pull the **Voice Studio** out as its own
-  tool, add a **cognitive parent gate** (research-backed). Preserves every feature.
+- **P1** 📐 Nav flaky → parent **hub + drill-down**, Voice Studio as its own tool, **cognitive gate** — **SPEC
+  ready** (research-backed; preserves every feature + bound IDs).
 
 **Cross-cutting — characters & chrome**
 - **🖼️ UI Glow-up Audit** — inventory: only Teddy + Vixen are raster; everyone else old SVG (+ Neo's
@@ -998,6 +998,69 @@ Players / Progress / Settings / Voices), gate `game.js:1454` (3-second press-and
   resetting; fix it in the refactor.
 - **Studio is heavy** (IndexedDB, ElevenLabs key, GitHub token) — keep it lazy/contained in its own space.
 - Accessibility: ≥96px targets, high contrast even in the parent area.
+
+— Trinity, 2026-06-14
+
+---
+
+## 📐 SPEC FOR NEO — Grown-Up Corner refactor: parent hub + drill-down + cognitive gate (Trinity, 2026-06-14)
+
+Implements P1. Goal: replace the 4 flat heterogeneous tabs with a **parent HUB → drill-down sections**, pull the
+**Voice Studio** out as its own tool, and add a **cognitive gate** — **preserving every control + every bound ID.**
+Current: panel `index.html:305–434`; tab-switch wired in **`audio-studio.js:339–341`** (delegated `.tabbtn` →
+toggle `.on` on `.tabbtn`/`.tabpane` by `data-tab`); gate `game.js:1454` (3s hold → `openSettings`); open logic
+`openSettings()` `game.js:1438`.
+
+### Architecture (minimal-risk — REUSE the existing panes)
+1. **Keep the 4 `.tabpane` blocks + ALL inner markup/IDs** (`#tabPlayers/#tabProgress/#tabSettings/#tabAudio`) as
+   the "sections." Re-parenting/moving them in the DOM is safe (`getElementById` is position-independent) — just
+   **don't rename inner IDs or remove elements.**
+2. **Add a HUB pane `#tabHub`** = the landing: an **overview** (active player + switch, today's mins/missions from
+   `S.daily`, cloud on/off via `cloudActive()`, voice-coverage % from the studio dash) + **4 big nav cards**
+   (👥 Players · 📊 Progress & Reports · ⚙️ Settings · 🎙️ Voice Studio) + a prominent **"← Back to game"** (Close).
+3. **Replace the flat tab switch** (audio-studio.js:339–341) with `showSection(id)` (shows ONE pane: hub OR a
+   section) + `backToHub()`. Give each section a **"‹ Back"** header → `backToHub()`. Drop the persistent
+   `.tabbar` (nav is hub↔section). Move this nav logic OUT of audio-studio.js (it shouldn't own panel nav).
+4. **`openSettings()` lands on `#tabHub`** + populates the overview; **paint each section LAZILY on drill-in**
+   (`showSection('tabProgress')`→`renderProgress()`; Studio→`refreshAudioStudio()`; Settings→`paintVol/paintDetailSeg`
+   + cloud field; Players→`paintPlayers`) so opening the panel is light and data is fresh each entry.
+5. **Voice Studio = its own labeled tool** (same `#tabAudio` pane, titled as a tool, reached from its hub card,
+   lazy-loaded) — no longer a peer of a sound toggle.
+
+### Cognitive gate (replaces the weak 3s hold)
+- Keep the **3s hold** as the *intent* trigger (so a kid can't trigger it by accident); on hold-complete show a
+  **math modal**: "Grown-ups only — tap the answer: **13 + 24**" with 3 big answer buttons (1 correct + 2
+  plausible foils). Correct → `openSettings()` + set a session flag `__parentOK`. Wrong → gentle dismiss.
+- **Numbers: adult-easy / kid-hard** — two **2-digit** addends with regrouping (e.g., 13+24, 27+15), NOT
+  single-digit (a 7yo learning math could solve those).
+- **Remember per session:** skip the challenge while `__parentOK` is fresh; **re-challenge on
+  `visibilitychange` (hidden→visible)** or after N minutes idle. Destructive controls (Reset, Publish/GitHub
+  token, cloud code) already live behind the gated panel — good.
+
+### ⚠️ ID-PRESERVATION list (do NOT rename/remove — handlers bind by ID at load)
+`volSlider`/`volPct`, `sfxSlider`/`sfxPct`/`btnSfxToggle` (sfx.js), `musicSlider`/`musicPct`/`btnMusicToggle`
+(music.js), `btnVoiceTest`, the `#detailSeg` buttons, `cloudSecret`/`btnCloudConnect`/`btnCloudOff`/`cloudState`/
+`saveWarn`, `saveBox`/`btnCopySave`/`btnRestoreSave`, `btnResetProfile`/`resetWho`, `playersList`/`btnAddPlayer`,
+`progBody`, `vpStatus2`, `audDash` + **all audio-studio element ids**, `btnCloseSettings`. A blind re-layout that
+renames these breaks the handlers in game.js/sfx.js/music.js/audio-studio.js.
+
+### Edge cases / gotchas
+- **Lazy paint must run EVERY drill-in** (not once) so stats/cloud/coverage are fresh.
+- **Back resets scroll position** (part of today's "flaky" feel is stale tab state/scroll).
+- Panel stays a full-screen overlay (z 20); **Close returns to the prior game screen** (`btnCloseSettings`
+  removes `.on`) — keep.
+- reduced-motion on any drill transition; ≥96px targets + high contrast incl. the gate buttons.
+- **No save/migrate impact** (pure UI). #1 cloud-auth is already live (`cloudSecret`/Family code) — the refactor
+  just re-homes the Sync card under Settings; keep `cloudActive`/`cloudConnect`/`cloudOff` wiring.
+
+### Phasing (incremental, low-risk)
+P1 add hub + `showSection`/`backToHub` over the existing panes (biggest IA win, IDs untouched) → P2 lazy-paint
+on drill-in → P3 cognitive gate + session-remember → P4 re-label/contain the Voice Studio + tidy microcopy.
+
+### Verify
+No unit tests (DOM). Add `shot.mjs` scenes: the gate modal, the hub, each section, Studio. Manual: gate math
+correct/incorrect + session-remember; each section opens→paints→Back; **every control still works** (sliders,
+toggles, detail, cloud, backup, reset, players, studio); Close returns to the game.
 
 — Trinity, 2026-06-14
 
