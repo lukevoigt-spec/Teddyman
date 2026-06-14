@@ -175,9 +175,11 @@ const WEAPONS=[
 function ownedWeapons(){ const a=currentAct(), g=actGearList(a);
   return WEAPONS.filter(w=>(!w.act||w.act===a)&&g.includes(w.gear)); }
 function heroOpts(){ /* muscle + gear come from THIS act's progress, so a new act resets his power */
-  const a=currentAct(), done=actMissions(a).filter(m=>S.done[m.id]).length, gear=actGearList(a);
+  const a=currentAct(), am=actMissions(a), done=am.filter(m=>S.done[m.id]).length, total=am.length, gear=actGearList(a);
   const eq=S.equip.weapon||"none";
-  return { muscle: done>=7?2:(done>=3?1:0),
+  /* muscle growth SPREAD across the whole act (was front-loaded: maxed at 7 of ~53). tier 1 ~28% in,
+     tier 2 ~60% in, so he visibly bulks up the entire campaign, not in the first few missions. */
+  return { muscle: total ? (done>=total*0.6?2:(done>=total*0.28?1:0)) : 0,
            weapon: ownedWeapons().some(w=>w.k===eq)?eq:"none",   /* only a weapon unlocked in THIS act shows */
            cape: S.equip.cape||"red",
            theme: actInfo(a).theme||"hero",
