@@ -63,8 +63,10 @@ function mapPaintSVG(){
       </g></g>`;
     if(zi===cur){   /* PAINTED Teddy (heroMarquee, act-aware) standing AT the node — feet at its base, not floating on the disc */
       const s=.62, hx=x-s*120, hy=(y+4)-s*226;   /* seat local feet (120,226) at (x, y+4) */
-      hero=`<ellipse cx="${x}" cy="${y+6}" rx="42" ry="12" fill="#0a0414" opacity=".5"/>`
-        + `<g transform="translate(${hx} ${hy}) scale(${s})">${heroMarquee(250).replace(/<svg[^>]*>|<\/svg>/g,"")}</g>`;
+      /* pointer-events:none — the hero renders ABOVE the current .mnode, so without this it would
+         steal the start-mission tap and shrink the touch target (MAP-1 regression, constraint #6). */
+      hero=`<g pointer-events="none"><ellipse cx="${x}" cy="${y+6}" rx="42" ry="12" fill="#0a0414" opacity=".5"/>`
+        + `<g transform="translate(${hx} ${hy}) scale(${s})">${heroMarquee(250).replace(/<svg[^>]*>|<\/svg>/g,"")}</g></g>`;
     }
   });
   /* TIME PORTAL — opens once the Act-1 finale is cleared (story canon: Teddy follows

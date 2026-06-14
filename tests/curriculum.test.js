@@ -173,6 +173,10 @@ grp("map locking ENFORCEMENT — mapPaintSVG marks future zones .locked (no skip
   var c=counts();
   ok("fresh save: exactly one CURRENT node, the rest LOCKED, none done", c.current===1 && c.locked===n-1 && c.done===0, c);
   ok("every map node exposes data-zi so the lock-guarded click handler can resolve it", (mapPaintSVG().match(/data-zi="/g)||[]).length===n);
+  // MAP-1: the painted map hero renders ABOVE the current node — it must be pointer-events:none so it
+  // can't intercept the start-mission tap (touch-target / constraint #6 regression guard).
+  (function(){ var hm=mapPaintSVG(), pe=hm.indexOf('pointer-events="none"'), ti=hm.indexOf('art/teddy');
+    ok("the painted map hero is pointer-events:none before its image (won't steal the current-zone tap)", pe>=0 && ti>pe, {pe:pe,ti:ti}); })();
   zMissions(zs[0]).forEach(function(m){ S.done[m.id]=true; });   // clear zone 1
   c=counts();
   ok("after clearing zone 1: one done, one current, the rest still locked", c.done===1 && c.current===1 && c.locked===n-2, c);
