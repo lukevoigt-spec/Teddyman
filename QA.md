@@ -318,6 +318,12 @@ Source of truth = the `RASTER` manifest (`art.js:198-200`) + the `rasterArt()` c
   placeholders. None block gameplay; all are art-lane polish (cross-refs the character-art resolver + **U8** boss
   escalation).
 
+### 🎮 ENGAGEMENT / "want-to-play" wave → see DESIGN-ENGAGEMENT.md (2026-06-14)
+The next-wave feature specs (treasure chests, Hero Room revamp, weapons/customization ecosystem, store expansion,
+pets, the coin-fly juice pass) + an IP read (Marvel/Avengers + Lord of the Rings) live in **`DESIGN-ENGAGEMENT.md`**,
+with a research basis and a best-first build order. Audit fixes (U-series, below) ship first; that doc is the parallel
+delight track.
+
 ### 🔧 U10–U13 — READY-TO-SHIP FIX SPECS (Neo, exact targets) — 2026-06-14
 All four are small + low-risk. Verify each with `node tools/shot-cloud.mjs <scene>` (scenes: `intro`, `recharge`/
 `inter`, `a2map`, `a2base`) + keep `save`/`curriculum` green.
