@@ -2,6 +2,8 @@
   --ink:#150f2e; --panel:#fff6e3; --sky1:#0b051f; --sky2:#2a1b5e; --sky3:#5c3a8f;
   --blue:#3f93ff; --blueD:#2257c4; --red:#e6453c; --gold:#ffce3a; --goldD:#ff9e1f;
   --green:#33d68a; --purp:#8a4fd0; --txt:#fff6e3; --glow:#ffcf57;
+  /* motion easing tokens (STYLE.md §6) — reference by name so juice reads consistently */
+  --ease-overshoot:cubic-bezier(.34,1.56,.64,1); --ease-accelerate:cubic-bezier(.55,.085,.68,.53); --ease-soft:ease-out;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;}
@@ -473,6 +475,13 @@ body.calm .gembox>svg,body.calm .trophy,body.calm .gembox.mastered::after{animat
     inset 0 3px 0 rgba(255,255,255,.55), inset 0 -11px 18px rgba(8,28,80,.5), inset 0 0 0 2px rgba(255,255,255,.14);}
 .btn:not(.ghost):active{box-shadow:0 3px 8px rgba(0,0,0,.4), inset 0 2px 0 rgba(255,255,255,.4), inset 0 -6px 12px rgba(120,68,8,.45), inset 0 0 0 2px rgba(255,255,255,.14);}
 .btn.blue:active{box-shadow:0 3px 8px rgba(0,0,0,.4), inset 0 2px 0 rgba(255,255,255,.38), inset 0 -6px 12px rgba(8,28,80,.5), inset 0 0 0 2px rgba(255,255,255,.12);}
+/* the ONE primary CTA gently breathes so it's unmistakably "the thing to do" (STYLE.md §7.4 #1 +
+   §8 checklist; research: exactly one obvious action per screen). transform-only (GPU); the press
+   still wins; Calm/reduced-motion hold it still. */
+@media (prefers-reduced-motion:no-preference){.btn.cta{animation:ctaFloat 2.4s ease-in-out infinite;}}
+@keyframes ctaFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.btn.cta:active{animation:none;}
+body.calm .btn.cta{animation:none;}
 
 /* glass HUD chips + round buttons */
 .chip,.roundbtn{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(16,10,38,.5);
