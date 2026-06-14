@@ -197,6 +197,74 @@ Evidence: `cloudPull()` collapses every non-OK response, including Worker `401`,
 
 ---
 
+## Morpheus deep-dive addendum — 2026-06-14
+
+Scope: pulled and rebased onto `origin/main` at `fd4097d`, after Neo shipped MAP-1/MAP-2/CLOUD-1, pacing P1,
+Memory Vault #1, and the dedicated Recharge activity. Rechecked the hard-constraint lanes (sound-ID anti-gaming,
+audio-first flow/watchdogs, save migration, map touch targets, generated art rollout, Act-2 finale, and daily loop).
+Baseline is clean: `node tests/save.test.js` = 73 pass, `node tests/curriculum.test.js` = 53 pass, JS/MJS parse
+sweep pass, `git diff --check` pass. I am not re-reporting MAP-1/CLOUD-1/MAP-2; those are fixed on main.
+
+**1. Act-2 fortress word-locks can mis-teach magic-e audio — CONFIRMED new bug.**
+Evidence: `fortRead()` samples the act-aware `readPool()` (`game.js:984`), which is `READWORDS2` in Act 2
+(`game.js:773`) and includes magic-e words like `cake`, `bike`, `home`, `cube`, `rose` (`data-content.js:86-92`).
+But the fortress word tiles are rendered with `toGraphemes(w)` and each tile simply plays `Aud.play("snd_"+c)`
+(`game.js:986-987`). For `cake`, that means the `a` tile replays short /a/ instead of `snd_a_long`, and the
+silent `e` tile replays `snd_e`. The main Read-It path already knows the correct behavior: `magicE(w)` +
+`graphemeSounds(w)`, `longv`, and `silente` (`game.js:782-787`).
+-> **Proposed fix:** factor/reuse one word-tile renderer for Read-It, Training, Forge, and Fortress, or at least
+copy the `nextRead()` magic-e branch into `fortRead()`: long-vowel tile plays `snd_*_long`, silent-E is visibly
+dimmed and does not play short /e/, and a correct magic-e word credits `record(magicE(w).unit,true)` just like
+Read-It (`game.js:793-795`). Add a focused test/helper assertion that a fortress-rendered `cake` uses long-A and
+never binds `snd_e` to the silent-E tile.
+— Morpheus, 2026-06-14
+
+**2. Recharge routes magic-e safely, but its build feedback still treats CVCe tiles as ordinary letters — CONFIRMED new bug.**
+The new Recharge activity correctly avoids anti-gaming bug #4: `vaultRoute()` sends no-clip magic-e units to a
+build round inside a real word, not to sound-ID (`game.js:1410-1422`), and tests now cover that routing. The build
+round itself is still not magic-e-aware, though. `vaultUnits(w,false)` uses `toGraphemes(w)` (`game.js:1414`),
+`vaultBuild()` renders plain slots with no `silente`/`longv` classes (`game.js:1449-1452`), and per-tile feedback
+plays `Aud.play("snd_"+c)` / `Aud.play(["snd_"+want])` (`game.js:1464-1467`). For a due `a_e` reviewed through
+`cake`, the child can hear short /a/ on the `a` tile and short /e/ on the silent-E retry path; the final word audio
+is correct, but the step-by-step feedback undermines the Magic-E rule.
+-> **Proposed fix:** share the magic-e-aware tile/audio helper used by Read-It/Forge: compute `magicE(w)` +
+`graphemeSounds(w)`, mark the long vowel and silent E visually, play `snd_*_long` for the vowel, and suppress
+short-/e/ replay for silent E. Add a Recharge-specific guard for `vaultBuild(vaultRoute("a_e"))`/`cake` proving it
+does not bind `snd_a` or `snd_e` to those CVCe feedback moments.
+— Morpheus, 2026-06-14
+
+**3. Act-2 finale sentence/comprehension proof is still the highest reading-core backlog item.**
+This is not a duplicate bug report; it is a priority call after MAP/CLOUD shipped. The old Morpheus finding remains
+live: Dragon Keep's final phase is still `{kind:"read"}` for "READ TO FREE MISS KENDALL!" (`game.js:944-948`), so
+the climax can finish on word-picture decoding rather than sentence/comprehension proof. The dormant `fortSentence`
+path still hardcodes Act-1 `FORTMAZE`/`SENTENCES` (`game.js:1020-1034`), so flipping the final phase is not safe
+until those pools are act-aware.
+-> **Material suggestion for Trinity:** promote this alongside Training/Vault surfacing in the active top handoff
+as the next reading-core packet: Act-2 final proof should use `SENTENCES2` plus `CLOZE2`/Act-2 maze content, with
+the same no-timer, audio-first flow. Training Room cumulative/grapheme-aware work is still useful, but after
+Recharge shipped it is no longer the blocker for deterministic Vault review.
+— Morpheus, 2026-06-14
+
+**4. Source-of-truth drift: CLAUDE.md still carries resolved title-flow complaints as "not yet done."**
+Evidence: `CLAUDE.md:252-255` still says the title has a button under START, START/CONTINUE are redundant, and
+the old "THE POWER GEMS OF STAR FORCE CITY" subtitle needs replacement. Latest code has the resolved H3/H4 shape:
+generic subtitle in `index.html:75`, one `btnPlay` in `index.html:77`, and the single PLAY handler in `game.js:412`.
+Because conflict order says `CLAUDE.md -> AGENTS.md -> QA.md`, this stale parent-note block can mislead future
+agents into re-opening work Trinity has already verified as shipped.
+-> **Proposed fix:** Trinity/Neo should mark that CLAUDE parent-note item as partially resolved/superseded:
+buttons/chrome polish (H2) remains open, but H3/H4 title copy and START/CONTINUE flow are shipped.
+— Morpheus, 2026-06-14
+
+**5. Generated character art looks shippable; only one mentor-polish check remains.**
+The current raster call sites and files line up: ally flags in `RASTER` (`art.js:198-200`), Mom/Dad in
+`mentorChips()` (`art.js:230-245`), and Noah/Dragon through `rasterArt("noah"/"dragon")` (`art.js:585-589`).
+Visual pass found no blocking content/readability issue for the latest Dragon/Noah or the Act-1 family/allies.
+The one polish note: `mentorChips()` renders `art/mom.png` directly at `224x224`, and the PNG itself is tight at
+the bottom edge, so Mom's shoes read slightly cropped compared with Dad. This is not a deploy blocker, but before
+generated mentor art spreads further, run the harness on `mentorChips(120)` and either pad/regenerate Mom to the
+same safe canvas spec as the allies or document the crop as accepted.
+— Morpheus, 2026-06-14
+
 ## 🔍 CODE-REVIEW FINDINGS — verified by Claude 2026-06-14 (for the coding agent)
 
 An external review raised 5 findings. I checked each against the actual code. **4 are real and
