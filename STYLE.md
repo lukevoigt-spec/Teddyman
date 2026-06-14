@@ -204,7 +204,7 @@ Targets/easing: micro-feedback ~`.12s`; pops `.4–.5s ease`; nothing decorative
 ### Juice philosophy (1 line)
 **Layer many small effects (motion + scale + flash + a number + sound) over one big one — and juice the REWARD layer,
 NEVER the active learning prompt.** Full principles in `AGENTS.md` ("how we juice"); mechanics + feasibility in
-`DESIGN-ENGAGEMENT.md §8`.
+`DESIGN-ENGAGEMENT.md §8`; **SFX/audio-juice standards in §6.5 below.**
 
 ### Easing tokens (use these, not bare `ease`)
 Add to `:root` and reference by name so motion reads consistently:
@@ -233,6 +233,35 @@ Every new juice effect maps onto the existing `S.detail` tiers (reuse `applyDeta
 **Full** = full magnetize + sprites + glow → **Calm** = fewer sprites (or number-tween only) + bounce + sound →
 **Lite / `prefers-reduced-motion`** = **instant set** + a single pulse + sound (no sprites). All effects still
 auto-remove and can't hang a flow.
+
+### Sound design (SFX) — standards (the audio half of juice; engine = `sfx.js` Web-Audio `Sfx`)
+SFX is half of "game feel." Distilled from the game-audio canon, tuned for Teddy (audio-first, ADHD, ND sensory).
+Implement in `sfx.js` (Web Audio = oscillators + gain **ADSR** + frequency → all of this is cheap, offline, no
+files/licensing — keep it synthesized). **Standards:**
+1. **LAYER.** Important cues = 2–3 stacked elements (a body tone + a bright transient/sparkle), not one beep. Crisp
+   reward = **fast attack + short decay** (ADSR) — the satisfying "plink."
+2. **VARY (anti-repetition).** Never play an identical cue twice in a row: a small pool + **subtle, bounded** pitch
+   (±~30–60 cents) / volume jitter per play. ⚠️ **ND-safe:** keep variation SUBTLE + predictable — ASD/ND profiles
+   dislike *unpredictable/jarring* sound; vary to kill robotic fatigue, **never to startle.**
+3. **PITCH = juice + info.** Ascending pitch = success; **pitch-ladder streaks** (each combo/coin step a semitone up)
+   so a run *feels* like it's building.
+4. **DON'T MASK THE VOICE (audio-first #8).** Narration owns the **mid band (~0.3–3 kHz)** → put confirmations low,
+   sparkle high, keep mids clear; **duck SFX under any narration** (as Music already does); keep every SFX **short**.
+5. **RESERVE for key events.** Punctuate the meaningful moments (correct / reward / unlock / win / mastery); don't
+   sound everything — keeps the learning audio primary and avoids fatigue.
+6. **POSITIVE bright / NEGATIVE gentle.** Success = cheerful chime/fanfare; "wrong" = a **soft, low** cue, **never**
+   harsh/buzzer (hard constraint #2).
+7. **MASTERY-WEIGHTED.** The richest, most-layered sting on **MASTERED! / rank-up**; routine coins stay simple +
+   quieter (mirrors §6.0).
+8. **Respect the controls.** Own volume `S.sfxVol` + off toggle (separate from voice/music) + reduced-audio; default gentle.
+**Per-event quick spec:** correct = layered bright plink (fast attack/short decay) + subtle jitter · combo = pitch-ladder
+up per step · coin = short staccato chime, laddering on a run · wrong = soft low "nope," no harshness · unlock/win =
+layered fanfare swell · mastery = the biggest/brightest/most-layered sting (loudest in the kit).
+*(Sources: pitch as aural juice + variation — [GameDeveloper](https://www.gamedeveloper.com/audio/the-power-of-pitch-shifting),
+[A Sound Effect (repetition/fatigue)](https://www.asoundeffect.com/game-audio-immersion/); UI audio frequency-band +
+ducking — [SFX Engine](https://sfxengine.com/blog/best-practices-for-game-ui-sounds),
+[Material](https://m2.material.io/design/sound/applying-sound-to-ui.html); child/ND sensory: reserve for key events,
+bounded predictable variation, ASD auditory sensitivity.)*
 
 ---
 

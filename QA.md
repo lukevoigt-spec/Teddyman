@@ -301,6 +301,22 @@ session; see ledger. Open chrome below.)*
   benefits a FRESH playthrough — confirm a fresh player is coming before P2/P3. Tests: grandfather-union keeps
   earned gear/friends after re-map; `migrate` seeds `S.freed` from existing `S.done`.
 
+### 🎙️ VOICE — add LINE VARIATIONS for the most-repeated dialogue (parent, 2026-06-14)
+Characters say the **same line every time** for high-frequency prompts/praise → gets old fast. Add variations so the
+most-said lines rotate; then the parent does **one bulk audio ReGen**. *(Same anti-fatigue principle as SFX variation,
+STYLE.md §6.5.)*
+- **Identify the highest-frequency line ids** (said many times/session): the per-round prompts (`find_prompt`, forge/
+  read/scan/trace prompts), the per-correct praise, win/cheer lines, ally cheers — audit the `narrate()`/`Aud.play`
+  call sites for the most-repeated ids.
+- **Author 2–3 VARIATIONS each** in the LINES manifest (`data-lines.js`) — new ids (e.g. `find_prompt` + `find_prompt2`
+  + `find_prompt3`) with TTS-fallback text + the **same role `v`**. New ids **auto-appear in the Voice Studio** (per
+  CLAUDE.md) so the parent can record/generate them.
+- **Add a "fresh variant" picker** (small helper): map a logical line → its variant pool, pick one **≠ the last
+  played** (no immediate repeat; round-robin or random-no-repeat). Route the high-frequency `narrate()` calls through it.
+- ⚠️ Variations keep the **same meaning + role**; **anti-gaming #4** — sound-ID prompts stay target-independent (never
+  name/reveal the letter); flows stay hang-safe (`flow()`/watchdog; a missing variant clip falls back to TTS).
+- **Batch ALL the new variation ids in one pass** so the parent ReGens the whole set **once**.
+
 ### Other notes / risks (low priority, carried forward)
 - 📋 **CLAUDE.md title-flow notes are stale** (H3/H4 shipped; CLAUDE.md:252-255 still lists them as open). Parent-
   owned file — **flag, don't edit.**
