@@ -666,11 +666,13 @@ function dragonSVG(w=240){
 const u="d"+(__huid++);
 return `<svg viewBox="-24 -12 348 344" width="${w}" aria-hidden="true">
 <defs>
-<linearGradient id="dbody" x1=".25" y1="0" x2=".75" y2="1"><stop offset="0" stop-color="#5c7196"/><stop offset=".5" stop-color="#3c4d70"/><stop offset="1" stop-color="#25324e"/></linearGradient>
+<linearGradient id="dbody" x1=".25" y1="0" x2=".75" y2="1"><stop offset="0" stop-color="#8195bd"/><stop offset=".5" stop-color="#3c4d70"/><stop offset="1" stop-color="#161d30"/></linearGradient>
 <linearGradient id="dcream" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#e8dec5"/><stop offset="1" stop-color="#c2b594"/></linearGradient>
-<linearGradient id="dwing" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#dccfb0"/><stop offset="1" stop-color="#b3a482"/></linearGradient>
+<linearGradient id="dwing" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#f0e6cb"/><stop offset=".55" stop-color="#c4b691"/><stop offset="1" stop-color="#8a7c5d"/></linearGradient>
 <radialGradient id="${u}aura" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff6a2a" stop-opacity=".58"/><stop offset=".55" stop-color="#c0301a" stop-opacity=".2"/><stop offset="1" stop-color="#c0301a" stop-opacity="0"/></radialGradient>
 <radialGradient id="${u}eye" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffd0c0"/><stop offset=".4" stop-color="#ff4a3a"/><stop offset="1" stop-color="#a00000"/></radialGradient>
+<linearGradient id="${u}form" x1=".82" y1="1" x2=".25" y2="0"><stop offset="0" stop-color="#070b13" stop-opacity=".5"/><stop offset=".62" stop-color="#070b13" stop-opacity="0"/></linearGradient>
+<filter id="${u}soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="5"/></filter>
 <filter id="${u}lit" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="3.5" result="b"/><feSpecularLighting in="b" surfaceScale="4" specularConstant=".4" specularExponent="18" lighting-color="#dfe8ff" result="s"><fePointLight x="60" y="-40" z="160"/></feSpecularLighting><feComposite in="s" in2="SourceAlpha" operator="in" result="sc"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="sc"/></feMerge></filter>
 <filter id="${u}glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3"/></filter>
 </defs>
@@ -711,6 +713,18 @@ return `<svg viewBox="-24 -12 348 344" width="${w}" aria-hidden="true">
 <g fill="#fff" stroke="#18202f" stroke-width="1.5" stroke-linejoin="round"><path d="M118 124 l5 15 l7 -14z"/><path d="M138 130 l5 14 l7 -13z"/><path d="M162 130 l5 13 l7 -14z"/><path d="M184 124 l5 15 l7 -14z"/></g>
 <circle cx="138" cy="116" r="2.6" fill="#18202f"/><circle cx="170" cy="116" r="2.6" fill="#18202f"/>
 <g stroke="#3c4d70" stroke-width="3" fill="none" stroke-linecap="round"><path d="M98 122 Q60 118 46 132"/><path d="M210 122 Q248 118 262 132"/></g>
+</g>
+<g class="dshade" stroke="none">
+<ellipse cx="150" cy="258" rx="70" ry="32" fill="#ff7320" opacity=".17" filter="url(#${u}soft)"/>
+<path d="M100 150 Q150 128 200 150 Q218 200 198 252 Q150 270 102 252 Q82 200 100 150Z" fill="url(#${u}form)"/>
+<path d="M92 102 Q86 52 134 40 Q170 32 202 48 Q228 62 224 102 Q224 126 200 138 Q170 150 140 147 Q106 145 96 128 Q90 116 92 102Z" fill="url(#${u}form)"/>
+<ellipse cx="152" cy="150" rx="42" ry="13" fill="#0a0e16" opacity=".4" filter="url(#${u}soft)"/>
+<g fill="none" stroke="#bcd0ff" stroke-linecap="round" opacity=".92" filter="url(#${u}glow)">
+<path d="M97 120 Q87 112 91 90 Q98 52 130 41" stroke-width="4"/>
+<path d="M101 152 Q83 198 99 248" stroke-width="4"/>
+<path d="M104 156 Q150 134 196 156" stroke-width="2.5" stroke="#9fb4e8" opacity=".55"/>
+</g>
+<g fill="#fff" opacity=".85"><circle cx="121" cy="100" r="2.4"/><circle cx="173" cy="100" r="2.4"/></g>
 </g>
 </g>
 </svg>`;}
