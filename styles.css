@@ -267,6 +267,20 @@ body[data-act="2"] .navitem{border-color:#6a5436;background:rgba(50,38,18,.55);c
   background:transparent;border:none;border-radius:11px;padding:9px 16px;cursor:pointer;transition:background .15s,color .15s;}
 .tabbtn.on{background:linear-gradient(180deg,#312368,#241b4d);color:var(--gold);box-shadow:inset 0 0 0 1.5px rgba(255,206,58,.4),0 2px 8px rgba(0,0,0,.3);}
 .tabpane{display:none;flex-direction:column;align-items:center;gap:12px;width:min(720px,94vw);}
+/* U3 parent HUB — overview + big nav cards (replaces the flat tab bar) */
+.hubover{width:min(720px,94vw);background:rgba(10,5,24,.5);border:1.5px solid #2a2150;border-radius:16px;
+  padding:13px 18px;display:flex;flex-direction:column;gap:5px;}
+.hub-row{font-family:'Baloo 2',sans-serif;font-size:16px;color:#e8e2ff;letter-spacing:.01em;}
+.hub-row b{color:var(--gold);font-weight:800;}
+.hub-dim{color:#a99fd6;font-size:14px;}
+.hubcards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;width:min(720px,94vw);}
+.hubcard{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:108px;cursor:pointer;color:var(--gold);
+  background:linear-gradient(165deg,rgba(49,35,104,.72),rgba(24,17,58,.72));border:2.5px solid #4a3a86;border-radius:18px;
+  box-shadow:0 6px 16px rgba(0,0,0,.32);transition:transform .12s,box-shadow .12s;}
+.hubcard:active{transform:translateY(2px);box-shadow:0 3px 8px rgba(0,0,0,.4);}
+.hubcard .hc-ic{font-size:40px;line-height:1;}
+.hubcard .hc-t{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:17px;text-align:center;}
+.secback{align-self:flex-start;}
 /* Progress tab */
 .pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;}
 .pcard{background:#241b4d;border:2px solid #3a2d72;border-radius:14px;padding:10px;text-align:center;}
@@ -277,7 +291,7 @@ body[data-act="2"] .navitem{border-color:#6a5436;background:rgba(50,38,18,.55);c
 .pgem{display:inline-block;min-width:26px;padding:2px 7px;border-radius:8px;border:2px solid var(--ink);
   color:#fff;font-family:'Andika',sans-serif;font-weight:700;text-align:center;}
 .pgem.warn{background:#e6453c;}
-.pnote{font-size:12px;color:#9b94c9;}
+.pnote{font-size:13px;color:#b3aad3;}   /* U3: nudged up for parent readability */
 .tabpane.on{display:flex;}
 .audrow{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center;width:100%;}
 .audrow input[type=password],.audrow select{flex:1;min-width:180px;padding:9px 12px;border-radius:12px;
@@ -595,7 +609,7 @@ body.lite #titleHero>svg,body.lite #baseHero>svg,body.lite #winHero>svg,body.lit
 .setcard.danger{background:linear-gradient(165deg,rgba(70,20,42,.5),rgba(30,10,22,.55));}
 .setcard-h{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:17px;color:var(--gold);display:flex;align-items:center;gap:8px;}
 .sc-ic{font-size:19px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4));}
-.setcard-sub{font-family:'Andika',sans-serif;font-size:12.5px;line-height:1.45;color:#a99fd6;}
+.setcard-sub{font-family:'Andika',sans-serif;font-size:14px;line-height:1.45;color:#bcb2e4;}   /* U3: parent-readable */
 .setrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
 .setrow label{font-size:15px;font-weight:600;color:#efeaff;min-width:96px;}
 .setrange{flex:1;min-width:130px;height:10px;-webkit-appearance:none;appearance:none;border-radius:6px;

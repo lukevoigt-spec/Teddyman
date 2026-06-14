@@ -319,14 +319,19 @@
   <div id="settingsPanel">
     <div class="comic" style="font-size:34px;color:var(--gold);">GROWN-UP CORNER</div>
     <div class="vpstatus" id="vpStatus2"></div>
-    <div class="tabbar">
-      <button class="tabbtn on" data-tab="tabPlayers">👥 Players</button>
-      <button class="tabbtn" data-tab="tabProgress">📊 Progress</button>
-      <button class="tabbtn" data-tab="tabSettings">⚙️ Settings</button>
-      <button class="tabbtn" data-tab="tabAudio">🎙️ Voices</button>
+    <!-- U3: HUB landing — overview + big nav cards (replaces the flat tab bar) -->
+    <div id="tabHub" class="tabpane on">
+      <div class="hubover" id="hubOver"></div>
+      <div class="hubcards">
+        <button class="hubcard" id="hubPlayers"><span class="hc-ic">👥</span><span class="hc-t">Players</span></button>
+        <button class="hubcard" id="hubProgress"><span class="hc-ic">📊</span><span class="hc-t">Progress &amp; Reports</span></button>
+        <button class="hubcard" id="hubSettings"><span class="hc-ic">⚙️</span><span class="hc-t">Settings</span></button>
+        <button class="hubcard" id="hubAudio"><span class="hc-ic">🎙️</span><span class="hc-t">Voice Studio</span></button>
+      </div>
     </div>
 
-    <div id="tabPlayers" class="tabpane on">
+    <div id="tabPlayers" class="tabpane">
+      <button class="btn ghost sm secback">‹ Back</button>
       <div class="setcard">
         <div class="setcard-h"><span class="sc-ic">👥</span> Players</div>
         <div class="setcard-sub">Each player keeps their own saved progress. Teddy auto-loads; tap &ldquo;switch&rdquo; on the title to change. Add a profile for yourself to test without touching his progress.</div>
@@ -336,10 +341,12 @@
     </div>
 
     <div id="tabProgress" class="tabpane">
+      <button class="btn ghost sm secback">‹ Back</button>
       <div id="progBody" class="read"></div>
     </div>
 
     <div id="tabSettings" class="tabpane">
+      <button class="btn ghost sm secback">‹ Back</button>
       <div class="setcard">
         <div class="setcard-h"><span class="sc-ic">🔊</span> Sound</div>
         <div class="setrow">
@@ -401,6 +408,8 @@
     </div>
 
     <div id="tabAudio" class="tabpane">
+      <button class="btn ghost sm secback">‹ Back</button>
+      <div class="setcard-h" style="justify-content:center;"><span class="sc-ic">🎙️</span> Voice Studio</div>
       <div id="audDash"></div>
 
       <div class="vsec">

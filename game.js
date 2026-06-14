@@ -1626,10 +1626,32 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
     if(!s)return; const d=migrate(JSON.parse(s.data)); if(!d)return; snapshot("before restore"); S=d; save();
     $("settingsPanel").classList.remove("on"); GEO=geomFor(currentAct()); toMap(); }; });
 };
-function openSettings(){ $("saveBox").value=JSON.stringify(S); $("vpStatus2").textContent=vpMsg(); window.renderProgress();
+/* U3: the Grown-Up Corner is a HUB → drill-down. openSettings lands on the hub; each section paints
+   LAZILY on drill-in (fresh stats/cloud/coverage every entry). Every inner control + bound ID is
+   preserved — only the navigation changed (flat tabs → hub cards + ‹ Back). */
+function paintHub(){ const o=$("hubOver"); if(!o)return; const d=S.daily||{};
+  const mins=Math.round((d.secs||0)/60), tmin=Math.round((d.trainSecs||0)/60);
+  o.innerHTML=`<div class="hub-row"><b>Player:</b> ${escHTML(profileName(ACTIVE))}</div>`
+    +`<div class="hub-row"><b>Today:</b> ${(d.missions||0)} missions · ${mins} min <span class="hub-dim">(🏋️ ${tmin} training)</span></div>`
+    +`<div class="hub-row"><b>Cloud sync:</b> ${cloudActive()?"On ✓":"Off"}</div>`
+    +`<div class="hub-row"><b>Voices:</b> ${escHTML(vpMsg())}</div>`; }
+function paintSettingsSection(){ $("saveBox").value=JSON.stringify(S);
   $("cloudSecret").value=cloudSecret; cloudStatus(cloudActive()?"Cloud sync ON — the same family code on any device continues his progress":"Cloud sync off (saved on this device)");
-  { const rw=$("resetWho"); if(rw)rw.textContent=profileName(ACTIVE)+"'s"; }
-  paintPlayers(); paintVol(); paintDetailSeg(); $("settingsPanel").classList.add("on"); }
+  const rw=$("resetWho"); if(rw)rw.textContent=profileName(ACTIVE)+"'s";
+  paintVol(); paintDetailSeg(); }
+const SECTION_PAINT={ tabPlayers:()=>paintPlayers(), tabProgress:()=>window.renderProgress(),
+  tabSettings:()=>paintSettingsSection(), tabAudio:()=>{ if(typeof refreshAudioStudio==="function")refreshAudioStudio(); } };
+function showSection(id){ const sp=$("settingsPanel"); if(!sp)return;
+  sp.querySelectorAll(".tabpane").forEach(p=>p.classList.toggle("on",p.id===id));
+  sp.scrollTop=0;   /* Back resets scroll (part of the old "flaky" feel was stale scroll state) */
+  if(id==="tabHub")paintHub(); else if(SECTION_PAINT[id])try{SECTION_PAINT[id]();}catch(e){} }
+function backToHub(){ showSection("tabHub"); }
+function openSettings(){ $("vpStatus2").textContent=vpMsg(); $("settingsPanel").classList.add("on"); backToHub(); }
+$("hubPlayers").onclick=()=>{Aud.pick&&Aud.pick();showSection("tabPlayers");};
+$("hubProgress").onclick=()=>{Aud.pick&&Aud.pick();showSection("tabProgress");};
+$("hubSettings").onclick=()=>{Aud.pick&&Aud.pick();showSection("tabSettings");};
+$("hubAudio").onclick=()=>{Aud.pick&&Aud.pick();showSection("tabAudio");};
+document.querySelectorAll("#settingsPanel .secback").forEach(b=>b.onclick=()=>{Aud.pick&&Aud.pick();backToHub();});
 /* parent-only player management (inside the gated Grown-Up Corner) */
 function paintPlayers(){ const list=$("playersList"); if(!list)return; list.innerHTML="";
   profiles().forEach(p=>{ const row=document.createElement("div");
