@@ -131,7 +131,12 @@ Every UI finding/spec logged so far, by screen. Full detail in the dated section
   floating control on a vast empty scene (weak affordance). U5 consistency + map clutter fold into **MR1/M2**.
 - **U8** 🟡 Finale boss (Lord Vex) renders identically to a common Vexbot — no climax escalation (art lane, ↪B1).
 - **U9** 🟡 Trace round — varying dot sizes + no ghost letterform/stroke order (multisensory gap, ↪I2; Act-1 only).
-- *All 11 mission types rendered; the core learning loop is consistent + strong — fixes are chrome, not the loop.*
+- **U10** 🟠 Intro cutscene "boxy" skyline = crude flat-vector clip-art on premium art (the parent's complaint; ↑I1).
+- **U11** 🟠 `.bubble` long lines clip behind the 🔊 ear button (Recharge/Interlude) — add right padding (CSS-only).
+- **U12** 🟡 Act-2 map hero clipped by the top HUD bar (↪MR2 ZONESPOTS). **U13** 🟡 league names truncate ("SS KENDA").
+- *ALL screens rendered now — 11 mission types + win/rest/train/shop/recharge/intro/interlude + Act-2 medieval skin.
+  Core learning loop + populated Base/Victory + Act-2 skin are strong; fixes are chrome, not the loop. Cast: hero/
+  villain/mentor/freed-ally raster done; left = Miss Kendall + JJ/Cal/Nora faces + full-body cards (see CAST INVENTORY).*
 
 — Trinity, 2026-06-14
 
@@ -253,6 +258,65 @@ appear across read/sentence/cloze/scramble, not just Read-It.
 - **Sight vs decodable differentiation** (cream+♥ vs blue) reads clearly on sentence/cloze/scramble — keep it.
 - **The single PLAY title (H4) and the city-chip nav dropdown** are clean and correct.
 - **Clear primary CTAs** where they matter: "TRACE IT! →", "CAST MAGIC-E", "Hear the sentence" — good affordance.
+
+### 🟢 Meta / reward / shop / Act-2-skin sweep — round 2 (2026-06-14)
+Rendered the remaining surfaces the first pass skipped: **win/Victory, rest, Training Room, Hero Shop, Recharge
+(Memory Vault), the Intro + Interlude cutscenes, and the ACT-2 medieval skin** (map, base, digraph learn). New
+findings + confirmations:
+
+**U10. The Intro cutscene's "boxy" skyline panel is the single weakest visual in the game (elevates I1 to 🟠).** Real
+`scrIntro` shot: a **crude flat-vector skyline** (plain rectangles + dot windows + a circle moon) framed in a gold
+box, sitting on top of the premium painted background — it looks like placeholder clip-art glued onto a finished
+game. This is exactly the parent's "weird boxy box." **Fix:** replace the `.panelart` skyline with full-bleed
+generated/painted art (or remove the frame and let the painted bg carry it). The Interlude reuses the same frame but
+there it wraps **real raster characters** (Mom & Dad) so it reads fine — so the fix is specifically the *skyline
+illustration*, not the frame everywhere. **Bump I1 priority** — this is high-visibility (every first run).
+
+**U11. Bubble text clips behind the 🔊 ear button on long lines (layout bug).** Real shots: Recharge ("build the word
+you hear" → "hear" cut at the edge) and Interlude ("an urgent message is coming in!" → "coming" clipped). The `.bubble`
+reserves no right-side padding for the absolutely-positioned `.ear` (`styles.css:39-52`), so long final words run
+under/past it. **Fix:** add `padding-right` ≈ ear-width+gap to `.bubble` (or inline-flow the ear). CSS-only.
+
+**U12. Act-2 map hero is clipped against the top HUD.** Real `a2map` shot: the knight on the current zone (Dragon
+Keep, top of the medieval map) is **cut off by the top "TODAY'S TRAINING" bar / HUD chip** — feet-on-node placement
+collides with the HUD when the current zone sits high. **Fix:** clamp the map-hero Y (and/or the HUD) so the figure
+never overlaps the top bar; folds into the **MR2 ZONESPOTS recalibration** (per-act) — same lane.
+
+**U13. League-shelf names truncate badly ("MISS KENDALL" → "SS KENDA").** Real `a2base` shot: the Hero League member
+labels clip mid-word with no ellipsis (`allyMapFig`/league-shelf label width). **Fix:** shrink-to-fit or ellipsis the
+ally name, or shorten the display alias. Minor, cosmetic.
+
+**U5 confirmed in Shop + collectibles:** the Hero Shop items (Hero Banner/Trophy/Vexbot Toy/Dragon Toy/Crown/Rocket)
+are all **emoji** (🚩🏆🤖🐉👑🚀) — same premium-clash as the picture tiles; the shop is where it stings most ("buy this
+cheap-looking emoji"). Roll the U5 icon set to the shop too.
+
+**More real-screen GOODs (don't fix):** the **Victory screen** is strong (premium raster Teddy in a random win-pose +
+rescued-ally face + confetti + clear CITY MAP / NEXT MISSION choices). The **fully-populated Act-2 Base** looks great
+(6/6 league with raster ally faces, 26/26 lettered gem collection, knight + medieval bronze button skin) — proving
+**U7 is a *zero-state* problem, not a populated-state one.** The **Act-2 medieval skin** (stone/bronze chrome,
+gold-bordered map pills, MedievalSharp on chrome) reads well and the digraph-learn articulation cue ("Push your lips
+forward — shhh") is good pedagogy. **Mom & Dad raster portraits** (Interlude) are on-brand.
+
+### 🎭 CAST RENDER INVENTORY (answering "who's left to render?") — 2026-06-14
+Source of truth = the `RASTER` manifest (`art.js:198-200`) + the `rasterArt()` call sites, confirmed on real screens.
+- **✅ RASTER (premium, done):** Teddy ×3 muscle stages + Knight ×3 (`teddy-m0..2`, `teddy-knight-m0..2`); the 5 freed
+  allies — Archie(Tank)/Ellie(Flip)/William(Sunny)/Amelia(Heart)/Leighton (`ally-*`); **Lord Vex** (`art/vex.png`),
+  **The Vixen** (`art/vixen.png`), **Dragon** (`art/dragon.png`), **Noah the Red** (`art/noah.png`); **Mom & Dad**
+  (`mentorChips`). *(Note: confirm the `teddy-knight-*` PNGs are final art, not placeholder — the on-screen knight
+  reads simpler than the raster Teddy.)*
+- **🟡 STILL PLACEHOLDER / PARAMETRIC-SVG (left to render):**
+  1. **Miss Kendall** — `allyFace("kendall")` is an explicit placeholder (`art.js:292 "placeholder until a photo"`);
+     she's a *rescued ally*, visible now on the Act-2 league shelf (the "SS KENDA" chip). Needs real raster.
+  2. **JJ, Cal, Nora** — the Act-2 captured friends — placeholder `allyFace` (`art.js:302/307/312`); no raster, no
+     full-body. (Parent will provide real-kid references per CLAUDE.md.)
+  3. **Full-body ally CARDS** — `allyBody()` (`art.js:362`) is parametric SVG for the Pokémon-style flip cards; not
+     raster for anyone yet.
+  4. **`captiveSVG` / `portalSVG`** — Interlude "?" silhouettes + time portal, still placeholder SVG.
+- **Intentionally vector (NOT to rasterize):** letter/word/picture gem tiles, trace dots, gem collection, UI chrome.
+- **Bottom line:** the *hero/villain/mentor/freed-ally* cast is ~done; the remaining "who" = **Miss Kendall + JJ/Cal/
+  Nora** (faces, blocked on parent photo refs) **+ the full-body card art for everyone** + the two interlude
+  placeholders. None block gameplay; all are art-lane polish (cross-refs the character-art resolver + **U8** boss
+  escalation).
 
 ### Recommended sequence for Neo
 1. **U1 touch targets** (ear 52→≥72/96, roundbtn 54→≥72) — CSS-only, hard-constraint, ship today.
