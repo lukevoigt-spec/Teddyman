@@ -40,7 +40,7 @@ DOMAINS — what has a standard, what's partial, what's still missing — so cov
 | Pedagogy / learning design | ✅ | CLAUDE.md · QA pedagogy specs |
 | Error / no-fail states | ✅ | hard constraint #2 (gentle wrong) |
 | Data / privacy / parental controls | ✅ | cloud auth + parent gate |
-| **Accessibility (consolidated)** | ✅ **standard §10** (impl pending) | colorblind-safe, WCAG contrast, audio-redundancy, cognitive/sensory, motor — mapped to the Game Accessibility Guidelines; action checklist in §10 |
+| Accessibility (generic) | n/a — single user | Teddy is the only user → no generic a11y standard; his needs are met directly (Andika, ≥96px, reduced-motion + Full/Calm/Lite tiers, gentle no-fail, audio-first) per §0 + CLAUDE.md. §10 = tombstone. |
 | **Onboarding / FTUE** | ✅ **standard §11** (impl pending) | teach-through-play, I-do/we-do/you-do per new mechanic, fast first win, just-in-time, returning-kid re-entry; action checklist in §11 |
 | **Narrative & voice/tone** | ✅ **standard §12** (impl pending) | per-role personas + script rules (simple/contractions/one-`!`/no-scold) + cutscene pacing; action checklist in §12 |
 | **Art-direction bible** | ✅ **standard §13** (impl pending) | proportions/outline/lighting/palette/timing constants + reference render + per-character checklist; in §13 |
@@ -429,53 +429,12 @@ for the degradations above (or gate them behind `prefers-reduced-motion` / a cap
 
 ---
 
-## 10. Accessibility (consolidated standard — Trinity, 2026-06-14)
-Maps to the **Game Accessibility Guidelines** (visual / auditory / motor / cognitive) + **WCAG**, tuned for Teddy
-(pre-reader, dyslexia, ADHD, ND sensory). **Consolidates + extends the §0 non-negotiables.** Core principle: **never
-rely on a single channel** — every meaningful cue is carried by **≥2 of {shape/glyph, motion, sound, color}** (color is
-an *accent*, never the sole signal). Audio-first means audio is primary, **not** that audio is alone.
-
-**Visual**
-- **Never color alone (GAG core).** Today correct = `.win` (green pop + `burstAt` + ding) and wrong = `.dim` (grey +
-  replayed sound) — multi-modal already, but the win/lose split leans on **green-vs-grey + burst-presence.** → **add an
-  explicit non-color correctness mark** (a ✓ on `.win`; a distinct shape/settle on the `.hint`) so a colorblind child
-  reads it without hue. `GEMCOLOR` graphemes always render the **Andika glyph** on the gem (so color isn't the sole id
-  — good); **action: run `GEMCOLOR` + the token palette through a colorblind simulator** (deutan/protan/tritan), fix any
-  color-only distinction (a few hues are close, e.g. s/i blues).
-- **Contrast: target WCAG AA** (4.5:1 text · 3:1 large/UI). White + `--ink`-outline on panels already aims high; **add
-  the `.txt-outline` utility** (still a §8 gap) for text on painted art; keep `.dim` legible (don't dim below readable).
-- ✅ Large targets **≥96px** child controls · **Andika** for all letters · **reduced-motion** honored.
-
-**Auditory** (audio-first → must be visually redundant)
-- **Every audio FEEDBACK/STATUS cue needs a visual twin** (GAG visual-indicator rule). correct/wrong/coin/win/unlock
-  already pair with burst/dim/confetti/cards — **audit that NONE is sound-only.** The 🔊 replay ear is the lifeline (on
-  every prompt). The narration **bubble mirrors the script as on-screen text** (a parent/over-shoulder caption) — keep.
-- ⚠️ **Designed exception:** the *learning target* in sound-ID is deliberately NOT shown (anti-gaming #4). Redundancy
-  applies to **feedback/status**, never the target. The app must stay fully playable **muted** (visual path intact).
-- ✅ Independent **voice / SFX / music** volumes + off toggles.
-
-**Motor**
-- ✅ Large targets + generous hit-areas (U1 gave the ear a ~96px hit-area); **no timing, no precision drag, no fast
-  multi-tap** (constraint #1); trace is forgiving (dot snapping). **Action: confirm no interaction needs fine motor
-  precision** after UI changes.
-
-**Cognitive / sensory (the ND core)**
-- ✅ One focal point + minimal simultaneous choices (the nav work / Hick), **no time pressure** (#1), **no harsh fail**
-  (#2), predictable + consistent (nav / Jakob), short frequent loops.
-- **Sensory-overload control = the Full/Calm/Lite detail tiers** — treat these as the official "reduce stimulation"
-  accessibility setting; **surface them (+ the audio toggles) as an explicit "Comfort" group** in the parent area.
-- **Auditory sensitivity (ND):** SFX + line variation stay **gentle + predictable + bounded** (§6.5); Calm/Lite + the
-  volume toggles are the "turn it down" path.
-
-**Action checklist (for Neo):**
-- [ ] Non-color correctness signal (✓ on `.win`; distinct `.hint`). · [ ] CB-simulator pass on `GEMCOLOR` + palette.
-- [ ] `.txt-outline` for text on painted art (contrast). · [ ] Audit every `Sfx`/`Aud` cue has a visual twin.
-- [ ] A "Comfort/Accessibility" group in the parent area (detail tier + 3 volumes + reduced-motion). · [ ] Re-confirm
-  ≥96px hit-areas after UI changes. · [ ] Confirm fully-muted playability.
-*(Sources: [Game Accessibility Guidelines — full list](https://gameaccessibilityguidelines.com/full-list/),
-[Xbox Accessibility Guidelines](https://learn.microsoft.com/en-us/gaming/accessibility/xbox-accessibility-guidelines/103); WCAG 2.x AA.)*
-
----
+## 10. Accessibility — RETIRED · n/a (single bespoke user — parent decision 2026-06-14)
+Teddy is the **only** user and the app is built **explicitly around him**, so a *generic* accessibility standard
+(colorblind modes, broad WCAG conformance) isn't needed. His specific needs are already met **directly**: **Andika**
+literacy font, **≥96px** targets, **reduced-motion + Full/Calm/Lite** sensory tiers, **gentle no-fail** feedback, and
+**audio-first** instruction — see §0 (Non-negotiables), the detail-tier system, and CLAUDE.md hard constraints. If his
+profile ever needs a specific affordance, add it directly to those. *(The alignment audit drops generic-a11y findings.)*
 
 ## 11. Onboarding / FTUE (standard — Trinity, 2026-06-14)
 How a new player (and a returning kid) learns the game and each new mechanic. The award-winning rule: **teach through
