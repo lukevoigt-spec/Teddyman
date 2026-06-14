@@ -51,10 +51,13 @@ function mapPaintSVG(){
       <ellipse cx="${x}" cy="${y+32}" rx="32" ry="8" fill="#0a0414" opacity=".5"/>
       <circle class="obloom" cx="${x}" cy="${y}" r="${R+16}" fill="url(#node_${st})" opacity=".5" filter="url(#mglow)"/>
       <circle cx="${x}" cy="${y}" r="${R}" fill="url(#node_${st})" stroke="#0c0820" stroke-width="3"/>
+      ${st==="current"?`<circle class="mbeacon" cx="${x}" cy="${y}" r="${R+10}" fill="none" stroke="#ffe9b0" stroke-width="4"/>`:""}
       <circle cx="${x}" cy="${y}" r="${R-1}" fill="none" stroke="#fff" stroke-width="2" opacity=".35"/>
-      <ellipse cx="${x}" cy="${y+13}" rx="${R*.62}" ry="${R*.36}" fill="#fff" opacity=".1"/>
-      <ellipse cx="${x-9}" cy="${y-14}" rx="13" ry="8" fill="#fff" opacity=".5" transform="rotate(-28 ${x-9} ${y-14})"/>
-      <circle cx="${x-13}" cy="${y-13}" r="4.5" fill="#fff" opacity=".9"/>
+      <g class="nspec">
+        <ellipse cx="${x}" cy="${y+13}" rx="${R*.62}" ry="${R*.36}" fill="#fff" opacity=".1"/>
+        <ellipse cx="${x-9}" cy="${y-14}" rx="13" ry="8" fill="#fff" opacity=".5" transform="rotate(-28 ${x-9} ${y-14})"/>
+        <circle cx="${x-13}" cy="${y-13}" r="4.5" fill="#fff" opacity=".9"/>
+      </g>
       ${ st==="done" ? `<text x="${x}" y="${y+13}" text-anchor="middle" font-family="Bangers" font-size="36" fill="#0c3f28">✓</text>`
         : st==="locked" ? `<g transform="translate(${x} ${y})" stroke="#150f2e" stroke-width="2.4"><path d="M-6 -1 v-4 a6 6 0 0 1 12 0 v4" fill="none" stroke="#d7d0ee"/><rect x="-10" y="-1" width="20" height="15" rx="3.5" fill="#d7d0ee"/></g>`
         : `<circle cx="${x}" cy="${y}" r="7" fill="#fff" opacity=".95"/>` }
@@ -95,11 +98,14 @@ function mapPaintSVG(){
       <radialGradient id="node_current" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#fff1b8"/><stop offset=".5" stop-color="#ffce3a"/><stop offset="1" stop-color="#b9760f"/></radialGradient>
       <radialGradient id="node_locked" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#5b5384"/><stop offset=".5" stop-color="#3b3360"/><stop offset="1" stop-color="#211c3a"/></radialGradient>
       <radialGradient id="portalGrad" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fffbe0"/><stop offset=".35" stop-color="#9be8ff"/><stop offset=".7" stop-color="#7a4fd6"/><stop offset="1" stop-color="#1a0e3a"/></radialGradient>
+      <radialGradient id="mapVig" cx=".5" cy=".46" r=".72"><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#0a0414" stop-opacity=".5"/></radialGradient>
       <filter id="mglow" x="-90%" y="-90%" width="280%" height="280%"><feGaussianBlur stdDeviation="8"/></filter>
       <filter id="mpill" x="-15%" y="-60%" width="130%" height="220%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity=".55"/></filter>
       <style>@media (prefers-reduced-motion: no-preference){.mnode.current .obloom{animation:opul 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}.pbloom{animation:opul 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}.pspin{animation:pspin 6s linear infinite}}@keyframes opul{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.8;transform:scale(1.14)}}@keyframes pspin{to{transform:rotate(360deg)}}.portalnode{cursor:pointer}</style>
     </defs>
     <image href="${MAPIMG[a]||MAPIMG[1]}" x="0" y="0" width="1000" height="750" preserveAspectRatio="xMidYMid meet"/>
+    <rect class="mapscrim" x="0" y="0" width="1000" height="750" fill="#0b0720" opacity=".26"/>
+    <rect x="0" y="0" width="1000" height="750" fill="url(#mapVig)"/>
     ${mapFriends(a, zs, spots)}
     ${nodes}
     ${portal}

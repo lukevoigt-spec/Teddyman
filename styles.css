@@ -935,3 +935,16 @@ body[data-act="2"] .baserank #powerLbl{
   50%{transform:scale(1.04);box-shadow:0 0 0 12px rgba(127,227,255,0);}}
 @media (prefers-reduced-motion:no-preference){.btn.vaultdue{animation:vaultpulse 1.7s ease-in-out infinite;}}
 body.calm .btn.vaultdue{animation:none;}
+
+/* MR1 / U6 — MAP VISUAL HIERARCHY: the current node must win the eye. Push done/locked back (quieter
+   glow, no specular shine), and ring the current node with a pulsing gold beacon. NOT de-juicing
+   (constraint #3) — just making "go HERE next" instant. The scrim/vignette (map.js) sits the painting
+   behind the foreground nodes/labels. */
+.mnode.done .obloom{opacity:.18;}
+.mnode.locked .obloom{opacity:.12;}
+.mnode:not(.current) .nspec{opacity:0;}        /* specular shine only on the active node */
+.mnode .mbeacon{transform-box:fill-box;transform-origin:50% 50%;}
+@media (prefers-reduced-motion:no-preference){.mnode .mbeacon{animation:mbeacon 2.2s ease-in-out infinite;}}
+@keyframes mbeacon{0%,100%{opacity:.9;transform:scale(1);}50%{opacity:.3;transform:scale(1.16);}}
+body.calm .mnode .mbeacon{animation:none;}
+body.lite .obloom,body.lite .pbloom{display:none;}   /* old iPads: flatten the GPU-blurred map glows */
