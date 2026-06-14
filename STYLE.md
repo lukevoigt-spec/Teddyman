@@ -24,8 +24,8 @@ These come from CLAUDE.md and **override** any visual rule below:
 
 ---
 
-## 0.5 Per-act theming — PARKING LOT (planned, not built)
-The game should **re-skin its non-learning chrome per act** so each act has its own world feel,
+## 0.5 Per-act theming — ✅ SHIPPED (Act-2 medieval skin is LIVE via `body[data-act="2"]`)
+The game **re-skins its non-learning chrome per act** so each act has its own world feel,
 while the **learning content keeps its ideal font (Andika) and high contrast unchanged**.
 - **Act 1 = Star Force City** — the current cosmic/superhero look (Bangers titles, neon-gold).
 - **Act 2 = "MAGIC KINGDOM"** (rename from "MEDIEVAL REALM") — a **medieval / fantasy** skin
@@ -37,8 +37,10 @@ while the **learning content keeps its ideal font (Andika) and high contrast unc
   `setAct()`. **Never** touch the `.read`/Andika literacy styling or the tile/slot legibility.
 - Display fonts are **UI-only**; load one medieval display face (e.g. a Google "Cinzel"/
   "MedievalSharp"-style), keep Andika + Baloo for everything the child must read.
-> Status: PARKED. The `ACTS[1].city` string + this medieval skin land together in a future
-> "Act-2 look" pass. The city rename alone is a 1-line change whenever wanted.
+> Status: ✅ SHIPPED. The Act-2 stone/bronze chrome + the **MedievalSharp** display font (UI chrome only) are LIVE —
+> ~35 `body[data-act="2"]` rules in `styles.css` (buttons, nav, bubble, scene grade, frame corners) + the
+> "MAGIC KINGDOM" city rename. The notes above are the design intent, now realized — **refine** the skin, don't
+> rebuild it. (Learning tiles stay Andika + high-contrast, untouched.)
 
 ---
 

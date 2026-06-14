@@ -232,6 +232,43 @@ session; see ledger. Open chrome below.)*
 
 ---
 
+### 🆕 Cypher pass — vetted (Trinity, 2026-06-14)
+Guest QA (Cypher) sent 2 fresh ideas + a STYLE.md gap list. Vetted vs the code (status-discipline rules) — **not
+accepted wholesale.**
+
+**Fresh ideas — both worth doing, constraint-clean:**
+- 💡 **Hidden Gem Whispers (ambient micro-delight).** 1–2×/session an unpredictable subtle sparkle on the map/Base →
+  tap = ONE optional `startFind`/`startRead` round; reward = pure delight (burst + an ally one-liner), **no coins**.
+  ✅ Optional, no pressure, a low-stakes reading rep, and its **intrinsic (non-coin)** reward aligns with the §6.0
+  mastery-not-participation contract. Soft-gate behind a min-missions/day so it never overwhelms. Cheap (reuses
+  find/read + painted-scene + ally-pop). → candidate for the engagement wave.
+- 💡 **Ally Storytime — "Read With Me" (fluency, Great Library).** After solid sentence accuracy, a rescued ally
+  (Amelia/William): **models** a decodable sentence with prosody → warm encouragement → **shared** read (Teddy taps
+  words as the ally voice supports/fades) → optional solo re-read with cheering. ✅ Pedagogically strong (explicit
+  prosody modeling + supported reading + relational payoff); reuses `SENTENCES2` + ally voice roles + audio engine,
+  **no new task type/scoring**. ⚠️ Respect the "**app can't HEAR the child**" constraint (as in the Spell Scroll
+  spec): **tap-paced** shared reading, never a measured choral score. Pairs naturally with rec #2. → recommend to parent.
+
+**STYLE.md gap list — verified verdicts:**
+- ❌ **P0.3 "Act-2 medieval skin completely parked" — WRONG (stale).** SHIPPED: **35** `body[data-act="2"]` rules
+  (stone/bronze buttons, nav, bubble, scene grade, motes, frame corners) + **MedievalSharp** loaded (index.html:16) &
+  applied (styles.css:974); CLAUDE.md confirms. Cypher read STYLE.md §0.5's "PARKED" — **STYLE.md §0.5 corrected** to
+  SHIPPED. No code action.
+- ⚠️ **P0.2 modal treatment — mischaracterized.** `#settingsPanel`/`#shopPanel` are **full painted overlays**
+  (bg-base.jpeg + dark gradient, styles.css:276/414), not "simple scrims"; backdrop-blur is used widely. The §4
+  gem-purple blurred modal-panel isn't applied to them, but the painted-overlay look is intentional (U3 hub). Optional
+  taste call, not P0.
+- ↪ **P0.1 secondary-button polish = existing H2.** Fold in — Cypher's specifics (`.echip` / Base tiles / shop items
+  lack the sheen/glow/7px-border recipe) are a good concrete checklist for the H2 button pass.
+- ↪ **P1.3 layout / action-rail = M-#2** (top-priority Base bug) + U3/U7 (shipped).
+- ✅ **P1.2 `.txt-outline` utility — VALID (confirmed absent in styles.css).** STYLE.md §2/§8 recommend it for text on
+  painted art. Low priority (most text sits on panels).
+- ✅ **P2.1 idle `float` on primary CTAs — VALID** (STYLE.md §8 checklist, unchecked; reduced-motion-aware). Low.
+- ✅ **P2.2 bundle the next polish as ONE "Visual Refresh" commit** — agree (STYLE.md §8). Process note for Neo.
+- ↪ **P1.1 `flyReward` not built** — correct, already the #1 engagement item (DESIGN-ENGAGEMENT §5/§8). Not new.
+
+— Trinity, 2026-06-14
+
 ## 🧠 DURABLE ANALYSES (keep)
 
 ### Reward "juice vs reading" red-team — verdict + the 5 dials
