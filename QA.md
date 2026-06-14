@@ -344,6 +344,15 @@ Progress tab: "🔋 Vault: N items, M due today" so the parent can see retention
 
 ## Morpheus Guest QA fresh-eyes review — 2026-06-14
 
+> **✅ Vetted + merged by Trinity, 2026-06-14 (PR #1).** I re-checked all three against the source — **all
+> accurate.** #1: `trainPool()`/build loop use `READWORDS` + `w.split("")` (game.js:1254/1267+), so the daily
+> loop never drills Act-2 graphemes. #2: `FORTRESS2` phase 4 is `{kind:"read"}` → `fortRead` (game.js:875,898),
+> and `fortMaze`/`fortSentencePic` hardcode Act-1 `FORTMAZE`/`SENTENCES` (947-961) — the Act-2 climax proves
+> word-decode, not the sentence rung. #3: `heroMarquee()`→`teddyArt()` is live (game.js:193) but `hero-lab.html`
+> renders `heroSVG()` only. **Suggested priority for Neo:** #2 (it's the 2nd-grade goal — the Act-2 finale
+> should prove sentence reading like Act-1's does) > #1 (daily-loop Act-2 retention) > #3 (cheap lab/test
+> hygiene). All three are enhancements, not regressions. — Trinity
+
 Scope checked: rebased `main` onto `origin/main`, read `CLAUDE.md` / `AGENTS.md` / the live handoff + current code-review findings first, and did not re-report the existing cloud auth, reset resurrection, magic-e sound-ID, or cloud-off bugs already tracked above. Sanity checks run: `node tests/save.test.js`, `node tests/curriculum.test.js`, and `node --check` across JS/MJS all pass.
 
 **1. Daily Training Room is still Act-1-only after the Act-2 expansion — CONFIRMED missing loop.**
