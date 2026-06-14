@@ -338,7 +338,77 @@ hub cards (biggest first-impression win) → setcard/slider/switch polish → co
 parity. Pure `styles.css` + tiny markup; **re-verify the gate still opens it**, every slider/toggle still binds, and
 shoot the settings scene (`shot.mjs`/`shot-cloud.mjs`) in Act 1 + Act 2; keep `save`/`curriculum` green.
 
-## 10. Sources
+## 10. TREASURE CHESTS — build-ready spec (expands §4.1)
+The flagship curiosity add. **Constraint-safe by construction: a chest ALWAYS pays out (coins, often + a cosmetic) —
+never empty, never a loss, never a gamble; "variable" = *which* good thing, not *whether*** (hard constraints #1/#2).
+
+### 10.1 Data + state
+- **Tier config** (new const, game.js near `BASE_ITEMS`):
+  ```js
+  const CHESTS={ wood:{coinMin:6,coinMax:10,cosmeticChance:.35}, silver:{coinMin:12,coinMax:20,cosmeticChance:.6},
+                 gold:{coinMin:24,coinMax:40,cosmeticChance:1} };
+  ```
+- **Save fields** (migrate defaults in `state-save.js` `migrate()` + a `save.test` assertion):
+  `S.chests = {wood:0,silver:0,gold:0}` (pending unopened), `S.repTick = 0` (training-rep counter),
+  `S.chestDay = ""` (last daily-chest dayKey). All additive — never wipe an existing save (#7).
+
+### 10.2 Earn hooks (where chests drop)
+1. **Every new mission → wood; milestone → gold.** In `missionComplete()` (game.js:628) under the existing
+   `firstTime` guard: `S.chests.wood++;` and inside the existing `(CUR.finale||CUR.rescue||CUR.type==="fortress")`
+   branch (line 649) `S.chests.gold++;` instead/also.
+2. **Training reps → wood every 10.** In `trainWin()` (game.js:1422): `S.repTick=(S.repTick||0)+1;
+   if(S.repTick%10===0)S.chests.wood++;` (already calls `save()`).
+3. **Daily surprise → silver, once/day, as a GIFT.** In `ensureDaily()`/first `toMap()` of the day:
+   `if(S.chestDay!==dayKey()){S.chests.silver++; S.chestDay=dayKey();}` — surface it as "A present is waiting!"
+   **Never** "don't break your streak" (constraint #2). No reset/penalty if days are missed.
+
+### 10.3 Open flow (`openChest(tier)`) — reuse existing juice
+1. **Anticipation:** chest sprite shakes (WAAPI, 3 quick ±6° rotates) — `transform` only, Calm/reduced-motion → skip.
+2. **Burst:** lid flips open + light ray; call `confetti(48)` + `flashScreen("rgba(255,210,90,.42)")` + `Sfx.unlock()`
+   (all already used by `showUnlock`, game.js:1167).
+3. **Roll contents (never empty):** `coins = rand(min,max)`; cosmetic = with `cosmeticChance` pick a random
+   **un-owned** `BASE_ITEMS` (`{id,nm,ic,cost}`, game.js:1366). **If all items owned → convert the cosmetic to bonus
+   coins** so the chest is never a dud.
+4. **Award + reveal:** `flyReward(chestEl, baseCoinsEl, coins)` (the §8 helper) to pour coins into the counter; if a
+   cosmetic dropped, `S.owned[id]=true` then `showUnlock(itemArt(it.ic), it.nm, "NEW!", done)` (game.js:1163 — it has a
+   `done` callback, so chain coin-fly → cosmetic card cleanly).
+5. **Commit:** `S.chests[tier]--; save();` and repaint the Base.
+- **Detail tiers:** Full = shake+flip+confetti+coin-fly; Calm = lighter; **Lite/reduced-motion = instant open + reveal
+  card** (no shake/flip). Reuse `applyDetail()`/`body.calm`/`body.lite`.
+
+### 10.4 Surfacing + art
+- A **chest corner** in the Hero Base (see §11): pending chests render as tappable sprites, **pulsing** when
+  `S.chests` total > 0; a small badge on the Base/HUD entry so he knows a present is waiting.
+- **Art (`art.js`, Neo via the gen pipeline or SVG):** `chestSVG(tier)` — wood/silver/gold; **act-themed via
+  `currentAct()`** (sci-fi "supply crate" Act 1, treasure chest Act 2), matching the existing `bossSprite()` pattern.
+
+### 10.5 Tests
+`save.test`: `S.chests`/`S.repTick`/`S.chestDay` migrate from old/partial saves; `openChest` decrements the tier and
+**always yields coins ≥ tier.coinMin** (never-empty invariant); never grants an already-owned cosmetic (duplicate
+guard). Keep `curriculum.test` untouched (no curriculum impact).
+
+## 11. HERO ROOM — build plan (expands §4.2)
+The Base (`paintBase()`, game.js:1229) already has the right *contents* (hero showcase + Loadout, Gem Vault, Trophy
+shelf, League shelf, Villain cages) — the revamp is **layout + growth feel**, not new data. No new deps (HTML/SVG/CSS).
+**Do it in slices, smallest first:**
+1. **Action-rail fix FIRST (the real bug, Morpheus M-#2 / §7 rule #4).** Make `.baseactions` a dedicated bottom rail
+   with reserved space; give `.basecol-hero`/Loadout a scroll path (`max-height:100%; overflow-y:auto`) so the loadout
+   can't hide under the buttons at 1024×768. (Specced in §9 item #1 — this is the prerequisite that makes the room
+   safe to grow.)
+2. **Chest corner** (from §10.4) — the first new "zone"; small, high delight.
+3. **Weapon Rack** (§4.3): render `ownedWeapons()` as a rack; tap a weapon → a flip **inspect card** (front: held-weapon
+   art from `heroSVG`/art.js + name; back: a one-line bio + which milestone unlocked it). **Mirror the existing ally
+   flip-card** component (CLAUDE.md "HERO CARDS = DONE") — reuse, don't reinvent.
+4. **Growth feel:** a **"place + sparkle"** WAAPI pop on any item that's newly-owned since last visit (diff `S.owned`/
+   chests/weapons against a small `S.seen*` set); seed **1–2 free starter decorations** so a fresh room is never bare
+   (closes audit **U7** zero-state). Gate motion on Calm/Lite.
+5. **Diorama polish (last, biggest):** arrange the zones as a lived-in room (Trophy Wall / Weapon Rack / Gem Vault /
+   Chest corner / Companion spot / League shelf / Villain cages) with the hero on a center plinth in his current
+   outfit + equipped weapon. Keep one screen, ≥96px child targets, Act-2 skin parity.
+- **Verify each slice:** `shot.mjs base basefull` (Act 1 + Act 2, 1024×768 + portrait), `save`/`curriculum` green, no
+  audio flow can hang.
+
+## 12. Sources
 **Game feel / juice canon + web-anim perf:** [GameAnalytics — squeezing more juice](https://www.gameanalytics.com/blog/squeezing-more-juice-out-of-your-game-design) ·
 [Game Developer — juice (Jonasson/Purho lineage)](https://www.gamedeveloper.com/design/squeezing-more-juice-out-of-your-game-design-) ·
 [abagames — making games juicy](https://abagames.github.io/joys-of-small-game-development-en/make_game_juicy.html) ·
