@@ -128,7 +128,7 @@ words (= orthographic mapping) · the decodability invariant · the no-failure/a
 | **1** | **Memory Vault** | 📐 spec | Expanding-interval **spaced review** of mastered items (box/due on `S.mastery`). *Highest retention leverage — and the scheduler #2/#3/#4 reuse.* |
 | **2** | **Spell Scroll** | 📐 spec | **Repeated reading + listening preview** (fluency); Training Room; reuses the Vault scheduler. |
 | **3** | **Sound Warm-Up** | 📐 spec | Oral **phonemic awareness** + child **articulatory cues** (reuses `PH_COACH`/`graphemeSounds`). |
-| **4** | **Mastery-threshold tune** | 📋 proposed | Raise the accuracy bar + require one **spaced-correct** + light overlearning so "mastered" = *retained*. |
+| **4** | **Mastery-threshold tune** | 📐 spec | Split **proficient** (gates finales) vs **retained** (proficient + spaced-correct); gentle bar bump (0.8/seen5). |
 | **5** | OG/"multisensory" caveat | 💡 advisory | Keep see/hear/trace/find, but invest in #1–3, not MORE multisensory ornament (not the active ingredient). |
 | **6** | Morphology + comprehension | 📋 roadmap | Word-crafting (prefix/suffix/base) + richer comprehension — the 2nd-grade rung / Act 3. Decoding first. |
 
@@ -1241,6 +1241,56 @@ back k/g/ng), not a realistic animated mouth (low art cost).
 ### Phasing
 P1 the articulatory cue on the Learn screen (smallest, high-yield — reuse `PH_COACH` + a few mouth shapes) →
 P2 the blend warm-up (Training Room) → P3 segment + isolate + the oral→letter bridge.
+
+— Trinity, 2026-06-14
+
+---
+
+## 📐 SPEC FOR NEO — Mastery-threshold tune: "proficient" vs "retained" (rec #4) (Trinity, 2026-06-14)
+
+Implements rec #4. Today: `masteredItem` = `str>=4 && seen>=4 && acc>=0.75` (game.js:151–153), used BOTH to gate
+finales (`coreWeak`, game.js:156) AND to show the ★/✦ (game.js:1159, 1404). Goal: make "mastered" mean
+*retained*, with a higher bar + a **spaced-correct** + light overlearning — **without** soft-locking finales.
+
+### ⚠️ THE trap (why this isn't a one-constant change)
+A **spaced-correct** requirement (correct on ≥2 different calendar days) **cannot gate the finale** — a child
+can't earn a *next-day* correct mid-session, so `coreWeak` would become impossible to clear in one sitting →
+**finale soft-lock.** So **split the two meanings:**
+- **`masteredItem` = PROFICIENT** (in-session achievable) → keeps gating finales (`coreWeak`) + the Progress ★.
+- **`retainedItem` = DURABLE** (proficient + spaced-correct) → the Base gold **✦**, the Vault "graduated"
+  criterion, and an optional Progress "retained" count. **Never gates a finale.**
+
+### Changes
+- **Gently raise the proficient bar** (game.js:151): `MASTER_ACC 0.75→0.8`, `MASTER_SEEN 4→5` (light
+  overlearning). Keep `MASTER_STR 4`. Achievable in a session; finale review loops stay short. *Don't go 0.9 /
+  seen 8 — grindy for an ADHD learner (constraints #1/#2 keep it no-failure, but avoid long loops).*
+- **Track correct-days** in `record(g,ok)` (game.js:143): on a correct, `if(dayKey()!==m.lastOkDay){
+  m.okDayCount=(m.okDayCount||0)+1; m.lastOkDay=dayKey(); }` (`dayKey()` state-save.js:136). Additive + save-safe.
+- **Add `retainedItem(key)`** = `masteredItem(key) && (S.mastery[key].okDayCount||0) >= 2`.
+- **Re-home the displays:** finale gate + ★ stay on `masteredItem` (★ literally = "what gates rescues" —
+  keep that semantic); the Base gold **✦** (game.js:1159, "you truly own this one") and the **Vault graduation**
+  move to `retainedItem`.
+
+### Gotchas
+- **The trap above** — `coreWeak` stays on `masteredItem`, NOT `retainedItem`. Re-verify finales clear in one
+  session.
+- **Don't visually demote existing mastery:** old saves have no `okDayCount`, so already-✦ gems would lose the
+  gold on first load. **Grandfather in `migrate()`:** for any item where `masteredItem` is already true, seed
+  `okDayCount = max(okDayCount, 2)`. (Or keep ✦ on `masteredItem` and add a *new* small "retained" badge — but
+  grandfathering is cleaner.)
+- **Vault synergy (#1):** `okDayCount` reuses the same `dayKey` day-tracking the Memory Vault uses, and the
+  Vault's spaced re-exposures are exactly what *earn* the 2nd-day correct → build/share the day-tracking with #1.
+- Mastery-paced + no-failure (#5/#1/#2): the higher bar just means a little more gentle review, never a fail.
+
+### Tests (`save.test`)
+- `record()` increments `okDayCount` only on a NEW day, not a same-day repeat (inject a fake `dayKey`).
+- `masteredItem` flips at `str4/seen5/acc.8`; `retainedItem` needs `okDayCount>=2` on top.
+- `migrate()` grandfathers already-mastered items to `okDayCount>=2` (no ✦ regression) and leaves other saves
+  untouched.
+
+### Phasing
+P1 bump the proficient constants (0.8/5) + verify finales still clear → P2 add day-tracking + `retainedItem` +
+grandfather migrate → P3 move ✦/Vault-graduation to `retainedItem` (+ optional Progress "retained" count).
 
 — Trinity, 2026-06-14
 
