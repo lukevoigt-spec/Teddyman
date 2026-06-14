@@ -59,8 +59,8 @@ function mapPaintSVG(){
         : st==="locked" ? `<g transform="translate(${x} ${y})" stroke="#150f2e" stroke-width="2.4"><path d="M-6 -1 v-4 a6 6 0 0 1 12 0 v4" fill="none" stroke="#d7d0ee"/><rect x="-10" y="-1" width="20" height="15" rx="3.5" fill="#d7d0ee"/></g>`
         : `<circle cx="${x}" cy="${y}" r="7" fill="#fff" opacity=".95"/>` }
       <g transform="translate(${x},${y+R+22})" filter="url(#mpill)">
-        <rect x="${-pw/2}" y="-17" width="${pw}" height="34" rx="13" fill="rgba(10,5,24,.82)" stroke="${st==="locked"?"#6a6090":"#ffce3a"}" stroke-width="2.2"/>
-        <text x="0" y="6" text-anchor="middle" textLength="${pw-20}" lengthAdjust="spacingAndGlyphs" font-family="${lblFont}" font-size="17" fill="${st==="done"?"#9fe870":st==="locked"?"#9a92c0":"#ffe08a"}" letter-spacing="1">${nm}</text>
+        <rect x="${-pw/2}" y="-17" width="${pw}" height="34" rx="13" fill="rgba(10,5,24,.92)" stroke="${st==="locked"?"#8079a8":"#ffce3a"}" stroke-width="2.2"/>
+        <text x="0" y="6" text-anchor="middle" font-family="${lblFont}" font-size="18" fill="${st==="done"?"#9fe870":st==="locked"?"#c7c0e6":"#ffe08a"}" letter-spacing="1">${nm}</text>
       </g></g>`;
     if(zi===cur){   /* PAINTED Teddy (heroMarquee, act-aware) standing AT the node — feet at its base, not floating on the disc */
       const s=.62, hx=x-s*120, hy=(y+4)-s*226;   /* seat local feet (120,226) at (x, y+4) */

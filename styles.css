@@ -46,12 +46,16 @@ body{
 }
 .bubble .ear{
   position:absolute;right:12px;top:50%;transform:translateY(-50%);
-  width:52px;height:52px;border-radius:50%;background:var(--blue);border:4px solid var(--ink);
+  width:72px;height:72px;border-radius:50%;background:var(--blue);border:4px solid var(--ink);
   display:flex;align-items:center;justify-content:center;cursor:pointer;color:transparent;font-size:0;
 }
+/* U1: the 🔊 replay is the pre-reader's lifeline (constraints #6 large targets, #8 every prompt
+   replayable) — 72px visual + a transparent inset:-12px ring => ~96px tap area (clicks on the ring
+   still resolve to the .ear host element). */
+.bubble .ear::after{content:"";position:absolute;inset:-12px;border-radius:50%;}
 /* Clean SVG speaker glyph (replaces the 🔊 emoji on every replay button) */
 .bubble .ear::before{
-  content:"";width:26px;height:26px;background:#fff;
+  content:"";width:34px;height:34px;background:#fff;
   -webkit-mask:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M3 9v6h4l5 5V4L7 9H3z'/%3E%3Cpath fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' d='M15.5 8.5a5 5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12'/%3E%3C/svg%3E");
           mask:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M3 9v6h4l5 5V4L7 9H3z'/%3E%3Cpath fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' d='M15.5 8.5a5 5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12'/%3E%3C/svg%3E");
 }
@@ -136,7 +140,7 @@ body{
 .hud{position:absolute;top:env(safe-area-inset-top,8px);left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;pointer-events:none;z-index:5;}
 .hud>*{pointer-events:auto;}
 .chip{background:rgba(21,15,46,.85);border:3px solid var(--txt);border-radius:18px;padding:6px 16px;font-family:'Bangers',cursive;font-size:clamp(17px,2.6vw,24px);color:var(--gold);letter-spacing:.06em;}
-.roundbtn{width:54px;height:54px;border-radius:50%;background:rgba(21,15,46,.85);border:3px solid var(--txt);color:var(--txt);font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.roundbtn{width:72px;height:72px;border-radius:50%;background:rgba(21,15,46,.85);border:3px solid var(--txt);color:var(--txt);font-size:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
 /* city-name dropdown nav (tap the chip → menu, reachable on every screen) */
 .navwrap{position:relative;}
 .navchip{cursor:pointer;user-select:none;-webkit-user-select:none;}
@@ -151,7 +155,7 @@ body{
 .navitem:active{transform:translateY(2px);background:rgba(60,46,110,.7);}
 body[data-act="2"] .navmenu{border-color:#caa15a;background:rgba(28,20,10,.97);}
 body[data-act="2"] .navitem{border-color:#6a5436;background:rgba(50,38,18,.55);color:#f0e2c4;}
-.starsrow{font-size:clamp(20px,3vw,28px);color:var(--gold);}
+.starsrow{font-family:'Bangers',cursive;font-size:clamp(24px,3.8vw,34px);color:var(--gold);-webkit-text-stroke:3px var(--ink);paint-order:stroke;letter-spacing:.04em;}   /* U2: bigger + stroked round-progress counter */
 /* Daily Training meter — encouragement only, fills as he plays, never drains/penalizes */
 #dailyMeter{position:absolute;top:calc(env(safe-area-inset-top,8px) + 58px);left:14px;right:14px;z-index:5;pointer-events:none;}
 .dailylabel{font-family:'Bangers',cursive;font-size:clamp(14px,2.4vw,19px);letter-spacing:.06em;color:var(--gold);text-align:center;-webkit-text-stroke:3px var(--ink);paint-order:stroke;}
@@ -249,7 +253,7 @@ body[data-act="2"] .navitem{border-color:#6a5436;background:rgba(50,38,18,.55);c
   80%{transform:scale(1);opacity:1}100%{transform:scale(.9) translateY(-8px);opacity:0}}
 
 .title-logo{font-size:clamp(54px,10vw,110px);color:var(--gold);-webkit-text-stroke:8px var(--ink);paint-order:stroke;text-align:center;line-height:.95;}
-.sub{font-size:clamp(20px,3.4vw,30px);color:#cfc6f2;text-align:center;}
+.sub{font-size:clamp(20px,3.4vw,30px);color:#fff;text-align:center;-webkit-text-stroke:2.5px var(--ink);paint-order:stroke;}   /* U2: ink stroke so it reads on the bright cloud */
 .heroimg{width:clamp(150px,26vw,260px);}
 .gearlist{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
 .gearbadge{background:rgba(21,15,46,.7);border:3px solid var(--gold);color:var(--gold);border-radius:16px;padding:8px 16px;font-family:'Bangers',cursive;font-size:20px;letter-spacing:.05em;}

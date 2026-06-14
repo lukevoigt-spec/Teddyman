@@ -50,6 +50,7 @@ const SCENES = {
   learn_o: `(startLearn({letter:"o"}), 1)`,
   learn_f: `(startLearn({letter:"f"}), 1)`,
   learn_r: `(startLearn({letter:"r"}), 1)`,
+  find:    `(function(){ CUR={id:1}; startFind("a",4); return 1; })()`,
 };
 
 const args = process.argv.slice(2);
