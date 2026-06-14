@@ -450,6 +450,67 @@ resumes nothing (`CUR` isn't persisted across reloads); it just opens the map.
 
 ---
 
+## 🎨 UI FINDINGS — Intro / Calibration / Map (Trinity, 2026-06-14)
+
+Continues the parent UI walkthrough (screenshot = the Act-1 map). FINDINGS format. Refs: intro
+`index.html:91–95` + `game.js:392–406`; panel CSS `styles.css:230`; scan `game.js:454–474`; map hero
+`map.js:64`, `heroNow`/`heroMarquee` `game.js:187/193`, `teddyArt` `art.js:198–210`.
+
+**I1. Intro cutscene — kill the "boxy box" + go full-bleed / generated.**
+The "weird box" is `.panelart` (styles.css:230): a gold-bordered, blurred, semi-transparent **rectangle**
+framing the cutscene art — it fights the full-bleed painted aesthetic. The art inside is mostly **old inline
+SVG** per beat (`INTRO[].art`, game.js:392); only the final origin panel + the knight reveal already use the
+generated `teddyArt`. Direction: drop the boxed frame, let cutscene art go **full-bleed** (comic/storybook),
+move panels to **generated raster**.
+⚠️ **Gotchas for Neo:**
+- `.panelart` is **shared** by the intro AND the Act-1→Act-2 **interlude** (`#interArt`, index.html:99), and the
+  beat hooks (`faceSpeak` bobs `#introArt`; `cutsceneFX` letterbox/flash/shake). Any rework must keep those +
+  the narration **bubble** and the **⏭ skip / Home** (constraint #8 — flows can never hang).
+- Full-bleed needs a scrim/gradient so the **bubble + controls stay legible** over busy art.
+- This is effectively the **"storybook cutscenes" backlog (D)** you were wary of — but the render loop +
+  generated art are landing well now, so it's a better moment. Suggest **one beat as a pilot** before committing
+  the whole sequence.
+
+**I2. Calibration (Scan) — plain text tiles, dated vs the premium look.**
+The first-run calibration (`startScan`/`nextScan`, game.js:454–474) renders options as plain
+`<button class="tile read">` showing the **letter as text**, not the premium **gem** visuals (`gemSVG`) used on
+the Base shelf. Functionally fine (anti-gaming-safe — the prompt is audio-only), but it's the weakest-looking
+screen in the most important first-30-seconds.
+⚠️ **Gotchas for Neo:**
+- It's a **sound→letter** task: the tiles legitimately SHOW letters (they're the options) — just upgrade the
+  **tile chrome** (gem treatment), keeping the glyph in **Andika** + high contrast (constraints #4/#6). Don't
+  turn it into a text→text match.
+- Gated by `S.scan`; don't break the first-run flow (intro→scan→map) or the Grown-Up level-override that sets
+  `S.scan`.
+
+**M1. Map hero is the OLD SVG (not `teddyArt`) — inconsistent + awkwardly perched on the node disc.**
+`map.js:64` draws the current-zone hero via `heroNow(250)` = **`heroSVG`** (old parametric SVG), while
+title/win/rest/intro now use the generated **`teddyArt`** (`heroMarquee`, game.js:193). So the map shows a
+different, older Teddy, scaled `.26` and offset onto the big glowing **node disc** → "standing on a circle."
+⚠️ **Gotchas for Neo (not a 1-line swap):**
+- **Coordinate-space mismatch:** the `.26` scale + `(x-30, y-150)` offset were tuned for `heroSVG`'s viewBox
+  (`-30 -150 310 660`). `teddyArt`'s viewBox is `0 0 240 256` wrapping a raster `<image href="art/teddy-m*.png">`
+  (art.js:198–210). Naively swapping mis-scales/mis-positions. Either (a) inline `teddyArt` and **re-tune**
+  scale/offset for 240×256, or (b) cleaner: **overlay the hero as an absolutely-positioned HTML element**
+  (`heroMarquee`) above the map, tracking the current node's screen position — decouples it from the SVG math
+  and renders the raster crisply.
+- **Placement:** centered on the glowing disc looks off. Give the current zone a **pedestal/platform** to stand
+  ON, or place him **beside/in front** with feet at the node base.
+- **Consistency knock-on:** freed-friend tokens (`allyMapFig`, SVG) stay vector — a raster hero next to vector
+  allies may look mixed. Decide: allies also get raster, or the hero stays a dedicated **small painted Teddy map
+  token** for cohesion.
+
+**M2. Map nodes + zone labels — the "big circle" + flat pills (ties to button finding H2).**
+The current node is a generic glowing **gold circle** (`map.js:49–63`); zone labels are flat dark/gold pills —
+both read as plain UI stamped on a painted world. Direction: make nodes **diegetic** (a painted landmark/platform
+per zone) and labels feel like in-world signage — same "premium chrome" language as the home-page buttons (H2).
+⚠️ **Gotcha:** node state (done ✓ / current pulse / locked 🔒) must stay **instantly readable** — it's the core
+"where do I go" affordance + the lock gate; don't let diegetic art bury the state cue.
+
+— Trinity, 2026-06-14
+
+---
+
 **Test commit by Grok (xAI):** Write access verified successfully! Added this line on 2026-06-13.
 
 ## 2026-06-13 Grok (xAI) Review — Latest Main (commit 060066c)
