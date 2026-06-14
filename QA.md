@@ -28,47 +28,37 @@ this is the "what we're doing right now" index.
   commit. On the desktop, also `shot.mjs` for full composed screens. The parent can run the
   harness and share PNGs back if the working instance is the cloud one.
 
-### Decisions locked with the parent (2026-06-14)
-1. **Art direction = "sweep + generated heroes".** (a) Apply a premium *shading pass* to the whole
-   cast in-SVG (form-shadow/volume, ambient occlusion, rim light, scene under-glow, deeper
-   gradients, catchlights — see the dragon for the reference technique), AND (b) pursue
-   GENERATED RASTER art for marquee likenesses (Teddy + real family) via ChatGPT Pro / Grok
-   (the parent has both) — Claude masks/frames/animates + wires them in, then render-verifies.
-2. **Pacing = full re-tune** (it was heavily front-loaded). DONE: muscle curve now act-relative
-   (tier1 ~28%, tier2 ~60% of the act) instead of maxing at 7 of ~53 missions. STILL TO PROPOSE
-   (parent wants specifics before save-affecting changes): spread GEAR unlocks (belt/boots/
-   hammer/sword all land in the first ~8 missions today) and FRIEND-RESCUE timing (most friends
-   free in the first ~17 missions, then a drought to the finale) across the whole campaign.
-3. **Desktop infra:** parent is setting up a Windows 11 Pro box with Claude Code + Node + the
-   tools harness; use **same-dir** (not worktree) for our serialized single-branch workflow.
-   Image-gen path depends on GPU: NVIDIA 8GB+ → local ComfyUI; else → Grok/OpenAI API via gen.mjs.
+### Crew & workflow (see `AGENTS.md`)
+**Neo** (Lead Coder, desktop) — the only one who edits code + merges to `main`; final say. **Trinity** (cloud,
+me) — QA/reviews + docs; writes `QA.md` + `AGENTS.md` straight to `main`; vets + squash-merges guest QA PRs.
+**Morpheus** (Codex) / **Cypher** (Grok) / **Tank** (Gemini) — guest QA, open `QA.md`-only PRs. `QA.md` is
+**advisory** — Neo scrutinises each item before actioning; the **parent is the final authority.** Trinity checks
+open PRs first on every re-engagement.
 
-### Shipped this session (all live on main)
-- Hero cards: real-life outfits (Ellie gymnast / Amelia dress / Leighton flowery princess /
-  Archie sporty + shaggier hair); allies speak a signature line when tapped.
-- New equippable **weapons**: Lasso + Gem Bow (Act 1), War Mace + Joust Lance (Act 2), unlocked
-  off existing milestone gear (no new save ids). `WEAPONS[]`/`ownedWeapons()` in game.js.
-- Villain polish: fierier auras; dragon aura blue→fire; removed Lord Vex's stray "?" marks;
-  **dragon elevated** with the full shading pass (proof technique).
-- **Settings overhaul**: game-like Grown-Up Corner — icon tabs/headers, sliding On/Off SWITCHES
-  (sfx/music), a 3-way SEGMENTED Full|Calm|Lite picker, polished cards/sliders.
-- **Test hardening**: curriculum.test.js now 35 checks incl. lock-enforcement (mapPaintSVG marks
-  future zones .locked + skip-via-tamper guard). save.test.js 33.
-- Earlier: time-portal cutscene, combo-lock fix, button fill-clip fix.
+### The two backlogs live at the TOP of this file
+- **🧭 UI BACKLOG INDEX** — home/intro/map/base findings + specs (H/I/M/B), the character-art resolver, the Map
+  Rework Packet; status icons + ship-now quick wins.
+- **🧠 PEDAGOGY BACKLOG INDEX** — the 6 research-brief recs (#1–4 + #6 SPEC ready, #5 advisory) + the reward
+  red-team. *Build the Memory Vault scheduler first — #2/#3/#4 reuse it.*
 
-### Next actions (priority order)
-1. Continue the **shading-pass sweep**: Vixen + Lord Vex (match the dragon), then the four family
-   bodies + `allyFace`. Render-verify each with `svg-shot.mjs`; send the parent a fresh cast sheet.
-2. Get a **real-game screenshot** pass on the desktop (`node tools/shot.mjs` + `--webkit`) — first
-   look at composed screens; QA layout/Safari issues.
-3. Draft the **gear + friend-rescue pacing** re-tune for parent approval (save-safe: derived from
-   done missions; reassigns GEAR_AT keys + ally rescue missions, no id renumbering).
-4. First **generated-hero** test (Vixen or Teddy) once the gen path is set.
+### Status — what's DONE (don't re-chase) vs OPEN
+**Shipped on `main`:** all 5 original code-review findings resolved — **cloud auth #1** (parent-entered Family
+sync code + fail-closed Worker, verified), #2 reset, #3 magic-e, #4 cloud-off; **H3** generic subtitle + **H4**
+one-PLAY title; the **`charArt`/`RASTER` resolver** + raster **Teddy / Vixen / Archie / Sunny**; the **map raster
+hero** (M1, partial); muscle pacing spread; the settings overhaul; equippable weapons; villain shading.
+**Open for Neo (code):** **MAP-1** — decorative map figures (hero + `mapFriends` allies) intercept node taps; add
+`pointer-events:none` (NOT on `.mnode`/`.portalnode`). **CLOUD-1** — a wrong family code is cached + briefly shows
+"Connected" (`cloudPull` collapses `401`→`false`). **MAP-2** — `.mnode.locked{pointer-events:none}` silences the
+`locked_tip` cue. Plus the UI punch-list (buttons **H2**, map revamp **MR1–3**, intro **I1**, parent-hub **P1**…)
+and the pedagogy specs (Vault #1 onward).
+**Still to propose:** gear / friend-rescue **pacing spread** (muscle done; the rest 📋).
 
-### Guardrails (unchanged)
-- `node tests/curriculum.test.js` + `node tests/save.test.js` must pass before any push (exit 0).
-- Never push broken code (auto-deploys to the child's iPad within minutes). Small, plain-English
-  commits. Develop on the feature branch, fast-forward main, deploy.
+### Guardrails
+- `node tests/curriculum.test.js` + `node tests/save.test.js` must pass before any push (exit 0). Latest:
+  **save 41 · curriculum 40**, every JS/MJS parses.
+- Never push broken code (auto-deploys to the child's iPad within minutes). Small, plain-English commits.
+  **Neo merges code to `main`; Trinity commits docs (`QA.md`/`AGENTS.md`) straight to `main` (fetch+rebase,
+  no merge commits); guests open `QA.md` PRs.** Branch protection stays OFF (per AGENTS.md) until 2+ agents code.
 - API keys / tokens NEVER committed (`.env`, `art/incoming/`, `tools/node_modules` gitignored).
 
 ---
