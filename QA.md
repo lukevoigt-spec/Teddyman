@@ -183,6 +183,15 @@ Evidence: `cloudPull()` collapses every non-OK response, including Worker `401`,
 > **Sweep result:** baseline clean — `save 41`, `curriculum 40`, every JS/MJS parses; no structural regressions.
 > The `charArt`/`RASTER` rollout is incremental as designed (Teddy + Vixen raster; villains/allies still SVG —
 > not a bug). M1 in the UI index updated to **partially shipped** (needs MAP-1 guard). — Trinity, 2026-06-14
+>
+> **Deeper sweep (Trinity, 2026-06-14):** traced the high-churn areas (resolver, generated-art assets, map hero,
+> hero cards, boss/finale). No new bugs. Confirmed: **every `RASTER` PNG actually exists** (teddy m0–2, knight
+> m0–2, ally-tank, ally-sunny, vixen) — no manifest/asset mismatch (a `true` flag with a missing PNG would render
+> an INVISIBLE character, since SVG `<image>` shows nothing on a bad href; worth a tiny test). One **MAP-1
+> extension:** the `mapFriends` ally figures (map.js:36) are also decorative with no `pointer-events:none`, so
+> they can intercept node taps too — apply the guard to **all** decorative map figures (hero + allies), but NOT
+> to `.mnode`/`.portalnode` (those must stay tappable). `allyMapFig` staying SVG while the hero is raster is the
+> expected incomplete rollout (cosmetic), not a bug.
 
 ---
 
