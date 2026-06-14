@@ -70,6 +70,64 @@ this is the "what we're doing right now" index.
 
 ---
 
+## 🔍 CODE-REVIEW FINDINGS — verified by Claude 2026-06-14 (for the coding agent)
+
+An external review raised 5 findings. I checked each against the actual code. **4 are real and
+worth fixing; 1 is already handled.** Evidence (file:line) + recommended fix below. Any fix must
+keep `node tests/save.test.js` + `node tests/curriculum.test.js` green; #2 and #3 warrant new tests.
+
+**1. Cloud saves are world-readable/writable — CONFIRMED (serious).**
+Evidence: `state-save.js:29` bakes the Worker URL into this PUBLIC repo; `:36` `CLOUD_PASSPHRASE=""`;
+`:39` `cloudKey()` returns the bare profile id (e.g. `teddy`); `cloud/worker.js:11–26` does
+`Access-Control-Allow-Origin:*` + unauthenticated GET/PUT keyed only by `?k=`. So anyone can read,
+overwrite, or wipe his save at `…workers.dev?k=teddy`, and profile names may be real kids' names.
+→ **Fix nuance:** committing a value into `CLOUD_PASSPHRASE` does NOT help — it's in public client
+code, so the hash is trivially recomputed. The real fix is a **parent-entered runtime secret** (stored
+in localStorage, never committed) used to derive the slot key AND validated **Worker-side** (a token
+the Worker checks). Minimum viable: make cloud opt-in (drop the baked URL) or add Worker auth. This is
+a known documented tradeoff in CLAUDE.md, but the parent should decide explicitly.
+
+**2. Reset / Level-0 resurrects old progress — CONFIRMED (real bug).**
+Evidence: `load()` picks whichever copy has MORE progress (`state-save.js:81–82`); `save()` always
+writes primary (`:87`) but mirrors to backup ONLY when `hasProgress(S)` (`:89`). The reset button
+(`game.js:1465`) and the Level-0 slider path (`game.js:1402–03`) do `S=fresh(); save()`, so the
+**empty primary is written but the old backup is left intact** → on next `load()` the backup outscores
+the empty primary and the old save returns, silently defeating the reset.
+→ **Fix:** add an intentional-reset path that snapshots (already done) then explicitly clears/tombstones
+the backup, e.g. `localStorage.removeItem(BAKKEY)` (keep SNAPKEY for undo) so a deliberate fresh start
+can't be resurrected. Add a save.test case ("reset is not undone by the backup on reload").
+
+**3. Act-2 mastery remediation targets unsupported magic-e keys — CONFIRMED (real bug).**
+Evidence: `actGraphemes()` in Act 2 includes `taughtMagicE()` → `a_e/i_e/o_e/u_e` (`game.js:506`,
+units at `:45`); `coreWeak()` filters those for finales (`:156`); `masteryReview()` feeds the weak list
+straight into `startFind()` (`:557–559`), which plays `"snd_"+g` and shows a gem tile (`:619`). There is
+**no `snd_a_e/i_e/o_e/u_e` clip anywhere** (0 matches in data-lines.js + voicepack.js; digraphs/vowel-teams
+DO have clips). So a child weak on magic-e at the gate gets a silent/garbled "find the gem" round with a
+nonsensical `a_e` tile — and magic-e is a *split* grapheme that should never be a single sound-ID gem.
+→ **Fix:** exclude magic-e units (and any grapheme lacking a `snd_` clip) from the sound-ID review;
+route magic-e weaknesses to `startMagic` (re-teach the unit) or a forge/read round with a magic-e word.
+Also audit find/boss foil pools so `a_e`-type units can never surface as gem tiles. Add a curriculum.test
+guard ("every grapheme reachable by masteryReview/startFind has a snd_ clip").
+
+**4. "Turn off cloud sync" doesn't survive reload — CONFIRMED (real bug).**
+Evidence: the off button only removes `teddyCloudURL` (`game.js:1442`), but boot re-applies the baked
+default whenever that key is empty (`state-save.js:105`). So after the next reload, sync silently turns
+back on.
+→ **Fix:** persist an explicit disabled state — store a sentinel (e.g. `teddyCloudURL="off"` or a
+separate `teddyCloudOff` flag) and skip `DEFAULT_CLOUD_URL` at boot when it's set. (Ties into #1.)
+
+**5. Locked capes are clickable — REJECTED (already handled).**
+The reviewer flagged that the cape `onclick` has no locked guard (`game.js` capeRow) — true of the JS, but
+`styles.css:311` sets `.echip.lockd{opacity:.4;pointer-events:none;}`, so a locked cape can't be tapped on
+iPad Safari. Not a live bug. *Optional* defense-in-depth: add an early `return` in the handler when locked
+(belt-and-suspenders), but no user-facing issue exists today.
+
+**Priority for the coding agent:** #2 and #3 first (they silently hurt the child's experience and are
+fully in-code), then #4 (small), then #1 (a product/security decision the parent should weigh in on —
+flag it, propose the parent-entered-secret approach, don't bake another public secret).
+
+---
+
 **Test commit by Grok (xAI):** Write access verified successfully! Added this line on 2026-06-13.
 
 ## 2026-06-13 Grok (xAI) Review — Latest Main (commit 060066c)
