@@ -1455,6 +1455,20 @@ variants) → P4 derivational + spelling-change rules (likely Act 3).
 
 ---
 
+## ✅ VERIFIED — generated character art + resolver (Trinity, 2026-06-14)
+
+Read the actual PNGs + traced wiring. **All premium + on-brief:** `teddy-m1` (superhero — gem-lens glasses, gold
+"T", red cape, hero stance), `ally-tank`/Archie (real athletic kid, no cape, "A" jersey), `ally-sunny`/William
+(cheerful comic-relief, "W" shirt), `vixen` (stylish horned villainess, pink flames). The `RASTER`/`rasterArt`
+resolver is correct (RASTER-gated, SVG fallback; every flagged PNG exists). Tests green (save 41, curriculum 40).
+The render→generate→integrate→verify loop is working end-to-end.
+→ **Minor finding for Neo (perf, not a bug):** the generated PNGs are ~300–355 KB each; Teddy alone is 6 tiers
+(m0–2 × hero/knight) ≈ 1.9 MB, and the cast will grow (Vex/Dragon/Noah/more allies). For the no-build static
+deploy on **old iPads / cellular**, consider **optimizing** them (pngquant/oxipng ≈ 60–70% smaller, or WebP) and
+whether all 6 Teddy tiers are needed. The SW caches after first load, but first-load + updates still pull it all.
+
+---
+
 ## 📐 SPEC FOR NEO — Gear + friend-rescue pacing spread (Trinity, 2026-06-14)
 
 > **✅ PARENT GREENLIT (2026-06-14): BUILD IT, grandfathered.** Teddy's early (or a reset/new player is coming),
