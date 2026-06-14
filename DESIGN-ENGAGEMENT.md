@@ -173,7 +173,100 @@ the literature warns over-juice harms readability, and constraint #4/#6 keep the
 - Each step: `node tools/shot-cloud.mjs <scene>` to verify on a real screen, keep `save.test`/`curriculum.test` green,
   and confirm no audio flow can hang.
 
-## 8. Sources
+## 8. POLISH TECHNIQUES & FEASIBILITY (architecture-aware — how to build it the *best* way on our stack)
+The parent's question: *coin-juice seems universal — what's the most-polished way, and do apps use other
+visualization elements?* Yes — there's a whole established craft here. Below: the canon, the **menu of reward-viz
+techniques** (so we choose deliberately), the **polished recipe**, and an **honest feasibility read** against our
+no-build static / DOM+CSS+inline-SVG / iPad-Safari architecture (the `S.detail` Full/Calm/Lite tiers are our friend).
+
+### 8.1 The canon (what "juice" is built on)
+The whole field traces to **"Juice It or Lose It"** (Jonasson & Purho, Nordic Game Jam 2012) and **"The Art of
+Screenshake"** (Jan Willem Nijman, Vlambeer 2013); the theory is **Steve Swink's *Game Feel*** (the input→perception
+loop). The mechanics are **Disney's 12 principles** (anticipation, squash & stretch, follow-through, *overshoot*,
+secondary action) applied via **tweening + easing** (Robert Penner's easing equations — `easeOutBack`/`easeOutElastic`
+give the satisfying overshoot; `easeInQuad` makes coins *accelerate* into the counter). **The core lesson is
+LAYERING: many small, cheap effects stacked (motion + scale + flash + sound + a number) feel far better than one big
+effect** — and the counter-lesson (Wayline's "juice problem") is *don't juice the thing the player must read* — for us
+that's the hard rule: **juice the reward layer, never the learning prompt** (constraints #4/#6).
+
+### 8.2 The reward-visualization MENU (apps use far more than "a coin slides over")
+A polished reward is usually **3–5 of these stacked**, not one:
+1. **Arc-to-counter stream** (the classic): emit several coin sprites from the reward source that travel a **curved
+   (bezier) path** to the HUD counter, **staggered** (~30–50 ms apart) so they "pour." Curve + stagger = the premium
+   feel; a straight, simultaneous slide looks cheap.
+2. **Magnetize / vacuum:** coins first **scatter outward** (burst), pause, then get **sucked** into the counter
+   (accelerating `easeInQuad`). The scatter-then-gather adds anticipation — used in most match-3 / hyper-casual hits.
+3. **Radial burst + settle:** for a big payout, explode coins outward with rotation, then collect.
+4. **Number-only tween (no sprites):** when sprites would be noise, just **count the number up** (never *set* it) with
+   an `easeOut` over ~300 ms + a scale-bounce — cheap, classy, great for small/quiet rewards or the Lite tier.
+5. **Comet/trail:** a single bright token with a fading motion-trail flies to the counter (good for a *rare* drop —
+   chest cosmetic, rank-up).
+6. **Counter feedback (the most underrated):** the receiving counter should **count up**, **scale-bounce on arrival**
+   (overshoot 1.0→1.18→1.0, `easeOutBack`), **flash/glow**, and optionally **odometer-roll** the digits. Polished games
+   spend as much on the *destination* reaction as the projectile.
+7. **Floating "+N" popup** at the source (rises + fades; bigger/!` on combo).
+8. **Secondary stack:** screen flash, confetti, soft pitch-**laddered** `Sfx.coin` (each coin a semitone up), glow
+   pulse, and (iPad) a light haptic. These are what sell it subliminally.
+> **Recommendation for Teddy:** use **#2 magnetize** (scatter-then-vacuum) for mission/chest payouts (most satisfying),
+> **#4 number-tween** for tiny per-rep coins (keeps the learning screen calm), and **always** the **#6 counter
+> count-up + bounce + glow** + **#7 +N pop** + pitch-laddered sound. That's the "most-polished" combination, and it
+> degrades cleanly down the detail tiers.
+
+### 8.3 The polished recipe (one reusable helper)
+`flyReward(fromEl, toEl, n, {glyph:'🪙'|svg, tier})` — reused for coins, gems, XP:
+1. **Anticipation:** source element does a quick scale-pop (squash→stretch) as it "ejects."
+2. **Emit & travel:** spawn `min(n, CAP≈12)` sprites (object-**pool** them — never create N=100 nodes), each on a
+   **quadratic bezier** from source→counter with a randomized control point (the arc), **staggered** delay, easing
+   `easeInQuad` (accelerate in). For `n>CAP`, send CAP sprites but tween the counter by the full `n`.
+3. **Arrival (per sprite):** counter `+= step`, **scale-bounce** (`easeOutBack`), soft `Sfx.coin` laddered, sprite
+   removed (pool reclaim).
+4. **Settle:** counter glow pulse fades; `+N` popup floated at the source resolves.
+- **Timing:** whole thing ~500–700 ms; stagger 30–50 ms; counter count-up ~300 ms. Fast enough to never gate play
+  (constraint #1 — no waiting), slow enough to read as celebration.
+
+### 8.4 FEASIBILITY on our architecture — verdict: ✅ fully doable, ZERO new deps
+We're a no-build static site (DOM + CSS + inline SVG, iPad Safari). All of the above is **transform/opacity-only**
+animation, which is exactly what the browser composites **on the GPU, off the main thread** — the documented path to
+60 fps on mobile (`transform`+`opacity` only; **never** animate `left/top/width/height`; add `will-change:transform`;
+cap composited layers).
+- **How:** spawn a pooled `position:fixed` node (a coin glyph or tiny inline-SVG); animate with the **Web Animations
+  API** (`el.animate([...], {duration, delay, easing})`) — no library, per-sprite control, `finished.then()` cleanup.
+- **The arc, three clean options (pick per Safari support, all no-dep):** (a) **CSS Motion Path** — `offset-path:
+  path('M..Q..')` + animate `offset-distance 0→100%` (supported in current iOS Safari; the cleanest true bezier);
+  (b) a **3-keyframe `transform: translate`** with a mid control point (fakes the arc, universally supported);
+  (c) a **~10-line rAF quadratic-bezier lerp** if we ever want path control WAAPI can't give. Recommend (a) with (b)
+  as fallback.
+- **Counter count-up:** a short `requestAnimationFrame` integer tween (`easeOutQuad`) + a WAAPI scale-bounce on the
+  counter node. ~15 lines.
+- **Detail-tier mapping (reuses existing `S.detail` / `body.calm` / `body.lite` + `prefers-reduced-motion`):**
+  **Full** = full magnetize + sprites + glow; **Calm** = fewer sprites (or number-tween only) + bounce + sound;
+  **Lite / reduced-motion** = **instant set** + a single pulse + sound (no sprites at all). One code path, three
+  budgets — same pattern `applyDetail()` already uses.
+- **No-leak rule:** pool the sprite nodes (a small free-list), reclaim on `finished`; never leave orphaned fixed nodes.
+
+### 8.5 Feasibility of the OTHER components (same architecture lens)
+| Component | Tech needed | New deps | Effort | Notes |
+|---|---|---|---|---|
+| Coin-fly / +N / count-up (§5, §8.3) | WAAPI + CSS transform/opacity | none | **Low** | Flagship; central hooks `record()`/`trainWin`/chest exist |
+| Treasure chests (§4.1) | DOM/SVG chest + WAAPI shake/open + `confetti`/`showUnlock` | none | **Low** | New `S.chests` (migrate + test) |
+| Hero Rank meter + fanfare (§3, §5.6) | CSS bar + count-up + `Sfx.win` | none | **Low** | Rides existing mastery/`record()` data |
+| Store expansion + de-emoji (§4.5) | data rows + SVG/raster icons | none | **Low–Med** | Art-lane for icons; closes audit U5 |
+| Customization (§4.4) | CSS vars / SVG params + `S` fields | none | **Low–Med** | Recolors are cheap; helmet/emblem variants = art |
+| Weapon tiers / glow-ups (§4.3) | additive SVG overlays in `art.js` | none | **Med** | Art-bound; logic trivial (mastery count → tier) |
+| Pets / companions (§4.6) | idle SVG + follow-on-map | none | **Med** | Art + a little map-anim plumbing |
+| Hero Room diorama (§4.2) | HTML/SVG layout rework of `paintBase` | none | **Med** | Biggest *layout* job; no new tech, do after room has contents |
+**Bottom line:** nothing here needs a build step, a canvas particle engine, or a library — it's all WAAPI/CSS/SVG over
+hooks we already have. The only "hard" parts are **art** (weapon/pet/icon assets) and the **Hero Room layout**, not the
+tech. Start with the Low-effort, high-delight row (coin-fly → chests → rank meter), each verified with
+`node tools/shot-cloud.mjs <scene>` + green `save`/`curriculum` tests.
+
+## 9. Sources
+**Game feel / juice canon + web-anim perf:** [GameAnalytics — squeezing more juice](https://www.gameanalytics.com/blog/squeezing-more-juice-out-of-your-game-design) ·
+[Game Developer — juice (Jonasson/Purho lineage)](https://www.gamedeveloper.com/design/squeezing-more-juice-out-of-your-game-design-) ·
+[abagames — making games juicy](https://abagames.github.io/joys-of-small-game-development-en/make_game_juicy.html) ·
+[Game Economist Consulting — best currency animations](https://www.gameeconomistconsulting.com/the-best-currency-animations-of-all-time/) ·
+[Algolia — 60fps performant web animations](https://www.algolia.com/blog/engineering/60-fps-performant-web-animations-for-optimal-ux) ·
+[Wayline — the over-juice caveat](https://www.wayline.io/blog/the-juice-problem-how-exaggerated-feedback-is-harming-game-design).
 **Engagement / progression / chests:** [ScienceDirect — curiosity & treasure-chest mechanics](https://www.sciencedirect.com/science/article/abs/pii/S1071581925001326) ·
 [MoldStud — retention-driven mobile dev](https://moldstud.com/articles/p-key-practices-for-retention-driven-mobile-game-development-boost-player-engagement-and-loyalty) ·
 [The Game of Nerds — progression systems](https://thegameofnerds.com/2025/06/17/designing-progression-systems-that-keep-players-hooked/) ·
