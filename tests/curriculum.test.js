@@ -177,6 +177,15 @@ grp("map locking ENFORCEMENT — mapPaintSVG marks future zones .locked (no skip
   // can't intercept the start-mission tap (touch-target / constraint #6 regression guard).
   (function(){ var hm=mapPaintSVG(), pe=hm.indexOf('pointer-events="none"'), ti=hm.indexOf('art/teddy');
     ok("the painted map hero is pointer-events:none before its image (won't steal the current-zone tap)", pe>=0 && ti>pe, {pe:pe,ti:ti}); })();
+  // MAP-1 (extension): the decorative mapFriends ally figures (rendered at scale(.5)) sit near the nodes —
+  // they too must be pointer-events:none so they never intercept a node tap. .mnode/.portalnode stay tappable.
+  // (Plain indexOf, NOT regex: backslash escapes get stripped inside this TEST template literal.)
+  (function(){ var mp=mapPaintSVG();
+    function cnt(s,sub){ var n=0,i=0; while((i=s.indexOf(sub,i))>=0){ n++; i+=sub.length; } return n; }
+    var friends=cnt(mp,"scale(.5)");                                  // scale(.5) is unique to friend figures
+    var guarded=cnt(mp,'pointer-events="none" transform="translate'); // a guarded friend group opening
+    ok("map renders decorative friend figures (so the guard is exercised)", friends>=1, friends);
+    ok("every decorative map friend figure is pointer-events:none (won't steal a node tap)", friends===guarded, {friends:friends,guarded:guarded}); })();
   zMissions(zs[0]).forEach(function(m){ S.done[m.id]=true; });   // clear zone 1
   c=counts();
   ok("after clearing zone 1: one done, one current, the rest still locked", c.done===1 && c.current===1 && c.locked===n-2, c);
