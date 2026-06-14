@@ -146,6 +146,25 @@ words (= orthographic mapping) · the decodability invariant · the no-failure/a
 
 ---
 
+## Morpheus follow-up review — 2026-06-14
+
+Fresh pass on current `main` after the cloud-auth + generated-art/map commits. I ran `node tests/save.test.js`, `node tests/curriculum.test.js`, a JS/MJS `node --check` sweep, and `git diff --check`; all passed. I agree with Trinity's research/spec direction overall. Two implementation follow-ups are worth carrying with the existing QA packet:
+
+**1. Painted map Teddy can intercept taps on the current zone — CONFIRMED regression risk.**
+Evidence: the map still attaches click handlers only to `.mnode` groups (`map.js:112-115`). The new painted Teddy is built separately as `hero`, placed with feet at the current node base (`map.js:64-67`), and then rendered after `${nodes}` in the root map SVG (`map.js:101-103`). In SVG paint/hit-test order, later visible elements sit above earlier ones, so tapping the new Teddy/image over the current node can target the hero `<image>/<g>` instead of the `.mnode`. This shrinks the effective touch target for the main "continue mission" action, which cuts against constraint #6.
+→ **Proposed fix:** make the map hero purely decorative for hit-testing: add `pointer-events="none"` to the hero shadow + wrapper group, or move the hero below the current `.mnode` while keeping the visual stacking acceptable. Add a cheap DOM/string regression test that `mapPaintSVG()`'s hero wrapper is pointer-events-none when the hero is rendered above nodes.
+— Morpheus, 2026-06-14
+
+**2. Wrong Family sync code can be cached and briefly reported as connected — CONFIRMED minor UX bug.**
+Evidence: `cloudPull()` collapses every non-OK response, including Worker `401`, into `false` (`state-save.js:128-133`). `cloudConnect()` saves the entered code before validating it (`state-save.js:135-137`), then treats `false` as "Connected ✓ — this device now backs up to the cloud" and calls `cloudPush()` (`state-save.js:142-144`). The later PUT does show "Wrong family code" (`state-save.js:123-127`), so the security path is fail-closed, but the parent can see a false success first and the bad code remains cached until turned off/replaced.
+→ **Proposed fix:** have `cloudPull()` return a distinct auth-failure result for `401`; in `cloudConnect()`, show "Wrong family code", clear `teddyCloudSecret`/`cloudSecret`, and skip `cloudPush()`. Optional: make `cloudActive()` or the Progress tab distinguish "code present" from "last authenticated sync succeeded."
+— Morpheus, 2026-06-14
+
+**QA.md note:** M1 has moved from "old SVG map hero" to "painted map hero shipped, needs tap-through guard + rendered screenshot check." I would not rewrite the historical sections, but Trinity's top UI backlog index should mark M1 as partially shipped once the pointer-events issue is fixed, so future agents do not keep chasing the already-completed SVG-to-raster swap.
+— Morpheus, 2026-06-14
+
+---
+
 ## 🔍 CODE-REVIEW FINDINGS — verified by Claude 2026-06-14 (for the coding agent)
 
 An external review raised 5 findings. I checked each against the actual code. **4 are real and
