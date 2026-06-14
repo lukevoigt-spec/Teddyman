@@ -182,14 +182,14 @@ ok("hasSoundClip: true for letters/digraphs/teams, FALSE for magic-e units (no s
 // migrate must stay additive: it NEVER injects box/due into an existing record (constraint #7)
 (function(){ var mg=migrate({v:1, mastery:{ s:{seen:3,ok:2,str:2} }, done:{}});
   ok("migrate leaves old {seen,ok,str} records untouched (no box/due injected)", mg.mastery.s.box===undefined && mg.mastery.s.due===undefined && mg.mastery.s.seen===3);
-  var rt=JSON.parse(JSON.stringify({v:1, mastery:{ s:{seen:4,ok:4,str:4,box:2,due:"2026-06-20",last:"2026-06-13"} }}));
+  var rt=JSON.parse(JSON.stringify({v:1, mastery:{ s:{seen:5,ok:5,str:4,box:2,due:"2026-06-20",last:"2026-06-13"} }}));
   ok("box/due/last round-trip through JSON (save + cloud carry them inside S)", rt.mastery.s.box===2 && rt.mastery.s.due==="2026-06-20"); })();
 // deterministic schedule via an injected dayKey (dayKey is a reassignable fn decl in this scope)
 var __realDayKey=dayKey, __day="2026-06-14"; dayKey=function(){ return __day; };
 S=fresh();
 S.mastery["s"]={seen:2,ok:2,str:2}; vaultTouch("s",true);
 ok("vaultTouch does NOT enroll an item that isn't mastered yet", S.mastery["s"].box==null);
-S.mastery["s"]={seen:4,ok:4,str:4}; vaultTouch("s",true);
+S.mastery["s"]={seen:5,ok:5,str:4}; vaultTouch("s",true);
 ok("enroll on first mastery: box 0, due one interval out, last=today", S.mastery["s"].box===0 && S.mastery["s"].due==="2026-06-15" && S.mastery["s"].last==="2026-06-14");
 vaultTouch("s",true);
 ok("an early (not-yet-due) touch does NOT advance the box/interval (spacing is day-based, not rep-based)", S.mastery["s"].box===0 && S.mastery["s"].due==="2026-06-15");
@@ -205,15 +205,38 @@ vaultTouch("t",false);
 ok("demote-OUT: a miss below mastery clears box/due so it rejoins the active pools", S.mastery["t"].box==null && S.mastery["t"].due==null);
 // vaultDue: only due+mastered, capped at VAULT_CAP, oldest-due first
 S=fresh(); __day="2026-06-20";
-["a","b","c","d","e","f","g","h"].forEach(function(k,i){ S.mastery[k]={seen:4,ok:4,str:4, box:0, due:addDays("2026-06-10", i)}; });
+["a","b","c","d","e","f","g","h"].forEach(function(k,i){ S.mastery[k]={seen:5,ok:5,str:4, box:0, due:addDays("2026-06-10", i)}; });
 (function(){ var due=vaultDue();
   ok("vaultDue caps at VAULT_CAP items", due.length===VAULT_CAP);
   ok("vaultDue returns oldest-due first", due[0]==="a" && due[1]==="b"); })();
-S.mastery["z"]={seen:4,ok:4,str:4, box:0, due:"2026-07-01"};
+S.mastery["z"]={seen:5,ok:5,str:4, box:0, due:"2026-07-01"};
 ok("vaultDue excludes items not yet due", vaultDue().indexOf("z")<0);
 S.mastery["a"].str=0;
 ok("vaultDue excludes an enrolled item that fell below mastery", vaultDue().indexOf("a")<0);
 ok("vaultCount counts ALL enrolled + still-mastered items (uncapped, not due-filtered)", vaultCount()===8);   // b..h (7) + z (1); a dropped below mastery
+
+grp("MASTERY-THRESHOLD tune (#4): proficient (in-session, gates finales) vs retained (spaced-correct, drives ✦)");
+S=fresh(); __day="2026-06-14";
+ok("PROFICIENT bar bumped: seen4 no longer counts (needs seen>=5)", (function(){ S.mastery["p"]={seen:4,ok:4,str:4}; return !masteredItem("p"); })());
+ok("…seen5 + acc>=0.8 + str>=4 IS proficient", (function(){ S.mastery["p"]={seen:5,ok:4,str:4}; return masteredItem("p"); })());   // acc .8
+ok("…acc below 0.8 is NOT proficient (seen5, 3/5=.6)", (function(){ S.mastery["p"]={seen:5,ok:3,str:4}; return !masteredItem("p"); })());
+ok("RETAINED needs proficient AND okDayCount>=2 (1 day = not yet retained)", (function(){ S.mastery["p"]={seen:5,ok:5,str:4,okDayCount:1}; return masteredItem("p") && !retainedItem("p"); })());
+ok("…okDayCount>=2 on a proficient item IS retained", (function(){ S.mastery["p"].okDayCount=2; return retainedItem("p"); })());
+ok("…a high okDayCount on a NON-proficient item is NOT retained (retained requires proficient)", (function(){ S.mastery["p"]={seen:2,ok:2,str:2,okDayCount:9}; return !retainedItem("p"); })());
+// record() counts correct-days once per NEW calendar day (the spaced-correct signal), never same-day repeats
+S=fresh(); __day="2026-06-14"; record("x",true);
+ok("record(): first correct sets okDayCount=1 + lastOkDay=today", S.mastery["x"].okDayCount===1 && S.mastery["x"].lastOkDay==="2026-06-14");
+record("x",true); record("x",true);
+ok("…same-day repeats do NOT bump okDayCount (spacing is day-based)", S.mastery["x"].okDayCount===1);
+__day="2026-06-15"; record("x",true);
+ok("…a correct on a NEW day bumps okDayCount to 2", S.mastery["x"].okDayCount===2 && S.mastery["x"].lastOkDay==="2026-06-15");
+record("x",false);
+ok("…a MISS never bumps okDayCount (only correct days count)", S.mastery["x"].okDayCount===2);
+// migrate() grandfathers an old proficient item so its ✦ gold survives — but never auto-promotes new/partial items
+(function(){ var mg=migrate({v:1, mastery:{ a:{seen:6,ok:6,str:5}, b:{seen:2,ok:1,str:1}, c:{seen:5,ok:5,str:4,okDayCount:1} }, done:{}});
+  ok("migrate grandfathers an already-proficient item to okDayCount=2 (✦ won't vanish on load)", mg.mastery.a.okDayCount===2);
+  ok("migrate leaves a NON-proficient item's okDayCount unset (no false ✦)", mg.mastery.b.okDayCount===undefined);
+  ok("migrate does NOT re-bump an item that already has okDayCount (real spaced progress is preserved)", mg.mastery.c.okDayCount===1); })();
 dayKey=__realDayKey; S=fresh();
 
 grp("CLOUD-1: a wrong family code is flagged + cleared, never cached behind a false 'Connected ✓'");

@@ -83,6 +83,14 @@ function migrate(d){ if(!d||typeof d!=="object"||d.v!==1) return null;
   if(d.session.day===undefined)d.session.day=""; if(d.session.count===undefined)d.session.count=0; if(d.session.rest===undefined)d.session.rest=false;
   if(typeof d.stars!=="number")d.stars=0; d.intro=!!d.intro; d.scan=!!d.scan;
   if(typeof d.coins!=="number")d.coins=0; d.owned=(d.owned&&typeof d.owned==="object")?d.owned:{};
+  /* #4 grandfather: an OLD save's already-PROFICIENT items have no okDayCount, so their Base ✦ gold
+     would vanish the moment ✦ moved to "retained". Seed those to 2 correct-days. The per-item
+     "okDayCount===undefined" guard makes this idempotent AND safe for NEW play: record() defines
+     okDayCount the instant an item is first answered, so a genuinely-new item is never auto-promoted.
+     Threshold literals MIRROR game.js MASTER_STR/SEEN/ACC (game.js isn't loaded yet at migrate time). */
+  for(const k in d.mastery){ const m=d.mastery[k];
+    if(m && typeof m==="object" && m.okDayCount===undefined && m.seen>0
+       && m.str>=4 && m.seen>=5 && (m.ok/m.seen)>=0.8) m.okDayCount=2; }
   return d; }
 function readKey(k){ try{ const raw=localStorage.getItem(k); if(!raw)return null; return migrate(JSON.parse(raw)); }catch(e){ return null; } }
 /* rough "how much progress" — more done missions (then newer) wins a tie-break */

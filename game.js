@@ -163,7 +163,10 @@ if(typeof document!=="undefined"){
 }
 function mast(g){ if(!S.mastery[g])S.mastery[g]={seen:0,ok:0,str:0}; return S.mastery[g]; }
 function record(g,ok){ const m=mast(g); m.seen++;
-  if(ok){m.ok++;m.str=Math.min(5,m.str+1); combo++; if(combo>=3)comboPop(combo);}
+  if(ok){m.ok++;m.str=Math.min(5,m.str+1); combo++; if(combo>=3)comboPop(combo);
+    /* #4 RETENTION: count CORRECT CALENDAR DAYS (once per day, never same-day repeats) — the
+       "retained" signal (correct across >=2 days) layered on top of in-session "proficient". */
+    if(dayKey()!==m.lastOkDay){ m.okDayCount=(m.okDayCount||0)+1; m.lastOkDay=dayKey(); } }
   else {m.str=Math.max(0,m.str-1); combo=0; if(typeof Sfx!=="undefined")Sfx.wrong();}   /* gentle soft cue, never harsh */
   vaultTouch(g,ok);   /* Memory Vault: enroll on first mastery / advance the spaced schedule on a due review */
   save(); }
@@ -171,9 +174,15 @@ function record(g,ok){ const m=mast(g); m.seen++;
    An item is MASTERED when it's strong, well-seen, and accurate. Milestones
    (ally rescues / zone finales) are GATED on real mastery so "rescued X" truly
    means "proficient" — enforced gently via extra adaptive review, never failure. */
-const MASTER_STR=4, MASTER_SEEN=4, MASTER_ACC=0.75;
+/* PROFICIENT = in-session achievable (gates finales via coreWeak + the Progress ★). Bumped a touch
+   (#4): seen 4→5, acc .75→.8 (light overlearning) — still session-clearable so finales never soft-lock. */
+const MASTER_STR=4, MASTER_SEEN=5, MASTER_ACC=0.8;
 function masteredItem(key){ const m=S.mastery[key];
   return !!(m && m.str>=MASTER_STR && m.seen>=MASTER_SEEN && (m.ok/m.seen)>=MASTER_ACC); }
+/* RETAINED = DURABLE = proficient AND correct on >=2 different calendar days (#4). Drives the Base
+   gold ✦ ("you truly own this one"); the Vault's spaced re-exposures are what EARN the 2nd day.
+   NEVER gates a finale (a child can't earn a next-day correct mid-session — that would soft-lock). */
+function retainedItem(key){ const m=S.mastery[key]; return masteredItem(key) && ((m&&m.okDayCount)||0)>=2; }
 function letterMastered(g){ return masteredItem(g); }
 /* what a milestone certifies = every letter taught so far must be mastered */
 function coreWeak(m){ return (m&&(m.finale||m.rescue)) ? actGraphemes().filter(g=>!letterMastered(g)) : []; }
@@ -1230,9 +1239,9 @@ function paintBase(){
   const shelf=$("gemShelf"); shelf.innerHTML="";
   let any=false;
   ORDER.forEach(g=>{ if(S.done[LETTER_MISSION[g]]){ any=true;
-    /* earned gems twinkle; a fully-MASTERED gem earns a gold ✦ (collection meets
-       mastery — a visible "you truly own this one" reward). */
-    shelf.innerHTML+=`<span class="gembox${masteredItem(g)?" mastered":""}">${gemSVG(g, GEMCOLOR[g], 48)}</span>`; } });
+    /* earned gems twinkle; a RETAINED gem (proficient + remembered across days, #4) earns a gold ✦
+       (collection meets durable mastery — a visible "you truly own this one" reward). */
+    shelf.innerHTML+=`<span class="gembox${retainedItem(g)?" mastered":""}">${gemSVG(g, GEMCOLOR[g], 48)}</span>`; } });
   if(!any)shelf.innerHTML='<div class="baselbl" style="font-size:15px;">Rescue gems on missions to fill your shelf!</div>';
   { const got=ORDER.filter(g=>S.done[LETTER_MISSION[g]]).length, gc=$("gemCount"); if(gc)gc.textContent=got+" / "+ORDER.length; }
   /* league */
