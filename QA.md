@@ -57,8 +57,13 @@ tappable so the gentle `locked_tip` cue plays; lock still JS-enforced), **pacing
 durable `S.freed` + `S.gearByAct`, migrate-safe, plumbing-only so no regression yet), **Memory Vault #1** (Leitner
 box/due scheduler on `S.mastery`, additive). Tests **save 73 · curriculum 47**, all parse, tree clean, no scramble
 dupes.
-**Open for Neo (code):** the UI punch-list (buttons **H2**, map revamp **MR1–3**, intro **I1**, parent-hub **P1**…)
-and the pedagogy specs (Vault surfacing + #2/#3/#4 onward).
+**Open for Neo (code):** the UI punch-list (buttons **H2**, map revamp **MR1–3**, intro **I1**, parent-hub **P1**…),
+the **🆕 U-series real-screen audit** (U1 touch targets = hard-constraint quick win), and the pedagogy specs (Vault
+surfacing + #2/#3/#4 onward). **Morpheus PR #3 merged (2026-06-14):** Trinity-confirmed Act-2 **fortress `fortRead()`
+mis-teaches magic-e audio** (plays short `snd_a` + voiced silent-E for "cake" — `game.js:987` — vs `nextRead()`'s
+magic-e branch `game.js:784-787`); same gap in **Recharge `vaultBuild`** tiles; both want the shared magic-e-aware
+tile renderer. Also: Act-2 finale comprehension-proof still the top reading-core gap; CLAUDE.md title-flow notes are
+stale (H3/H4 shipped — parent-owned file, flag don't edit).
 **Approved (grandfathered), plumbing DONE → next is the re-map:** gear / friend-rescue **pacing spread** — P1
 grandfather plumbing shipped; **P2/P3 = re-map GEAR_AT keys + ally rescue ids.** ⚠️ Before the re-map ships, the
 durable seed (`grandfather()` boot, game.js:155, not `save()`d) must be persisted for active saves first (happens
@@ -66,7 +71,7 @@ via normal play; worth a guard) so the re-map can't un-earn current gear/league.
 
 ### Guardrails
 - `node tests/curriculum.test.js` + `node tests/save.test.js` must pass before any push (exit 0). Latest:
-  **save 41 · curriculum 40**, every JS/MJS parses.
+  **save 73 · curriculum 53**, every JS/MJS parses.
 - Never push broken code (auto-deploys to the child's iPad within minutes). Small, plain-English commits.
   **Neo merges code to `main`; Trinity commits docs (`QA.md`/`AGENTS.md`) straight to `main` (fetch+rebase,
   no merge commits); guests open `QA.md` PRs.** Branch protection stays OFF (per AGENTS.md) until 2+ agents code.
@@ -113,6 +118,121 @@ Every UI finding/spec logged so far, by screen. Full detail in the dated section
 
 **Specs ready for Neo right now:** H4 (one-PLAY) · M1 (map hero) · Character-art resolver · Map Rework Packet.
 **Ship-now quick wins:** H3, H4, M1-wire, B1(b) shade `heroSVG`.
+
+**🆕 GOLD-STANDARD UI/UX AUDIT (real-screen, U-series) — see the dated section below.** Highest-leverage:
+- **U1** 🔴 **P0 touch targets below spec** — the audio **replay/ear button is 52px** and the **round nav/gear is
+  54px**, vs the project's ~96px mandate (CLAUDE.md #6) and the kids-UX ≥64px floor. U1 is a HARD-CONSTRAINT
+  regression (#6, and #8 since the replay button is the audio-first lifeline). **Ship-now quick win.**
+- **U2** 🟠 Low-contrast text — map zone labels (locked `#9a92c0`), subtitle (`#cfc6f2`), progress counters.
+- **U3** 🟠 Grown-Up Corner layout — vast empty lower half + 12–15px text (cross-refs **P1**).
+- **U4** 🟡 Emoji picture-tiles amid premium painted/raster art (style clash); intro/scan/forge = one tiny
+  floating control on a vast empty scene (weak affordance). U5 consistency + map clutter fold into **MR1/M2**.
+
+— Trinity, 2026-06-14
+
+---
+
+## 🎨 GOLD-STANDARD UI/UX AUDIT — real-screen, Chromium (Trinity, 2026-06-14)
+
+**The assignment (parent):** *"Put your UI/UX hat on, research the gold standard in mobile gaming, render the game,
+and list every contradiction to best practices — go deep, fix the UI once and for all."* This is the deep packet
+for Neo.
+
+**Method.** Rendered the REAL game in headless **Chromium** from the cloud via the npm-Chromium recipe (Trinity's
+local `tools/shot-cloud.mjs` — the full recipe is documented up top; Neo can land it durably in the tools lane).
+Captured 8 real screens at 1024×768 @2x: **title, map, base,
+settings(Grown-Up Corner), scan, find, read, forge.** Each finding cites the exact file/line + CSS value, the
+best-practice it violates, and a concrete fix.
+
+> ⚠️ **One caveat on the renders:** the screenshot harness blocks the Google-Fonts CDN (else WebKit/Chromium hang on
+> it), so text rasterised in **system-fallback fonts** — the real **Bangers / Andika / Baloo 2** faces differ. So
+> **layout, colour, contrast, sizing, spacing and art are faithful, but the wordmark/letter *font look* is NOT** —
+> do not judge H1 (title font) from these. Everything below is font-independent.
+
+**The yardstick (2026 mobile-game + kids-UX research).** Touch targets: ≥44–48px iOS/Android *floor*; **kids 4–7
+need ≥64px with ~64px gaps**; this project already mandates **~96px** (CLAUDE.md #6). Nav: reserve top corners for
+back/secondary, one-handed reach, **5–7 items max**, cleaner HUD = less clutter. Onboarding: first win <60s, teach
+in-gameplay, progressive disclosure. Feedback: immediate visual+audio, explicit button **press/disabled** states,
+120–220ms micro-animations, honour `prefers-reduced-motion`. Readability: high contrast (WCAG AA ≈ 4.5:1 body),
+clear single primary action, designed empty/zero states. (Sources at the end.)
+
+### 🔴 P0 — hard-constraint regressions (ship first)
+
+**U1. Touch targets under the 96px mandate — including the audio-first lifeline.** *(violates CLAUDE.md #6 large
+targets, #8 every prompt has a replay button; kids ≥64px floor.)*
+- `.bubble .ear` (the **🔊 replay** button on every prompt) = **52×52px** (`styles.css:49`). This is THE control the
+  pre-reader taps to re-hear an instruction — it must be the easiest tap on screen, and it's the smallest.
+- `.roundbtn` (the **settings gear** top-right + round nav buttons) = **54×54px** (`styles.css:134`).
+- **Fix:** bump both to **≥72px (target 96px)** with a transparent ≥96px hit-area if the visual must stay small
+  (pad + `padding`/`::before` hit-box). The ear especially — it's failing the audio-first constraint. Quick win,
+  CSS-only. *Confirm against `.tile.rletter` which already scales to 96px (`styles.css:75`) — match that ceiling.*
+
+### 🟠 P1 — readability / contrast (high impact, low risk)
+
+**U2. Low-contrast text in three places (fails WCAG AA on a busy painted ground).**
+- **Map zone labels** (`map.js:63`): locked = `#9a92c0` muted-purple, and the label pill is only `rgba(10,5,24,.82)`
+  at `font-size:17` — on the dense painted map the locked labels barely read. ALSO `textLength="${pw-20}"
+  lengthAdjust="spacingAndGlyphs"` **stretches/squashes glyphs to fit**, distorting letterforms (bad for a kid
+  learning shapes). **Fix:** raise locked label to ≥`#c7c0e6`, thicken/opaque the pill, drop the `textLength`
+  stretch (let it wrap or shrink-to-fit), and add a subtle text-shadow for separation from the art.
+- **Title subtitle** `.sub` = `#cfc6f2` (`styles.css:247`) on the bright cloud background → washed out. **Fix:**
+  add an ink stroke/shadow (matches `.title-logo`) or a translucent plate behind it.
+- **Progress counters** ("0 / 4", "0 / 3" on find/read) read tiny and dim — the only orientation cue in a round.
+  **Fix:** bigger, higher-contrast, ideally a dot/pip row (kids parse pips faster than fractions).
+
+**U3. Grown-Up Corner (Settings) — unbalanced layout + tiny type.** Real shot: the panel fills only the **top third;
+the bottom ~half is dead empty space**, and body/tab text is **12–15px** (`styles.css:257 .tabbtn 15px`, `265 .plbl
+12px`, `271 .pnote 12px`). Button hierarchy is inconsistent (huge "Add player" pill vs small "Close"). This is the
+**P1 parent-hub** problem seen on a real screen — fold this evidence into that spec: centre/space the content, raise
+parent-readable text to ≥16px, normalise button sizes, and use the empty space for the hub's drill-down cards.
+
+### 🟡 P2 — hierarchy, consistency, affordance
+
+**U4. Intro / scan / forge = one tiny floating control on a vast decorative scene.** Real shots of `scrScan` and
+`scrForge` show a single ~52px audio button centred on an otherwise empty painted stage — beautiful but **near-zero
+visual affordance** ("what do I do here?"). Audio narration carries it, but per onboarding best-practice the *first
+meaningful action* should be visually obvious. **Fix:** give intro/calibration screens a clear, large, pulsing
+primary CTA (e.g. a big "TAP TO START" gem) alongside the audio — ties into **I1/I2**.
+
+**U5. Style clash — emoji picture-tiles inside premium painted/raster art.** The Read-It choices render as raw
+emoji (🐶🎩🐱 on `.picktile`, `game.js` read flow) while the title/map/cast are premium painted/raster. Emoji read
+inconsistently across devices and break the "premium game" target (STYLE.md). **Fix (later, art lane):** a small
+set of consistent flat-vector picture icons for the READWORDS/READWORDS2 pool. Low priority; logging for the art
+rollout.
+
+**U6. Map overstimulation / weak current-node dominance (confirms M2 / MR1 on a real screen).** ~12 nodes + labels +
+hero + ally figures overlay a high-detail painting; the **current** node doesn't visually dominate, so "where do I
+tap next" isn't instant. Best-practice (cleaner HUD, clear primary action) wants the current node to pop and the
+rest to recede. **Fix:** already specced as **MR1** (scrim the bg behind the active node, scale/glow the current
+node, dim done/locked) — this audit is the real-screen evidence for it; bump its priority.
+
+**U7. Hero Base — low-contrast card bodies + cramped hero/collection overlap + heavy zero-state.** Card body text is
+dim purple on dark (hard to read); the left hero card visually collides with the collection panel; and on a fresh
+save every shelf shows "0 / N" with "go earn this!" copy — a lot of empty-state at once (borderline vs the
+"show only EARNED items, never empty slots" rule, CLAUDE.md World-canon). **Fix:** raise card-text contrast, add
+breathing room between hero and panels, and soften the zero-state (show the first goal only, not all four 0/N rows).
+Cross-refs **B1** (shade `heroSVG`) — the Base hero also still reads as the plainer SVG vs the premium raster Teddy
+on the title (character-consistency, art lane).
+
+### What's already GOOD (don't "fix") — real-screen confirmations
+- **Anti-gaming #4 holds on screen:** the Find prompt reads "Find the gem that makes the sound… 🔊" with **no letter
+  shown** — exactly right. Don't let any "readability" fix add the target letter to the prompt.
+- **Letter/word/picture tiles are excellent:** large, high-contrast Andika gems (`s a t`, `c a t`, picture choices)
+  — these are the most salient thing on screen, as intended. Leave them.
+- **The single PLAY title (H4) and the city-chip nav dropdown** are clean and correct.
+
+### Recommended sequence for Neo
+1. **U1 touch targets** (ear 52→≥72/96, roundbtn 54→≥72) — CSS-only, hard-constraint, ship today.
+2. **U2 contrast** (map labels + subtitle + progress pips) — CSS/`map.js`, low risk.
+3. **U6/MR1 map hierarchy** + **U3 → P1 parent-hub** — the two structural reworks (already specced; this is the
+   evidence).
+4. **U4 intro CTA (I1/I2)**, then the art-lane items (**U5** emoji icons, **U7/B1** Base hero shading).
+Verify each with `node tools/shot-cloud.mjs <scene>` (Trinity can re-shoot any screen on request) + keep `save`/
+`curriculum` green.
+
+**Sources (research yardstick):** WANDR — UX for gaming platforms; UXPin — Game UX guide 2026; Pixune — mobile game
+UI 2026; UX Planet / Gapsy / Aufait UX — designing apps for kids; AccessibilityChecker / Wix Studio —
+microinteractions & button-state feedback. (Touch-target floors: Apple HIG 44pt / Android 48dp; kids ≥64px.)
 
 — Trinity, 2026-06-14
 
