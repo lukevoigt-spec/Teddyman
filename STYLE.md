@@ -24,6 +24,39 @@ These come from CLAUDE.md and **override** any visual rule below:
 
 ---
 
+## 0.2 DESIGN COVERAGE MAP — our standards + the open gaps (Trinity, 2026-06-14)
+Goal: **every aspect of the app follows award-winning-studio best practices.** This is the running index of design
+DOMAINS — what has a standard, what's partial, what's still missing — so coverage is a checklist, not a guess.
+
+| Domain | Status | Where / next |
+|---|---|---|
+| Visual system (color, type, buttons, panels, components) | ✅ | STYLE.md §1–5 |
+| Motion / visual juice + easing tokens + reward-viz | ✅ | STYLE.md §6 · DESIGN-ENGAGEMENT §8 |
+| Sound design (SFX) | ✅ | STYLE.md §6.5 |
+| Layout & navigation | ✅ | STYLE.md §7 |
+| Reward economy / engagement / progression | ✅ | DESIGN-ENGAGEMENT §4–11 · §6.0 mastery contract |
+| Performance budget | ✅ | STYLE.md §9 |
+| Per-act theming | ✅ | STYLE.md §0.5 |
+| Pedagogy / learning design | ✅ | CLAUDE.md · QA pedagogy specs |
+| Error / no-fail states | ✅ | hard constraint #2 (gentle wrong) |
+| Data / privacy / parental controls | ✅ | cloud auth + parent gate |
+| **Accessibility (consolidated)** | ❌ **GAP · P0** | *build* — colorblind-safe, WCAG contrast, **audio-redundancy** (every cue has a visual twin), cognitive/sensory, motor; map to the **Game Accessibility Guidelines** (visual/auditory/motor/cognitive) |
+| **Onboarding / FTUE** | ❌ **GAP · P0** | *build* — teach-through-play, **one mechanic at a time, audio-first, no text**; covers every new task type + a returning-kid re-entry |
+| **Narrative & voice/tone** | ⚠️ partial | voice roles (CLAUDE.md) + the line-variation note; *no script-tone / mentor-persona / cutscene-&-storybook pacing standard* |
+| **Art-direction bible** | ⚠️ partial | art.js + CHARACTER-ART-PROMPTS.md; *no proportions / shadow-&-light / palette / animation-timing consistency spec* |
+| **Animation principles (Disney 12)** | ⚠️ partial | covered inside juice easing; *no character/UI motion standard (anticipation / staging / secondary action / settle)* |
+| **Haptics** | ❌ GAP · P2 | *build* — iPad taptic as the **3rd feedback channel** (gentle, ND-careful, own toggle) |
+| **Information architecture / screen-flow map** | ❌ GAP · P2 | *build* — canonical map of every screen + its states (empty/loading/populated) + transitions |
+| **Difficulty / flow & pacing** | ⚠️ partial | mastery model + 15/15 split; *formalize the flow channel (challenge↔skill) + session pacing* |
+| Localization | n/a | single child, English |
+
+**Gap build-order (best-first):** **1) Accessibility** (P0 — most aligned with Teddy's ND/dyslexia/ADHD profile;
+consolidates scattered rules + adds colorblind-safe + audio-redundancy + contrast). **2) Onboarding/FTUE** (P0).
+**3) Narrative & voice/tone.** **4) Art-direction bible.** **5) Animation principles.** **6) Haptics.** **7) IA map.**
+**8) Flow & pacing.** Build each as a standards section like §6/§6.5/§7, grounded in the cited authorities.
+
+---
+
 ## 0.5 Per-act theming — ✅ SHIPPED (Act-2 medieval skin is LIVE via `body[data-act="2"]`)
 The game **re-skins its non-learning chrome per act** so each act has its own world feel,
 while the **learning content keeps its ideal font (Andika) and high contrast unchanged**.
