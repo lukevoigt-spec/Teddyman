@@ -136,8 +136,18 @@ keep `node tests/save.test.js` + `node tests/curriculum.test.js` green; #2 and #
 > - **#4 cloud-off persistence — FIXED + verified.** `resolveCloudURL()` + an `"off"` sentinel keep sync
 >   disabled across reloads; tests cover off→disabled, unset→baked default, custom→preserved.
 > - **#5 locked capes — correctly left alone** (CSS `pointer-events:none` already guards).
-> - **#1 cloud auth — STILL PENDING the parent's decision** (see the proposed fix below). Not yet implemented.
-> - Suites green at time of verification: **curriculum 40, save 39.**
+> - **#1 cloud auth — ✅ FIXED + verified (Trinity, 2026-06-14).** Neo shipped the parent-entered **Family
+>   sync code** exactly as proposed, and a bit better. Verified against source: client `state-save.js` —
+>   `cloudSecret` (localStorage `teddyCloudSecret`, never committed), `cloudActive()=URL&&secret`,
+>   `cloudKey()="p"+__cloudHash(secret+"::"+ACTIVE)` (unguessable slot, no more bare `?k=teddy`), every
+>   request sends `Authorization: Bearer <secret>` (`cloudAuth`), and offline-first is intact (a `401` →
+>   "wrong code — saved on device", never blocks). Worker `cloud/worker.js` — **fails CLOSED**: rejects
+>   unless `Bearer == env.AUTH_SECRET` (Cloudflare secret, never committed) with a **constant-time** compare
+>   (`constantEq`), + a 300KB body cap. The dead public `CLOUD_PASSPHRASE` is **removed**. `save.test`
+>   asserts the slot derives from the family code, not the bare id. **This also closed #4** (the `"off"`
+>   sentinel). Exceeds the spec (constant-time + fail-closed + size cap).
+> - Suites green at time of verification: **curriculum 40, save 41.** ALL five code-review findings now
+>   resolved (#1–#4 fixed, #5 correctly rejected).
 
 **1. Cloud saves are world-readable/writable — CONFIRMED (serious).**
 Evidence: `state-save.js:29` bakes the Worker URL into this PUBLIC repo; `:36` `CLOUD_PASSPHRASE=""`;
