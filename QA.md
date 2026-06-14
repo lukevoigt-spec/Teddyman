@@ -550,6 +550,43 @@ generated mentor art spreads further, run the harness on `mentorChips(120)` and 
 same safe canvas spec as the allies or document the crop as accepted.
 — Morpheus, 2026-06-14
 
+## Morpheus UI/progression pass — 2026-06-14
+
+Scope: refreshed/rebased to latest `origin/main` (`593c311`), re-read the live handoff/open findings first, rendered key
+screens with `node tools/shot.mjs title map base basefull vault vaultfull vaultbase learn_s trace find`, and re-shot
+`base`/`basefull` after the rebase. I am not re-reporting the known U11 bubble clipping, Training Room Act-2 grapheme
+gap, Dragon Keep finale proof gap, or the existing map/art backlog. Baseline remains green: `node tests/save.test.js`
+= 87 pass, `node tests/curriculum.test.js` = 57 pass, and the JS/MJS parse sweep passed.
+
+**1. Rest-break cadence does not reset after the first day/session — CONFIRMED.**
+Evidence: fresh saves carry `session:{count:0,day:"",rest:false}` (`state-save.js:73`), and `sessionTick()` exists to
+reset that object when the date changes (`state-save.js:173`), but `rg "sessionTick"` finds no call site. New missions
+increment `S.session.count` (`game.js:637-639`), and the win buttons only show the rest screen when
+`S.session.count>=3&&!S.session.rest` (`game.js:1210-1211`). Once a rest is shown, those same handlers set
+`S.session.rest=true`; because the daily/session reset never runs, future days can lose the gentle three-mission rest
+nudge. This does not create a failure state, but it weakens the ADHD-friendly daily loop the product is aiming for.
+→ **Proposed fix:** reset `S.session` in the same day-rollover path as `ensureDaily()` or call `sessionTick()` at the
+start of `missionComplete()` before increment/check logic. Prefer one date key instead of maintaining both
+`today()` and `dayKey()` formats. Add a save/curriculum guard for "old-day `rest:true` resets before the next day's
+third new mission, then rest triggers again"; avoid any boot-time save that could outrank a newer cloud pull.
+
+— Morpheus, 2026-06-14
+
+**2. Hero Base loadout can be hidden under the bottom action buttons on iPad landscape — CONFIRMED.**
+Evidence: the real 1024×768 render (`node tools/shot.mjs base basefull`) shows the Cape/weapon loadout rows sitting
+behind `TRAINING ROOM / SHOP / RECHARGE / CITY MAP` in both fresh and populated Base states. The source matches the
+render: `#scrBase` is a fixed full-screen flex column with no vertical overflow (`styles.css:855`); `.basewrap` is the
+shrinking middle region (`styles.css:860`); only the right collection column gets `overflow-y:auto`
+(`styles.css:882-883`), while `.basecol-hero`/Loadout do not; and `.baseactions` is rendered after the middle section
+(`index.html:166-170`, `styles.css:891-892`). Existing U7 correctly calls out Base crowding/zero-state, but this is
+more specific: earned equipment controls can become partially untappable/hidden, so the reward loop loses part of its
+"try the new gear now" payoff.
+→ **Proposed fix:** make the Base layout reserve safe space for the action row and give the left hero/loadout column a
+real scroll path on tablet landscape, or move the action row into a non-overlapping responsive rail/top cluster. Keep
+the 96px+ targets; verify with `shot.mjs base`, `basefull`, and Act-2 Base at 1024×768 plus a portrait iPad viewport.
+
+— Morpheus, 2026-06-14
+
 ## 🔍 CODE-REVIEW FINDINGS — verified by Claude 2026-06-14 (for the coding agent)
 
 An external review raised 5 findings. I checked each against the actual code. **4 are real and
