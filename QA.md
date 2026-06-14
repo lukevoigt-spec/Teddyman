@@ -127,6 +127,9 @@ Every UI finding/spec logged so far, by screen. Full detail in the dated section
 - **U3** 🟠 Grown-Up Corner layout — vast empty lower half + 12–15px text (cross-refs **P1**).
 - **U4** 🟡 Emoji picture-tiles amid premium painted/raster art (style clash); intro/scan/forge = one tiny
   floating control on a vast empty scene (weak affordance). U5 consistency + map clutter fold into **MR1/M2**.
+- **U8** 🟡 Finale boss (Lord Vex) renders identically to a common Vexbot — no climax escalation (art lane, ↪B1).
+- **U9** 🟡 Trace round — varying dot sizes + no ghost letterform/stroke order (multisensory gap, ↪I2; Act-1 only).
+- *All 11 mission types rendered; the core learning loop is consistent + strong — fixes are chrome, not the loop.*
 
 — Trinity, 2026-06-14
 
@@ -214,21 +217,51 @@ breathing room between hero and panels, and soften the zero-state (show the firs
 Cross-refs **B1** (shade `heroSVG`) — the Base hero also still reads as the plainer SVG vs the premium raster Teddy
 on the title (character-consistency, art lane).
 
+### 🟢 Learning-screen sweep — ALL 11 mission types rendered (2026-06-14)
+Drove and shot every round type (learn, trace, find, read, forge, spell, sentence, cloze, scramble, magic, boss,
+fortress). **Headline: the core learning loop is consistent and strong** — a stable grammar across every screen:
+instruction **bubble at top** → context/anchor (letter, picture, enemy) → **slots/target** → **tile row at bottom**,
+with **sight-word tiles visually differentiated** (cream + ♥ heart marker) from **decodable tiles** (blue), all in
+large high-contrast Andika gems. This consistency is a genuine asset; the fixes below are *chrome*, not the loop.
+Two NEW findings + confirmations of the systemic ones:
+
+**U8. The finale boss has no visual escalation — Lord Vex renders identically to a rank-and-file Vexbot.** Real shots:
+the `scrBoss` common enemy and the `scrFortress` *climax* villain (`game.js` `bossSprite()`/`inkblotSVG`) are the
+**same gray robot at the same size**. The Act-1 finale is the emotional peak ("Free Leighton!") — best-practice
+(climax should feel bigger/distinct) wants Lord Vex larger, scarier, visually escalated vs his mooks. A raster
+`vex.png` already exists in the pipeline but the fortress uses the plain SVG. **Fix (art lane):** give the finale
+boss a distinct, larger sprite (raster Vex, or scale+recolour+extra menace on the SVG). Cross-refs **B1**/resolver.
+
+**U9. Trace round — dots have inconsistent sizes and no ghost letterform / stroke order.** Real `scrTrace` shot: the
+"S" is shown as loose yellow dots of *varying* size on a plain white square, with no ghosted letter outline and no
+numbered/connected path — a pre-reader (esp. dyslexia profile) can't infer stroke direction. Multisensory O-G
+practice wants a clear ghost letter + ordered path. **Fix:** uniform dot size, a faint ghost letterform behind the
+dots, and a drawn/numbered path. Cross-refs **I2**. (Low priority; the trace step is Act-1-only — digraphs skip it.)
+
+**U2 is SYSTEMIC (confirmed on every round):** the progress counter ("0 / 3", "0 / 8", "0 / 2") is uniformly tiny +
+dim gold on every learning screen — the child's only "how far am I" cue. Make a **shared high-contrast pip/dot row**
+component and use it everywhere (kids parse pips faster than fractions). **U5 is SYSTEMIC too:** emoji picture-tiles
+appear across read/sentence/cloze/scramble, not just Read-It.
+
 ### What's already GOOD (don't "fix") — real-screen confirmations
-- **Anti-gaming #4 holds on screen:** the Find prompt reads "Find the gem that makes the sound… 🔊" with **no letter
+- **Anti-gaming #4 holds on screen:** the Find AND fortress-boss prompts read "…makes the sound… 🔊" with **no letter
   shown** — exactly right. Don't let any "readability" fix add the target letter to the prompt.
 - **Letter/word/picture tiles are excellent:** large, high-contrast Andika gems (`s a t`, `c a t`, picture choices)
   — these are the most salient thing on screen, as intended. Leave them.
+- **Sight vs decodable differentiation** (cream+♥ vs blue) reads clearly on sentence/cloze/scramble — keep it.
 - **The single PLAY title (H4) and the city-chip nav dropdown** are clean and correct.
+- **Clear primary CTAs** where they matter: "TRACE IT! →", "CAST MAGIC-E", "Hear the sentence" — good affordance.
 
 ### Recommended sequence for Neo
 1. **U1 touch targets** (ear 52→≥72/96, roundbtn 54→≥72) — CSS-only, hard-constraint, ship today.
 2. **U2 contrast** (map labels + subtitle + progress pips) — CSS/`map.js`, low risk.
 3. **U6/MR1 map hierarchy** + **U3 → P1 parent-hub** — the two structural reworks (already specced; this is the
    evidence).
-4. **U4 intro CTA (I1/I2)**, then the art-lane items (**U5** emoji icons, **U7/B1** Base hero shading).
-Verify each with `node tools/shot-cloud.mjs <scene>` (Trinity can re-shoot any screen on request) + keep `save`/
-`curriculum` green.
+4. **U4 intro CTA (I1/I2)** + **U9 trace ghost-letter**, then the art-lane items (**U5** emoji icons, **U7/B1** Base
+   hero shading, **U8** distinct finale-boss sprite).
+Verify each with `node tools/shot-cloud.mjs <scene>` — scenes now cover ALL 11 mission types (title/map/base/settings/
+scan/find/read/forge/learn/trace/spell/sentence/cloze/scramble/magic/fortress/boss). Trinity can re-shoot any screen,
+incl. before/after, on request. Keep `save`/`curriculum` green.
 
 **Sources (research yardstick):** WANDR — UX for gaming platforms; UXPin — Game UX guide 2026; Pixune — mobile game
 UI 2026; UX Planet / Gapsy / Aufait UX — designing apps for kids; AccessibilityChecker / Wix Studio —
