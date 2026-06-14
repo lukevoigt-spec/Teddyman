@@ -1,5 +1,75 @@
 # QA.md — External Review Notes for Super Teddy
 
+---
+
+## ⭐ CURRENT LIVE STATE & HANDOFF — 2026-06-14 (read this first)
+
+This is the active working context so any instance (cloud OR the parent's local desktop) can
+pick up. Historical review notes are preserved below. CLAUDE.md remains the source of truth;
+this is the "what we're doing right now" index.
+
+### The big shift: we can now SEE the art (render/verify loop)
+- **NEW `tools/` dev harness** (gitignored at runtime, never ships):
+  - `tools/svg-shot.mjs` — rasterize any `art.js` SVG expression (or `--cast` contact sheet) to
+    PNG via `@resvg/resvg-js`. **Works in the cloud** (npm registry reachable). VERIFIED.
+    Use it to self-check EVERY art change instead of working blind: e.g.
+    `node tools/svg-shot.mjs "dragonSVG(200)" d.png` then Read the PNG.
+  - `tools/shot.mjs` — screenshots the **real game** in Chromium **and WebKit (Safari ≈ iPad)**,
+    serving over http + driving the game's own nav fns. **Local desktop only** (Chromium
+    download is firewalled in the cloud env).
+  - `tools/gen.mjs` — generate character art from a prompt via `XAI_API_KEY` or `OPENAI_API_KEY`
+    → `art/incoming/`. Local only; keys never committed.
+  - `tools/README.md` = setup. `art/CHARACTER-ART-PROMPTS.md` = house style + per-character
+    generation prompts (the "generated heroes" pipeline).
+- **Workflow for art:** edit `art.js` → render with `svg-shot.mjs` → Read the PNG → iterate →
+  commit. On the desktop, also `shot.mjs` for full composed screens. The parent can run the
+  harness and share PNGs back if the working instance is the cloud one.
+
+### Decisions locked with the parent (2026-06-14)
+1. **Art direction = "sweep + generated heroes".** (a) Apply a premium *shading pass* to the whole
+   cast in-SVG (form-shadow/volume, ambient occlusion, rim light, scene under-glow, deeper
+   gradients, catchlights — see the dragon for the reference technique), AND (b) pursue
+   GENERATED RASTER art for marquee likenesses (Teddy + real family) via ChatGPT Pro / Grok
+   (the parent has both) — Claude masks/frames/animates + wires them in, then render-verifies.
+2. **Pacing = full re-tune** (it was heavily front-loaded). DONE: muscle curve now act-relative
+   (tier1 ~28%, tier2 ~60% of the act) instead of maxing at 7 of ~53 missions. STILL TO PROPOSE
+   (parent wants specifics before save-affecting changes): spread GEAR unlocks (belt/boots/
+   hammer/sword all land in the first ~8 missions today) and FRIEND-RESCUE timing (most friends
+   free in the first ~17 missions, then a drought to the finale) across the whole campaign.
+3. **Desktop infra:** parent is setting up a Windows 11 Pro box with Claude Code + Node + the
+   tools harness; use **same-dir** (not worktree) for our serialized single-branch workflow.
+   Image-gen path depends on GPU: NVIDIA 8GB+ → local ComfyUI; else → Grok/OpenAI API via gen.mjs.
+
+### Shipped this session (all live on main)
+- Hero cards: real-life outfits (Ellie gymnast / Amelia dress / Leighton flowery princess /
+  Archie sporty + shaggier hair); allies speak a signature line when tapped.
+- New equippable **weapons**: Lasso + Gem Bow (Act 1), War Mace + Joust Lance (Act 2), unlocked
+  off existing milestone gear (no new save ids). `WEAPONS[]`/`ownedWeapons()` in game.js.
+- Villain polish: fierier auras; dragon aura blue→fire; removed Lord Vex's stray "?" marks;
+  **dragon elevated** with the full shading pass (proof technique).
+- **Settings overhaul**: game-like Grown-Up Corner — icon tabs/headers, sliding On/Off SWITCHES
+  (sfx/music), a 3-way SEGMENTED Full|Calm|Lite picker, polished cards/sliders.
+- **Test hardening**: curriculum.test.js now 35 checks incl. lock-enforcement (mapPaintSVG marks
+  future zones .locked + skip-via-tamper guard). save.test.js 33.
+- Earlier: time-portal cutscene, combo-lock fix, button fill-clip fix.
+
+### Next actions (priority order)
+1. Continue the **shading-pass sweep**: Vixen + Lord Vex (match the dragon), then the four family
+   bodies + `allyFace`. Render-verify each with `svg-shot.mjs`; send the parent a fresh cast sheet.
+2. Get a **real-game screenshot** pass on the desktop (`node tools/shot.mjs` + `--webkit`) — first
+   look at composed screens; QA layout/Safari issues.
+3. Draft the **gear + friend-rescue pacing** re-tune for parent approval (save-safe: derived from
+   done missions; reassigns GEAR_AT keys + ally rescue missions, no id renumbering).
+4. First **generated-hero** test (Vixen or Teddy) once the gen path is set.
+
+### Guardrails (unchanged)
+- `node tests/curriculum.test.js` + `node tests/save.test.js` must pass before any push (exit 0).
+- Never push broken code (auto-deploys to the child's iPad within minutes). Small, plain-English
+  commits. Develop on the feature branch, fast-forward main, deploy.
+- API keys / tokens NEVER committed (`.env`, `art/incoming/`, `tools/node_modules` gitignored).
+
+---
+
 **Test commit by Grok (xAI):** Write access verified successfully! Added this line on 2026-06-13.
 
 ## 2026-06-13 Grok (xAI) Review — Latest Main (commit 060066c)
