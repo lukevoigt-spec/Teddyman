@@ -165,7 +165,10 @@ body[data-act="2"] .navitem{border-color:#6a5436;background:rgba(50,38,18,.55);c
 #mapBaseBtn:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(0,0,0,.35);}
 #mapBaseBtn svg{width:24px;height:24px;}
 .mnode{cursor:pointer;}
-.mnode.locked{opacity:.45;pointer-events:none;}
+/* MAP-2: dim a locked zone but KEEP it tappable so the JS handler can play the gentle "not yet"
+   locked_tip cue (map.js) — silence on a tap reads as a broken button (audio-first, no silent dead-ends).
+   The lock is still enforced in JS (locked nodes never startMission); this only restores the cue. */
+.mnode.locked{opacity:.45;cursor:default;}
 .mnode .ring{animation:none;}
 .mnode.current .ring{animation:mappulse 1.8s ease-in-out infinite;transform-origin:center;transform-box:fill-box;}
 @keyframes mappulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
