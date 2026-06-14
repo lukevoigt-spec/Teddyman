@@ -372,6 +372,84 @@ Evidence: the live game now uses `heroMarquee()` to render generated raster Tedd
 
 ---
 
+## 🎨 UI FINDINGS — Home / Title page (Trinity, 2026-06-14)
+
+Parent-flagged, investigated against the live code + the on-device screenshot. FINDINGS (diagnosis +
+direction + gotchas) — Neo owns the final design. Refs: title markup `index.html:73–81`; title CSS
+`styles.css:22, 243–244, 478, 910`; title JS `game.js:330–356`.
+
+**H1. Title font — worth elevating, but it's a brand/taste call (low urgency).**
+The logo is **Bangers** (`.comic`, styles.css:22) with an 8px ink stroke + gold + glow (`.title-logo`,
+styles.css:243/478). Reads fine but is a generic comic face while everything around it got more premium.
+Options: (a) keep Bangers; (b) elevate the **treatment** only (richer gradient/bevel, gem accents) —
+cheapest big lift; (c) a bespoke **wordmark** ("SUPER TEDDY" as a generated/SVG logo asset) — most
+premium + act-agnostic.
+⚠️ **Gotchas for Neo:**
+- `.comic` (Bangers) is used **everywhere** (HUD/headers). Restyle the **logo only** (`.title-logo`), not
+  `.comic`, or you reskin the whole app.
+- **Act-swap trap:** `body[data-act="2"] .comic` already swaps `.comic`→MedievalSharp (styles.css:910). If
+  `data-act=2` is set while the title shows (an Act-2 player on home), the logo font silently changes —
+  brand inconsistency. Lock the logo font regardless of act.
+- A **new webfont = another Google-Fonts load** (perf on old iPads + the WebKit font-CDN hang you hit in
+  `shot.mjs`). A bespoke **SVG/PNG wordmark** avoids the font load and is fully controllable (pairs with
+  the image-gen direction). Lean: (b) now, (c) when doing art.
+
+**H2. Buttons — elevate them; but do NOT bake text into generated button images.**
+`.btn` is a CSS gradient pill with a chunky press shadow (styles.css:25–37, 395+); `.ghost` is a bordered
+transparent pill (the flat bronze CONTINUE/BASE in the shot). Rudimentary next to the painted scene.
+⚠️ **Gotchas for Neo (the important one):**
+- Button **text length varies** (START vs CONTINUE MISSION vs HERO BASE) and fonts are responsive
+  (`clamp`). A single fixed **image button = stretched/cropped text**. Two safe ways to use image-gen:
+  (1) **9-slice `border-image`** — a textured *frame* (corners+edges) that stretches to any width without
+  distorting; (2) a **tileable texture** behind CSS text. **Never** a text-baked PNG per label.
+- Lowest-risk big win is **CSS-premium** (bevel, inner/outer shadow, subtle texture/noise, gem/rivet
+  corner accents) — text-agnostic, no asset load, scales.
+- `.btn` restyle **propagates to every screen** — regression-check all buttons, not just the title.
+- Keep **touch targets ≥96px** (constraint #6) + high contrast; keep the `:active` press feedback; make
+  the **Lite/Calm detail tier flatten** heavy button filters for old iPads.
+- **Per-act skin:** Act-2 chrome is parchment/stone (`body[data-act="2"]`) — plan a stone/bronze button
+  variant. Keep using CSS **tokens** (`--gold/--ink/--txt`), never raw hex (STYLE.md).
+
+**H3. Subtitle — replace the Act-1-specific line (already on the CLAUDE.md backlog).**
+`index.html:75` is static **"THE POWER GEMS OF STAR FORCE CITY"** — Act-1 only; Act 2 is the Magic
+Kingdom. Routes: (a) a **generic, timeless brand tagline** (act-agnostic, set once) — recommended; (b)
+**per-act swap**. Draft taglines (a): *"WHERE WORDS GIVE YOU SUPERPOWERS" · "READ. POWER UP. BE A HERO." ·
+"SUPER TEDDY'S READING ADVENTURE."*
+⚠️ **Gotchas for Neo:**
+- The subtitle is **static HTML rendered at boot**. For per-act (b), set it in `paintTitle()` (runs on
+  boot + profile switch) from `currentAct()`/`ACTS[].city` — don't leave the hardcoded string.
+- Per-act begs "**which act on the landing?**" → the active profile's `S.act` (new player = Act 1). The
+  city is **already shown on the map HUD chip**, so a generic tagline up top (city flavor on the map) is
+  cleaner and skips the boot-timing branch. Lean (a).
+
+**H4. START vs CONTINUE — collapse to one PLAY (the meaty one).**
+Confirmed redundant: for any returning player (`S.intro` true), **both `btnStart` and `btnContinue` just
+call `toMap()`** (game.js:341–342). `btnStart` only differs for a *brand-new* player (it runs
+`startIntro()` → origin cutscene → scan tutorial). "Continue **Mission**" is also a **misnomer** — it
+resumes nothing (`CUR` isn't persisted across reloads); it just opens the map.
+**Direction:** one **PLAY** button that branches internally on save state.
+⚠️ **Gotchas / nuances for Neo (incl. easy-to-miss ones):**
+- **Don't lose first-run onboarding:** PLAY must still do `if(!S.intro) startIntro()` (origin + scan) for
+  new players; returning → hub/map. That branch is the whole reason START/CONTINUE existed.
+- **The map is ALREADY the hub.** `toMap()` lands a returning player on their **current zone's next undone
+  mission** (curZoneIx/zoneNext) — it already "continues" correctly — and the **HUD nav chip** (World Map /
+  Hero Base / Home) + the parent-gated gear are on every non-title screen. So the cheapest faithful version
+  of your idea is **PLAY → map**, reusing the HUD for base/settings.
+- A **dedicated hub screen** matches your mental model but **adds a tap to content** — for an ADHD 7yo,
+  fewer taps to reading is better, and it **duplicates** the HUD nav. If you want the explicit hub, make it
+  *fast* (big art tiles) and don't bury Play.
+- **Settings stays parent-gated** (3s hold on the gear). A kid-facing hub must NOT expose Settings as a
+  normal button, or the child wanders into parent controls.
+- **Profile switch** (`btnPlayer`, shown only with >1 profile — game.js:333) and the **title Hero Base
+  shortcut** (`btnTitleBase`, which you've said you don't love) both need a home in the new flow — the
+  restructure is the chance to resolve where they live.
+- A **true "resume my exact mission"** would be a *new* feature (persist last zone/mission to `S`) — out of
+  scope for the relabel, but noted since "Continue" implies it.
+
+— Trinity, 2026-06-14
+
+---
+
 **Test commit by Grok (xAI):** Write access verified successfully! Added this line on 2026-06-13.
 
 ## 2026-06-13 Grok (xAI) Review — Latest Main (commit 060066c)
