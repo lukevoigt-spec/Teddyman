@@ -41,7 +41,7 @@ DOMAINS — what has a standard, what's partial, what's still missing — so cov
 | Error / no-fail states | ✅ | hard constraint #2 (gentle wrong) |
 | Data / privacy / parental controls | ✅ | cloud auth + parent gate |
 | **Accessibility (consolidated)** | ✅ **standard §10** (impl pending) | colorblind-safe, WCAG contrast, audio-redundancy, cognitive/sensory, motor — mapped to the Game Accessibility Guidelines; action checklist in §10 |
-| **Onboarding / FTUE** | ❌ **GAP · P0** | *build* — teach-through-play, **one mechanic at a time, audio-first, no text**; covers every new task type + a returning-kid re-entry |
+| **Onboarding / FTUE** | ✅ **standard §11** (impl pending) | teach-through-play, I-do/we-do/you-do per new mechanic, fast first win, just-in-time, returning-kid re-entry; action checklist in §11 |
 | **Narrative & voice/tone** | ⚠️ partial | voice roles (CLAUDE.md) + the line-variation note; *no script-tone / mentor-persona / cutscene-&-storybook pacing standard* |
 | **Art-direction bible** | ⚠️ partial | art.js + CHARACTER-ART-PROMPTS.md; *no proportions / shadow-&-light / palette / animation-timing consistency spec* |
 | **Animation principles (Disney 12)** | ⚠️ partial | covered inside juice easing; *no character/UI motion standard (anticipation / staging / secondary action / settle)* |
@@ -474,4 +474,44 @@ an *accent*, never the sole signal). Audio-first means audio is primary, **not**
   ≥96px hit-areas after UI changes. · [ ] Confirm fully-muted playability.
 *(Sources: [Game Accessibility Guidelines — full list](https://gameaccessibilityguidelines.com/full-list/),
 [Xbox Accessibility Guidelines](https://learn.microsoft.com/en-us/gaming/accessibility/xbox-accessibility-guidelines/103); WCAG 2.x AA.)*
+
+---
+
+## 11. Onboarding / FTUE (standard — Trinity, 2026-06-14)
+How a new player (and a returning kid) learns the game and each new mechanic. The award-winning rule: **teach through
+play, one new thing at a time, get to first success fast — never a text wall.** For a pre-reader this is *mandatory*,
+not optional (he can't read a tutorial).
+
+**The repeatable "new-mechanic" pattern — `I do → we do → you do`** (use for EVERY new task type / grapheme type):
+1. **I do (model):** the mentor *demonstrates* it once — audio + a visual demo, never a text instruction. The **magic-e
+   CAST demo (`startMagic`)** is the gold-standard model (show cap → cast → cape); replicate that depth for new
+   mechanics, not just a spoken sentence.
+2. **We do (guided):** first reps run with **extra support** — fewer foils, the hint primed, the mentor cheering.
+3. **You do (solo):** full difficulty once it's landing. Support **fades as competence grows** (the mastery model
+   already does this — lean on it).
+
+**First-ever session (cold start):** a SHORT story hook (intro cutscene) → straight into a **winnable first action**
+(scan → first mission) → **first success within ~30–60s.** Don't front-load tutorials or lore; get him playing fast.
+
+**Just-in-time, never front-loaded:** introduce a mechanic the **moment it's first needed** — we already do this
+(`read_intro`/`spell_intro`/… per activity; `blend_intro` on the first blends mission; Noah's Act-2 cutscenes). Keep it;
+never dump several mechanics at once.
+
+**Returning-kid re-entry:** the map's **current-node pulse** = "you are here / do this next" (spatial, no reading); a
+gentle warm-up (the Memory Vault **Recharge**) re-primes without re-teaching. No repeat tutorials.
+
+**Always escapable + replayable (constraint #8):** every teach beat has the 🔊 replay + the ⏭ skip and auto-advances —
+it can never trap or bore a kid who already gets it.
+
+**Measure with the real child** (FTUE's #1 rule is real-player feedback): is he into the game within the first minute?
+Does a new mechanic *land* on the first solo rep, or does he stall? That observation is the signal — there's no metric.
+
+**Action checklist (for Neo):**
+- [ ] Audit every task type: does each NEW mechanic get a true **model→guided** beat, or only a spoken `_intro`? Bring
+  the thin ones up to the `startMagic` bar.
+- [ ] A shared **`introMechanic()`** helper so the pattern (model → guided reps with support → solo) is consistent +
+  can't be skipped accidentally. [ ] Time-to-first-win check on a fresh save (target ≤ ~60s).
+*(Sources: [GameDeveloper — FTUE best practices](https://www.gamedeveloper.com/design/best-practices-for-a-successful-ftue-first-time-user-experience-),
+[Games UX — onboarding](https://uxdesign.cc/games-ux-building-the-right-onboarding-experience-a6e99cf4aaea),
+[antidote.gg — FTUE in games](https://antidote.gg/the-importance-of-first-time-user-experience-in-games/).)*
 
