@@ -464,5 +464,9 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   • `node tests/curriculum.test.js` — unique mission ids, per-act id ranges, every type handled +
     zone exists, the grapheme model, and THE BIG ONE: no forge/read word uses a letter/grapheme
     before it's taught (play order). Run after ANY mission/word/zone/grapheme change. (This caught a
-    real bug: "rub" used "b" before it was taught — now "rug".)
+    real bug: "rub" used "b" before it was taught — now "rug".) ALSO guards the APP INVARIANTS (QA):
+    locked-node enforcement (mapPaintSVG marks future zones .locked + the skip-via-tamper guard — a
+    later zone completed out of order never moves the gate), anti-gaming rule #4 (find/boss sound-ID
+    prompts are target-INDEPENDENT — the on-screen text never reveals the letter), and parent
+    profile-name escaping (escHTML). Run after touching the map/lock, sound-ID prompts, or profiles.
 - When in doubt about a design tradeoff, optimize for: reading reps per minute, then delight.

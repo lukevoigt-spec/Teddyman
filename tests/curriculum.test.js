@@ -145,6 +145,28 @@ grp("Act-1 Reading Dojo SCRAMBLE words are decodable");
 (function(){ var allL=new Set(ORDER.slice()), e=[];
   SCRAMBLE.forEach(function(s,i){ s.words.forEach(function(w){ if(!SIGHT[w] && !toGraphemes(w).every(function(g){return allL.has(g);})) e.push("S["+i+"] '"+w+"'"); }); });
   ok("every scramble word is decodable (all 26 letters + sight)", e.length===0, e); })();
+
+grp("map locking ENFORCEMENT — mapPaintSVG marks future zones .locked (no skipping ahead)");
+(function(){ try{
+  function counts(){ var svg=mapPaintSVG(); return {
+    done:(svg.match(/mnode done/g)||[]).length,
+    current:(svg.match(/mnode current/g)||[]).length,
+    locked:(svg.match(/mnode locked/g)||[]).length }; }
+  var zs=actZones(1), n=zs.length;
+  S.done={};
+  var c=counts();
+  ok("fresh save: exactly one CURRENT node, the rest LOCKED, none done", c.current===1 && c.locked===n-1 && c.done===0, c);
+  ok("every map node exposes data-zi so the lock-guarded click handler can resolve it", (mapPaintSVG().match(/data-zi="/g)||[]).length===n);
+  zMissions(zs[0]).forEach(function(m){ S.done[m.id]=true; });   // clear zone 1
+  c=counts();
+  ok("after clearing zone 1: one done, one current, the rest still locked", c.done===1 && c.current===1 && c.locked===n-2, c);
+  // SKIP-AHEAD via save tampering: complete the LAST zone while an earlier one is unfinished
+  S.done={}; zMissions(zs[n-1]).forEach(function(m){ S.done[m.id]=true; });
+  ok("completing a LATER zone out of order does NOT move the gate (earliest undone stays CURRENT)", curZoneIx(zs)===0);
+  c=counts();
+  ok("...the tampered zone shows DONE but the path stays gated (LOCKED nodes remain)", c.done===1 && c.current===1 && c.locked>=1, c);
+  S.done={};
+}catch(e){ ok("map-lock enforcement is testable", false, String(e)); S.done={}; } })();
 `;
 vm.runInContext(fs.readFileSync(path.join(ROOT, "data-missions.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-content.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-lines.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "state-save.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "audio.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "allies.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "map.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "sfx.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "music.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 
