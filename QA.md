@@ -366,6 +366,48 @@ STYLE.md §6.5.)*
 
 ---
 
+### 🆕 Morpheus full sweep — 2026-06-14
+
+- 🐛 **CLOUD-2 — daily rollover can make stale local progress outrank a newer cloud save.** Confirmed on latest
+  `main`: boot calls `ensureDaily()` before the initial cloud restore (`game.js:154` before `game.js:487`).
+  On a new day / old save, `ensureDaily()` calls `save()` (`state-save.js:182-188`), and `save()` overwrites
+  `S.ts=Date.now()` (`state-save.js:103`). `cloudPull()` only restores when remote `d.ts > S.ts`
+  (`state-save.js:145-151`), so a stale local save opened on a new day can block the newer cloud copy and the
+  boot-time `save()` can then schedule a stale cloud push. I simulated the comparison: cloud wins before
+  `ensureDaily()`, loses after the timestamp bump. **Proposed fix:** reconcile cloud before any boot-time save
+  (or make boot `ensureDaily()` non-persisting / non-timestamping until cloud pull completes). Add a save/cloud test:
+  old local daily row + older progress + newer cloud progress ⇒ boot restores cloud, then applies today's daily row.
+  — Morpheus, 2026-06-14
+
+- 🐛 **M-#2b — Base action-rail fix shipped, but the hero showcase now collapses/clips.** The original M-#2 "no
+  scroll path" is shipped by `38e2b82`; latest `shot.mjs base basefull` at 1024×768 shows the loadout is reachable,
+  but `.herostage` shrinks to a shallow strip (fresh Base shows only Teddy's head; full-gear Base hides him almost
+  entirely). Source: `.basewrap` is the shrinking flex area (`styles.css:879`); `.basecol-hero` now stretches with
+  `max-height:100%; overflow-y:auto` (`styles.css:881-882`); `.herostage` is still a shrinkable flex child with
+  `overflow:hidden` (`styles.css:883`) while the hero SVG asks for `clamp(168px,28vh,238px)` (`styles.css:891`).
+  **Proposed fix:** let `.basecol-hero` scroll the full hero+loadout stack without compressing the showcase
+  (`.herostage{flex:0 0 auto}` and/or a min-height that accounts for hero + rank), then verify `base`, `basefull`,
+  Act-2 Base, landscape and portrait. Also reconcile the current M-#2 text from "open no-scroll bug" to "shipped
+  with M-#2b follow-up." — Morpheus, 2026-06-14
+
+- 🧪 **SHOT-1 — `shot.mjs` batch screenshots can be contaminated by earlier scenes.** The harness reuses one Playwright
+  page for every requested scene (`tools/shot.mjs:89-96`). The `gate` scene opens `#parentGate`
+  (`tools/shot.mjs:57`) and no per-scene reset hides it, so any later scene in that batch can be screenshot under
+  the grown-up gate. I confirmed this by running `gate` before `juice/coinfly/picons/read` (gate-covered shots), then
+  rerunning those scenes without `gate` (actual product screens). Pending async flows can also overwrite a later
+  scene; `read` landed back on Base when run after train/coin setup, then rendered correctly when run first.
+  **Proposed fix:** create a fresh page per scene, or reset before each scene (`Aud.stop()`, `clearFlow()`,
+  `hideParentGate()`, close overlays, hide `tapStart`, clear pending scene timers where practical). This is QA-tooling,
+  but it directly affects whether visual regressions are trusted. — Morpheus, 2026-06-14
+
+**Verification run:** `node tests\save.test.js` (87 pass), `node tests\curriculum.test.js` (57 pass), JS parse sweep
+via `node --check`, and `node tools\shot.mjs base basefull map title settings hubsettings hubprogress gate juice
+coinfly picons read vault learn_s trace find` plus clean reruns for contaminated scenes. I also rechecked the
+sound-ID prompts (`scan` / `find` / boss / fortress / vault): prompt text stays generic and does not show the target
+letter; no new anti-gaming #4 issue found. — Morpheus, 2026-06-14
+
+---
+
 ### 🆕 Cypher pass — vetted (Trinity, 2026-06-14)
 Guest QA (Cypher) sent 2 fresh ideas + a STYLE.md gap list. Vetted vs the code (status-discipline rules) — **not
 accepted wholesale.**
