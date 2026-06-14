@@ -185,10 +185,12 @@ function heroOpts(){ /* muscle + gear come from THIS act's progress, so a new ac
            theme: actInfo(a).theme||"hero",
            belt2:gear.includes("Power Belt"), boots2:gear.includes("Rocket Boots") }; }
 function heroNow(w){ return heroSVG(w,heroOpts()); }
-/* PAINTED marquee hero: the generated per-muscle Teddy art for the Act-1 superhero
-   (title / win / rest / origin reveal). The Act-2 knight keeps the parametric SVG
-   (pose changes with gear; no painted knight set yet). heroOpts() gives the muscle tier. */
-function heroMarquee(w){ const o=heroOpts(); return o.theme==="hero" ? teddyArt(w,o.muscle) : heroSVG(w,o); }
+/* PAINTED marquee hero: the generated per-muscle Teddy art on the title / win /
+   rest / origin screens. theme "hero" -> Act-1 superhero, "knight" -> Act-2 knight
+   (both have a painted m0/m1/m2 set). Any other theme falls back to parametric SVG.
+   heroOpts() supplies the muscle tier + theme. Hero Base keeps heroNow() so the
+   Loadout still shows the equipped weapon/cape in the parametric pose. */
+function heroMarquee(w){ const o=heroOpts(); return (o.theme==="hero"||o.theme==="knight") ? teddyArt(w,o.muscle,o.theme) : heroSVG(w,o); }
 /* ---------------- SCREEN MGMT ---------------- */
 const $=id=>document.getElementById(id);
 /* Painted-scene slots: screen -> art/bg-<name>.* . Add an image to swap a scene;
@@ -413,7 +415,7 @@ const INTERLUDE=[
  {art:`<div style="display:flex;justify-content:center;">${captiveSVG(260)}</div>`, id:"interlude2"},
  {art:`<div style="display:flex;justify-content:center;">${vixenSVG(220)}</div>`, id:"interlude3", fx:"villain"},
  {art:`<div style="display:flex;justify-content:center;">${portalSVG(220)}</div>`, id:"interlude4", fx:"portal"},
- {art:()=>`<div style="display:flex;justify-content:center;">${heroSVG(220,{...heroOpts(),theme:"knight",muscle:0,weapon:"none",belt2:false,boots2:false})}</div>`, id:"interlude_knight", fx:"transform"}
+ {art:`<div style="display:flex;justify-content:center;">${teddyArt(220,0,"knight")}</div>`, id:"interlude_knight", fx:"transform"}  /* painted squire — powerless knight reveal */
 ];
 let interIx=0;
 function startInterlude(){ interIx=0; show("scrInter"); paintInter(); }

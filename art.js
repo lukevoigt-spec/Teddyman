@@ -188,21 +188,25 @@ ${(o.theme==="knight"&&m>=2)?`<!-- ===== full KNIGHT helm (top rank) ===== -->
 ${kgear}
 </g></g></svg>`}`;}
 
-/* ---- PAINTED Super Teddy marquee — generated raster per MUSCLE stage
-   (art/teddy-m0|m1|m2.png, transparent). One image per muscle tier (0 starter,
-   1 super, 2 mega), wrapped in an <svg> so it keeps a heroic gold aura, contact
+/* ---- PAINTED Super Teddy marquee — generated raster per MUSCLE stage.
+   theme "hero": art/teddy-m0|m1|m2.png (Act-1 superhero, starter/super/mega).
+   theme "knight": art/teddy-knight-m0|m1|m2.png (Act-2, squire/soldier/knight).
+   One image per muscle tier, wrapped in an <svg> so it keeps an aura, contact
    shadow and idle bob and the same sizing API as heroSVG. Used by the marquee/
    celebration spots (title/win/rest/origin); the parametric heroSVG still drives
-   the loadout/armed/knight states where pose changes with gear. ---- */
-function teddyArt(w=210, muscle=1){
+   the loadout/armed states where the pose changes with the equipped weapon. ---- */
+function teddyArt(w=210, muscle=1, theme="hero"){
 const u="t"+(__huid++);
 const m=Math.max(0,Math.min(2,muscle|0));
+const kn=theme==="knight";
+const file=kn?`teddy-knight-m${m}`:`teddy-m${m}`;
+const a0=kn?"#ffba4a":"#ffce3a", a1=kn?"#c77a2a":"#3a7bff";   /* warm torch aura (knight) vs gold+blue (hero) */
 return `<svg viewBox="0 0 240 256" width="${w}" aria-hidden="true">
-<defs><radialGradient id="${u}a" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffce3a" stop-opacity=".4"/><stop offset=".5" stop-color="#3a7bff" stop-opacity=".16"/><stop offset="1" stop-color="#3a7bff" stop-opacity="0"/></radialGradient></defs>
+<defs><radialGradient id="${u}a" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="${a0}" stop-opacity=".4"/><stop offset=".5" stop-color="${a1}" stop-opacity=".16"/><stop offset="1" stop-color="${a1}" stop-opacity="0"/></radialGradient></defs>
 <style>@media (prefers-reduced-motion: no-preference){.tfloat{animation:${u}fl 4.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}}@keyframes ${u}fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}</style>
 <g class="taura"><ellipse cx="120" cy="118" rx="126" ry="140" fill="url(#${u}a)"/></g>
 <ellipse cx="120" cy="240" rx="66" ry="13" fill="#0a0a18" opacity=".4"/>
-<g class="tfloat"><image x="8" y="2" width="224" height="224" href="art/teddy-m${m}.png"/></g>
+<g class="tfloat"><image x="8" y="2" width="224" height="224" href="art/${file}.png"/></g>
 </svg>`;}
 
 /* ---- LORD VEX / VEXBOT (refined: angled glowing visor, sharper menace) ---- */
