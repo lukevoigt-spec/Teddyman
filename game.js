@@ -165,6 +165,7 @@ function mast(g){ if(!S.mastery[g])S.mastery[g]={seen:0,ok:0,str:0}; return S.ma
 function record(g,ok){ const m=mast(g); m.seen++;
   if(ok){m.ok++;m.str=Math.min(5,m.str+1); combo++; if(combo>=3)comboPop(combo);}
   else {m.str=Math.max(0,m.str-1); combo=0; if(typeof Sfx!=="undefined")Sfx.wrong();}   /* gentle soft cue, never harsh */
+  vaultTouch(g,ok);   /* Memory Vault: enroll on first mastery / advance the spaced schedule on a due review */
   save(); }
 /* ---- MASTERY (proficiency, not just completion) ----
    An item is MASTERED when it's strong, well-seen, and accurate. Milestones
@@ -176,6 +177,52 @@ function masteredItem(key){ const m=S.mastery[key];
 function letterMastered(g){ return masteredItem(g); }
 /* what a milestone certifies = every letter taught so far must be mastered */
 function coreWeak(m){ return (m&&(m.finale||m.rescue)) ? actGraphemes().filter(g=>!letterMastered(g)) : []; }
+
+/* ---- MEMORY VAULT: expanding-interval spaced review (research rec #1) ----
+   pickWeak/masteryReview target weak items WITHIN a session, but nothing brings a MASTERED item
+   back days later, so retention isn't actively protected. The Vault resurfaces mastered items on a
+   Leitner schedule (box 0..4 → 1/3/7/14/30 days). SAVE-SAFE + additive: box/due/last live on
+   S.mastery[key] and default to undefined — migrate() needs NO change, old saves are never touched
+   (constraint #7). Act-agnostic: keys span graphemes (letters/digraphs/teams) AND words (w_/sw_),
+   exactly as mastery already does, so spacing follows the child across acts.
+   The scheduler is the reusable engine the other pedagogy upgrades (#2 Spell Scroll, #4 spaced-
+   correct) build on, so it is intentionally pure + independently testable. */
+const VAULT_INTERVALS=[1,3,7,14,30], VAULT_MAXBOX=4, VAULT_CAP=6;
+/* a grapheme is reviewable as a SOUND-ID round only if it has its own snd_ clip. The magic-e units
+   (a_e/i_e/o_e/u_e) sound the vowel's NAME via snd_<v>_long + a silent e, so they have no snd_<unit>
+   clip — they must be reviewed as WORDS, never routed into a sound-ID task (ties to QA finding #3). */
+function hasSoundClip(g){ return !!(typeof LINES!=="undefined" && LINES["snd_"+g]); }
+/* add n days to a "YYYY-MM-DD" key (pure date math; tolerant of odd input, never throws) */
+function addDays(key,n){ const p=String(key||"").split("-").map(Number);
+  const d=new Date(p[0]||2026,(p[1]||1)-1,p[2]||1); d.setDate(d.getDate()+(n||0));
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+/* enroll a freshly-mastered item into box 0 (first review one interval out). No-op if already enrolled. */
+function vaultEnroll(key){ const m=S.mastery[key]; if(!m||m.box!=null)return;
+  m.box=0; m.due=addDays(dayKey(),VAULT_INTERVALS[0]); m.last=dayKey(); }
+/* a scheduled review happened: correct → promote (longer interval), miss → demote ONE step (gentler
+   than a reset). Pure scheduler step — the caller decides WHEN an item is actually due (vaultTouch). */
+function vaultReview(key,ok){ const m=S.mastery[key]; if(!m||m.box==null)return;
+  m.box = ok ? Math.min(VAULT_MAXBOX,m.box+1) : Math.max(0,m.box-1);
+  m.due = addDays(dayKey(),VAULT_INTERVALS[m.box]); m.last=dayKey(); }
+/* called from record() on every answer: enroll on first mastery; for an enrolled item advance the
+   schedule ONLY on a genuinely DUE review (so casual same-session reps can't inflate the interval —
+   spacing is day-based, not rep-based); if a miss drops it below mastery, leave the Vault so it
+   rejoins the normal active pools and re-enrolls when re-mastered. */
+function vaultTouch(key,ok){ const m=S.mastery[key]; if(!m)return;
+  if(m.box==null){ if(masteredItem(key))vaultEnroll(key); return; }
+  if(!masteredItem(key)){ delete m.box; delete m.due; delete m.last; return; }   /* demote out of the Vault */
+  if(m.due!=null && m.due<=dayKey()) vaultReview(key,ok);   /* a real spaced review advances the schedule */
+  else m.last=dayKey();                                      /* early/casual touch: don't reschedule */
+}
+/* keys due for review today (due<=today AND still mastered), oldest-due first, capped for ADHD focus. */
+function vaultDue(){ const t=dayKey();
+  return Object.keys(S.mastery).filter(k=>{ const m=S.mastery[k];
+      return m && m.due!=null && m.due<=t && masteredItem(k); })
+    .sort((a,b)=> S.mastery[a].due<S.mastery[b].due?-1:(S.mastery[a].due>S.mastery[b].due?1:0))
+    .slice(0,VAULT_CAP); }
+/* how many items are enrolled + still mastered (for the parent's retention readout) */
+function vaultCount(){ return Object.keys(S.mastery).filter(k=>{ const m=S.mastery[k];
+  return m && m.box!=null && masteredItem(k); }).length; }
 
 /* AUDIO layer (CUSTOM clip store, VStore, clipFor, Aud engine, flow/clearFlow/
    narrate, ear-tap listener) moved to audio.js (loaded before game.js). */
@@ -1291,8 +1338,11 @@ const BASE_ITEMS=[
 let trainReps=0,trainSlot=0,trainCur,trainMiss=0;
 function trainPool(){ const t=taughtLetters(); return Object.keys(READWORDS).filter(w=>w.split("").every(c=>t.includes(c))); }
 function pickTrainWord(){ const pool=trainPool(); if(!pool.length)return null;
-  /* weight toward words built from his weakest letters (so practice targets need) */
-  const wt=pool.map(w=>1+w.split("").reduce((s,c)=>s+(5-(mast(c).str||0)),0));
+  /* Memory Vault surfacing (MVP): strongly prefer a w_ word that's due for spaced review, so the
+     Training Room doubles as the Vault's reviewer — still probabilistic + adaptive (never forced). */
+  const dueW=new Set(vaultDue().filter(k=>k.indexOf("w_")===0).map(k=>k.slice(2)));
+  /* weight toward words built from his weakest letters (so practice targets need) + a due-review boost */
+  const wt=pool.map(w=>(1+w.split("").reduce((s,c)=>s+(5-(mast(c).str||0)),0))+(dueW.has(w)?8:0));
   let r=Math.random()*wt.reduce((a,b)=>a+b,0);
   for(let i=0;i<pool.length;i++){ r-=wt[i]; if(r<=0)return pool[i]; }
   return pool[0]; }
@@ -1406,6 +1456,7 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
     return `<div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
       <div style="width:20px;height:46px;background:#241b4d;border-radius:5px;border:2px solid #3a2d72;display:flex;align-items:flex-end;overflow:hidden;"><div style="width:100%;height:${h}%;background:${hit?'linear-gradient(180deg,#ffd75e,#f0a82b)':'linear-gradient(180deg,#5fe0a0,#23a35f)'};"></div></div>
       <div class="pnote" style="font-size:10px;">${Math.round(x[1]/60)}</div></div>`; }).join("");
+  const vaultN=vaultCount(), vaultD=vaultDue().length;   /* Memory Vault retention readout */
   el.innerHTML=`
     <div class="psec" style="text-align:center;"><b>${escHTML(profileName(ACTIVE))}'s progress</b> <span class="pnote">— each player has their own stats</span></div>
     <div class="psec"><b>Daily training (time on task)</b>
@@ -1430,6 +1481,7 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
     <div class="psec"><b>Mastered for milestones</b> <span class="pnote">(★ = mastered; rescues are gated on these)</span>
       <div class="pgems">${taught.length? taught.map(g=>`<span class="pgem" style="background:${letterMastered(g)?'#27ae60':'#7a6f4a'}">${g.toUpperCase()}${letterMastered(g)?'★':''}</span>`).join(" ") : "<i>none yet</i>"}</div>
       <div class="pnote">${taught.filter(letterMastered).length} / ${taught.length} letters mastered. A rescue can't be earned until every letter so far is mastered — so an ally freed = real proficiency.</div></div>
+    <div class="psec pnote">🔋 Memory Vault — spaced review protects what he's learned: ${vaultN? (vaultN+" gem"+(vaultN===1?"":"s")+" on the schedule · "+(vaultD? vaultD+" due today (they resurface as he plays)" : "all charged ✨")) : "nothing to recharge yet — master some gems first"}</div>
     ${weak.length?`<div class="psec"><b>Best to practice next</b> <span class="pnote">(weakest right now)</span>
       <div class="pgems">${weak.map(g=>`<span class="pgem warn">${g.toUpperCase()}</span> <span class="pnote">${progAcc(g)!=null?progAcc(g)+"%":"new"} ${strDots(g)}</span>`).join("<br>")}</div></div>`:""}
     ${overrideHTML}

@@ -175,6 +175,47 @@ ok("grandfather is IDEMPOTENT (returns false once seeded — a re-map's cleared 
 ok("durable gear is ACT-SCOPED: Act-1 Gem Sword never leaks into Act 2's arsenal (names repeat across acts)", actGearList(2).indexOf("Gem Sword")<0);
 ok("a FRESH save already has the durable fields, so grandfather() is a no-op", (function(){ S=fresh(); return grandfather()===false; })());
 
+grp("MEMORY VAULT scheduler (rec #1): expanding-interval spaced review, save-safe + deterministic");
+ok("addDays does pure date math across month/year boundaries", addDays("2026-06-14",1)==="2026-06-15" && addDays("2026-06-30",1)==="2026-07-01" && addDays("2026-12-31",1)==="2027-01-01");
+ok("addDays tolerates odd input without throwing", typeof addDays("",3)==="string" && typeof addDays(null,0)==="string");
+ok("hasSoundClip: true for letters/digraphs/teams, FALSE for magic-e units (no snd_ clip → must review as WORDS)", hasSoundClip("s") && hasSoundClip("sh") && hasSoundClip("ai") && !hasSoundClip("a_e") && !hasSoundClip("i_e"));
+// migrate must stay additive: it NEVER injects box/due into an existing record (constraint #7)
+(function(){ var mg=migrate({v:1, mastery:{ s:{seen:3,ok:2,str:2} }, done:{}});
+  ok("migrate leaves old {seen,ok,str} records untouched (no box/due injected)", mg.mastery.s.box===undefined && mg.mastery.s.due===undefined && mg.mastery.s.seen===3);
+  var rt=JSON.parse(JSON.stringify({v:1, mastery:{ s:{seen:4,ok:4,str:4,box:2,due:"2026-06-20",last:"2026-06-13"} }}));
+  ok("box/due/last round-trip through JSON (save + cloud carry them inside S)", rt.mastery.s.box===2 && rt.mastery.s.due==="2026-06-20"); })();
+// deterministic schedule via an injected dayKey (dayKey is a reassignable fn decl in this scope)
+var __realDayKey=dayKey, __day="2026-06-14"; dayKey=function(){ return __day; };
+S=fresh();
+S.mastery["s"]={seen:2,ok:2,str:2}; vaultTouch("s",true);
+ok("vaultTouch does NOT enroll an item that isn't mastered yet", S.mastery["s"].box==null);
+S.mastery["s"]={seen:4,ok:4,str:4}; vaultTouch("s",true);
+ok("enroll on first mastery: box 0, due one interval out, last=today", S.mastery["s"].box===0 && S.mastery["s"].due==="2026-06-15" && S.mastery["s"].last==="2026-06-14");
+vaultTouch("s",true);
+ok("an early (not-yet-due) touch does NOT advance the box/interval (spacing is day-based, not rep-based)", S.mastery["s"].box===0 && S.mastery["s"].due==="2026-06-15");
+__day="2026-06-15"; vaultTouch("s",true);
+ok("a DUE correct review promotes: box 1, due +3 days", S.mastery["s"].box===1 && S.mastery["s"].due==="2026-06-18");
+vaultReview("s",false);
+ok("vaultReview miss demotes ONE step (box 1→0) and pulls due in (gentler than a reset)", S.mastery["s"].box===0 && S.mastery["s"].due===addDays("2026-06-15",1));
+S.mastery["s"].box=VAULT_MAXBOX; vaultReview("s",true);
+ok("box never exceeds VAULT_MAXBOX", S.mastery["s"].box===VAULT_MAXBOX);
+// demote-OUT: a miss that drops the item below mastery leaves the Vault entirely
+S.mastery["t"]={seen:5,ok:3,str:0, box:0, due:"2026-06-15"};   // enrolled but now below mastery (acc .6, str 0)
+vaultTouch("t",false);
+ok("demote-OUT: a miss below mastery clears box/due so it rejoins the active pools", S.mastery["t"].box==null && S.mastery["t"].due==null);
+// vaultDue: only due+mastered, capped at VAULT_CAP, oldest-due first
+S=fresh(); __day="2026-06-20";
+["a","b","c","d","e","f","g","h"].forEach(function(k,i){ S.mastery[k]={seen:4,ok:4,str:4, box:0, due:addDays("2026-06-10", i)}; });
+(function(){ var due=vaultDue();
+  ok("vaultDue caps at VAULT_CAP items", due.length===VAULT_CAP);
+  ok("vaultDue returns oldest-due first", due[0]==="a" && due[1]==="b"); })();
+S.mastery["z"]={seen:4,ok:4,str:4, box:0, due:"2026-07-01"};
+ok("vaultDue excludes items not yet due", vaultDue().indexOf("z")<0);
+S.mastery["a"].str=0;
+ok("vaultDue excludes an enrolled item that fell below mastery", vaultDue().indexOf("a")<0);
+ok("vaultCount counts ALL enrolled + still-mastered items (uncapped, not due-filtered)", vaultCount()===8);   // b..h (7) + z (1); a dropped below mastery
+dayKey=__realDayKey; S=fresh();
+
 grp("CLOUD-1: a wrong family code is flagged + cleared, never cached behind a false 'Connected ✓'");
 // cloudPull's 401 path is async; run it in a promise the host awaits before reporting (ctx.setTimeout is a stub).
 __pending = (async function(){

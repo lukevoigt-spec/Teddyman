@@ -196,6 +196,12 @@ grp("map locking ENFORCEMENT — mapPaintSVG marks future zones .locked (no skip
   ok("...the tampered zone shows DONE but the path stays gated (LOCKED nodes remain)", c.done===1 && c.current===1 && c.locked>=1, c);
   S.done={};
 }catch(e){ ok("map-lock enforcement is testable", false, String(e)); S.done={}; } })();
+
+grp("MEMORY VAULT routing safety — a no-clip grapheme is NEVER routed into a sound-ID task (anti-gaming #4 / QA #3)");
+ok("every magic-e unit lacks a snd_ clip (must be reviewed as a WORD, never shown as a sound-ID gem)", MAGICE_UNITS.every(function(u){ return !hasSoundClip(u); }));
+ok("every letter / digraph / vowel-team HAS a snd_ clip (so it IS routable to a sound-ID round)", ["s","a","t","p","i","n"].concat(DIGRAPHS).concat(VOWELTEAMS).every(function(g){ return hasSoundClip(g); }));
+ok("soundReviewSet (the sound-ID router) filters OUT the no-clip magic-e units, keeps the rest", (function(){ var s=soundReviewSet(["s","a_e","sh","o_e","ai"]); return s.indexOf("a_e")<0 && s.indexOf("o_e")<0 && s.indexOf("s")>=0 && s.indexOf("sh")>=0 && s.indexOf("ai")>=0; })());
+ok("a pure magic-e weak set yields an EMPTY sound-ID set (those route to word/magic review instead)", soundReviewSet(MAGICE_UNITS).length===0);
 `;
 vm.runInContext(fs.readFileSync(path.join(ROOT, "data-missions.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-content.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-lines.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "state-save.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "audio.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "allies.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "map.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "sfx.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "music.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 
