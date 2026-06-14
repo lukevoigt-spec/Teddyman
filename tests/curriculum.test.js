@@ -210,6 +210,12 @@ ok("vaultRoute sends a w_ word to a BUILD round (encode, not sound-ID)", (functi
 ok("vaultRoute flags a sw_ sight word so it's built letter-by-letter", (function(){ var r=vaultRoute("sw_the"); return r && r.mode==="build" && r.w==="the" && r.sight===true; })());
 ok("vaultUnits SPLITS a sight word letter-by-letter ('said' = s,a,i,d — never tokenised as a team)", vaultUnits("said",true).join(",")==="s,a,i,d");
 ok("vaultUnits tokenises a non-sight word by GRAPHEME (a digraph is one tile: ship = sh,i,p)", vaultUnits("ship",false).join(",")==="sh,i,p");
+
+grp("ARTICULATORY CUES (#3): the Learn-screen mouth-cue table covers every taught grapheme, skips no-sound magic-e");
+ok("MOUTHCUE has a cue for every single letter (the 26)", ORDER.every(function(g){ return !!MOUTHCUE[g]; }));
+ok("MOUTHCUE has a cue for every digraph + vowel team (2-char graphemes use the Learn screen too)", DIGRAPHS.concat(VOWELTEAMS).every(function(g){ return !!MOUTHCUE[g]; }));
+ok("MOUTHCUE never lists a magic-e unit (those teach via startMagic, not the Learn screen)", MAGICE_UNITS.every(function(u){ return !MOUTHCUE[u]; }));
+ok("every MOUTHCUE entry has a mouth-shape id + a kid cue line", Object.keys(MOUTHCUE).every(function(k){ var c=MOUTHCUE[k]; return c && typeof c.shape==="string" && typeof c.say==="string" && c.say.length>0; }));
 `;
 vm.runInContext(fs.readFileSync(path.join(ROOT, "data-missions.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-content.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-lines.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "state-save.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "audio.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "allies.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "map.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "sfx.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "music.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 

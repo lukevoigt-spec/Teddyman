@@ -239,6 +239,10 @@ ok("…a MISS never bumps okDayCount (only correct days count)", S.mastery["x"].
   ok("migrate does NOT re-bump an item that already has okDayCount (real spaced progress is preserved)", mg.mastery.c.okDayCount===1); })();
 dayKey=__realDayKey; S=fresh();
 
+grp("ARTICULATORY CUE renderer (#3): mouthCue() returns an SVG for every shape the table uses");
+ok("mouthCue renders an <svg> for every distinct mouth shape in MOUTHCUE", (function(){ var seen={}; for(var k in MOUTHCUE)seen[MOUTHCUE[k].shape]=1;
+  return Object.keys(seen).every(function(s){ var svg=mouthCue(s,60); return typeof svg==="string" && svg.indexOf("<svg")===0 && svg.indexOf("</svg>")>0; }); })());
+
 grp("CLOUD-1: a wrong family code is flagged + cleared, never cached behind a false 'Connected ✓'");
 // cloudPull's 401 path is async; run it in a promise the host awaits before reporting (ctx.setTimeout is a stub).
 __pending = (async function(){

@@ -45,6 +45,11 @@ const SCENES = {
             vaultPlan=vaultDueRoutable(); vaultPos=0; show('scrVault'); vaultStep(); return 1; })()`,
   vaultfull: `(function(){ S.mastery={}; startVault(); return 1; })()`,
   vaultbase: `(function(){ S.mastery={ "w_cat":{seen:5,ok:5,str:5,box:0,due:"2020-01-01"} }; paintBase(); show('scrBase'); return 1; })()`,
+  // #3 articulatory cue on the Learn screen — a few distinct mouth shapes
+  learn_s: `(startLearn({letter:"s"}), 1)`,
+  learn_o: `(startLearn({letter:"o"}), 1)`,
+  learn_f: `(startLearn({letter:"f"}), 1)`,
+  learn_r: `(startLearn({letter:"r"}), 1)`,
 };
 
 const args = process.argv.slice(2);

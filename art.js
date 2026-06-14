@@ -610,3 +610,24 @@ function gemSVG(g, color, w){
 <text y="10" text-anchor="middle" font-family="Andika,sans-serif" font-weight="700" font-size="17" fill="#fff" stroke="#150f2e" stroke-width="3.4" paint-order="stroke" style="paint-order:stroke">${g}</text>
 </svg>`;
 }
+
+/* MOUTH CUE (research rec #3): a small, friendly articulatory-cue mouth for the Learn screen — a
+   handful of shapes by place/manner, NOT a realistic mouth (low art cost). data-content.js MOUTHCUE
+   maps each taught grapheme -> a shape id + a kid cue line. Pure SVG string, no game state. */
+function mouthCue(shape, size){ size=size||72;
+  const LIP="#e07d72", LIP2="#c25b52", DARK="#5e2330", TEETH="#fff7f0", TONGUE="#f29bad";
+  const almond=`<path d="M14,42 Q50,20 86,42 Q50,64 14,42 Z" fill="${LIP}"/>`;
+  const outline=`<path d="M14,42 Q50,20 86,42 Q50,64 14,42 Z" fill="none" stroke="${LIP2}" stroke-width="3"/>`;
+  let body;
+  switch(shape){
+    case "open":   body=`${almond}<ellipse cx="50" cy="42" rx="24" ry="20" fill="${DARK}"/><ellipse cx="50" cy="56" rx="16" ry="8" fill="${TONGUE}"/>${outline}`; break;
+    case "mid":    body=`${almond}<ellipse cx="50" cy="42" rx="22" ry="12" fill="${DARK}"/><ellipse cx="50" cy="48" rx="14" ry="5" fill="${TONGUE}"/>${outline}`; break;
+    case "round":  body=`<circle cx="50" cy="42" r="22" fill="${LIP}"/><circle cx="50" cy="42" r="21" fill="none" stroke="${LIP2}" stroke-width="3"/><circle cx="50" cy="42" r="12" fill="${DARK}"/>`; break;
+    case "lips":   body=`<path d="M16,42 Q50,33 84,42 Q50,51 16,42 Z" fill="${LIP}" stroke="${LIP2}" stroke-width="2.6"/><path d="M18,42 Q50,45 82,42" stroke="${LIP2}" stroke-width="2.4" fill="none"/>`; break;
+    case "teeth":  body=`${almond}<ellipse cx="50" cy="45" rx="22" ry="12" fill="${DARK}"/><rect x="31" y="33" width="38" height="10" rx="3" fill="${TEETH}"/>${outline}`; break;
+    case "tongue": body=`${almond}<ellipse cx="50" cy="44" rx="23" ry="15" fill="${DARK}"/><rect x="33" y="32" width="34" height="8" rx="2.5" fill="${TEETH}"/><ellipse cx="50" cy="47" rx="12" ry="7" fill="${TONGUE}"/>${outline}`; break;
+    case "back":   body=`${almond}<ellipse cx="50" cy="44" rx="23" ry="16" fill="${DARK}"/><ellipse cx="50" cy="37" rx="11" ry="7" fill="#3a121c"/><ellipse cx="50" cy="55" rx="17" ry="7" fill="${TONGUE}"/>${outline}`; break;
+    default:       body=`${almond}<ellipse cx="50" cy="42" rx="20" ry="12" fill="${DARK}"/>${outline}`;
+  }
+  return `<svg viewBox="0 0 100 84" width="${size}" height="${Math.round(size*0.84)}" aria-hidden="true">${body}</svg>`;
+}

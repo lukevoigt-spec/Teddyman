@@ -672,6 +672,11 @@ function startLearn(m){ learnLetter=m.letter; const L=LETTERS[learnLetter];
     if(twin){ cue.innerHTML=`<span class="cueok read">${learnLetter}</span><span class="cuevs">not</span><span class="cuex read">${twin}</span>`; cue.style.display="flex"; }
     else cue.style.display="none";
   }
+  /* #3 articulatory cue: show HOW the mouth makes this sound (a friendly mouth shape + a kid line).
+     Phonemic-awareness -> orthographic-mapping support; graphemes without an entry just show nothing. */
+  const mcEl=$("mouthCue"); if(mcEl){ const mc=(typeof MOUTHCUE!=="undefined")&&MOUTHCUE[learnLetter];
+    if(mc){ mcEl.innerHTML=`<div class="mouthart">${mouthCue(mc.shape,104)}</div><div class="mouthcap">${mc.say}</div>`; mcEl.style.display="flex"; }
+    else mcEl.style.display="none"; }
   const ids=["intro_"+learnLetter,"snd_"+learnLetter,"like_"+learnLetter];
   if(LINES["cue_"+learnLetter] && (CONFUSE[learnLetter]||[]).some(t=>S.done[LETTER_MISSION[t]])) ids.push("cue_"+learnLetter);
   narrate("letter",$("letterText"),ids); }

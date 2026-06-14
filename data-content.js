@@ -119,3 +119,48 @@ const TRACE={
   z:[[[104,108],[196,108],[104,224],[196,224]]],
   q:[[[196,128],[150,96],[106,126],[100,176],[140,216],[192,200]],[[200,100],[200,234],[220,262]]]
 };
+
+/* ARTICULATORY CUES (research rec #3) — for each grapheme the LEARN screen teaches, a child-friendly
+   "how your mouth makes it" line + a mouth-shape id (rendered by mouthCue() in art.js). Phonemic
+   awareness + articulatory features feed orthographic mapping (Ehri/NRP). Kid-phrased on purpose —
+   the adult PH_COACH in the Voice Studio keeps the technical "voiced/unvoiced" wording. Covers the 26
+   letters + digraphs + vowel teams (all taught via startLearn); magic-e units have no snd_ clip and
+   teach via startMagic, so they are intentionally absent. Shapes by place/manner: open · mid · round ·
+   lips · teeth · tongue · back. */
+const MOUTHCUE={
+  s:{shape:"tongue",say:"Smile, teeth almost shut — let the air hiss: sssss 🐍"},
+  a:{shape:"open",  say:"Drop your jaw, open wide: aaa (apple) 🍎"},
+  t:{shape:"tongue",say:"Tongue taps behind your top teeth — tiny puff: t"},
+  p:{shape:"lips",  say:"Press your lips, then pop a little air: p"},
+  i:{shape:"mid",   say:"Open just a little: ih (igloo)"},
+  n:{shape:"tongue",say:"Tongue up behind your teeth, hum: nnn"},
+  m:{shape:"lips",  say:"Lips together, hum: mmm"},
+  d:{shape:"tongue",say:"Tongue taps behind your top teeth: d"},
+  g:{shape:"back",  say:"Back of your tongue, quick: g (goat) 🐐"},
+  o:{shape:"open",  say:"Round and open: o (octopus) 🐙"},
+  c:{shape:"back",  say:"Back of your tongue, sharp: k (cat) 🐱"},
+  k:{shape:"back",  say:"Back of your tongue: k (kite) 🪁"},
+  e:{shape:"mid",   say:"Open a little, lips relaxed: eh (egg) 🥚"},
+  u:{shape:"mid",   say:"Short and relaxed: uh (up) ⬆️"},
+  r:{shape:"round", say:"Pull your tongue back and growl: rrr"},
+  h:{shape:"back",  say:"Just breath, like fogging glass: h"},
+  b:{shape:"lips",  say:"Lips together, little pop: b"},
+  f:{shape:"teeth", say:"Top teeth on your bottom lip, push air: fff"},
+  l:{shape:"tongue",say:"Tongue tip behind your top teeth: lll"},
+  j:{shape:"round", say:"Quick and buzzy: j (jam) 🍓"},
+  v:{shape:"teeth", say:"Top teeth on your bottom lip, buzz: vvv"},
+  w:{shape:"round", say:"Round your lips: w (win)"},
+  x:{shape:"back",  say:"Two quick sounds: k-s (fox) 🦊"},
+  y:{shape:"mid",   say:"Quick: y (yes)"},
+  z:{shape:"tongue",say:"Like S but buzzy: zzz 🐝"},
+  q:{shape:"round", say:"Round your lips: kw (queen) 👑"},
+  sh:{shape:"round",say:"Push your lips forward — the quiet sound: shhh 🤫"},
+  ch:{shape:"round",say:"Short and snappy: ch (chip)"},
+  th:{shape:"tongue",say:"Tongue between your teeth, push air: thhh"},
+  wh:{shape:"round",say:"A w with a puff of breath: wh (whale) 🐋"},
+  ck:{shape:"back", say:"Just like k: k (duck) 🦆"},
+  ng:{shape:"back", say:"Hum at the back of your mouth: ng (ring) 💍"},
+  ai:{shape:"open", say:"Two letters, one long sound: ay (rain) 🌧️"},
+  ee:{shape:"mid",  say:"Two letters, one long sound: ee (feet) 🦶"},
+  oa:{shape:"round",say:"Two letters, one long sound: oh (boat) ⛵"}
+};
