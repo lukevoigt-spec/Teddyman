@@ -55,8 +55,8 @@ const base = `http://localhost:${port}/index.html`;
 
 const page = await browser.newPage({ viewport: { width: 1024, height: 768}, deviceScaleFactor: 2 });
 page.on("pageerror", e => console.log("  page error:", e.message));
-await page.goto(base, { waitUntil: "networkidle" });
-await page.waitForTimeout(900); // let boot + first paint settle
+await page.goto(base, { waitUntil: "load" }); // networkidle never settles (PWA: SW/fonts/audio probing)
+await page.waitForTimeout(1500); // let boot + first paint settle
 
 for (const s of scenes) {
   const setup = SCENES[s];
