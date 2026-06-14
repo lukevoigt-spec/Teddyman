@@ -126,6 +126,52 @@ iPad Safari. Not a live bug. *Optional* defense-in-depth: add an early `return` 
 fully in-code), then #4 (small), then #1 (a product/security decision the parent should weigh in on —
 flag it, propose the parent-entered-secret approach, don't bake another public secret).
 
+### Proposed fix for #1 — lowest-friction cloud auth (parent-approved 2026-06-14; NOT YET IMPLEMENTED)
+
+Parent decision: do it properly with a **parent-entered "family sync code"** — typed once per device,
+cached, then silent forever (the child's auto-load never prompts). This is the lowest-friction option
+that is actually secure, because the client is a PUBLIC static site, so **no secret can live in
+committed code**. One shared family secret; the Cloudflare Worker is the only place it can be stored
+server-side (as a CF **secret binding**, never in this repo); each device caches the same code locally.
+
+**Worker (`cloud/worker.js`):**
+- Read `env.AUTH_SECRET` (set via `wrangler secret put AUTH_SECRET` or the CF dashboard — never committed).
+- On GET/PUT require `Authorization: Bearer <token>` and a **constant-time** `token === env.AUTH_SECRET`;
+  else return `401`. This closes the anonymous read/write hole (#1).
+- Optional hardening: narrow `Access-Control-Allow-Origin` from `*` to the GitHub Pages origin.
+- Keep `?k=<slot>` as the storage key.
+
+**Client (`state-save.js`):**
+- `cloudSecret = localStorage["teddyCloudSecret"] || ""` — parent-entered in Grown-Up Corner ▸ Sync,
+  cached per device, never committed.
+- Cloud is ACTIVE only when `cloudURL && cloudSecret` (the URL may stay baked for zero-paste convenience).
+- Send `Authorization: Bearer ${cloudSecret}` on every cloudPush/cloudPull fetch.
+- Unguessable slot: `cloudKey() = "p" + __cloudHash(cloudSecret + "::" + ACTIVE)` (replaces the bare
+  profile id, so `?k=teddy` is no longer guessable). Reuse the existing `__cloudHash`. This **supersedes
+  the dead committed `CLOUD_PASSPHRASE`** — remove that field.
+- Offline-first preserved: a missing secret or a `401` → run on the local save silently, never block play.
+
+**Also fixes #4 (off doesn't persist):** drive sync off the presence of `teddyCloudSecret`, not the baked
+URL. "Turn off" clears `teddyCloudSecret` and sets a `teddyCloudOff` sentinel; boot skips cloud while the
+sentinel is set (remove/secret-gate the `if(!cloudURL) cloudURL=DEFAULT_CLOUD_URL` auto-enable).
+
+**Parent flow (the whole friction):**
+1. Grown-Up Corner ▸ Sync shows one field: **"Family sync code."** Parent types a memorable code → Connect.
+2. Cached locally; every boot syncs silently after that. The child never sees a prompt.
+3. New device → parent enters the **same** code once → his progress continues.
+
+**Migration (one-time, no data loss):**
+- Coordinated deploy: ship Worker + client together. Old bare-`?k=teddy` slots stop being used; the new
+  hashed slot is established on the first authenticated sync from each device. Local saves are the source
+  of truth (device-first + snapshot ring), so nothing is lost.
+- Parent note to surface in-app: *"After this update, open Grown-Up Corner ▸ Sync on each device and enter
+  your family code once; his progress uploads to the new private slot."*
+- Update `cloud/README.md` + the CLAUDE.md constraint-7 note (cloud now requires the family code, not the
+  bare profile id).
+
+**Tests:** worker-level check (401 without/with wrong token, 200 with the right token) if feasible; a
+save.test assertion that cloud stays inactive without a cached secret.
+
 ---
 
 **Test commit by Grok (xAI):** Write access verified successfully! Added this line on 2026-06-13.
