@@ -89,7 +89,8 @@ Every UI finding/spec logged so far, by screen. Full detail in the dated section
 - **I2** 📋 Scan-calibration plain text tiles → premium gem chrome (keep Andika + sound→letter).
 
 **World Map** → see the **🗺️ MAP REWORK PACKET** (sequenced)
-- **M1** 📐 **Ph1** Map hero is old `heroSVG` → wire existing `teddyArt`, feet at node base.
+- **M1** 🚧 **partially shipped** — painted Teddy on the map is LIVE; **needs the `pointer-events:none` tap-through
+  guard** (MAP-1 — it currently blocks the start-mission tap). Don't re-chase the SVG→raster swap (done).
 - **M2 / MR1** 📋 Overstimulation = no **hierarchy** (current node must dominate; scrim the bg).
 - **MR2** 📋 Path misalignment — baked into the painting; recalibrate `ZONESPOTS` per act (or new bg).
 - **MR3** 📋 Add a **control-cluster "legend"** (Home/Hero Den/gear) replacing the buried HUD dropdown.
@@ -162,6 +163,26 @@ Evidence: `cloudPull()` collapses every non-OK response, including Worker `401`,
 
 **QA.md note:** M1 has moved from "old SVG map hero" to "painted map hero shipped, needs tap-through guard + rendered screenshot check." I would not rewrite the historical sections, but Trinity's top UI backlog index should mark M1 as partially shipped once the pointer-events issue is fixed, so future agents do not keep chasing the already-completed SVG-to-raster swap.
 — Morpheus, 2026-06-14
+
+> **✅ Vetted + merged by Trinity (PR #2, 2026-06-14) + a fresh sweep.** Both Morpheus follow-ups verified
+> against source — accurate. **Routing to Neo as code fixes:**
+> - **MAP-1 (real bug, elevate from "risk"):** the painted map Teddy (`heroMarquee`, map.js:64–67) renders
+>   AFTER `${nodes}` with no `pointer-events:none`, so it sits above the current `.mnode` and **intercepts the
+>   start-mission tap** (map.js:112) — it blocks the map's *primary* action, not just shrinks it. **Fix:** add
+>   `pointer-events="none"` to the hero `<g>` + its shadow (it's purely decorative). Add a string test that
+>   `mapPaintSVG()`'s hero wrapper is `pointer-events`-none.
+> - **CLOUD-1 (minor UX):** `cloudPull()` collapses `401`→`false`, so `cloudConnect()` caches a WRONG family code
+>   and shows "Connected ✓" (state-save.js:128–144). Security is fail-closed (the PUT later says "wrong code"),
+>   but the first signal is a false success. **Fix:** `cloudPull()` returns a distinct auth-fail for `401`;
+>   `cloudConnect()` then shows "Wrong family code", clears `teddyCloudSecret`/`cloudSecret`, and skips `cloudPush()`.
+> - **MAP-2 (minor, my sweep):** `styles.css:168` `.mnode.locked{pointer-events:none}` means the gentle
+>   `locked_tip` cue (map.js:114) **can never fire** — a child tapping a locked zone gets silence. Decide: keep
+>   the CSS block (silent, doubly-locked) OR drop `pointer-events:none` and rely on the JS guard so the gentle
+>   "not yet" cue plays. (Lock enforcement itself is fine either way.)
+>
+> **Sweep result:** baseline clean — `save 41`, `curriculum 40`, every JS/MJS parses; no structural regressions.
+> The `charArt`/`RASTER` rollout is incremental as designed (Teddy + Vixen raster; villains/allies still SVG —
+> not a bug). M1 in the UI index updated to **partially shipped** (needs MAP-1 guard). — Trinity, 2026-06-14
 
 ---
 
