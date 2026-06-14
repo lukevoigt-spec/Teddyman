@@ -22,11 +22,12 @@ Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under *
 3. **🗺️ MAP REDO** (parent directive) — regenerate a **calmer** painted bg, then rebuild the path + `ZONESPOTS`.
    Supersedes the cosmetic map tweaks (U2/U6/U12). See **World Map** below.
 4. **⚙️ Settings game-feel pass** — DESIGN-ENGAGEMENT.md §9.1 (detailed spec).
-5. **🔧 Remaining U-series chrome fixes** — U3, U4, U5, U7, U8, U9, U10, U11, U13 (U1/U2 shipped — see ledger;
-   U12 hero-clip folds into MR2 / MAP REDO).
-6. **🧠 Pedagogy** — build the **Memory Vault SURFACING** (the #1 scheduler shipped; now surface due items), then
-   recs **#2 Spell Scroll**, **#3 Sound Warm-Up**, **#4 mastery-threshold tune**; plus the **Act-2 finale
-   comprehension-proof gap** (the top reading-core item). See **Pedagogy & Curriculum** below.
+5. **🔧 Remaining U-series chrome fixes** — **U8** (finale boss escalation), **U10** (intro skyline art), **U13**
+   (league-name fit). *(U1–U7, U9, U11 all shipped this session — see ledger; U12 folds into MR2 / MAP REDO.)*
+6. **🧠 Pedagogy** — **rec #2 Spell Scroll** (repeated reading), **rec #6 Word Crafting** (morphology capstone), the
+   **Act-2 finale comprehension-proof gap** (top reading-core item), and **gear pacing P2/P3**. *(Memory Vault
+   scheduler #1 + Recharge surfacing, rec #3 articulatory cue, and rec #4 mastery-threshold all shipped this
+   session — see ledger.)*
 
 ---
 
@@ -57,6 +58,31 @@ One line each; long detail/spec blocks were removed on consolidation.
 - ✅ **U1 touch targets** — ear 52→72px (~96px hit-area), round nav/gear 54→72px (Neo, `1d4ce8c`).
 - ✅ **U2 map contrast** — brighter locked labels on opaque pills, `textLength` glyph-stretch removed, subtitle
   ink-stroked, progress counter bigger+stroked (Neo, `1d4ce8c`).
+- ✅ **U3 Grown-Up Corner** — parent HUB→drill-down + lazy section paint + bigger parent text (`4d257a9`) + the **P3
+  cognitive math-gate** replacing the weak 3s hold (`593c311`). (Closes the P1 parent-hub spec.)
+- ✅ **U4 intro/scan/forge CTA** — pulsing gold play-orb gives a clear first action on the bare stage; audio-first
+  auto-advance preserved, no text label (`e6e501f`).
+- ✅ **U5 picture-tile icons** — flat-vector `picIcon()` for all 63 READWORDS/READWORDS2 words (`0335140`/`77f1be0`/
+  `71d2fd3`). *(Shop `BASE_ITEMS` icons are still emoji → folded into the store de-emoji, DESIGN-ENGAGEMENT.md §4.5.)*
+- ✅ **U6 / MR1 map hierarchy** — scrim+vignette push the painting back; current node dominates (beacon + hero),
+  done/locked recede; Lite flattens blooms; lock-gate unchanged (`1bbf2b8`).
+- ✅ **U7 Base zero-state** — hide empty collection cards (show-only-earned), raise card-text contrast + breathing
+  room; brighter trace ghost letter (`b507eef`).
+- ✅ **U9 trace stroke guidance** — uniform dots + marked NEXT dot + stroke-order numbers + dashed direction paths
+  (Act-1 O-G) (`50e5fd8`).
+- ✅ **U11 `.bubble` clip** — right padding 70→92px clears the enlarged 72px ear (`23341b8`; `.bubble{padding:16px 92px…}`).
+  *(I briefly re-opened this with a malformed grep — Neo's catch; it IS shipped.)*
+- ✅ **Pedagogy rec #3 (P1) articulatory cue** — every taught grapheme shows a kid mouth-shape + "how your mouth makes
+  it" line (`mouthCue`/`MOUTHCUE`); magic-e excluded (`4353acf`). *(The Sound Warm-Up oral-PA drill (part A) is still open.)*
+- ✅ **Pedagogy rec #4 mastery-threshold** — split PROFICIENT (gates finales + ★, bumped to seen5/acc.8) from RETAINED
+  (`retainedItem` game.js:188 = proficient + correct on ≥2 days → Base gold ✦); `okDayCount` in `record()`; `migrate()`
+  grandfathers old proficient items (`382f0da`).
+- ✅ **Memory Vault scheduler (#1) + surfacing** — Leitner box/due on `S.mastery` (`27a608c`) + the **"Recharge the
+  Gems"** Base activity that deterministically re-exposes due items (sound-ID / build / sight-split), daily nudge + due
+  badge, no new task type (`fd4097d`).
+- ✅ **Mastery-weighted juice** — `record()` fires the loudest celebration on the moment of MASTERY (gold "MASTERED!" +
+  `Sfx.mastery` + confetti, intermittent); combo escalates on accuracy streaks — the red-team dial in code (`a73f0c6`).
+- ✅ **`tools/shot-cloud.mjs`** — durable cloud render harness landed (`bf1e0c8`).
 - ✅ **Settings / Grown-Up hub refactor groundwork** — settings overhaul shipped; P1 full hub spec still open below.
 - ✅ **Equippable weapons** — WEAPONS catalog, act-gated, rendered held in `heroSVG`.
 - ✅ **Villain shading** — dragon/Vex form-shadow + rim-light pass.
@@ -79,22 +105,8 @@ One line each; long detail/spec blocks were removed on consolidation.
   or tileable texture behind CSS text — **never** a text-baked PNG (labels vary: START vs CONTINUE MISSION). `.btn`
   restyle propagates everywhere; keep ≥96px + `:active` press; Lite/Calm flatten heavy filters; plan an Act-2
   stone/bronze variant; CSS tokens not raw hex.
-- 🟠 **U3 — Grown-Up Corner layout** — panel fills only the top third (bottom ~half dead), body/tab text 12–15px
-  (`styles.css:257/265/271`), inconsistent button hierarchy. Real-screen evidence for the **P1 parent-hub** spec
-  (see Hero Base / parent refactor — fold this in: centre/space content, ≥16px parent text, normalise buttons).
-- 🟡 **U4 — Vast-empty intro/scan/forge scenes** — a single ~52px audio control floating on a decorative stage =
-  weak affordance ("what do I do?"). Give intro/calibration a large pulsing primary CTA (e.g. "TAP TO START" gem)
-  alongside the audio. Ties to I1/I2.
-- 🟡 **U5 — Emoji picture-tiles** amid premium painted/raster art (read/sentence/cloze/scramble + Shop items
-  🚩🏆🤖🐉👑🚀). Style clash (worst in the Shop). Later art lane: a small consistent flat-vector icon set for the
-  READWORDS/READWORDS2 pool + shop. (Overlaps DESIGN-ENGAGEMENT store de-emoji.)
-- 🟠 **U11 — `.bubble` long lines clip behind the 🔊 ear** (Recharge / Interlude). `.bubble` (styles.css:39) lacks
-  enough right padding to clear the enlarged ear button, so long lines run under it. Fix: `padding-right` ~92px (and
-  the Act-2 `body[data-act="2"] .bubble` at :951). CSS-only. *(Verified still open 2026-06-14 — no padding fix in
-  styles.css.)*
-- 🟡 **U9 — Trace round** — varying dot sizes + no ghost letterform / stroke order (multisensory O-G gap; dyslexia
-  profile can't infer stroke direction). Fix: uniform dots, faint ghost letter behind, drawn/numbered path.
-  Act-1 only (digraphs skip trace). Ties to I2.
+*(U3 Grown-Up layout, U4 intro CTA, U5 word-tile icons, U9 trace guidance, U11 bubble pad — all SHIPPED this
+session; see ledger. Open chrome below.)*
 - 📋 **I2 — Scan-calibration tiles** plain text vs premium gem chrome — upgrade tile chrome only (keep glyph in
   Andika, sound→letter; don't make it text→text). Gated by `S.scan`; don't break intro→scan→map.
 - 📋 **I1 — Intro `.panelart` boxy frame** → full-bleed / generated (shared with the interlude; pilot one beat;
@@ -104,11 +116,7 @@ One line each; long detail/spec blocks were removed on consolidation.
   raster Mom & Dad). Art swap only; don't touch the cutscene flow.
 
 ### World Map
-- 📋 **MR1 — No visual hierarchy / current-node dominance.** ~70+ bright elements + friends + hero over a loud
-  painting; nothing says "go HERE next." Make the CURRENT node dominate (bigger bloom/pulse/beacon), DONE quiet
-  (small ✓, desaturated), LOCKED muted; drop per-node specular on non-current; scrim/vignette the bg. ⚠️ Goal is
-  hierarchy+legibility, NOT de-juicing (constraint #3); keep done/current/locked instantly readable (nav + lock
-  gate); Lite flattens map blooms. (`map.js:39–100`.)
+- ✅ **MR1 visual hierarchy — SHIPPED** (`1bbf2b8`; see ledger). Remaining map work below + the MAP REDO.
 - 📋 **MR2 — Recalibrate `ZONESPOTS`** (`map.js:17–20`, 1000×750). The golden path is BAKED into the painting; only
   node coords (or a new bg) can move. Nudge each zone coord per act onto the path (overlay via `shot.mjs`); fold in
   U12's hero-clip floor (`y ≥ ~150`); re-check portal `PX/PY` + `mapFriends` offsets. Do Act 1 + Act 2 separately.
@@ -130,10 +138,7 @@ One line each; long detail/spec blocks were removed on consolidation.
   (it previews equipped weapon/cape/gear — raster is a fixed pose), so it reads "lesser" than raster Teddy on
   title/win. **Mitigation (lean):** give `heroSVG` a shading pass (form shadow/rim light, like the dragon got) so
   every parametric use lifts at once. (Don't raster the loadout.)
-- 🟠 **U7 — Base zero-state + contrast.** Fresh save shows every shelf as "0 / N" + "go earn this!" (borderline vs
-  "show only EARNED items" rule); card body text dim purple; hero/collection cards collide. Fix: raise card-text
-  contrast, add breathing room, soften zero-state (show the first goal only, not all four 0/N rows). Populated Base
-  looks great — confirms U7 is a *zero-state* problem. Cross-refs B1.
+- ✅ **U7 Base zero-state — SHIPPED** (`b507eef`; see ledger).
 
 ### Cast & Art
 - 🟡 **Remaining renders (art lane, none block gameplay).** Per `RASTER` manifest (`art.js:198-200`):
@@ -166,15 +171,8 @@ One line each; long detail/spec blocks were removed on consolidation.
 ### Pedagogy & Curriculum
 *(Research basis in DURABLE ANALYSES below. Memory Vault scheduler #1 shipped; #2/#3/#4 reuse its box/due model.)*
 
-- 📐 **Memory Vault SURFACING (next pedagogy item).** Scheduler shipped (box/due on `S.mastery` — optional
-  `box`/`due`/`last`, `VAULT_INTERVALS=[1,3,7,14,30]`, `VAULT_CAP=6`, demote-one-step on miss, leave-Vault below
-  mastery). **Now surface due items** as a gentle capped "Memory Vault — recharge gems" mini-activity from Hero
-  Base, routing each due item by TYPE (no new task type): **grapheme → `startFind`** sound-ID (target-independent
-  prompt = anti-gaming #4 ✓) but **EXCLUDE no-`snd_`-clip graphemes** (magic-e `a_e/i_e/o_e/u_e` — guard
-  `hasSoundClip`, route to a WORD review); **word (`w_`/`sw_`) → `startRead`/forge**. No timer/fail; gentle
-  replay+retry. Edge cases: empty→hide, nothing-due→"fully charged ✨", backlog>CAP→oldest-due-first. Optional
-  Progress: "🔋 Vault: N items, M due today". (The dedicated Recharge activity already exists — wire deterministic
-  surfacing through it.)
+- ✅ **Memory Vault (#1 scheduler + surfacing) — SHIPPED** (`27a608c` + `fd4097d`; see ledger). The "Recharge the
+  Gems" Base activity now re-exposes due items on the spaced schedule. *(#2/#6 reuse its box/due model.)*
 - 📐 **Rec #2 — "Spell Scroll" repeated reading + listening preview** (fluency; Lee & Yoon 2016). ⚠️ **No speech
   recognition** — structure repeated *oral* reading, don't measure it; tap-pace is a soft engagement proxy, NOT a
   fluency score. Mechanic: mentor reads a short DECODABLE passage with words highlighting (listening preview, reuse
@@ -183,23 +181,13 @@ One line each; long detail/spec blocks were removed on consolidation.
   (coins via `trainWin` game.js:1306; `record()`s scroll words). Data: `SCROLLS` (data-content.js, per act, only
   taught words — curriculum.test guards decodability) + `S.scrolls[id]={reps,bestMs,box,due}` (additive/save-safe).
   ≥96px Andika tiles; `flow()` so it can't hang (#8).
-- 📐 **Rec #3 — "Sound Warm-Up" oral PA + articulatory cue** (PA enables orthographic mapping; Ehri). ⚠️ **No speech
-  rec** → tap responses (child still says it aloud; parent nudge). **(A)** short ≤5-item oral-PA drill: blend
-  (`graphemeSounds(w)` game.js:54 → tap the `READWORDS` picture, *no letters shown*, then reveal grapheme = the
-  oral→letter bridge) / segment (count phonemes) / isolate (first sound). **(B)** child articulatory cue on the
-  Learn screen (`startLearn` game.js:582, `#letterCue` slot at 588) — a kid-friendly mouth shape + keyword + one
-  line. **Reuse `PH_COACH`** (audio-studio.js:30+, per-phoneme keyword/icon/mouth cue) — extract a shared
-  `PHONEMES` table into data-content.js (add kid cue + mouth-shape id; keep adult tip studio-only; don't break the
-  Studio). ⚠️ Anti-gaming #4 (sound-only prompts, no target letter); magic-e units have no `snd_` (exclude; use
-  `snd_<v>_long`). Lives in the Training Room. P1 = the Learn-screen mouth cue (smallest, high-yield).
-- 📐 **Rec #4 — mastery-threshold tune: "proficient" vs "retained".** ⚠️ **The trap:** a spaced-correct requirement
-  **cannot gate the finale** (no next-day correct mid-session → soft-lock). So **split the meanings:**
-  `masteredItem` = PROFICIENT (in-session, keeps gating `coreWeak` + Progress ★); add `retainedItem(key)` =
-  `masteredItem && okDayCount>=2` (Base gold ✦ + Vault "graduated" — **never gates a finale**). Changes: bump
-  `MASTER_ACC 0.75→0.8`, `MASTER_SEEN 4→5` (game.js:151; keep STR 4; don't go 0.9/8 — grindy); track correct-days in
-  `record()` (`if(dayKey()!==m.lastOkDay){m.okDayCount++; m.lastOkDay=dayKey()}`). ⚠️ **Grandfather in `migrate()`:**
-  any already-`masteredItem` true → seed `okDayCount=max(okDayCount,2)` (no ✦ regression). Shares `dayKey` tracking
-  with the Vault. Verify finales still clear in one session.
+- 📐 **Rec #3 — "Sound Warm-Up" oral-PA drill (part A; part B cue SHIPPED).** ✅ The Learn-screen **articulatory cue**
+  (B) shipped (`4353acf` — `mouthCue`/`MOUTHCUE`, magic-e excluded). **Still open = (A)** a short ≤5-item oral-PA drill
+  (child says it aloud; **no speech rec** → tap responses): blend (`graphemeSounds(w)` game.js:54 → tap the `READWORDS`
+  picture, *no letters shown*, then reveal grapheme) / segment (count phonemes) / isolate (first sound). Lives in the
+  Training Room (or as a warm-up before a mission). ⚠️ Anti-gaming #4 (sound-only, no target letter); magic-e units
+  have no `snd_` (exclude; use `snd_<v>_long`). Reuse the now-shared mouth-cue table.
+- ✅ **Rec #4 mastery-threshold ("proficient" vs "retained") — SHIPPED** (`382f0da`; see ledger).
 - 📐 **Rec #6 — "Word Crafting" morphology capstone** (MA improves reading/spelling for dyslexia; Ardanouy 2024).
   ⚠️ **Capstone, not now-item** — gate AFTER Great Library fluency (constraint #5; a 7yo is the early edge). Reuse
   **forge** (`startForge` game.js:985) at morpheme granularity (base tile + affix tile → forge → read; teach the
