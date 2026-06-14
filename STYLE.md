@@ -199,6 +199,39 @@ flow) and **soften under `prefers-reduced-motion`**.
 
 Targets/easing: micro-feedback ~`.12s`; pops `.4–.5s ease`; nothing decorative over ~1s.
 
+### Juice philosophy (1 line)
+**Layer many small effects (motion + scale + flash + a number + sound) over one big one — and juice the REWARD layer,
+NEVER the active learning prompt.** Full principles in `AGENTS.md` ("how we juice"); mechanics + feasibility in
+`DESIGN-ENGAGEMENT.md §8`.
+
+### Easing tokens (use these, not bare `ease`)
+Add to `:root` and reference by name so motion reads consistently:
+| Token | Curve | Use for |
+|---|---|---|
+| `--ease-overshoot` | `cubic-bezier(.34, 1.56, .64, 1)` (easeOutBack) | the satisfying **bounce/settle** — pops, counter arrival, reward reveal |
+| `--ease-accelerate` | `cubic-bezier(.55, .085, .68, .53)` (easeInQuad) | coins/sprites **accelerating into** the counter (magnetize) |
+| `--ease-soft` | `ease-out` | gentle fades / glow settle |
+For a springier reward beat, `easeOutElastic` is allowed on the *counter* only (never on text the child reads).
+
+### Reward-viz patterns (research-backed — TO BUILD; see DESIGN-ENGAGEMENT.md §8.2–8.3)
+The polished reward = **3–5 of these stacked**, all `transform`/`opacity` only (GPU), via Web Animations API / CSS —
+**no library, no build step**, pool the DOM nodes:
+| Pattern | What | Build as |
+|---|---|---|
+| **Magnetize stream** | sprites scatter out, then get *sucked* to the HUD counter (staggered, curved path) | `flyReward(fromEl,toEl,n)` — mission/chest payouts |
+| **Number-only tween** | just **count the value up** (never *set* it) + scale-bounce | tiny per-rep coins (keeps the learning screen calm) |
+| **Counter reaction** | the destination **counts up + scale-bounces (`--ease-overshoot`) + glows** | every coin/gem/XP change — the underrated half |
+| **`+N` popup** | floating number rises + fades at the source (bigger on combo) | reward moments |
+| **Secondary stack** | flash · `confetti()` · pitch-**laddered** `Sfx.coin` · glow | layer under the above |
+**Timing:** whole reward ~500–700ms; stagger 30–50ms; count-up ~300ms. One reusable `flyReward()` helper covers coins,
+gems, XP; central call sites already exist (`record()`, `trainWin`, chest-open). Replaces the simpler live `coinFloat()`.
+
+### Detail-tier degradation (one code path, three budgets)
+Every new juice effect maps onto the existing `S.detail` tiers (reuse `applyDetail()` / `body.calm` / `body.lite`):
+**Full** = full magnetize + sprites + glow → **Calm** = fewer sprites (or number-tween only) + bounce + sound →
+**Lite / `prefers-reduced-motion`** = **instant set** + a single pulse + sound (no sprites). All effects still
+auto-remove and can't hang a flow.
+
 ---
 
 ## 7. Layout & spacing
