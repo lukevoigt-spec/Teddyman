@@ -145,6 +145,34 @@ the literature warns over-juice harms readability, and constraint #4/#6 keep the
   coins are paid (`trainWin`, mission rewards, chest open).
 
 ## 6. HARD-CONSTRAINT GUARDRAILS (do not violate — re-read CLAUDE.md §"HARD CONSTRAINTS")
+### 6.0 ⭐ MASTERY-NOT-PARTICIPATION CONTRACT (binds ALL of §4–§11 — the pedagogy red-team)
+The whole engagement layer (chests, coins, pets, juice) must **reward getting BETTER at reading, not merely showing up
+or grinding**. This reconciles the want-to-play wave with the project's "mastery > participation" stance and `QA.md`'s
+red-team (*"is the juice competing with the reading?"* — verdict: keep it, but weight rewards to mastery/accuracy and
+make the reading wins louder). Research basis: expected per-rep tangible rewards risk **overjustification** + ADHD
+**fixation/insatiability** on a reward; the antidote is competence-contingent + intermittent reinforcement. Five binding
+rules:
+1. **Reading wins are LOUDER + BIGGER than cosmetic wins.** The mastery moments — a correct sound cue, **mastering a
+   grapheme** (the gold ✦), a **★ milestone**, an **ally rescue**, a **rank-up** — get the most salient juice and the
+   biggest loot (gold chest). Coins/cosmetic pops are a notch quieter and smaller. Never let a coin-fly out-shine "you
+   read it!"
+2. **Currency comes from LEARNING, never idle time or mere presence.** Coins/chests are earned by *correct* answers
+   (already: `record()` on correct, combo on accuracy). No idle earning. **Participation rewards stay the SMALLEST
+   tier** — the daily chest is **wood**, framed "welcome back," a hello, not the prize.
+3. **Weight payouts to ACCURACY/MASTERY, not volume.** Amendments to §10: the per-mission chest scales with
+   *performance* (no-hint / high-accuracy → silver, milestone+mastery-gate → gold), **not** mere completion; the
+   training chest keys off **correct reps weighted to weak/unmastered items** (reuse `pickTrainWord`'s weak-weighting),
+   not raw `repTick`. **Vary magnitude (intermittent)** — identical every-time payouts are both less engaging and more
+   overjustifying.
+4. **The coolest cosmetics/pets gate on MASTERY, not coin-grinding.** Extend the "collection meets mastery" pattern
+   (mastered gem → gold ✦): the best pet/weapon-skin/trophy unlocks on a mastery milestone (★ / act-gate), so the
+   aspirational stuff requires *getting better*, not just spending time. Coins buy the smaller decor.
+5. **Clean beat + salient prompt.** reward → settle → next prompt; a celebration never overlaps the next narration
+   (`flow()`-sequence); during a response window the gem/letter/word out-shines all chrome. (red-team dials #1, #3.)
+> **Parent's measure (no A/B):** is Teddy attending to the *letter/sound* or the *burst*? Reading to read, or to earn
+> coins? If cosmetics dominate his talk, dial coins down and make the reading wins louder. That behaviour is the signal.
+
+### 6.1 The standing hard constraints
 - **No gambling-loss / no empty rewards.** Chests + "variable rewards" mean *which good thing*, never *whether*. (#2)
 - **No streak-loss, no "you missed a day," no countdowns/timers.** The Daily Surprise is "a present is waiting,"
   framed as a gift, never a punishment for absence. (#1, #2)

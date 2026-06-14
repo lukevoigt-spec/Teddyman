@@ -70,6 +70,10 @@ and never fights the pedagogy:
    → **Lite / `prefers-reduced-motion`** (instant + a single pulse). Reuse `S.detail` / `body.calm` / `body.lite`.
 7. **Save-safe & cosmetic.** New `S.*` fields migrate (+ a `save.test` assertion); juice/cosmetics are **zero
    pay-to-win** — they buy delight, never a learning advantage.
+8. **Reward MASTERY, not participation.** The loudest juice + biggest loot go to *getting better at reading* (mastered
+   grapheme, ★ milestone, ally rescue, rank-up); coins/cosmetics are quieter and earned from *correct* answers, never
+   idle time. Keep reading wins louder than cosmetic wins. (Full contract: `DESIGN-ENGAGEMENT.md §6.0`; basis:
+   `QA.md` reward red-team.)
 
 — Trinity, 2026-06-14
 
