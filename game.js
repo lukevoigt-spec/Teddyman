@@ -336,7 +336,6 @@ function tryBG(layer, urls, i, id){
 }
 const AMBIENT_SCREENS=new Set(["scrTitle","scrMap","scrBase","scrWin","scrRest","scrIntro","scrInter"]);
 function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
-  hideTapStart();   /* U4: clear the intro CTA on any screen change (startScan/startForge re-show it after) */
   __inTraining=(id==="scrTrain");   /* daily time split: count training-room time separately */
   $(id).classList.add("on"); $(id).classList.add("fadein");
   setTimeout(()=>$(id).classList.remove("fadein"),600);
@@ -583,8 +582,8 @@ const SCAN_SET=ZONES[0].letters;
 let scanIx=0;
 function startScan(){ if(S.scan){toMap();return;}
   show("scrScan"); scanIx=0;
-  flow(narrate("scan",$("scanText"),["scan_intro"]),()=>nextScan()); showTapStart("72%"); }
-function nextScan(){ hideTapStart(); if(scanIx>=SCAN_SET.length){ S.scan=true; save();
+  flow(narrate("scan",$("scanText"),["scan_intro"]),()=>nextScan()); }   /* autoplays: mentor talks → round appears (⏭ skips); no tap-to-start gate */
+function nextScan(){ if(scanIx>=SCAN_SET.length){ S.scan=true; save();
     flow(narrate("scan",$("scanText"),["scan_done"]),()=>toMap()); return; }
   const target=SCAN_SET[scanIx];
   const foils=SCAN_SET.filter(x=>x!==target).sort(()=>Math.random()-.5).slice(0,2);
@@ -609,14 +608,8 @@ function nextScan(){ hideTapStart(); if(scanIx>=SCAN_SET.length){ S.scan=true; s
    uses game.js helpers like heroNow/show/startMission only at runtime). The map
    navigation button handlers stay here (they run at game.js load, after $). */
 $("btnSkip").onclick=()=>{ Aud.stop(); const f=__cont; clearFlow(); if(f)f(); };
-/* U4: the big "TAP TO PLAY!" CTA for the intro-narration phase of scan/forge. Tapping it advances the
-   active flow() immediately (same path as ⏭ skip), so it's a clear primary action without gating —
-   the narration still auto-advances on its own if untouched (audio-first, constraint #8). */
-function showTapStart(top){ const t=$("tapStart"); if(!t)return;
-  if(top)t.style.top=top;   /* drop the orb into the screen's OPEN area (scan bubble is top, forge's is bottom) */
-  t.onclick=()=>{ const f=__cont; Aud.stop(); clearFlow(); hideTapStart(); if(f)f(); };
-  t.style.display="flex"; }
-function hideTapStart(){ const t=$("tapStart"); if(t)t.style.display="none"; }
+/* (U4 tap-to-start orb removed — scan/forge AUTOPLAY: mentor narrates → round appears; ⏭ skip covers
+   "jump ahead". A tap-to-start CTA implied a false gate + extra decision that broke the audio-first flow.) */
 /* CITY-NAME NAV MENU — tap the city chip (on any screen) to jump anywhere, so the
    map view stays uncluttered (no more controls layered over the painting). */
 function closeNav(){ const m=$("navMenu"); if(m)m.classList.remove("on"); }
@@ -1146,8 +1139,8 @@ function startForge(m){ show("scrForge");
   $("forgeBoss").innerHTML=`<div class="boss" id="forgeSprite" style="width:clamp(130px,22vw,200px)">${bossSprite(200)}</div>`;
   paintPips("forgePips",forgeHP,forgeWords.length);
   const intro = m.id===111 ? ["blend_intro"] : ["forge_intro1","forge_intro2"];   /* first Blends mission gets Noah's blend explainer */
-  flow(narrate("forge",$("forgeText"),intro),()=>forgeWord()); showTapStart("50%"); }
-function forgeWord(){ hideTapStart();
+  flow(narrate("forge",$("forgeText"),intro),()=>forgeWord()); }   /* autoplays; no tap-to-start gate */
+function forgeWord(){
   if(forgeWordIx>=forgeWords.length){
     const fs=$("forgeSprite"); if(fs)fs.classList.add("flee");
     flow(Aud.play(["forge_win1","forge_win2"]),missionComplete); return; }
