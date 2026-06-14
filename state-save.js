@@ -139,7 +139,7 @@ function cloudConnect(secret){ cloudSecret=(secret||"").trim();
   cloudURL=resolveCloudURL(stored);
   if(!cloudActive()){ cloudStatus("Cloud sync off (saved on this device)"); return; }
   cloudStatus("Connecting…");
-  cloudPull().then(changed=>{ if(changed){ GEO=geomFor(currentAct()); if(S.intro){const c=document.getElementById("btnContinue"); if(c)c.style.display="inline-block";} }
+  cloudPull().then(changed=>{ if(changed){ GEO=geomFor(currentAct()); }
     cloudStatus(changed?"Connected ✓ — restored his cloud progress":"Connected ✓ — this device now backs up to the cloud");
     cloudPush(); }); }
 /* parent turns sync off: drop the cached code (the gate) AND tombstone the URL so boot stays off. */

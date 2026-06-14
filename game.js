@@ -329,7 +329,6 @@ function vpMsg(){ const n=(typeof VOICEPACK!=="undefined")?Object.keys(VOICEPACK
 /* paint the title for the ACTIVE player (auto-loaded last player) */
 function paintTitle(){ const nm=$("playerName"); if(nm)nm.textContent=profileName(ACTIVE);
   $("titleHero").innerHTML=heroMarquee(210);
-  $("btnContinue").style.display=S.intro?"inline-block":"none";
   $("btnPlayer").style.display=profiles().length>1?"inline-block":"none"; }
 paintTitle();
 setBG("scrTitle");   /* the title is shown via static HTML, so load its painted background at boot */
@@ -338,8 +337,10 @@ Aud.vol = (S.vol==null?1:S.vol);                 /* parent narration volume (0�
 document.body.dataset.act=currentAct();           /* scene-grade theme from boot (title is static) */
 applySceneTone("scrTitle");                        /* per-scene key/rim light for the boot title */
 document.body.classList.add("scene-ambient");     /* the boot title screen is ambient */
-$("btnStart").onclick=()=>{ Aud.pick(); if(!S.intro)startIntro(); else {Aud.play("welcome"); toMap();} };
-$("btnContinue").onclick=()=>{ Aud.pick(); Aud.play("welcome"); toMap(); };
+/* ONE primary action: PLAY → brand-new player gets the origin cutscene→scan→map; a returning
+   player resumes on the map. (Replaces START + the duplicate CONTINUE — both only called toMap.)
+   Must stay the FIRST user gesture so Aud.pick() unlocks iOS audio. */
+$("btnPlay").onclick=()=>{ Aud.pick(); if(!S.intro)startIntro(); else {Aud.play("welcome"); toMap();} };
 /* ---- player picker (select an existing player; add/remove is parent-only) ---- */
 const PC_CAPES=["red","gold","purple"];
 function openPicker(){ paintPicker(); $("playerPicker").classList.add("on"); }
@@ -489,7 +490,6 @@ $("hudTitle").onclick=e=>{ e.stopPropagation(); const m=$("navMenu"); if(m)m.cla
 $("navMap").onclick=()=>navGo(toMap);
 $("navBase").onclick=()=>navGo(showBase);
 $("navHome").onclick=()=>navGo(()=>{ paintTitle(); show("scrTitle"); });
-$("btnTitleBase").onclick=()=>{ Aud.stop(); clearFlow(); showBase(); };
 document.addEventListener("click",closeNav);   /* tap anywhere else closes the menu */
 
 /* ---------------- MISSION FLOW ---------------- */

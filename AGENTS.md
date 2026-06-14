@@ -22,7 +22,10 @@ Read both before working.
 ## The rules
 1. **Only Neo touches code and merges to `main`.** Before every push Neo verifies
    `node tests/save.test.js` + `node tests/curriculum.test.js` are green (plus a runtime boot
-   check), and has the final say.
+   check), and has the final say. **`QA.md` is ADVISORY, not a mandate:** Neo scrutinises each
+   suggestion against the actual code/product before actioning it, and **comments in `QA.md` (or
+   asks the human) to push back or request clarification** rather than implementing on autopilot.
+   The **human/parent is the ultimate authority** above Neo.
 2. **QA agents write `QA.md` ONLY** (Trinity also `AGENTS.md`). Two commit paths:
    - **Trinity** commits her `QA.md` / `AGENTS.md` **straight to `main`** as plain commits
      (`git fetch` + rebase — no feature branch, no merge commits; she's the QA-lane curator).
