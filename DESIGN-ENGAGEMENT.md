@@ -260,7 +260,40 @@ hooks we already have. The only "hard" parts are **art** (weapon/pet/icon assets
 tech. Start with the Low-effort, high-delight row (coin-fly → chests → rank meter), each verified with
 `node tools/shot-cloud.mjs <scene>` + green `save`/`curriculum` tests.
 
-## 9. Sources
+## 9. NAVIGATION & SETTINGS — current state + remaining work (applies STYLE.md §7)
+I audited the live code against the new §7 nav rules before speccing — and **most of CLAUDE.md's "UI/NAV BACKLOG" is
+already built** (those notes are now partly stale). Don't re-do these:
+- ✅ **(iii) START-vs-CONTINUE jank — SOLVED.** The title has **one** primary action: `#btnPlay` "PLAY"
+  (`index.html:92`) → `startIntro()` first-time else `toMap()` (`game.js:422`); the code comment confirms it "replaces
+  START + the duplicate CONTINUE." That's §7 rule #1 satisfied.
+- ✅ **(iv) generic tagline — SOLVED.** Subtitle is now act-agnostic: "A HERO READS. A HERO RISES." (`index.html:90`).
+- ✅ **Persistent global nav — built** (the earlier NAV OVERHAUL: HUD city-chip → World Map / Hero Base / Home from
+  every screen) = §7 rule #2.
+- ✅ **Settings = hub → drill-down + adult gate — built** (the U3 work: `#tabHub` 4 icon cards → Players / Progress /
+  Settings / Voice Studio, each with ‹ Back; press-and-hold + math gate). Good progressive disclosure (§7) + grouped
+  `setcard`s (Sound/Display). **Structure is sound — leave it.**
+
+### What's actually left (best-first)
+1. **Base action-rail fix (real bug, from Morpheus M-#2 + §7 rule #4).** Make `.baseactions` a **dedicated bottom rail**
+   and reserve space for it: give `.basecol-hero`/Loadout a scroll path (`max-height:100%; overflow-y:auto`) **or** pin
+   the action row and add matching bottom-padding to `.basewrap`, so the loadout can't overflow under TRAINING ROOM /
+   SHOP / RECHARGE / CITY MAP at 1024×768. Verify `shot.mjs base basefull` + Act-2 Base + portrait. *(This is the one
+   with a genuine layout defect — do it first.)*
+2. **Settings/hub GAME-FEEL pass (enhancement #2 — *visual*, not structural).** The hub cards + `setcard`s work but
+   read plain. Apply the §3 button craft (sheen/glow/press, 7px border) to `.hubcard`; frost the `setcard`s (§4 glass);
+   bump tap targets to ≥96px; consider iconographic toggle art for the switches. **Keep the hub→drill-down flow + every
+   bound control ID** — this is paint, not replumbing. Study how real kids' games lay out settings (Jakob's Law).
+3. **Button-affordance pass (backlog (i)).** The §8 gap-checklist already calls for leveling up `.btn` with the
+   sheen pseudo-element + `.glow`; apply it everywhere (title/base/settings) so every button *reads* as pressable
+   (Norman signifiers). Pure CSS in `styles.css`.
+4. **§7 conformance sweep (cheap invariants worth a test/checklist).** Confirm on every gameplay screen: **status up
+   top, actions bottom/corners** (rule #4); **every control has icon + a tap-to-hear** (rule #3, pre-reader); **Home /
+   Back / ⏭ always present + enabled** (rule #6 / hard constraint #8). Fold the locked-node / sound-ID / escaping
+   invariants QA already wants into the same pass.
+> **Doc hygiene:** CLAUDE.md's UI/NAV BACKLOG (i–iv) should be updated to mark (iii)+(iv) DONE and re-scope (i)+(ii) to
+> the polish items above — that's a CLAUDE.md (product) edit, so it's **Neo's** to make (flagging it here, not editing it).
+
+## 10. Sources
 **Game feel / juice canon + web-anim perf:** [GameAnalytics — squeezing more juice](https://www.gameanalytics.com/blog/squeezing-more-juice-out-of-your-game-design) ·
 [Game Developer — juice (Jonasson/Purho lineage)](https://www.gamedeveloper.com/design/squeezing-more-juice-out-of-your-game-design-) ·
 [abagames — making games juicy](https://abagames.github.io/joys-of-small-game-development-en/make_game_juicy.html) ·
