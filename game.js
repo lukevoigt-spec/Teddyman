@@ -68,7 +68,25 @@ function actMissions(a){ const ids=new Set(actZones(a).map(z=>z.id)); return MIS
 /* Gear earned in THIS act (by its mission ids), so a new act starts powerless —
    the villain "stole" Teddy's gear. Mastery still persists across acts. */
 function actGearList(a){ const mids=new Set(actMissions(a).map(m=>m.id));
-  return Object.keys(GEAR_AT).filter(id=>mids.has(+id)&&S.done[id]).map(id=>GEAR_AT[id]); }
+  const derived=Object.keys(GEAR_AT).filter(id=>mids.has(+id)&&S.done[id]).map(id=>GEAR_AT[id]);
+  /* grandfather union: durable gear earned in THIS act (S.gearByAct[a]) so a later GEAR_AT re-map
+     (pacing spread) only changes FUTURE unlock points and never un-equips gear he already has.
+     Act-keyed because gear NAMES repeat across acts (Gem Sword / Power Belt / Rocket Boots). */
+  const durable=(S.gearByAct&&Array.isArray(S.gearByAct[a]))?S.gearByAct[a]:[];
+  return [...new Set([...derived, ...durable])]; }
+/* GRANDFATHER (pacing-spread plumbing) — durably record what's ALREADY earned: per-act gear
+   (S.gearByAct) + freed friends (S.freed), seeded ONCE from the CURRENT (pre-re-map) mission
+   mapping. Runs at boot while GEAR_AT / ally mids are still original, so a LATER re-map of those
+   ids re-paces only future unlocks and can never un-earn the hero's current gear or league. The
+   absence guard makes it idempotent (seed once, never overwrite), so a re-map can't wipe the
+   stamp; new earns also stamp these live (missionComplete). Returns true if it seeded anything. */
+function grandfather(){ let seeded=false;
+  if(!S.freed||typeof S.freed!=="object"){ S.freed={}; seeded=true;
+    LEAGUE.forEach(t=>{ if(S.done[t.mid]) S.freed[t.kind]=true; }); }
+  if(!S.gearByAct||typeof S.gearByAct!=="object"){ S.gearByAct={}; seeded=true;
+    ACTS.forEach(a=>{ const mids=new Set(actMissions(a.id).map(m=>m.id));
+      S.gearByAct[a.id]=Object.keys(GEAR_AT).filter(id=>mids.has(+id)&&S.done[id]).map(id=>GEAR_AT[id]); }); }
+  return seeded; }
 /* missions of an act in PLAY ORDER (zones run in ZONES-array order; missions
    within a zone by id). Used by the parent's level-override slider so its order
    matches the map Teddy actually sees. */
@@ -134,6 +152,10 @@ function updateDailyMeter(){ const fill=$("dailyFill"); if(!fill)return;
 }
 function dailyGoalReached(){ try{Aud.ding();}catch(e){} Aud.play("daily_goal"); }
 ensureDaily();
+grandfather();   /* seed the durable gear/friend records in-memory before the first hero paint. NOT save()d
+   here: save() would bump S.ts and could let a stale local save out-rank newer cloud progress in the boot
+   pull below. The seed persists on the next natural save (mission/setting/visibilitychange) or the cloud-
+   changed branch; re-seeding on a later boot is identical while the mission mapping is unchanged. */
 if(typeof document!=="undefined"){
   document.addEventListener("pointerdown",noteInteract,true);
   document.addEventListener("visibilitychange",()=>{ if(document.hidden)save(); });
@@ -352,12 +374,12 @@ function paintPicker(){ const wrap=$("playerCards"); if(!wrap)return; wrap.inner
     b.querySelector(".pcname").textContent=p.name;
     b.onclick=()=>switchProfile(p.id); wrap.appendChild(b); }); }
 function switchProfile(id){ closePicker(); if(id===ACTIVE)return;
-  save(); Aud.stop(); applyProfile(id); S=load(); GEO=geomFor(currentAct()); paintTitle(); show("scrTitle");
-  cloudPull().then(changed=>{ if(changed){ GEO=geomFor(currentAct()); paintTitle(); } }); }
+  save(); Aud.stop(); applyProfile(id); S=load(); grandfather(); GEO=geomFor(currentAct()); paintTitle(); show("scrTitle");
+  cloudPull().then(changed=>{ if(changed){ if(grandfather())save(); GEO=geomFor(currentAct()); paintTitle(); } }); }
 $("btnPlayer").onclick=()=>{ Aud.pick(); openPicker(); };
 $("btnPickerClose").onclick=closePicker;
 /* on boot, restore newer cloud progress (if a Worker URL is configured/baked in) */
-cloudPull().then(changed=>{ if(changed){ GEO=geomFor(currentAct()); paintTitle();
+cloudPull().then(changed=>{ if(changed){ if(grandfather())save(); GEO=geomFor(currentAct()); paintTitle();
   cloudStatus("Restored his latest progress from the cloud ✓"); } });
 
 /* While a cutscene character narrates, gently bob the portrait so the mentor
@@ -552,6 +574,10 @@ function missionComplete(){
     S.stars+=3; S.session.count++;
     const gear=GEAR_AT[CUR.id];
     if(gear&&!S.gear.includes(gear))S.gear.push(gear);
+    if(gear){ const ga=currentAct(); S.gearByAct=S.gearByAct||{}; (S.gearByAct[ga]=S.gearByAct[ga]||[]);
+      if(!S.gearByAct[ga].includes(gear))S.gearByAct[ga].push(gear); }   /* durable per-act earn (grandfather) */
+    /* durably free the friend whose rescue mission this is (so a later rescue re-pacing keeps them freed) */
+    const ally=LEAGUE.find(t=>t.mid===CUR.id); if(ally){ S.freed=S.freed||{}; S.freed[ally.kind]=true; }
     /* auto-equip a newly-forged weapon so it shows immediately (kid needn't visit the Base) */
     if(gear==="Gem Sword")S.equip.weapon="sword"; else if(gear==="Word Hammer")S.equip.weapon="hammer"; }
   save();
@@ -1162,12 +1188,12 @@ function paintBase(){
   /* league */
   const lg=$("leagueShelf"); lg.innerHTML="";
   let anyL=false;
-  LEAGUE.forEach(t=>{ if(S.done[t.mid]){ anyL=true;
+  LEAGUE.forEach(t=>{ if(allyFreed(t.kind)){ anyL=true;   /* durable freed-state (grandfathered) */
     const b=document.createElement("button"); b.className="leaguebtn"; b.title="See "+t.real+"\u2019s hero card";
     b.innerHTML=`<svg viewBox="-32 -36 64 86" width="54"><g>${allyFace(t.kind)}</g><text y="42" text-anchor="middle" font-family="Bangers" font-size="13" fill="#ffc93c">${t.real}</text><text y="55" text-anchor="middle" font-family="Bangers" font-size="9.5" fill="#9b94c9" letter-spacing=".5">"${t.name}"</text></svg>`;
     b.onclick=()=>openHeroCard(t.kind); lg.appendChild(b); } });
   if(!anyL)lg.innerHTML='<div class="baselbl" style="font-size:15px;">Smash Vex\u2019s cages to free your friends!</div>';
-  { const freed=LEAGUE.filter(t=>S.done[t.mid]).length, lc=$("leagueCount"); if(lc)lc.textContent=freed+" / "+LEAGUE.length; }
+  { const freed=LEAGUE.filter(t=>allyFreed(t.kind)).length, lc=$("leagueCount"); if(lc)lc.textContent=freed+" / "+LEAGUE.length; }
   paintBossShelf();   /* captured-villain cages */
   /* coins + trophy shelf (Training Room collection) */
   const cn=$("baseCoins"); if(cn)cn.textContent=S.coins||0;

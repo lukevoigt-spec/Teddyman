@@ -18,9 +18,12 @@ const ALLY={
   sunny:{real:"William", owns:"patrol", lines:["cheer_will1","cheer_will2"]},
   heart:{real:"Amelia",  owns:"win",    lines:["heart_cheer1","heart_cheer2","heart_cheer3"]}
 };
-function allyMid(kind){ if(kind==="heart")return 17;
-  const c=CAGED.find(x=>x.kind===kind); return c?c.mid:-1; }
-function allyFreed(kind){ return !!S.done[allyMid(kind)]; }
+/* the mission that frees this friend — resolved from LEAGUE so EVERY kind (incl. leighton/kendall,
+   which aren't in CAGED) maps correctly. Used only as the derived fallback below. */
+function allyMid(kind){ const m=LEAGUE.find(x=>x.kind===kind); return m?m.mid:-1; }
+/* freed = durably recorded (S.freed, survives a rescue-mid re-pacing) OR the rescue mission is done
+   (the derived fallback, true for any save that pre-dates the grandfather seed). */
+function allyFreed(kind){ return !!(S.freed&&S.freed[kind]) || !!S.done[allyMid(kind)]; }
 function allyLine(kind){ const L=ALLY[kind].lines; return L[Math.floor(Math.random()*L.length)]; }
 /* brief celebratory pop of the friend's face + name; auto-removes, no flash */
 function allyPop(kind){ const st=$("stage"); if(!st)return;

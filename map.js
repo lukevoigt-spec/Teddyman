@@ -31,7 +31,7 @@ function mapFriends(a, zs, spots){
     const zi=zs.findIndex(z=>z.id===m.z); if(zi<0)return; (byZi[zi]=byZi[zi]||[]).push(r); });
   let out="";
   Object.keys(byZi).forEach(zi=>{ const sp=spots[zi]; if(!sp)return; const [x,y]=sp;
-    const list=byZi[zi]; const unf=list.find(r=>!S.done[r.mid]); const r=unf||list[list.length-1]; const freed=!unf;
+    const list=byZi[zi]; const unf=list.find(r=>!allyFreed(r.kind)); const r=unf||list[list.length-1]; const freed=!unf;   /* durable freed-state (grandfathered) */
     const fx=x+(x<500?72:-72);
     /* pointer-events:none — decorative figures sit near the nodes and must never steal a node tap (MAP-1). */
     out+=`<g pointer-events="none" transform="translate(${fx} ${y-2}) scale(.5)">${allyMapFig(r.kind, freed)}</g>`; });

@@ -156,6 +156,25 @@ ok("'off' sentinel resolves to disabled/empty (not the baked default)", resolveC
 ok("unset/empty resolves to the baked DEFAULT_CLOUD_URL", resolveCloudURL("")===DEFAULT_CLOUD_URL);
 ok("a custom URL is preserved as-is", resolveCloudURL("https://x.workers.dev")==="https://x.workers.dev");
 
+grp("PACING-SPREAD grandfather plumbing (P1): durable gear/friends survive a future id re-map, no regression");
+// A mid-Act-1 save: belt(m1) boots(m3) hammer(m4) sword(m8) earned; tank(m3) flip(m6) sunny(m8) freed.
+S=fresh(); S.act=1; [1,3,4,6,8].forEach(function(id){ S.done[id]=true; });
+ok("allyMid resolves EVERY league kind incl. leighton/kendall (was -1 before)", allyMid("tank")===3 && allyMid("leighton")===48 && allyMid("kendall")===128);
+delete S.freed; delete S.gearByAct;   // OLD-save shape (pre-plumbing): the durable fields are absent
+var seeded=grandfather();
+ok("grandfather() seeds the durable records on an old save (absence is the trigger)", seeded===true && !!S.freed && !!S.gearByAct);
+ok("…S.freed seeded from completed rescue missions (tank@3, flip@6, sunny@8)", S.freed.tank===true && S.freed.flip===true && S.freed.sunny===true);
+ok("…S.gearByAct[1] seeded from GEAR_AT∩done (belt/boots/hammer/sword)", S.gearByAct[1].indexOf("Power Belt")>=0 && S.gearByAct[1].indexOf("Gem Sword")>=0 && S.gearByAct[1].indexOf("Rocket Boots")>=0 && S.gearByAct[1].indexOf("Word Hammer")>=0);
+ok("NO REGRESSION: right after seeding, actGearList(1) == the derived set (union adds nothing yet)", (function(){ var g=actGearList(1); return g.indexOf("Power Belt")>=0 && g.indexOf("Gem Sword")>=0 && g.indexOf("Rocket Boots")>=0 && g.indexOf("Word Hammer")>=0; })());
+ok("NO REGRESSION: every already-freed friend still reads freed after seeding", allyFreed("tank") && allyFreed("flip") && allyFreed("sunny"));
+// Simulate a FUTURE re-map (P2/P3): the gear/rescue missions move to ids this save hasn't completed → clear done.
+S.done={};
+ok("GRANDFATHER (gear): a re-map can't un-equip earned gear — the durable union still returns it", (function(){ var g=actGearList(1); return g.indexOf("Power Belt")>=0 && g.indexOf("Gem Sword")>=0 && g.indexOf("Rocket Boots")>=0 && g.indexOf("Word Hammer")>=0; })());
+ok("GRANDFATHER (friends): a re-map can't un-free a friend — allyFreed stays true via S.freed", allyFreed("tank") && allyFreed("flip") && allyFreed("sunny"));
+ok("grandfather is IDEMPOTENT (returns false once seeded — a re-map's cleared done can't wipe the stamp)", grandfather()===false && S.freed.tank===true && S.gearByAct[1].indexOf("Gem Sword")>=0);
+ok("durable gear is ACT-SCOPED: Act-1 Gem Sword never leaks into Act 2's arsenal (names repeat across acts)", actGearList(2).indexOf("Gem Sword")<0);
+ok("a FRESH save already has the durable fields, so grandfather() is a no-op", (function(){ S=fresh(); return grandfather()===false; })());
+
 grp("CLOUD-1: a wrong family code is flagged + cleared, never cached behind a false 'Connected ✓'");
 // cloudPull's 401 path is async; run it in a promise the host awaits before reporting (ctx.setTimeout is a stub).
 __pending = (async function(){

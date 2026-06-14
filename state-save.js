@@ -65,7 +65,12 @@ function removeProfile(id){ if(id==="teddy")return false;            /* never de
   if(ACTIVE===id){ applyProfile(profiles()[0].id); S=load(); }
   return true; }
 let S=load();
-function fresh(){return {v:1,act:1,ts:0,intro:false,scan:false,done:{},mastery:{},stars:0,coins:0,owned:{},gear:[],equip:{weapon:"none",cape:"red"},session:{count:0,day:"",rest:false}};}
+/* freed/gearByAct: durable "what's already earned" records for the gear/friend pacing spread —
+   freed[kind]=true once a friend is rescued; gearByAct[act]=[gear names] earned in that act. fresh
+   saves start with them present so grandfather() (game.js) no-ops; OLD saves lack them, so grandfather
+   seeds them ONCE from the current mission mapping. migrate() deliberately does NOT add them (the
+   absence is the seed trigger). */
+function fresh(){return {v:1,act:1,ts:0,intro:false,scan:false,done:{},mastery:{},stars:0,coins:0,owned:{},gear:[],gearByAct:{},freed:{},equip:{weapon:"none",cape:"red"},session:{count:0,day:"",rest:false}};}
 /* normalize ANY (old / partial / slightly broken) save object — never throws */
 function migrate(d){ if(!d||typeof d!=="object"||d.v!==1) return null;
   d.act=(typeof d.act==="number")?d.act:1; d.ts=d.ts||0;
