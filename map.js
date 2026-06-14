@@ -61,7 +61,11 @@ function mapPaintSVG(){
         <rect x="${-pw/2}" y="-17" width="${pw}" height="34" rx="13" fill="rgba(10,5,24,.82)" stroke="${st==="locked"?"#6a6090":"#ffce3a"}" stroke-width="2.2"/>
         <text x="0" y="6" text-anchor="middle" textLength="${pw-20}" lengthAdjust="spacingAndGlyphs" font-family="${lblFont}" font-size="17" fill="${st==="done"?"#9fe870":st==="locked"?"#9a92c0":"#ffe08a"}" letter-spacing="1">${nm}</text>
       </g></g>`;
-    if(zi===cur) hero=`<g transform="translate(${x-30} ${y-150}) scale(.26)">${heroNow(250).replace(/<svg[^>]*>|<\/svg>/g,"")}</g>`;
+    if(zi===cur){   /* PAINTED Teddy (heroMarquee, act-aware) standing AT the node — feet at its base, not floating on the disc */
+      const s=.62, hx=x-s*120, hy=(y+4)-s*226;   /* seat local feet (120,226) at (x, y+4) */
+      hero=`<ellipse cx="${x}" cy="${y+6}" rx="42" ry="12" fill="#0a0414" opacity=".5"/>`
+        + `<g transform="translate(${hx} ${hy}) scale(${s})">${heroMarquee(250).replace(/<svg[^>]*>|<\/svg>/g,"")}</g>`;
+    }
   });
   /* TIME PORTAL — opens once the Act-1 finale is cleared (story canon: Teddy follows
      the Vixen through it). Tapping it time-travels between Star Force City (Act 1) and
