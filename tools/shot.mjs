@@ -54,9 +54,14 @@ const port = server.address().port;
 const base = `http://localhost:${port}/index.html`;
 
 const page = await browser.newPage({ viewport: { width: 1024, height: 768}, deviceScaleFactor: 2 });
+// WebKit headless hangs the screenshot's font-wait on the Google-Fonts CDN; abort it
+// (parity shots fall back to system fonts — fine for layout/art checks). Chromium keeps real fonts.
+if (engine === "webkit") await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
 page.on("pageerror", e => console.log("  page error:", e.message));
-await page.goto(base, { waitUntil: "load" }); // networkidle never settles (PWA: SW/fonts/audio probing)
-await page.waitForTimeout(1500); // let boot + first paint settle
+// domcontentloaded, NOT load/networkidle: the PWA never goes idle and `load`
+// can stall on the Google-Fonts CDN (esp. WebKit) past the timeout.
+await page.goto(base, { waitUntil: "domcontentloaded" });
+await page.waitForTimeout(2000); // let boot, fonts + first paint settle
 
 for (const s of scenes) {
   const setup = SCENES[s];
