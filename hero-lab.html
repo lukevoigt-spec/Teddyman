@@ -70,7 +70,9 @@ document.getElementById("gAct2").innerHTML=
   `<div class="card" style="width:170px;"><div style="display:flex;justify-content:center;">${noahSVG(150)}</div><div class="lbl">Noah the Red</div></div>`+
   `<div class="card" style="width:200px;background:rgba(10,8,24,.5);"><div style="display:flex;justify-content:center;">${dragonSVG(170)}</div><div class="lbl">Dragon (boss)</div></div>`;
 
-document.getElementById("gVex").innerHTML=`<div class="card" style="width:230px;background:rgba(10,8,24,.6);"><div style="width:100%;display:flex;justify-content:center;">${inkblotSVG(180)}</div><div class="lbl">Lord Vex</div></div>`;
+document.getElementById("gVex").innerHTML=
+  `<div class="card" style="width:230px;background:rgba(10,8,24,.6);"><div style="width:100%;display:flex;justify-content:center;">${inkblotSVG(180)}</div><div class="lbl">Lord Vex</div></div>`+
+  `<div class="card" style="width:200px;background:rgba(24,6,20,.6);"><div style="width:100%;display:flex;justify-content:center;">${vixenSVG(180)}</div><div class="lbl">The Vixen (generated)</div></div>`;
 
 const allies=[["tank","Archie · Tank"],["flip","Ellie · Flip"],["sunny","William · Sunny"],["heart","Amelia · Heartguard"]];
 document.getElementById("gAlly").innerHTML=allies.map(([k,l])=>
