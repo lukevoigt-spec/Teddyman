@@ -197,7 +197,7 @@ ${kgear}
    inkblotSVG/vixenSVG. ---- */
 const RASTER={ "teddy-m0":true,"teddy-m1":true,"teddy-m2":true,
   "teddy-knight-m0":true,"teddy-knight-m1":true,"teddy-knight-m2":true,
-  "ally-tank":true, "ally-sunny":true, "ally-heart":true, "ally-flip":true };
+  "ally-tank":true, "ally-sunny":true, "ally-heart":true, "ally-flip":true, "ally-leighton":true };
 function rasterArt(file,w=210,a0="#ffce3a",a1="#3a7bff"){
 const u="r"+(__huid++);
 return `<svg viewBox="0 0 240 256" width="${w}" aria-hidden="true">
@@ -228,17 +228,21 @@ return `<svg viewBox="0 0 240 252" width="${w}" aria-hidden="true">
 
 /* ---- mentors (Mom & Dad chips) — unchanged ---- */
 function mentorChips(w=120){
-return `<svg viewBox="0 0 130 70" width="${w}" aria-hidden="true">
-<circle cx="35" cy="35" r="30" fill="#ffd9b8" stroke="#fff6e3" stroke-width="4"/>
-<path d="M10 24 Q14 4 36 4 Q58 4 60 24 Q50 12 36 14 Q20 14 10 24Z" fill="#6b4a2b" stroke="#150f2e" stroke-width="3"/>
-<path d="M22 48 Q35 56 48 47" stroke="#150f2e" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-<circle cx="27" cy="34" r="3" fill="#150f2e"/><circle cx="44" cy="34" r="3" fill="#150f2e"/>
-<path d="M20 52 Q35 60 50 51 L48 58 Q35 64 22 58Z" fill="#7a5a3a" opacity=".5"/>
-<circle cx="95" cy="35" r="30" fill="#ffd9b8" stroke="#fff6e3" stroke-width="4"/>
-<path d="M68 28 Q70 4 96 4 Q122 6 122 30 Q112 14 96 16 Q78 16 68 28Z" fill="#d8b572" stroke="#150f2e" stroke-width="3"/>
-<circle cx="87" cy="34" r="3" fill="#150f2e"/><circle cx="104" cy="34" r="3" fill="#150f2e"/>
-<path d="M82 48 Q95 56 108 47" stroke="#150f2e" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-<g fill="#f2a9c4"><circle cx="78" cy="58" r="3.4"/><circle cx="86" cy="61" r="3.4"/><circle cx="95" cy="62" r="3.4"/><circle cx="104" cy="61" r="3.4"/><circle cx="112" cy="58" r="3.4"/></g>
+const u="mc"+(__huid++);
+/* Mom & Dad mentors — generated rasters (art/dad.png + art/mom.png) side by side, each with a
+   soft signature aura + contact shadow. Used in the intro + interlude cutscenes; the cutscene's
+   faceSpeak bobs the whole portrait during narration, so no per-figure idle here. */
+return `<svg viewBox="0 0 460 250" width="${w}" aria-hidden="true">
+<defs>
+<radialGradient id="${u}d" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#3a7bff" stop-opacity=".28"/><stop offset="1" stop-color="#3a7bff" stop-opacity="0"/></radialGradient>
+<radialGradient id="${u}m" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff7d9c" stop-opacity=".28"/><stop offset="1" stop-color="#ff7d9c" stop-opacity="0"/></radialGradient>
+</defs>
+<ellipse cx="118" cy="120" rx="118" ry="126" fill="url(#${u}d)"/>
+<ellipse cx="342" cy="120" rx="118" ry="126" fill="url(#${u}m)"/>
+<ellipse cx="118" cy="234" rx="60" ry="12" fill="#0a0a18" opacity=".38"/>
+<ellipse cx="342" cy="234" rx="60" ry="12" fill="#0a0a18" opacity=".38"/>
+<image x="6" y="6" width="224" height="224" href="art/dad.png"/>
+<image x="230" y="6" width="224" height="224" href="art/mom.png"/>
 </svg>`;}
 
 /* ---- intro cityscape — unchanged ---- */
