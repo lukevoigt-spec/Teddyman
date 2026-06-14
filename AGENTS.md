@@ -35,6 +35,10 @@ Read both before working.
    finding + a concrete proposed fix + `file:line` evidence, so Neo can action it directly.
 4. **Sign every entry** `— <name>, <YYYY-MM-DD>`, and date your sections so stale notes are obvious.
 5. **Source-of-truth order:** `CLAUDE.md` (product) → `AGENTS.md` (process) → `QA.md` (advisory).
+6. **Trinity checks PRs on re-engagement.** Whenever a Trinity session is re-engaged after being idle,
+   her FIRST action is to list open PRs (`list_pull_requests`) and vet → squash-merge any guest QA PRs
+   before other work. (Subscriptions are per-PR, so the open event can't auto-notify; the human may also
+   just ping "guest pushed.")
 
 ## Branch protection
 **Leave it OFF for now.** GitHub branch protection is all-or-nothing per branch, so "require a PR"
