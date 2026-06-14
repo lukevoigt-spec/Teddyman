@@ -73,6 +73,44 @@ this is the "what we're doing right now" index.
 
 ---
 
+## 🧭 UI BACKLOG INDEX — at a glance (Trinity, 2026-06-14)
+
+Every UI finding/spec logged so far, by screen. Full detail in the dated sections below. **Status:** 📋 finding ·
+📐 spec ready · 🗂️ sequenced packet. **Ph1** = Phase-1 quick win (low-risk, ship now).
+
+**Home / Title**
+- **H1** 📋 Title logo font — taste call; style `.title-logo` only (act-swap + webfont traps).
+- **H2** 📋 Buttons too plain — CSS-premium / 9-slice; *never text-baked images*. **Cross-cutting** (every screen).
+- **H3** 📋 **Ph1** Subtitle is Act-1-only → generic tagline.
+- **H4** 📐 **Ph1** Collapse START+CONTINUE → one **PLAY** (→ map; keep first-run intro). *Decision: PLAY→map ✅.*
+
+**Intro / Calibration**
+- **I1** 📋 Intro boxy `.panelart` frame → full-bleed / generated (shared w/ interlude; pilot one beat).
+- **I2** 📋 Scan-calibration plain text tiles → premium gem chrome (keep Andika + sound→letter).
+
+**World Map** → see the **🗺️ MAP REWORK PACKET** (sequenced)
+- **M1** 📐 **Ph1** Map hero is old `heroSVG` → wire existing `teddyArt`, feet at node base.
+- **M2 / MR1** 📋 Overstimulation = no **hierarchy** (current node must dominate; scrim the bg).
+- **MR2** 📋 Path misalignment — baked into the painting; recalibrate `ZONESPOTS` per act (or new bg).
+- **MR3** 📋 Add a **control-cluster "legend"** (Home/Hero Den/gear) replacing the buried HUD dropdown.
+
+**Hero Base**
+- **B1** 📋 Base hero must stay **parametric** (loadout weapon/cape) → shade `heroSVG` so it's not "lesser".
+- **B2/B3** ↪ cross-ref the character-art resolver + H2 buttons.
+
+**Cross-cutting — characters & chrome**
+- **🖼️ UI Glow-up Audit** — inventory: only Teddy + Vixen are raster; everyone else old SVG (+ Neo's
+  visual-audit instructions: extend `shot.mjs` scenes, rollout order, uniform-canvas spec).
+- **📐 Character-art resolver + rollout** — `RASTER` manifest + `charArt()`; flip one boolean per character.
+- **🗂️ Prioritized punch-list** — Phase 1 quick wins → Phase 2 resolver → Phase 3 art-gen → Phase 4 chrome.
+
+**Specs ready for Neo right now:** H4 (one-PLAY) · M1 (map hero) · Character-art resolver · Map Rework Packet.
+**Ship-now quick wins:** H3, H4, M1-wire, B1(b) shade `heroSVG`.
+
+— Trinity, 2026-06-14
+
+---
+
 ## 🔍 CODE-REVIEW FINDINGS — verified by Claude 2026-06-14 (for the coding agent)
 
 An external review raised 5 findings. I checked each against the actual code. **4 are real and
