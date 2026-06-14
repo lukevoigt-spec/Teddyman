@@ -511,6 +511,67 @@ per zone) and labels feel like in-world signage — same "premium chrome" langua
 
 ---
 
+## 🖼️ UI GLOW-UP AUDIT — end-to-end (Trinity, 2026-06-14)
+
+Parent asked for a full sweep: find everywhere **old SVG** characters or **plain CSS** lag the new premium
+look. Below is what I can determine from the source; the rendered-per-screen eyeball is **Neo's to run on the
+desktop** (instructions at the end). This is the master inventory — the per-character build pattern is in the
+companion SPEC below.
+
+### A. Character-art inventory (generated raster ✅ vs OLD SVG ❌)
+| Character | Renderer | Raster? | Appears on |
+|---|---|---|---|
+| **Teddy** (hero/knight, m0–2) | `teddyArt` | ✅ `teddy-m*/teddy-knight-m*.png` | title, win, rest, intro origin + knight reveal (via `heroMarquee`) |
+| **Teddy on the MAP** | `heroNow`→`heroSVG` | ❌ old SVG | map current node (M1) |
+| **Teddy in Hero Base** | `heroNow`→`heroSVG` | ❌ old SVG | Base hero/loadout (game.js:1131) — *see nuance ‡* |
+| **Teddy in interlude / player-picker** | `heroNow`/`heroSVG` | ❌ old SVG | interlude noah3+end (435/447), picker cards (349) |
+| **Lord Vex / Vex Captain** | `inkblotSVG` | ❌ old SVG | intro panel2, boss battle, fortress, 2 boss cages |
+| **Dragon / wyrms (×4)** | `dragonSVG` | ❌ old SVG | Act-2 boss battle, fortress, 4 boss cages |
+| **The Vixen** | `vixenSVG` | ✅ `vixen.png` | interlude3, boss cage |
+| **Noah the Red** | `noahSVG` | ❌ old SVG | Act-2 intro (noah1/2/3) |
+| **Allies — faces** | `allyFace` | ❌ old SVG | win pop, hero-card mini, league shelf, `allyPop` |
+| **Allies — full body** | `allyBody` (ellie/amelia/leighton/archie) | ❌ old SVG | hero card art (hcArt) |
+| **Allies — map tokens** | `allyMapFig` | ❌ old SVG | freed friends on the map |
+| **Captives / Portal / City** | `captiveSVG`/`portalSVG`/`citySVG` | ❌ old SVG | interlude + intro panel1 |
+
+**So: Teddy + Vixen are raster; everyone else is old SVG — and Teddy himself is INCONSISTENT** (raster on
+title/win/rest via `heroMarquee`, but old SVG on map/Base/picker/interlude via `heroNow`). That split is the
+most visible "old art" problem.
+
+> **‡ CRITICAL nuance (don't let Neo over-swap):** the parametric `heroSVG` MUST stay where the **equipped
+> weapon + cape + gear** are previewed — i.e. the **Hero Base loadout** — because the generated raster is a
+> FIXED pose with no weapon/cape variants. Raster is for **fixed marquee poses + the map**; parametric SVG
+> stays for the loadout. (On the map, weapon/cape aren't really read anyway, so raster is fine there.)
+
+### B. Plain/simple UI lagging the premium look (cross-refs to the findings above)
+- **Buttons** (`.btn`/`.ghost`) — flat pills (finding **H2**); everywhere.
+- **Scan calibration tiles** — plain text buttons (finding **I2**).
+- **Intro `.panelart`** — boxy gold frame around old SVG (finding **I1**).
+- **Map nodes + zone labels** — generic glowing circle + flat pills (finding **M2**).
+- Worth Neo eyeballing for the same "plain vs painted" gap: **mission/learn tiles** (`.tile`), **forge/read
+  slots**, **boss HP bar**, **Progress + Grown-Up Corner chrome**, **Training Room / Shop cards**, **hero-card
+  flip**, **boss-cage bars**. (I can't see these rendered — see C.)
+
+### C. Instructions for Neo (he has the desktop + can SEE every screen)
+1. **Extend `tools/shot.mjs`** — the `SCENES` map only covers title/map/base/settings. Add scenes that drive
+   the game's own fns to reach every screen: a `scrIntro` beat (`startIntro()` then `paintIntro`), `scrScan`
+   (`startScan()`), a learn screen (`startLearn(MISSIONS.find(m=>m.type==='learn'))`), `scrForge`/`scrRead`,
+   `scrFortress`/`scrBoss`, `scrWin` (`showWin(...)`), `scrRest`, a hero card (`openHeroCard('flip')`), a boss
+   cage (`openBossCage(...)`), the Training Room + Shop, and the Grown-Up tabs. Shoot Chromium **and** `--webkit`.
+2. **Eyeball each shot against the premium bar** and tag: (a) any **old-SVG character** (per table A), (b) any
+   **plain CSS** that reads as "stamped UI" on the painted world, (c) contrast/touch/layout issues. Append a
+   short per-screen verdict to `QA.md` (your screenshots, your call as Lead Coder).
+3. **Generated-art rollout order (most-seen first):** map Teddy (M1) → **Vex + Dragon** (boss battles + cages,
+   high screen time) → **Noah** (Act-2 onboarding) → **allies** (faces + bodies + map tokens) → interlude bits
+   (captive/portal/city). Prompts already live in `art/CHARACTER-ART-PROMPTS.md` + `art/PROMPTS-chatgpt.md`.
+4. **Author every character PNG on a UNIFORM canvas** (so swaps are mechanical, like `teddyArt`'s 224-in-240×256):
+   same square canvas, transparent bg, character centered, **feet on a consistent baseline**, consistent headroom.
+   This lets the resolver in the SPEC below wrap any character identically.
+
+— Trinity, 2026-06-14
+
+---
+
 **Test commit by Grok (xAI):** Write access verified successfully! Added this line on 2026-06-13.
 
 ## 2026-06-13 Grok (xAI) Review — Latest Main (commit 060066c)
