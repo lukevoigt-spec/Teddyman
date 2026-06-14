@@ -70,7 +70,7 @@ let S=load();
    saves start with them present so grandfather() (game.js) no-ops; OLD saves lack them, so grandfather
    seeds them ONCE from the current mission mapping. migrate() deliberately does NOT add them (the
    absence is the seed trigger). */
-function fresh(){return {v:1,act:1,ts:0,intro:false,scan:false,done:{},mastery:{},stars:0,coins:0,owned:{},gear:[],gearByAct:{},freed:{},equip:{weapon:"none",cape:"red"},session:{count:0,day:"",rest:false}};}
+function fresh(){return {v:1,act:1,ts:0,intro:false,scan:false,done:{},mastery:{},stars:0,coins:0,owned:{},gear:[],gearByAct:{},freed:{},equip:{weapon:"none",cape:"red"},session:{count:0,day:"",rest:false},chests:{wood:0,silver:0,gold:0},repTick:0,chestDay:""};}
 /* normalize ANY (old / partial / slightly broken) save object — never throws */
 function migrate(d){ if(!d||typeof d!=="object"||d.v!==1) return null;
   d.act=(typeof d.act==="number")?d.act:1; d.ts=d.ts||0;
@@ -83,6 +83,11 @@ function migrate(d){ if(!d||typeof d!=="object"||d.v!==1) return null;
   if(d.session.day===undefined)d.session.day=""; if(d.session.count===undefined)d.session.count=0; if(d.session.rest===undefined)d.session.rest=false;
   if(typeof d.stars!=="number")d.stars=0; d.intro=!!d.intro; d.scan=!!d.scan;
   if(typeof d.coins!=="number")d.coins=0; d.owned=(d.owned&&typeof d.owned==="object")?d.owned:{};
+  /* TREASURE CHESTS (additive, save-safe): pending unopened counts + a training-rep counter + the last
+     daily-gift dayKey. Never wipes an existing save. */
+  d.chests=(d.chests&&typeof d.chests==="object")?d.chests:{wood:0,silver:0,gold:0};
+  ["wood","silver","gold"].forEach(t=>{ if(typeof d.chests[t]!=="number"||d.chests[t]<0)d.chests[t]=0; });
+  if(typeof d.repTick!=="number")d.repTick=0; if(typeof d.chestDay!=="string")d.chestDay="";
   /* #4 grandfather: an OLD save's already-PROFICIENT items have no okDayCount, so their Base ✦ gold
      would vanish the moment ✦ moved to "retained". Seed those to 2 correct-days. The per-item
      "okDayCount===undefined" guard makes this idempotent AND safe for NEW play: record() defines
@@ -185,6 +190,9 @@ function ensureDaily(){ const d=dayKey();
       const ks=Object.keys(S.history).sort(); while(ks.length>60)delete S.history[ks.shift()]; }
     S.daily={day:d, secs:0, trainSecs:0, missions:0, goalHit:false};
     if(!S.goalMin)S.goalMin=30;
+    /* daily SURPRISE = a wood gift, once/day (§6.0: daily reward is the smallest tier, a "hello" — never
+       a streak/"you missed a day" penalty, §6.1/#2). Gated on chestDay so it grants at most once per day. */
+    if(S.chestDay!==d){ S.chests=S.chests||{wood:0,silver:0,gold:0}; S.chests.wood=(S.chests.wood||0)+1; S.chestDay=d; }
     save();
   } else { if(!S.goalMin)S.goalMin=30; if(S.daily.trainSecs===undefined)S.daily.trainSecs=0; }
 }

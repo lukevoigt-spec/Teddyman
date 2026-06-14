@@ -170,7 +170,7 @@ function record(g,ok){ const m=mast(g); const wasMastered=masteredItem(g); m.see
     /* MASTERY > PARTICIPATION: the biggest micro-celebration fires the moment an item crosses into
        "mastered" (~5 solid reps) — a genuine, intermittent reward, louder than any coin/cosmetic. */
     if(!wasMastered && masteredItem(g)) masteryFlash(); }
-  else {m.str=Math.max(0,m.str-1); combo=0; if(typeof Sfx!=="undefined")Sfx.wrong();}   /* gentle soft cue, never harsh */
+  else {m.str=Math.max(0,m.str-1); combo=0; curMiss++; if(typeof Sfx!=="undefined")Sfx.wrong();}   /* gentle soft cue, never harsh; curMiss feeds the chest performance-tier */
   vaultTouch(g,ok);   /* Memory Vault: enroll on first mastery / advance the spaced schedule on a due review */
   save(); }
 /* ---- MASTERY (proficiency, not just completion) ----
@@ -376,7 +376,7 @@ function confetti(n){ const s=stageEl(); if(!s)return; n=REDUCE?12:(n||64);
     c.style.animationDuration=(1.1+Math.random()*0.9)+"s";
     if(Math.random()<.5)c.style.borderRadius="50%";
     s.appendChild(c); setTimeout(()=>c.remove(),2300); } }
-let combo=0;
+let combo=0, curMiss=0;   /* curMiss = wrong taps in the current mission → chest performance-tier (§6.0) */
 /* Lock every answer tile in a row once the round is decided, so a rapid-tapping
    child can't re-fire the SAME correct tile and farm phantom combos / skip reps —
    the lock auto-resets when the next prompt rebuilds the row. */
@@ -658,7 +658,7 @@ function pickFoils(g, pool, n){ const cands=pool.filter(x=>x!==g);
   const twin=(CONFUSE[g]||[]).find(p=>cands.includes(p));
   const out = twin ? [twin].concat(shuf(cands.filter(x=>x!==twin)).slice(0,n-1)) : shuf(cands).slice(0,n);
   return shuf(out); }
-function startMission(m){ clearFlow(); combo=0; CUR=m;
+function startMission(m){ clearFlow(); combo=0; curMiss=0; CUR=m;
   if(m.type==="learn")startLearn(m);
   else if(m.type==="patrol")startPatrol(m.set);
   else if(m.type==="read")startRead(m);
@@ -688,7 +688,12 @@ function missionComplete(){
     /* durably free the friend whose rescue mission this is (so a later rescue re-pacing keeps them freed) */
     const ally=LEAGUE.find(t=>t.mid===CUR.id); if(ally){ S.freed=S.freed||{}; S.freed[ally.kind]=true; }
     /* auto-equip a newly-forged weapon so it shows immediately (kid needn't visit the Base) */
-    if(gear==="Gem Sword")S.equip.weapon="sword"; else if(gear==="Word Hammer")S.equip.weapon="hammer"; }
+    if(gear==="Gem Sword")S.equip.weapon="sword"; else if(gear==="Word Hammer")S.equip.weapon="hammer";
+    /* TREASURE CHEST, performance-tiered (§6.0: payout weighted to mastery/accuracy, not mere completion):
+       milestone (mastery-gated finale/rescue) → GOLD; a clean no-miss mission → SILVER; else WOOD. */
+    S.chests=S.chests||{wood:0,silver:0,gold:0};
+    const ctier=(CUR.finale||CUR.rescue||CUR.type==="fortress")?"gold":(curMiss===0?"silver":"wood");
+    S.chests[ctier]=(S.chests[ctier]||0)+1; }
   save();
   if(firstTime && (CUR.finale||CUR.rescue||CUR.type==="fortress")) snapshot(CUR.lbl||("Mission "+CUR.id));  /* safety roll-back point */
   showWin(firstTime);
@@ -1338,6 +1343,9 @@ function paintBase(){
   { const due=vaultDueRoutable().length, vb=$("btnVault");
     if(vb){ vb.textContent = due ? ("🔋 RECHARGE ("+due+")") : "🔋 RECHARGE";
       vb.classList.toggle("vaultdue", due>0); } }
+  /* Treasure chests: show the GIFTS button only when a present is waiting (pulses to invite, never nags) */
+  { const n=pendingChests(), gb=$("btnGifts");
+    if(gb){ gb.style.display=n>0?"":"none"; gb.textContent="🎁 GIFTS ("+n+")"; gb.classList.toggle("vaultdue", n>0); } }
   /* U7 zero-state: hide an EMPTY collection card so a fresh save isn't four "0 / N · go earn it" rows
      at once. Gems stays as the single "first goal" when nothing's earned yet; league/villains/trophies
      appear only once they have something (strictly honours "show only EARNED items" — CLAUDE.md). */
@@ -1433,6 +1441,40 @@ const BASE_ITEMS=[
   {id:"crown",    nm:"Crown Stand", ic:"👑", cost:70},
   {id:"rocket",   nm:"Mini Rocket", ic:"🚀", cost:90}
 ];
+/* ---------------- TREASURE CHESTS (engagement §10, bound by §6.0) ----------------
+   A chest ALWAYS pays out (coins, often + a cosmetic) — never empty, never a loss, never a gamble:
+   "variable" = WHICH good thing, never WHETHER (constraints #1/#2). Earned by LEARNING (mission
+   performance / training reps / a daily hello), opened from the Hero Base. */
+const CHESTS={ wood:{coinMin:6,coinMax:10,cosmeticChance:.35,col:["#c8853a","#8a5a2b"]},
+  silver:{coinMin:12,coinMax:20,cosmeticChance:.6,col:["#dde2ea","#9aa3b0"]},
+  gold:{coinMin:24,coinMax:40,cosmeticChance:1,col:["#ffe07a","#e0a020"]} };
+function chestSVG(tier,size){ size=size||90; const c=(CHESTS[tier]||CHESTS.wood).col;
+  return `<svg viewBox="0 0 100 100" width="${size}" height="${size}" aria-hidden="true">
+    <ellipse cx="50" cy="89" rx="34" ry="6" fill="#0a0414" opacity=".4"/>
+    <rect x="20" y="52" width="60" height="33" rx="5" fill="${c[0]}" stroke="${PI_INK}" stroke-width="4"/>
+    <path d="M20 52 a30 17 0 0 1 60 0Z" fill="${c[1]}" stroke="${PI_INK}" stroke-width="4" stroke-linejoin="round"/>
+    <rect x="16" y="48" width="68" height="10" rx="3" fill="${c[1]}" stroke="${PI_INK}" stroke-width="4"/>
+    <g stroke="${PI_INK}" stroke-width="4"><line x1="37" y1="52" x2="37" y2="85"/><line x1="63" y1="52" x2="63" y2="85"/></g>
+    <rect x="44" y="58" width="12" height="15" rx="2" fill="#ffd23a" stroke="${PI_INK}" stroke-width="3"/>
+    <circle cx="50" cy="65" r="2.6" fill="${PI_INK}"/></svg>`; }
+function pendingChests(){ const c=S.chests||{}; return (c.wood||0)+(c.silver||0)+(c.gold||0); }
+function nextChestTier(){ const c=S.chests||{}; return c.gold>0?"gold":c.silver>0?"silver":c.wood>0?"wood":null; }
+/* open ONE chest: roll coins (always) + maybe an un-owned cosmetic (all owned → bonus coins, never a dud);
+   pour coins into the Base counter (flyReward), reveal a cosmetic via showUnlock, decrement + repaint. */
+function openChest(tier,done){ const cfg=CHESTS[tier]; if(!cfg||!(S.chests&&S.chests[tier]>0)){ if(done)done(); return; }
+  const coins=cfg.coinMin+Math.floor(Math.random()*(cfg.coinMax-cfg.coinMin+1));
+  let item=null;
+  if(Math.random()<cfg.cosmeticChance){ const un=BASE_ITEMS.filter(it=>!(S.owned&&S.owned[it.id]));
+    if(un.length)item=un[Math.floor(Math.random()*un.length)]; }
+  const bonus=item?0:Math.round(cfg.coinMin*0.5);   /* all cosmetics owned → small bonus coins so it's never a dud */
+  const gain=coins+bonus, before=S.coins||0; S.coins=before+gain;
+  if(item){ S.owned=S.owned||{}; S.owned[item.id]=true; }
+  S.chests[tier]=Math.max(0,(S.chests[tier]||0)-1); save();
+  try{ flashScreen("rgba(255,210,90,.42)"); confetti(tier==="gold"?64:40); if(typeof Sfx!=="undefined")Sfx.unlock(); }catch(e){}
+  const ctr=$("baseCoins"); if(ctr){ ctr.textContent=before; flyReward($("btnGifts")||$("stage"), ctr, gain); }
+  const finish=()=>{ paintBase(); if(done)done(); };
+  if(item)setTimeout(()=>showUnlock('<div style="font-size:90px;line-height:1;">'+item.ic+'</div>', item.nm, "NEW!", finish), 650);
+  else setTimeout(finish, 700); }
 let trainReps=0,trainSlot=0,trainCur,trainMiss=0;
 function trainPool(){ const t=taughtLetters(); return Object.keys(READWORDS).filter(w=>w.split("").every(c=>t.includes(c))); }
 function pickTrainWord(){ const pool=trainPool(); if(!pool.length)return null;
@@ -1477,7 +1519,11 @@ function trainDecode(w){ trainCur=w; trainMiss=0;
       else { record("w_"+w,false); trainMiss++; b.classList.add("dim");
         if(trainMiss>=2)cr.querySelectorAll(".picktile").forEach(x=>{if(x.dataset.w===w)x.classList.add("hint");}); readSoundOut(w); } };
     cr.appendChild(b); }); }
-function trainWin(el,w){ const bonus=combo>=3?2:1; const before=S.coins||0; S.coins=before+bonus; trainReps++; save();
+function trainWin(el,w){ const bonus=combo>=3?2:1; const before=S.coins||0; S.coins=before+bonus; trainReps++;
+  /* every 10 correct training reps → a wood chest (currency from LEARNING; pickTrainWord already weights
+     to weak/unmastered items, so the reps that earn it target need — §6.0 rule 3). */
+  S.repTick=(S.repTick||0)+1; if(S.repTick%10===0){ S.chests=S.chests||{wood:0,silver:0,gold:0}; S.chests.wood++; }
+  save();
   burstAt(el); coinFloat(el,bonus);                                  /* burst + the floating "+N" pop (§8 #7) */
   $("trainReps").textContent=trainReps; $("trainCoins").textContent=before;   /* counter starts pre-reward… */
   flyReward(el,$("trainCoins"),bonus);                               /* …then coins arc in + it counts up + bounces (plays Sfx.coin) */
@@ -1560,6 +1606,8 @@ function vaultBuild(it){ const w=it.w, sight=!!it.sight, units=vaultUnits(w,sigh
     cr.appendChild(b); }); }
 $("btnVault").onclick=()=>{ Aud.pick(); startVault(); };
 $("btnVaultBack").onclick=()=>{ Aud.stop(); showBase(); };
+/* open the next pending chest (gold → silver → wood) on tap */
+{ const gb=$("btnGifts"); if(gb)gb.onclick=()=>{ const t=nextChestTier(); if(!t)return; Aud.pick&&Aud.pick(); openChest(t); }; }
 /* ---- shop ---- */
 function openShop(){ paintShop(); $("shopPanel").classList.add("on"); }
 function paintShop(){ $("shopCoins").textContent=S.coins||0;

@@ -243,6 +243,18 @@ grp("ARTICULATORY CUE renderer (#3): mouthCue() returns an SVG for every shape t
 ok("mouthCue renders an <svg> for every distinct mouth shape in MOUTHCUE", (function(){ var seen={}; for(var k in MOUTHCUE)seen[MOUTHCUE[k].shape]=1;
   return Object.keys(seen).every(function(s){ var svg=mouthCue(s,60); return typeof svg==="string" && svg.indexOf("<svg")===0 && svg.indexOf("</svg>")>0; }); })());
 
+grp("TREASURE CHESTS (§10): migrate-safe + a chest is NEVER empty + no duplicate cosmetic");
+(function(){ var mg=migrate({v:1,done:{},mastery:{}});
+  ok("migrate adds chests {wood,silver,gold}=0 + repTick=0 + chestDay='' to an old save", mg.chests.wood===0 && mg.chests.silver===0 && mg.chests.gold===0 && mg.repTick===0 && mg.chestDay===""); })();
+ok("migrate repairs a partial/garbage chests object (no crash, all numbers >=0)", (function(){ var g=migrate({v:1,chests:{wood:-3,silver:"x"},done:{},mastery:{}}); return g.chests.wood===0 && g.chests.silver===0 && g.chests.gold===0; })());
+S=fresh(); S.chests.gold=1; S.coins=0; S.owned={};
+openChest("gold");
+ok("openChest('gold') always pays coins >= tier.coinMin (never empty)", S.coins>=CHESTS.gold.coinMin);
+ok("openChest decrements the opened tier", S.chests.gold===0);
+ok("a gold chest (cosmeticChance 1) grants a NEW un-owned cosmetic", (function(){ S=fresh(); S.owned={banner:true}; S.chests.gold=1; var n0=Object.keys(S.owned).length; openChest("gold"); return Object.keys(S.owned).length===n0+1 && S.owned.banner===true; })());
+ok("all-cosmetics-owned chest still pays coins (no dud)", (function(){ S=fresh(); BASE_ITEMS.forEach(function(it){S.owned[it.id]=true;}); S.chests.wood=1; S.coins=0; openChest("wood"); return S.coins>0; })());
+ok("opening with no pending chest is a safe no-op", (function(){ S=fresh(); var c=S.coins; openChest("gold"); return S.coins===c && S.chests.gold===0; })());
+
 grp("CLOUD-1: a wrong family code is flagged + cleared, never cached behind a false 'Connected ✓'");
 // cloudPull's 401 path is async; run it in a promise the host awaits before reporting (ctx.setTimeout is a stub).
 __pending = (async function(){
