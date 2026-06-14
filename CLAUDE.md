@@ -242,6 +242,13 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   Miss Kendall (tall, dark hair in a low ponytail). ART CONSTRAINT: this is a 7-year-old's app and the
   cast are his real family/friends — keep ALL character art wholesome and age-appropriate (heroic/strong
   is fine, e.g. a superhero-fit Dad; do NOT make any character sexualized).
+- UI / NAV BACKLOG (parent, 2026-06-14 — notes to revisit, NOT yet done): (i) BUTTONS feel too plain —
+  revisit ALL buttons; explore image-based/textured button art for a more premium "game" feel (keep
+  touch targets ~96px+, high contrast). (ii) TITLE/HOME: parent doesn't love the button under START
+  (the Hero Base shortcut); reconsider its look/placement. (iii) NAVIGATION is janky — START and
+  CONTINUE appear to do roughly the same thing; rethink the title→play flow so it's clear. (iv) SUBTITLE
+  "THE POWER GEMS OF STAR FORCE CITY" is Act-1-specific — come up with a GENERIC subtitle/tagline around
+  the hero that works for BOTH Act 1 and Act 2 (or swap per act). (Recorded while doing painted-Teddy art.)
 - PLANNED ENHANCEMENTS (parent-prioritized backlog — "identify 10, do best-first"): (1) AUDIO WORKFLOW
   REDO — streamline + bulletproof the record/ElevenLabs/export/publish pipeline (parent flagged; highest
   learning leverage). (2) SETTINGS OVERHAUL — game-like, intuitive, add missing settings; study how real
