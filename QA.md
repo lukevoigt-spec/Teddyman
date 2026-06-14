@@ -1467,6 +1467,15 @@ The render→generate→integrate→verify loop is working end-to-end.
 deploy on **old iPads / cellular**, consider **optimizing** them (pngquant/oxipng ≈ 60–70% smaller, or WebP) and
 whether all 6 Teddy tiers are needed. The SW caches after first load, but first-load + updates still pull it all.
 
+> **Reviewed `af9e345` (Trinity, 2026-06-14):** Dragon + Noah generated art — **both premium + on-brief** (Dragon =
+> fierce crimson fire-breathing boss; Noah = red-haired/bearded wizard + glowing staff, Gandalf-coded). Clean
+> approach: `dragonSVG`/`noahSVG` bodies swapped to `rasterArt(...)` wrappers so every call site (boss battles,
+> fortress, the 4 wyrm cages, Noah's intro) auto-upgrades with no churn (−124 lines of old SVG); cage transparency
+> works behind the bars. Vex also raster (`inkblotSVG`→`vex.png`). **Cast is now ~all raster** (Teddy×6, Vixen,
+> Vex, Dragon, Noah, 5 allies). No bugs; tests green (41/40). ⚠️ The **PNG-weight finding above is now more
+> pressing** (~15 PNGs ≈ ~5 MB of character art) — worth a pngquant/WebP pass soon. (Remaining old-SVG: Kendall
+> placeholder, captive/portal/city interlude bits, and the small `allyFace`/`allyMapFig` icons — fine.)
+
 ---
 
 ## 📐 SPEC FOR NEO — Gear + friend-rescue pacing spread (Trinity, 2026-06-14)
