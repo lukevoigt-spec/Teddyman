@@ -13,6 +13,13 @@ Read both before working.
 | **Cypher** | Guest QA | Grok | `QA.md` only — via a **PR** Trinity merges. |
 | **Tank** | Guest QA | Gemini | `QA.md` only — via a **PR** Trinity merges. |
 
+## Tooling note (art/media generation)
+**Neo can generate images AND video** via the **Grok** and **ChatGPT advanced APIs** (tokens configured locally) — so
+art-lane items are *buildable by Neo*, not blocked on the parent. This is why QA art findings (map bg regen, the U10
+intro-city image, character/icon renders, weapon/pet art) can be specced as "regenerate via the gen pipeline." Authoring
+conventions live in `art/CHARACTER-ART-PROMPTS.md`; raster drop-in is flagged in `art.js`'s `RASTER` manifest. (Cloud
+QA agents can't generate — they spec; Neo generates + commits.)
+
 ## Know who you are
 - Local **desktop** Claude Code session → you are **Neo**.
 - **Cloud / web** Claude session → you are **Trinity**.

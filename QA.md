@@ -362,6 +362,28 @@ const hx = x - s*120, hy = (y+4) - s*226;
 both `<text>` elements: `textLength="60" lengthAdjust="spacingAndGlyphs"`. (Name labels can squeeze slightly — unlike
 learning letters, distortion here is acceptable. Optional: only apply `textLength` when the name is long.)
 
+### 🗺️ MAP REDO — regenerate the background, then rebuild the path (parent directive, 2026-06-14)
+**Parent still doesn't love the world map — "feels so busy in a bad way."** This supersedes the cosmetic map fixes
+(U2 label contrast / U6 hierarchy / U12 hero-clip) with a **full art redo**, not a tweak. Confirmed on my real renders:
+the **Act-1 Star Force City map is the worst offender** — wall-to-wall high-saturation neon detail with no negative
+space, so the glowing nodes + labels + hero have **nothing to sit against** (poor figure-ground; the busyness fights
+the interactive layer). Note for the brief: the **Act-2 medieval map already reads better** (calmer, atmospheric, more
+negative space) — use it as the *bar*, and bring Act 1 up to it.
+- **The plan (parent's call):** (1) **regenerate the painted background image** with a calmer composition, then
+  (2) **rebuild the path + ZONESPOTS** overlay to the new art. Neo can do the regen via the image-generation APIs
+  (see the AGENTS.md tooling note).
+- **Art direction for the regen prompt:** a clear *journey* read — a **legible winding path** with **negative
+  space/atmosphere around it**, surroundings **desaturated/lower-contrast** so the path and the glowing zone nodes
+  **pop** (figure-ground first); a few **distinct landmarks** at the zone spots (not uniform clutter); consistent
+  depth/lighting; single screen, no scroll; **1000×750** authoring space to match `ZONESPOTS`. Keep the hero + nodes +
+  labels as the brightest things on screen — the background should *recede*. Per act: keep the sci-fi (Act 1) vs
+  medieval (Act 2) identity, but both calm.
+- **Code targets (`map.js`):** swap `MAPIMG` background (`art/bg-map.jpeg` Act 1, `art/bg-map-a2.jpeg` Act 2), then
+  **recalibrate `ZONESPOTS[act]`** `[x,y]` per zone to the new path (this is the **MR2** recalibration — fold U12's
+  hero-clip floor `y ≥ ~150` in here so the current-zone hero never collides with the top HUD). `mapPaintSVG()` overlay
+  logic stays; only the bg art + the spot coordinates change. Re-verify with `node tools/shot-cloud.mjs map a2map`.
+- **Save-safe:** art + coordinate change only — no save schema impact.
+
 ### Recommended sequence for Neo
 1. **U1 touch targets** (ear 52→≥72/96, roundbtn 54→≥72) — CSS-only, hard-constraint, ship today.
 2. **U2 contrast** (map labels + subtitle + progress pips) — CSS/`map.js`, low risk.
