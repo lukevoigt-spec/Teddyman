@@ -54,6 +54,7 @@ const SCENES = {
   learn_r: `(startLearn({letter:"r"}), 1)`,
   find:    `(function(){ CUR={id:1}; startFind("a",4); return 1; })()`,
   trace:   `(startTrace("s"), 1)`,
+  gate:    `(showParentGate(), 1)`,
   read:    `(function(){ CUR={id:5}; readWords=["cat"]; readIx=0; readGoal=1; readMiss=0; show('scrRead'); nextRead(); return 1; })()`,
   picons:  `(function(){ show('scrRead'); document.getElementById('readWord').innerHTML=''; var cr=document.getElementById('readChoices'); cr.innerHTML=''; ['sun','hat','cup','cat','dog','pig'].forEach(function(o){ var b=document.createElement('button'); b.className='tile picktile'; b.style.fontSize='64px'; b.innerHTML=picIcon(o,''); cr.appendChild(b); }); return 1; })()`,
   scancta: `(function(){ show('scrScan'); narrate('scan',document.getElementById('scanText'),['scan_intro']); clearFlow(); showTapStart('72%'); return 1; })()`,

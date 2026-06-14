@@ -68,6 +68,17 @@
   </div>
 
   <div class="roundbtn" id="btnSkip" title="Skip" style="position:absolute;right:16px;bottom:16px;display:none;z-index:8;width:64px;height:64px;"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M5 5l9 7-9 7V5zm11 0h3v14h-3V5z"/></svg></div>
+  <!-- U3 P3: cognitive math-gate — confirms a grown-up after the 3s gear-hold -->
+  <div id="parentGate">
+    <div class="pg-card">
+      <div class="pg-title">Grown-ups only 🔒</div>
+      <div class="pg-sub">Tap the answer to continue</div>
+      <div class="pg-q" id="pgQ"></div>
+      <div class="pg-opts" id="pgOpts"></div>
+      <button class="btn ghost sm" id="pgCancel">Cancel</button>
+    </div>
+  </div>
+
   <!-- U4: big primary "tap to play" CTA shown during the intro-narration phase of scan/forge (audio still auto-advances) -->
   <button id="tapStart" class="tapstart" style="display:none;" aria-label="Tap to play">
     <span class="ts-orb"><svg viewBox="0 0 24 24" width="64" height="64" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>

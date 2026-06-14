@@ -1662,14 +1662,32 @@ function paintPlayers(){ const list=$("playersList"); if(!list)return; list.inne
       x.onclick=()=>{ if(confirm("Remove player \""+p.name+"\" and their progress?")){ removeProfile(p.id); paintPlayers(); paintTitle(); } }; row.appendChild(x); }
     list.appendChild(row); }); }
 $("btnAddPlayer").onclick=()=>{ const nm=prompt("New player name?"); if(nm&&nm.trim()){ addProfile(nm); paintPlayers(); paintTitle(); } };
-/* ADULT GATE: the Grown-Up Corner opens only on a 3-second PRESS-AND-HOLD, so
-   Teddy can't wander in and change things. The gear fills/grows while held. */
+/* ADULT GATE: the Grown-Up Corner opens only on a 3-second PRESS-AND-HOLD (the INTENT trigger so
+   Teddy can't wander in), THEN a quick MATH challenge confirms a grown-up (U3 P3). The gear grows
+   while held. */
 (function(){ const g=$("btnGear"); if(!g)return; let t=null;
   const start=e=>{ if(e&&e.preventDefault)e.preventDefault(); clearTimeout(t); g.classList.add("holding");
-    t=setTimeout(()=>{ g.classList.remove("holding"); Aud.pick&&Aud.pick(); openSettings(); },3000); };
+    t=setTimeout(()=>{ g.classList.remove("holding"); Aud.pick&&Aud.pick(); parentGate(); },3000); };
   const cancel=()=>{ clearTimeout(t); g.classList.remove("holding"); };
   g.addEventListener("pointerdown",start);
   ["pointerup","pointerleave","pointercancel"].forEach(ev=>g.addEventListener(ev,cancel)); })();
+/* COGNITIVE GATE (U3 P3): adult-easy / kid-hard — two 2-digit addends WITH regrouping (a 7yo learning
+   math can't breeze a single-digit sum). Pass → open + remember for the session; re-challenged when the
+   app is backgrounded or after a few idle minutes. Wrong = gentle dismiss (no scold, no entry). */
+let __parentOK=0; const PARENT_OK_MS=5*60*1000;
+function parentGate(){ if(Date.now()-__parentOK < PARENT_OK_MS){ openSettings(); return; } showParentGate(); }
+function showParentGate(){ let a,b; do{ a=11+Math.floor(Math.random()*28); b=11+Math.floor(Math.random()*28); }while((a%10)+(b%10)<10);
+  const ans=a+b, opts=new Set([ans]);
+  while(opts.size<3){ const d=[-10,10,-1,1,9,-9][Math.floor(Math.random()*6)], f=ans+d; if(f>0&&f!==ans)opts.add(f); }
+  $("pgQ").textContent=a+" + "+b;
+  const row=$("pgOpts"); row.innerHTML="";
+  [...opts].sort(()=>Math.random()-.5).forEach(v=>{ const btn=document.createElement("button"); btn.className="btn"; btn.textContent=v;
+    btn.onclick=()=>{ if(v===ans){ __parentOK=Date.now(); hideParentGate(); openSettings(); } else hideParentGate(); };
+    row.appendChild(btn); });
+  $("parentGate").classList.add("on"); }
+function hideParentGate(){ const p=$("parentGate"); if(p)p.classList.remove("on"); }
+if($("pgCancel"))$("pgCancel").onclick=hideParentGate;
+document.addEventListener("visibilitychange",()=>{ if(document.hidden)__parentOK=0; });   /* re-challenge after backgrounding */
 $("btnCloudConnect").onclick=()=>cloudConnect($("cloudSecret").value);
 $("btnCloudOff").onclick=()=>{ cloudOff(); $("cloudSecret").value=""; };
 $("btnCloseSettings").onclick=()=>$("settingsPanel").classList.remove("on");
