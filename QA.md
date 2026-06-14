@@ -1454,6 +1454,68 @@ variants) → P4 derivational + spelling-change rules (likely Act 3).
 
 ---
 
+## 📐 SPEC FOR NEO — Gear + friend-rescue pacing spread (Trinity, 2026-06-14)
+
+The parent approved the "full re-tune"; muscle is done (derived, no risk). This is the gear + friends piece —
+the **save-affecting** one.
+
+### ⚠️ READ FIRST — the honest framing (a real decision for the parent)
+This re-tune **mainly benefits a FRESH playthrough.** Teddy is one child playing once: if he's already past the
+front-loaded section (gear at missions 1/3/4/8, friends at 3/6/8), the re-map **does nothing for him** (he has
+them), and done naïvely it would **un-earn** his current gear/friends. So either: **(a)** ship it *grandfathered*
+(never removes what's earned — spec below), valuable for future players / a reset; or **(b)** skip it if Teddy's
+mid/late Act-1 and there's no fresh player coming. **Ask the parent where Teddy is before building.** The muscle
+spread already fixed the most-felt front-loading with zero risk.
+
+### Why it's risky (the storage duality)
+- **Gear:** `S.gear` is durable (pushed on earn, game.js:554) BUT the hero's appearance + weapon unlocks
+  re-derive from **`actGearList`** = `GEAR_AT` ∩ done (game.js:70). Re-mapping `GEAR_AT` → `actGearList` drops gear
+  whose new mission isn't done yet → **hero loses belt/boots/weapon he had.**
+- **Friends:** purely derived — `allyFreed = !!S.done[allyMid]` (allies.js:23). Move an ally's `mid` → a not-yet-
+  done mission → the **freed friend disappears from the league.**
+
+### A. Gear spread (the front-load is just 4 items)
+`GEAR_AT` Act-1 is already mostly at milestones; only **belt(1) · boots(3) · hammer(4) · sword(8)** are front-
+loaded. Proposal: keep **Word Hammer early** (~m4, the first-weapon dopamine) and push the others to later zone
+finales so the hero powers up across the act, e.g. Sword→26 (Vex Captain), Belt→33, Boots→47. Keep gear NAMES
+(they drive appearance + the weapon unlocks: Gauntlet→lasso, Crown→bow, Belt→mace, Boots→lance).
+**Grandfather:** make `actGearList(a)` return the **union** of (derived `GEAR_AT`∩done) **and** (`S.gear` for this
+act) so a re-map only changes *future* unlock points, never removes earned gear. ⚠️ Gear names repeat across acts
+(Gem Sword / Power Belt / Rocket Boots) — act-scope the `S.gear` union by checking the item was earned via *this*
+act's missions (store `{gear, act}` in S.gear, or gate the union by act).
+
+### B. Friend-rescue spread
+Today: tank(3) · flip(6) · sunny(8) cluster in zone 1, heart(17) zone 2, leighton(48) finale. Spread to **one
+friend per early/mid zone** (≈ every 8–10 missions): tank→z1, flip→z2, sunny→z3, heart→z4ish, leighton stays the
+finale. Update `CAGED` mids + `allyMid`(allies.js:21) + `mapFriends`(map.js:27) + the `rescue:true` flag + each
+mission's narrative **label** (the rescue beat moves with the friend — keep the story coherent per zone).
+**Grandfather:** store freed allies durably (`S.freed[kind]=true` on rescue) and make `allyFreed = S.freed[kind]
+|| !!S.done[allyMid(kind)]` so a re-map never un-frees an earned friend.
+
+### Gotchas
+- The **grandfather is mandatory** (both A + B) or existing saves regress — this is the whole risk.
+- Gear ↔ **weapon-unlock** coupling: moving Belt/Boots moves when mace/lance unlock (Act-2) — keep coherent.
+- Rescue missions carry **narrative labels + the mastery gate** (`rescue:true` → `coreWeak`); moving them moves
+  the cutscene + keeps the gate.
+- `S.gear` shared across acts (the repeat-names issue) — act-scope carefully.
+- This only changes *new* unlocks for a grandfathered save, so **verify on a mid-campaign save** that nothing
+  visually disappears.
+
+### Tests (`save.test`)
+- A save that earned belt@m1 keeps the belt after `GEAR_AT` re-map (grandfather union).
+- A save that freed tank@m3 keeps tank after `allyMid` re-map (durable `S.freed`).
+- `migrate` seeds `S.freed` from existing `S.done`+old mids (so already-freed friends stay freed).
+- `curriculum.test`: every `rescue:true`/gear mission still exists + decodable; one friend per zone.
+
+### Phasing
+P1 add the grandfather plumbing (S.gear act-union + `S.freed` + migrate) and PROVE no regression on a loaded save
+→ P2 re-map gear (sword/belt/boots later) → P3 re-time friend rescues one-per-zone (+ labels). Don't do P2/P3
+before P1.
+
+— Trinity, 2026-06-14
+
+---
+
 **Test commit by Grok (xAI):** Write access verified successfully! Added this line on 2026-06-13.
 
 ## 2026-06-13 Grok (xAI) Review — Latest Main (commit 060066c)
