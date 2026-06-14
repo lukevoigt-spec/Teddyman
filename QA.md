@@ -51,7 +51,8 @@ hero** (M1, partial); muscle pacing spread; the settings overhaul; equippable we
 "Connected" (`cloudPull` collapses `401`→`false`). **MAP-2** — `.mnode.locked{pointer-events:none}` silences the
 `locked_tip` cue. Plus the UI punch-list (buttons **H2**, map revamp **MR1–3**, intro **I1**, parent-hub **P1**…)
 and the pedagogy specs (Vault #1 onward).
-**Still to propose:** gear / friend-rescue **pacing spread** (muscle done; the rest 📋).
+**Approved to build (grandfathered):** gear / friend-rescue **pacing spread** 📐 — parent GREENLIT; Neo builds
+the grandfather plumbing FIRST (S.gear act-union + `S.freed` + migrate, prove no regression), then re-maps. (Muscle done.)
 
 ### Guardrails
 - `node tests/curriculum.test.js` + `node tests/save.test.js` must pass before any push (exit 0). Latest:
@@ -1455,6 +1456,10 @@ variants) → P4 derivational + spelling-change rules (likely Act 3).
 ---
 
 ## 📐 SPEC FOR NEO — Gear + friend-rescue pacing spread (Trinity, 2026-06-14)
+
+> **✅ PARENT GREENLIT (2026-06-14): BUILD IT, grandfathered.** Teddy's early (or a reset/new player is coming),
+> so the spread is worth it. **Hard requirement: plumbing-first** — ship the grandfather (S.gear act-union +
+> durable `S.freed` + migrate) and PROVE no regression on a loaded save BEFORE re-mapping any gear/rescue ids.
 
 The parent approved the "full re-tune"; muscle is done (derived, no risk). This is the gear + friends piece —
 the **save-affecting** one.
