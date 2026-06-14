@@ -234,12 +234,76 @@ auto-remove and can't hang a flow.
 
 ---
 
-## 7. Layout & spacing
+## 7. Layout & Navigation
+### 7.1 Layout & spacing (structure)
 - One `#stage` (max-width 1180px) holds absolutely-positioned `.screen`s; one is `.on`.
 - Generous gaps (12–18px), centered columns, big margins — never cramped.
 - Painted scene = `#bgLayer` behind everything (`BG_MAP` swaps per screen; transparent
   fallback keeps the SVG/gradient look if an art file is missing). **Everything else must
   match the painted-art quality** — that's the whole point of this doc.
+- **Landscape-first.** Research on ADHD learners favours a stable landscape stage for focus; our
+  fixed `#stage` already assumes it. Don't design portrait-only layouts.
+
+### 7.2 Navigation philosophy (1 line)
+**For a pre-reader with ADHD, good navigation = exactly ONE obvious thing to do per screen, in the SAME place every
+time, shown by icon + audio (never text alone) — and the learning content is the single focal point; chrome recedes.**
+Full principle in `AGENTS.md`; the open UI/NAV work it drives is the CLAUDE.md "UI / NAV BACKLOG".
+
+### 7.3 The authorities (what we're standing on)
+Layout/nav has its own canon, the equivalent of the juice canon:
+- **Game-UI taxonomy** — *diegetic · non-diegetic · spatial · meta* (Fagerholt & Lorentzon, "Beyond the HUD", 2009). We
+  already span it: the city-name HUD chip + bubble = **non-diegetic** chrome; the painted map nodes ("you are here",
+  done/current/locked) = **spatial** wayfinding; cinematic grade/letterbox = **meta**. Prefer **spatial** cues for
+  wayfinding (a pre-reader reads a *journey*, not a menu) and keep critical controls **non-diegetic and dead-obvious**.
+- **Usability heuristics** — Nielsen's 10 + the **game-specific PLAY/Pinelle** sets (game usability = "the degree to
+  which a player can *learn, control, and understand*"). The ones we live by: **visibility of system status** (always
+  show where he is + what's next), **user control & freedom** (an exit/Home/⏭ is *always* present — also hard
+  constraint #8), **consistency & standards**, **recognition over recall**, **minimalist design**, **error
+  prevention/forgiving** (no dead-ends, no fail states).
+- **Interaction laws** — **Hick's Law** (decision time grows with choices → *one* primary action per screen, demote the
+  rest); **Fitts's Law** (big + close = fast; screen **corners/edges are "infinite" targets** → park persistent
+  controls there); **Jakob's Law** (match game/app conventions players already know); **Miller's Law** (cap simultaneous
+  items); **Norman** affordances/signifiers + feedback and **Krug**'s "don't make me think" (a control must *look*
+  tappable and self-evident); **progressive disclosure** (child surface minimal; parent/advanced behind the Grown-Up
+  gate); **Gestalt** proximity/common-region for grouping.
+- **Touch ergonomics** — Apple HIG **44pt** / Material **48dp** are *floors*; we exceed at **~96px** (non-negotiable
+  #2). **Thumb zones** (Hoober): on a two-handed landscape tablet the easy reach is the **bottom + bottom corners**;
+  top-centre is the "stretch" zone → put **status up top, ACTIONS at the bottom/corners** (this is exactly why the map
+  feels crammed — painted objects + controls fight in the top).
+
+### 7.4 Our navigation rules (apply these)
+1. **One primary action per screen** (Hick) — the single big "what do I do now" CTA, visually dominant; everything else
+   is demoted/secondary. *(This is the fix for the "START vs CONTINUE do the same thing" jank — two co-equal primaries
+   is the violation.)*
+2. **Persistent global nav, identical every screen** — the city-chip menu (World Map / Hero Base / Home) lives in the
+   **same spot on every screen incl. the title**, so he never hunts. Consistency > cleverness (Jakob).
+3. **Icon + audio, never text alone** (pre-reader) — every control has a clear glyph **and** a tap-to-hear; the same
+   concept always uses the **same icon/color** (recognition, not recall). No control depends on reading a word.
+4. **Status top, actions bottom/corners** (Fitts + thumb zones) — HUD/status along the top; primary + persistent
+   controls along the bottom and in the reachable corners, off the painted focal area.
+5. **Spatial wayfinding** — the map is a literal **journey** (done ✓ / current pulse / locked 🔒); "you are here" is
+   always unmistakable, so progress reads without literacy.
+6. **Always an exit** — Home / Back / ⏭ skip present on every screen and never disabled (user control & freedom +
+   constraint #8); a child can never get lost, stuck, or trapped by audio.
+7. **One focal point = the learning content** — size/color/motion hierarchy makes the decodable content the brightest,
+   most central thing; chrome is quieter (ties to non-negotiable #4 and the juice rule "never juice the prompt").
+8. **Forgiving & predictable** — same gesture does the same thing everywhere; no hidden modes; no dead-ends. Errors are
+   prevented, not punished.
+
+### 7.5 Where this lands (the open backlog)
+These rules are the lens for CLAUDE.md's **UI / NAV BACKLOG**: (iii) START-vs-CONTINUE jank = rule #1; (i) "plain
+buttons" = affordance/signifier craft (§3) so a button *reads* as pressable; (ii) the title Hero-Base shortcut's
+placement = rules #2/#4; and the **Settings overhaul** = progressive disclosure + game-convention layout (Jakob — lay
+it out like settings in real kids' games). Re-skin per act (§0.5) but keep the *nav structure* identical across acts.
+
+### 7.6 Sources
+[Diegetic/non-diegetic/spatial/meta UI taxonomy](https://medium.com/@lorenzoardeni/types-of-ui-in-gaming-diegetic-non-diegetic-spatial-and-meta-5024ce6362d0) ·
+[Game UX & diegesis theory](https://uxdesign.cc/understanding-ux-in-video-games-diegesis-theory-f59d5a94cbcf) ·
+[PLAY game usability heuristics (Desurvire/Pinelle)](https://link.springer.com/chapter/10.1007/978-3-642-02774-1_60) ·
+[Heuristic usability evaluation for educational games](https://files.eric.ed.gov/fulltext/ED621970.pdf) ·
+[NN/g — touch target size](https://www.nngroup.com/articles/touch-target-size/) ·
+[Thumb-friendly navigation](https://pageoneformula.com/designing-for-thumb-friendly-navigation-2/) ·
+[Designing an interactive learning app for ADHD children](https://www.matec-conferences.org/articles/matecconf/pdf/2018/56/matecconf_aasec2018_16008.pdf).
 
 ---
 

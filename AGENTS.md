@@ -73,6 +73,23 @@ and never fights the pedagogy:
 
 — Trinity, 2026-06-14
 
+## Design working-principle — layout & navigation
+Distilled from the game-UI/usability canon (full version + sources in `STYLE.md §7`). For a **pre-reader with ADHD**:
+1. **One obvious action per screen** (Hick's Law) — a single dominant CTA; never two co-equal primaries (that's the
+   START-vs-CONTINUE jank). Demote everything else.
+2. **Same nav, same place, every screen** (consistency / Jakob's Law) — the persistent menu and Home/Back/⏭ never move
+   and are never disabled (also hard constraint #8: always an exit, can't get lost or hang on audio).
+3. **Icon + audio, never text alone** — a pre-reader navigates by glyph + sound; the same concept always uses the same
+   icon/colour (recognition, not recall).
+4. **Status up top, ACTIONS at the bottom/corners** (Fitts + tablet thumb-zones) — keep controls off the painted focal
+   area; corners are "infinite" targets.
+5. **One focal point = the learning content** — chrome recedes; the decodable content is always the brightest, most
+   central thing (ties to #4 anti-gaming and the juice rule "never juice the prompt").
+6. **Forgiving & predictable** — no dead-ends, no hidden modes; errors prevented, never punished. Re-skin chrome per act
+   (`STYLE.md §0.5`) but keep the nav *structure* identical across acts.
+
+— Trinity, 2026-06-14
+
 ## Branch protection
 **Leave it OFF for now.** GitHub branch protection is all-or-nothing per branch, so "require a PR"
 would also block Trinity's (and Neo's) direct commits. The guest-PR → squash-merge flow is enforced
