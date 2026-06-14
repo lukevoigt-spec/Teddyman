@@ -65,6 +65,7 @@ const SCENES = {
   scanintro: `(function(){ show('scrScan'); narrate('scan',document.getElementById('scanText'),['scan_intro']); clearFlow(); return 1; })()`,
   menu: `(function(){ toMap(); document.getElementById('navMenu').classList.add('on'); return 1; })()`,
   chests: `(function(){ S.chests={wood:2,silver:1,gold:1}; S.coins=40; [1,3].forEach(function(i){S.done[i]=true;}); paintBase(); show('scrBase'); return 1; })()`,
+  rankbar: `(function(){ show('scrBase'); paintBase(); var pf=document.getElementById('powerFill'); if(pf)pf.style.width='62%'; document.getElementById('powerLbl').textContent='SUPER HERO'; return 1; })()`,
   basefull:`(function(){ [1,3,4,6,8].forEach(function(i){S.done[i]=true;}); S.coins=40; S.owned={banner:1}; paintBase(); show('scrBase'); return 1; })()`,
 };
 

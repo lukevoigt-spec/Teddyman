@@ -266,6 +266,17 @@ function heroOpts(){ /* muscle + gear come from THIS act's progress, so a new ac
            theme: actInfo(a).theme||"hero",
            belt2:gear.includes("Power Belt"), boots2:gear.includes("Rocket Boots") }; }
 function heroNow(w){ return heroSVG(w,heroOpts()); }
+/* HERO POWER METER (comprehensible, pre-reader): which rank tier + how FULL the bar is toward the next.
+   Bands match heroOpts's muscle thresholds (28%/60% of the act's missions) so the bar literally explains
+   the hero's growth the child already watches. Rank = ADVENTURE progress (the reward layer is what's
+   mastery-gated, §6.0). At top tier the bar fills toward "MAX POWER". */
+let __rankedUp=false;
+function heroProgress(){ const a=currentAct(), am=actMissions(a), total=am.length||1;
+  const done=am.filter(m=>S.done[m.id]).length, r=done/total, tier=heroOpts().muscle;
+  const bands=[[0,.28],[.28,.6],[.6,1]], lo=bands[tier][0], hi=bands[tier][1];
+  const pct=Math.max(0,Math.min(100,Math.round((r-lo)/(hi-lo)*100)));
+  const names=currentAct()===2?["SQUIRE","SOLDIER","KNIGHT"]:["HERO","SUPER HERO","MEGA HERO"];
+  return { tier, name:names[tier], pct, max:tier>=2 }; }
 /* PAINTED marquee hero: the generated per-muscle Teddy art on the title / win /
    rest / origin screens. theme "hero" -> Act-1 superhero, "knight" -> Act-2 knight
    (both have a painted m0/m1/m2 set). Any other theme falls back to parametric SVG.
@@ -677,6 +688,7 @@ function missionComplete(){
     if(weak.length){ masteryReview(weak); return; }
   }
   const firstTime=!S.done[CUR.id];
+  const oldTier=heroOpts().muscle;   /* for the RANK-UP fanfare detection */
   S.done[CUR.id]=true;
   ensureDaily();
   if(firstTime){ S.daily.missions=(S.daily.missions||0)+1;   /* count NEW missions today, not replays (QA P0) */
@@ -694,6 +706,7 @@ function missionComplete(){
     S.chests=S.chests||{wood:0,silver:0,gold:0};
     const ctier=(CUR.finale||CUR.rescue||CUR.type==="fortress")?"gold":(curMiss===0?"silver":"wood");
     S.chests[ctier]=(S.chests[ctier]||0)+1; }
+  __rankedUp = firstTime && (heroOpts().muscle>oldTier);   /* the hero just leveled up → celebrate in showWin */
   save();
   if(firstTime && (CUR.finale||CUR.rescue||CUR.type==="fortress")) snapshot(CUR.lbl||("Mission "+CUR.id));  /* safety roll-back point */
   showWin(firstTime);
@@ -1257,6 +1270,9 @@ function showWin(firstTime){ show("scrWin");
   if(firstTime&&FREE[CUR.id])ids.unshift(FREE[CUR.id]);
   /* Heartguard, once rescued, is the league's cheerleader on every win */
   if(S.done[17]&&!CUR.rescue)ids.push("heart_cheer"+(1+(S.stars%3)));
+  /* RANK-UP fanfare — the comprehensible "you leveled up": mentor announces it + a badge + extra pop */
+  if(__rankedUp){ ids.unshift("rankup"); setTimeout(()=>{ confetti(80); flashScreen("rgba(255,210,90,.4)"); },340);
+    $("winGear").innerHTML='<div class="gearbadge">⭐ RANK UP — '+heroProgress().name+'!</div>'+$("winGear").innerHTML; __rankedUp=false; }
   narrate("win",$("winText"),ids);
   const ix=MISSIONS.findIndex(x=>x.id===CUR.id);
   if(CUR.type==="fortress"){
@@ -1292,8 +1308,8 @@ function showBase(){ clearFlow(); show("scrBase");
 function paintBase(){
   $("baseHero").innerHTML=heroNow(Math.min(260,window.innerWidth*0.34));
   const o=heroOpts();
-  $("powerLbl").textContent=(currentAct()===2?["SQUIRE","SOLDIER","KNIGHT"]:["HERO","SUPER HERO","MEGA HERO"])[o.muscle];
-  const rd=$("rankDots"); if(rd)rd.innerHTML=[0,1,2].map(i=>`<i class="${i<=o.muscle?"on":""}"></i>`).join("");   /* power tier */
+  { const hp=heroProgress(); $("powerLbl").textContent="⚡ "+hp.name;
+    const pf=$("powerFill"); if(pf){ pf.style.width=hp.pct+"%"; pf.classList.toggle("maxed",hp.max&&hp.pct>=100); } }
   /* weapons — HANDS + every weapon skin unlocked in THIS act */
   const wrow=$("weaponRow"); wrow.innerHTML="";
   const weapons=[["none","HANDS"],...ownedWeapons().map(w=>[w.k,w.lbl])];

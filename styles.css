@@ -902,9 +902,12 @@ body.calm .uc-rays{animation:none;}
 .baserank{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:6px;}
 .baserank #powerLbl{font-family:'Bangers',cursive;font-size:24px;color:var(--gold);-webkit-text-stroke:3px var(--ink);paint-order:stroke;
   background:rgba(10,5,24,.66);border:2.5px solid var(--gold);border-radius:13px;padding:2px 18px;letter-spacing:1px;}
-.tierdots{display:flex;gap:6px;}
-.tierdots i{width:10px;height:10px;border-radius:50%;background:#37305c;border:1.5px solid #150f2e;}
-.tierdots i.on{background:var(--gold);box-shadow:0 0 7px var(--gold);}
+/* HERO POWER bar — fills toward the next rank (the comprehensible "level-up" meter) */
+.powerbar{width:170px;max-width:60vw;height:16px;border-radius:9px;background:rgba(10,5,24,.6);
+  border:2.5px solid var(--ink);overflow:hidden;box-shadow:inset 0 2px 4px rgba(0,0,0,.4);}
+.powerfill{height:100%;width:0;border-radius:7px;background:linear-gradient(90deg,#ffd23a,#ff9e1f);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.45);transition:width .55s var(--ease-overshoot);}
+.powerfill.maxed{background:linear-gradient(90deg,#7fe3ff,#5f6dff);}   /* MAX POWER reads distinct */
 .loadout .loadout-row{display:flex;align-items:center;gap:10px;}
 .loadout-lbl{font-size:11px;color:#9b94c9;min-width:52px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;}
 .loadout .equiprow{justify-content:flex-start;flex:1;}

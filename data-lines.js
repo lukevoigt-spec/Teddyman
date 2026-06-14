@@ -198,6 +198,7 @@ const LINES={
   vault_full:{t:"Your gems are fully charged! Come back tomorrow, hero!"},
   vault_done:{t:"All charged up! Your gems are glowing strong!"},
   vault_nudge:{t:"Psst — some of your gems are ready for a recharge! Tap the Vault when you want to power them up."},
+  rankup:{t:"WHOA — you LEVELED UP, Super Teddy! Your power bar is full — you're even stronger now!"},
   shop_need:{t:"Not enough coins yet — train a little more, hero!"},
   finale1:{t:"Incoming message! ... Super Teddy! It's Amelia!", v:"B"},
   finale2:{t:"Lord Vex trapped me in the Heart Tower! Come rescue me in your next adventure!", v:"B"},
