@@ -188,26 +188,30 @@ ${(o.theme==="knight"&&m>=2)?`<!-- ===== full KNIGHT helm (top rank) ===== -->
 ${kgear}
 </g></g></svg>`}`;}
 
-/* ---- PAINTED Super Teddy marquee — generated raster per MUSCLE stage.
-   theme "hero": art/teddy-m0|m1|m2.png (Act-1 superhero, starter/super/mega).
-   theme "knight": art/teddy-knight-m0|m1|m2.png (Act-2, squire/soldier/knight).
-   One image per muscle tier, wrapped in an <svg> so it keeps an aura, contact
-   shadow and idle bob and the same sizing API as heroSVG. Used by the marquee/
-   celebration spots (title/win/rest/origin); the parametric heroSVG still drives
-   the loadout/armed states where the pose changes with the equipped weapon. ---- */
-function teddyArt(w=210, muscle=1, theme="hero"){
-const u="t"+(__huid++);
-const m=Math.max(0,Math.min(2,muscle|0));
-const kn=theme==="knight";
-const file=kn?`teddy-knight-m${m}`:`teddy-m${m}`;
-const a0=kn?"#ffba4a":"#ffce3a", a1=kn?"#c77a2a":"#3a7bff";   /* warm torch aura (knight) vs gold+blue (hero) */
+/* ---- GENERATED-RASTER cast (Trinity's charArt resolver, QA 2026-06-14) ----
+   RASTER = a manifest: flip a flag the moment a character's PNG lands in art/ (authored on a
+   uniform 560² canvas — transparent, centered, feet near the baseline). rasterArt() wraps any
+   such PNG identically (soft aura + contact shadow + idle bob), and teddyArt/allyBody consult the
+   manifest so generated raster replaces the old SVG per-character, with the SVG as a safe fallback
+   (a half-finished rollout never breaks a screen). Villain rasters (vex/vixen) live directly in
+   inkblotSVG/vixenSVG. ---- */
+const RASTER={ "teddy-m0":true,"teddy-m1":true,"teddy-m2":true,
+  "teddy-knight-m0":true,"teddy-knight-m1":true,"teddy-knight-m2":true,
+  "ally-tank":true };
+function rasterArt(file,w=210,a0="#ffce3a",a1="#3a7bff"){
+const u="r"+(__huid++);
 return `<svg viewBox="0 0 240 256" width="${w}" aria-hidden="true">
 <defs><radialGradient id="${u}a" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="${a0}" stop-opacity=".4"/><stop offset=".5" stop-color="${a1}" stop-opacity=".16"/><stop offset="1" stop-color="${a1}" stop-opacity="0"/></radialGradient></defs>
-<style>@media (prefers-reduced-motion: no-preference){.tfloat{animation:${u}fl 4.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}}@keyframes ${u}fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}</style>
-<g class="taura"><ellipse cx="120" cy="118" rx="126" ry="140" fill="url(#${u}a)"/></g>
-<ellipse cx="120" cy="240" rx="66" ry="13" fill="#0a0a18" opacity=".4"/>
-<g class="tfloat"><image x="8" y="2" width="224" height="224" href="art/${file}.png"/></g>
+<style>@media (prefers-reduced-motion: no-preference){.${u}f{animation:${u}k 4.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}}@keyframes ${u}k{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}</style>
+<g><ellipse cx="120" cy="117" rx="127" ry="141" fill="url(#${u}a)"/></g>
+<ellipse cx="120" cy="240" rx="65" ry="13" fill="#0a0a18" opacity=".4"/>
+<g class="${u}f"><image x="8" y="2" width="224" height="224" href="art/${file}.png"/></g>
 </svg>`;}
+/* PAINTED Super Teddy by muscle tier — hero (teddy-m*) / Act-2 knight (teddy-knight-m*). */
+function teddyArt(w=210, muscle=1, theme="hero"){
+  const m=Math.max(0,Math.min(2,muscle|0));
+  return theme==="knight" ? rasterArt("teddy-knight-m"+m, w, "#ffba4a", "#c77a2a")
+                          : rasterArt("teddy-m"+m, w, "#ffce3a", "#3a7bff"); }
 
 /* ---- LORD VEX / VEXBOT (refined: angled glowing visor, sharper menace) ---- */
 function inkblotSVG(w=240){
@@ -352,6 +356,7 @@ const BODY_CFG={
 /* dispatch: characters with a real-life outfit get a bespoke body; the rest use
    the generic caped super-suit template. */
 function allyBody(kind,w=200){
+  if(RASTER["ally-"+kind])return rasterArt("ally-"+kind, w, "#ffb43a", "#ff7a2a");   /* generated raster (warm aura) once published */
   if(kind==="tank")return archieBody(w);
   if(kind==="flip")return ellieBody(w);
   if(kind==="heart")return ameliaBody(w);
