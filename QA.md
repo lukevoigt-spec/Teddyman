@@ -126,14 +126,12 @@ discoverability + tablet ergonomics, and they converge on one move (which also g
    7-yo never juggles two "home-like" anchors. (Home/title is rarely needed mid-play — mostly profile switching, which
    is parent-only anyway.)
 
-**🎯 Holistic recommendation (single highest-leverage move):** evolve the global nav from a **text-chip dropdown** into
-an **always-visible icon control-cluster — 🗺️ Map + 🏰 Base ONLY** (parent decision; Home/title/profile-switch live in
-the parent gear area), each **icon + tap-to-hear** its name, parked in a **bottom corner** for thumb reach; keep the
-chip as pure **status** ("where am I"). This (a) fixes the pre-reader discoverability gap (#1, #3), (b) fixes the
-ergonomics (#2), and (c) **is exactly MR3 — so promote MR3 from "map-only" to the standing global-nav pattern** (one
-2-icon cluster, every screen, both acts). Keep ≥96px, the locked-gate, an Act-2 skin variant, and the always-present
-`⏭` skip during flows. *(Anchor the cluster to the screen, not the 1000×750 map SVG, so it never overlaps painted
-landmarks.)*
+**🎯 Holistic recommendation (single highest-leverage move) — full resolved model in MR3 below.** Evolve the global nav
+from a **text-chip dropdown** into an **always-visible 2-icon dock (🏠 Base + 🗺️ Map), bottom-left, icon+audio**; the
+chip becomes pure **status**; the **dropdown is removed**; parent nav (Home/title, profile-switch, Settings) collapses
+into the **gear → Grown-Up Corner**. This fixes the pre-reader discoverability gap (#1,#3), the thumb-reach ergonomics
+(#2), and the overloaded chip (#3) at once, with one surface per audience and zero redundancy. **= MR3, now the
+standing global pattern.**
 
 **Net:** the bones are right; the one change that most improves the *holistic* experience is making the global nav
 **seen, not discovered** — visible icons a non-reader recognizes, in the easy-reach zone.
@@ -190,12 +188,19 @@ session; see ledger. Open chrome below.)*
 - 📋 **MR2 — Recalibrate `ZONESPOTS`** (`map.js:17–20`, 1000×750). The golden path is BAKED into the painting; only
   node coords (or a new bg) can move. Nudge each zone coord per act onto the path (overlay via `shot.mjs`); fold in
   U12's hero-clip floor (`y ≥ ~150`); re-check portal `PX/PY` + `mapFriends` offsets. Do Act 1 + Act 2 separately.
-- 📐 **MR3 — Control cluster** (now the **standing GLOBAL nav pattern**, not map-only — see the Navigation Validation
-  above). Replace the buried HUD text-chip dropdown with an **always-visible icon cluster: 🗺️ Map + 🏰 Base ONLY**
-  (parent decision 2026-06-14), each **icon + tap-to-hear**, in a **bottom corner** (thumb reach). The chip becomes
-  pure status ("where am I"); **Home / title / profile-switch + the gear move into the parent area**. ⚠️ ONE nav
-  surface (cluster, not the dropdown too); Settings stays parent-gated (hold+math); anchor to the screen (not the
-  1000×750 SVG), corner clear of painted landmarks; ≥96px; Act-2 skin variant; `⏭` skip stays during flows.
+- 📐 **MR3 — Global nav model (RESOLVED with parent, 2026-06-14; standing pattern, every screen, both acts).** ONE
+  child nav surface, ONE parent surface, no redundancy:
+  - **Child nav = a 2-icon dock, BOTTOM-LEFT:** **🏠 Hero Base** (use a *house* icon — Base = his home) + **🗺️ World
+    Map**, side by side, each **icon + tap-to-hear** its name, ≥96px. (Consistent with where the map's Base button
+    already sits.) Base is itself the gateway to training/shop/recharge/collection.
+  - **⏭ skip stays BOTTOM-RIGHT** (during flows) so it never collides with the dock; **🔊 replay** stays in the bubble.
+  - **Top-left chip → PURE STATUS** (location label only). **REMOVE the dropdown** — delete `#navMenu` + `.navitem` +
+    the `hudTitle` onclick (`index.html:58-62`, `game.js:624-627`); drop the `▾` (`.navchip::after`).
+  - **Parent surface = the gear (top-right) → Grown-Up Corner** (existing hold+math gate). It now also hosts the
+    **demoted nav**: **Home/title** (a "Back to title" action) + **profile switch** (fold into the existing Players
+    section). Nothing parent-facing sits in the child's view.
+  - ⚠️ Anchor the dock to the screen (not the 1000×750 map SVG) so it never overlaps painted landmarks; Act-2 skin
+    variant; locked-gate + lock enforcement unchanged. This **supersedes** the old `hudTitle` dropdown entirely.
 - 📋 **MAP REDO (parent directive — supersedes U2/U6/U12 tweaks).** Act-1 Star Force City map is the worst offender
   (wall-to-wall neon, no negative space, poor figure-ground); **Act-2 medieval map reads better — use it as the
   bar.** Plan: (1) **regenerate the painted bg** calmer (legible winding path + negative space, desaturated
