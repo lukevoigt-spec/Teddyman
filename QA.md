@@ -1076,6 +1076,73 @@ toggles, detail, cloud, backup, reset, players, studio); Close returns to the ga
 
 ---
 
+## 📐 SPEC FOR NEO — "Spell Scroll": repeated reading + listening preview (fluency rec #2) (Trinity, 2026-06-14)
+
+Implements research-brief rec #2. Repeated reading of a short passage is the meta-analytic gold standard for
+fluency in reading disability, **best with a listening passage preview** (passage modeled first) — Lee & Yoon
+2016, PubMed, [DOI](https://doi.org/10.1177/0022219415605194).
+
+### ⚠️ THE constraint that shapes everything: the app can't HEAR the child
+No speech recognition. True repeated reading is ORAL + adult-timed. So we **structure** repeated oral reading
+instead of measuring it: model it, prompt the re-read, track engagement via taps, re-space it. The fluency gain
+depends on the child reading **aloud** (mentor models it; nudge the parent to read along). **The tap-pace is a
+soft engagement proxy, NOT a fluency score — don't over-trust it.**
+
+### The mechanic ("charge the spell scroll")
+A short DECODABLE passage = a "spell scroll." Per session:
+1. **Listening preview** — a mentor (Amelia/Noah) reads the whole scroll aloud, **words highlighting in time**
+   (echo/choral modeling). Reuse `sentenceAudio()`/`wordAudio()` (game.js:785–787) — every decodable word has a
+   `word_` clip. Replay button; `flow()` so it can't hang (#8).
+2. **Child reads aloud + taps each word in order** ("cast each word") — legit finger-tracking (1:1) + decode,
+   and the only thing the app can measure. Wrong-order tap = gentle dim + replay that word + retry (no penalty, #2).
+3. **Personal-best "power"** — time the tap-through **silently in the background**; if today beats their best, a
+   power meter fills. **No visible countdown, no penalty for slow** (#1: "personal-best flair only, if ever").
+4. **Repeat across days** — the same scroll re-presents on a **spaced** schedule (reuse the **Memory Vault**
+   box/due model) — the "repeated" in repeated reading. A scroll graduates after N spaced reps.
+
+### Where it lives
+- **Primary: a "Spell Scrolls" drill in the Training Room** (the daily, decoupled, coin-paying loop — ideal for
+  a daily fluency habit). Coins per rep like `trainWin` (game.js:1306); `record()`s the scroll words so it
+  strengthens mastery + feeds the Vault.
+- Optional: a **fluency mission** in the Reading Dojo (Act-1 zone 9) / Great Library (Act-2 zone 105). Do the
+  Training-Room home first.
+
+### Data model
+- **`SCROLLS` (data-content.js), per act:** `{id, lines:[[words…],…], pic?}` — 2–3 short DECODABLE sentences using
+  only taught words/graphemes (same rule as `SENTENCES2`; **curriculum.test guards decodability + play order**).
+  Reuse `SENTENCES` words; sight words via `spellWordHTML`.
+- **`S.scrolls[id] = {reps, bestMs, box, due}`** (box/due reuse the Vault scheduler). Additive + save-safe (no
+  migrate change). `bestMs` = personal best (lowest tap-through); never shown as a timer.
+
+### Integration points (file:line)
+- Preview audio: `sentenceAudio`/`wordAudio` (game.js:785–787). Add `scroll_intro`/`scroll_again` to LINES
+  (Amelia/Noah role).
+- Host: `trainRound` (game.js:1276) — add a scroll mode beside build/decode; coins via `trainWin` (game.js:1306).
+- Mastery + spacing: `record()` (game.js:143) on the scroll words; Vault box/due for re-presentation.
+- Text render: Andika word tiles ≥96px (reuse the `wordtile` styling, game.js:801/824).
+
+### Constraints / gotchas
+- **#1 the big one:** no speech recognition — frame "power" as **effort/practice**, add a parent nudge ("read it
+  out loud together!"), don't present pace as a reading score.
+- **No timers-as-failure / no harsh fail** (#1/#2): timing silent + personal-best only; wrong tap = gentle
+  replay+retry.
+- **Audio-first, can't hang** (#8): preview + every word tappable to replay; `flow()`/watchdog + ⏭/Home.
+- **Decodability:** scrolls use only taught words/graphemes; `curriculum.test` guards (mirror SENTENCES2);
+  magic-e/sight words handled as elsewhere.
+- ≥96px tiles, Andika, high contrast.
+
+### Tests
+- `curriculum.test`: every `SCROLLS` word decodable by play position (+ sight handled); ids unique.
+- `save.test`: `S.scrolls` round-trips; `migrate` leaves old saves untouched.
+
+### Phasing
+P1 Training-Room scroll drill (preview → tap-through → personal-best power) + a few decodable scrolls → P2 spaced
+re-presentation via the Vault scheduler → P3 optional fluency mission + parent "read-along" nudge.
+
+— Trinity, 2026-06-14
+
+---
+
 **Test commit by Grok (xAI):** Write access verified successfully! Added this line on 2026-06-13.
 
 ## 2026-06-13 Grok (xAI) Review — Latest Main (commit 060066c)
