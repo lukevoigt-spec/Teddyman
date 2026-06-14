@@ -862,6 +862,51 @@ right muscle tier/theme shows.
 
 ---
 
+## 🗺️ MAP REWORK PACKET — sequenced for Neo (Trinity, 2026-06-14)
+
+One ordered plan combining **MR1** (hierarchy/overstimulation), **MR2** (path alignment), **MR3** (controls)
+and **M1** (hero raster). Full reasoning + gotchas are in those entries above — this is the *do-this-order*.
+
+### Decide two forks FIRST (they gate the work)
+- **F1 — the busy background:** *scrim the existing `bg-map.jpeg`* (cheap, keep coords) **vs** *regenerate a
+  calmer map painting with a clearer path* (heavier; forces re-calibration). **Start with scrim+hierarchy;**
+  only regenerate if that's not enough.
+- **F2 — the nav surface:** the new control cluster **replaces** the HUD city-chip dropdown **vs** *generalizes
+  to* the HUD across all screens. Pick one — never run both.
+
+### Sequence
+| # | Task | Type | Dep | Impact |
+|---|---|---|---|---|
+| 1 | **MR1 hierarchy** — current node dominates (beacon/pulse); done/locked quieter + desaturated; drop non-current specular; add a **scrim/vignette** over the bg | CSS + `map.js` node markup | F1 | ★★★ biggest perceived fix |
+| 2 | **M1 hero raster** — wire existing `teddyArt` onto the map, **feet at node base** (route A inline-retune or B overlay) | `map.js` JS | after 1 (final node look) | ★★★ kills "old Teddy on a circle" |
+| 3 | **MR3 control cluster** — always-visible Home / Hero Den / parent-gated gear in a screen corner (+ optional state key) | HTML/CSS + wire to `toMap`/`showBase`/gear | F2 | ★★ |
+| 4 | **MR2 recalibrate `ZONESPOTS`** — nudge each zone coord onto the painted path, **per act**, via `shot.mjs` overlay | data (`map.js:17–20`) | after 1 (and after any bg regen) | ★★ |
+| 5 | *(optional)* **regenerate a calmer map bg** + current-node **pedestal** art, then redo step 4 | art-gen | only if F1=regenerate | ★ |
+
+### Why this order
+- **MR1 before MR2/M1:** calibrate coords + place the hero against the *final* node design, not a placeholder
+  (don't do the eyeball calibration twice).
+- **A new bg (step 5) forces redoing `ZONESPOTS`** — so if you'll regenerate, do it *before* step 4, never after.
+- **MR3 is independent** of 1/2/4 once F2 is decided — can land any time.
+
+### Carry-forward gotchas (condensed)
+- Constraint #3: this is **hierarchy + legibility**, not de-juicing — keep the energy, just make "go HERE" win.
+- **Lock state must stay instantly readable** (it's the nav + the no-skip gate); the `curriculum.test`
+  lock-node check must still pass (MR work is cosmetic — don't touch `curZoneIx`/`zoneDone`/the `.locked` class
+  the click handler keys on).
+- The **path is baked into the painting** — only `ZONESPOTS` or a new bg moves it; redo coords **per act** and
+  re-check the **portal `PX/PY`** + `mapFriends` offsets.
+- **One nav surface** (F2); **Settings stays parent-gated**; cluster in a **corner clear of painted landmarks**,
+  anchored to the screen (not the 1000×750 SVG); touch ≥96px; **Lite** flattens the map blooms.
+- **M1:** don't touch the **Base hero** (parametric for the loadout); raster Teddy loses the on-map weapon/cape
+  (acceptable); at resolver time swap `teddyArt→charArt` and put **hero + allies on the same pipeline**.
+- **Verify** each step with `shot.mjs` (map scene, **both acts**, Chromium + WebKit); keep `save`+`curriculum`
+  green.
+
+— Trinity, 2026-06-14
+
+---
+
 **Test commit by Grok (xAI):** Write access verified successfully! Added this line on 2026-06-13.
 
 ## 2026-06-13 Grok (xAI) Review — Latest Main (commit 060066c)
