@@ -188,7 +188,7 @@ body[data-act="2"] .navitem{border-color:#6a5436;background:rgba(50,38,18,.55);c
 .tdot{fill:var(--gold);stroke:var(--ink);stroke-width:3;}
 .tdot.next{animation:hintpulse 1.4s infinite;transform-origin:center;transform-box:fill-box;}
 .tdot.hit{fill:var(--green);}
-.guide{font-family:'Andika',sans-serif;font-weight:700;fill:rgba(255,246,227,.16);}
+.guide{font-family:'Andika',sans-serif;font-weight:700;fill:rgba(255,246,227,.34);}   /* brighter trace-me letter (was .16 — too faint on the painted ground) */
 
 .boss{width:clamp(170px,30vw,280px);transition:transform .35s ease;}
 .boss.hitfx{animation:shake .38s ease;}
@@ -490,7 +490,7 @@ body.calm .gembox>svg,body.calm .trophy,body.calm .gembox.mastered::after{animat
 .title-logo{filter:drop-shadow(0 3px 0 rgba(0,0,0,.45)) drop-shadow(0 0 18px rgba(255,200,80,.55));}
 
 /* loose text labels stay legible over busy painted scenes */
-.baselbl{color:#cfc4ff;text-shadow:0 2px 6px rgba(0,0,0,.65);}
+.baselbl{color:#e8e2ff;text-shadow:0 2px 6px rgba(0,0,0,.65);}   /* U7: brighter card body text */
 .sub,.gearbadge,.starsrow,.dailylabel{text-shadow:0 2px 7px rgba(0,0,0,.6);}
 
 /* menu/panel cards: frosted glass so the Grown-Up Corner & Shop look designed */
@@ -830,7 +830,7 @@ body.calm .uc-rays{animation:none;}
 .basetitle{font-size:clamp(26px,4.6vw,44px);color:var(--gold);-webkit-text-stroke:5px var(--ink);paint-order:stroke;letter-spacing:1px;}
 .basecoins{display:flex;align-items:center;gap:6px;font-family:'Bangers',cursive;font-size:22px;color:var(--gold);
   background:rgba(10,5,24,.62);border:2.5px solid var(--gold);border-radius:14px;padding:3px 14px;}
-.basewrap{display:flex;gap:16px;align-items:flex-start;justify-content:center;width:min(1040px,96vw);flex-wrap:wrap;flex:1 1 auto;min-height:0;}
+.basewrap{display:flex;gap:22px;align-items:flex-start;justify-content:center;width:min(1040px,96vw);flex-wrap:wrap;flex:1 1 auto;min-height:0;}   /* U7: breathing room between hero + collection */
 /* LEFT — hero showcase + loadout */
 .basecol-hero{flex:0 0 auto;width:min(330px,92vw);display:flex;flex-direction:column;gap:12px;}
 .herostage{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;overflow:hidden;
@@ -856,8 +856,8 @@ body.calm .uc-rays{animation:none;}
   align-self:stretch;max-height:100%;overflow-y:auto;padding-right:2px;}
 .basecard{background:linear-gradient(180deg,rgba(28,18,58,.62),rgba(18,11,40,.5));border:2px solid #4a3a86;border-radius:16px;padding:11px 14px;
   display:flex;flex-direction:column;gap:8px;min-width:0;box-shadow:0 6px 16px rgba(0,0,0,.28);}
-.basecard-h{display:flex;align-items:center;gap:7px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:15px;color:var(--gold);}
-.ccount{margin-left:auto;font-family:'Bangers',cursive;font-size:14px;color:#cdb8ff;letter-spacing:.5px;
+.basecard-h{display:flex;align-items:center;gap:7px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:16px;color:var(--gold);}
+.ccount{margin-left:auto;font-family:'Bangers',cursive;font-size:15px;color:#e0d2ff;letter-spacing:.5px;
   background:rgba(10,5,24,.5);border:1.5px solid #4a3a86;border-radius:9px;padding:1px 9px;}
 .basecard-sub{font-size:12px;color:#9b94c9;letter-spacing:.02em;}
 .basecard .gemshelf{min-height:40px;background:rgba(10,5,24,.32);border-color:#352a63;}

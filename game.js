@@ -1271,6 +1271,16 @@ function paintBase(){
   { const due=vaultDueRoutable().length, vb=$("btnVault");
     if(vb){ vb.textContent = due ? ("🔋 RECHARGE ("+due+")") : "🔋 RECHARGE";
       vb.classList.toggle("vaultdue", due>0); } }
+  /* U7 zero-state: hide an EMPTY collection card so a fresh save isn't four "0 / N · go earn it" rows
+     at once. Gems stays as the single "first goal" when nothing's earned yet; league/villains/trophies
+     appear only once they have something (strictly honours "show only EARNED items" — CLAUDE.md). */
+  { const anyBoss=BOSSES.some(b=>S.done[b.mid]), anyTro=BASE_ITEMS.some(it=>S.owned&&S.owned[it.id]);
+    const anyColl=any||anyL||anyBoss||anyTro;
+    const setCard=(id,on)=>{ const sh=$(id), c=sh&&sh.closest(".basecard"); if(c)c.style.display=on?"":"none"; };
+    setCard("gemShelf",  any || !anyColl);   /* fresh save → gems is the lone first goal */
+    setCard("leagueShelf", anyL);
+    setCard("bossShelf",   anyBoss);
+    setCard("trophyShelf", anyTro); }
 }
 $("btnBaseBack").onclick=()=>{Aud.stop();toMap();};
 

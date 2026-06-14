@@ -51,6 +51,8 @@ const SCENES = {
   learn_f: `(startLearn({letter:"f"}), 1)`,
   learn_r: `(startLearn({letter:"r"}), 1)`,
   find:    `(function(){ CUR={id:1}; startFind("a",4); return 1; })()`,
+  trace:   `(startTrace("s"), 1)`,
+  basefull:`(function(){ [1,3,4,6,8].forEach(function(i){S.done[i]=true;}); S.coins=40; S.owned={banner:1}; paintBase(); show('scrBase'); return 1; })()`,
 };
 
 const args = process.argv.slice(2);
