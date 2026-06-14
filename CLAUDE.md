@@ -341,6 +341,34 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   (art.js). heroOpts equips only a weapon unlocked in the current act, so switching worlds re-arms him.
   PARKING LOT: a HORSE / mount (best as an Act-2 knight mount, Sir Teddy on horseback) — deferred art.
 - Hero visibly gains muscle as missions complete (3 stages). Hero Base = equip/collection hub.
+- THE HERO ROOM (live — the diegetic Hero Base, the game's decoratable centerpiece): ONE painted
+  medieval lair (art/bg-base-room.png, 1536x1024) whose PAINTED OBJECTS ARE the interactive UI. Built
+  with the SAME painted-SVG pattern as the world map: roomSVG() (game.js) emits one <svg viewBox="0 0
+  1536 1024" preserveAspectRatio="meet"> = the room <image> + hotspot <g>s in one coordinate space, so
+  every hotspot stays glued to its painted object at any viewport (calibrated in the ROOM{} coord map;
+  _nest() drops each art piece's native viewBox into a rect). paintBase() injects it into #roomWrap +
+  wires click handlers. ONE room serves BOTH acts (no act branch — medieval fits Act 2, and Act 1 Teddy
+  just stands in it); the Act-2 "second room" is DEFERRED. Layout:
+  • HERO on the central pedestal (heroNow → shows the equipped weapon/cape; knight in Act 2) + a RANK
+    pill + power bar (heroProgress) on the rug.
+  • COLLECTIONS AUTO-FILL their fixtures as earned (the "show only EARNED" rule, now diegetic): freed
+    friends → wall PORTRAIT FRAMES (tap a face → hero card; a +N badge if more than 3); beaten villains
+    → shelf JARS (tap → boss-cage quip; faint backing so the dark sprite reads); earned gems → far-right
+    hex NICHES (tap → full gem-grid modal #roomColl; a RETAINED gem still gets the gold ✦, #4).
+  • RACK = LIVE LOADOUT (folds the old Loadout card in): HANDS + every weapon unlocked THIS act hang on
+    the painted ladder, tap to equip; cape swatches in a row on the rug (gold/purple gate on S.stars).
+  • DIEGETIC ACTIONS (transparent hit rects over the painted objects, ≥96px): the DOOR → Training Room,
+    the CRYSTAL → Recharge/Memory-Vault (glows + due-count badge when items are due), the CHESTS → Gifts
+    (shown + pulsing only when a chest is pending). The coin counter (top-right) and the decor picker both
+    open the Shop. The ☰ MENU chip still handles World Map / Home / parent gate.
+  • DECORATION (the build-it-out loop): the 10 shop cosmetics (BASE_ITEMS) are the placeable decor — tap
+    an open decor spot (faint dashed "+" when you own something unplaced) → openDecorPicker → choose an
+    owned-but-unplaced item → it renders in the spot (S.decor{ "s<i>": itemId }, save-safe additive).
+    "Trophies" is no longer a separate fixture; the catalog stays at 10 (expand later). The OLD card-based
+    Hero Base (.basetop/.basewrap/.basecard layout + btnTrain/btnShop/btnVault/btnGifts buttons) is GONE.
+  • The stray figure the image-gen slipped into the bg was painted out (clean stone alcove). bg-base-a2.jpeg
+    was removed (the room serves both acts; bg-base.jpeg still backs the training/vault/settings/shop panels).
+  • PERF NOTE: bg-base-room.png is ~3.2MB — webp/pngquant optimisation is a deferred TODO.
 - CHARACTER ART IS NOW "PREMIUM ANIMATED SVG" (live, all in art.js — the chosen pipeline: keep
   everyone as parametric animated SVG; reserve painted images for backgrounds/maps). heroSVG = a
   HEROIC power stance (hands-on-hips, or weapon raised + gripped when armed) with feSpecularLighting

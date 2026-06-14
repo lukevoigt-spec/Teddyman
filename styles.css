@@ -881,50 +881,39 @@ body.calm .uc-rays{animation:none;}
 @media (prefers-reduced-motion:reduce){.uc-inner{animation:none}.uc-rays{animation:none}}
 
 /* ===================== HERO BASE — character-screen layout ===================== */
-#scrBase{justify-content:flex-start;gap:10px;padding-top:clamp(30px,5vh,56px);padding-bottom:14px;}
-.basetop{display:flex;align-items:center;justify-content:center;gap:18px;width:min(1040px,96vw);}
-.basetitle{font-size:clamp(26px,4.6vw,44px);color:var(--gold);-webkit-text-stroke:5px var(--ink);paint-order:stroke;letter-spacing:1px;}
-.basecoins{display:flex;align-items:center;gap:6px;font-family:'Bangers',cursive;font-size:22px;color:var(--gold);
-  background:rgba(10,5,24,.62);border:2.5px solid var(--gold);border-radius:14px;padding:3px 14px;}
-.basewrap{display:flex;gap:22px;align-items:flex-start;justify-content:center;width:min(1040px,96vw);flex-wrap:wrap;flex:1 1 auto;min-height:0;}   /* U7: breathing room between hero + collection */
-/* LEFT — hero showcase + loadout */
-.basecol-hero{flex:0 0 auto;width:min(330px,92vw);display:flex;flex-direction:column;gap:12px;
-  align-self:stretch;max-height:100%;min-height:0;}   /* the HERO is pinned (below); only the loadout scrolls */
-/* Slice 1: hero + power bar are the pinned focal point — never scroll away; the loadout scrolls if the column is short */
-.herostage{flex:0 0 auto;position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;overflow:hidden;
-  background:radial-gradient(ellipse 78% 62% at 50% 26%, rgba(95,109,255,.24), rgba(20,12,44,.55) 72%);
-  border:2px solid #4a3a86;border-radius:22px;padding:16px 18px 16px;box-shadow:inset 0 0 30px rgba(95,109,255,.12),0 10px 26px rgba(0,0,0,.4);}
-.herostage::before{content:"";position:absolute;top:-26%;left:50%;transform:translateX(-50%);width:150%;height:115%;pointer-events:none;
-  background:radial-gradient(ellipse at 50% 30%, rgba(255,206,58,.18), transparent 62%);}
-.herostage::after{content:"";position:absolute;bottom:62px;left:50%;transform:translateX(-50%);width:60%;height:24px;border-radius:50%;pointer-events:none;
-  background:radial-gradient(ellipse, rgba(0,0,0,.55), transparent 70%);}
-.herostage #baseHero{position:relative;z-index:1;display:flex;align-items:flex-end;}
-.herostage #baseHero svg{height:clamp(168px,28vh,238px);width:auto;}
-.baserank{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:6px;}
-.baserank #powerLbl{font-family:'Bangers',cursive;font-size:24px;color:var(--gold);-webkit-text-stroke:3px var(--ink);paint-order:stroke;
-  background:rgba(10,5,24,.66);border:2.5px solid var(--gold);border-radius:13px;padding:2px 18px;letter-spacing:1px;}
-/* HERO POWER bar — fills toward the next rank (the comprehensible "level-up" meter) */
-.powerbar{width:170px;max-width:60vw;height:16px;border-radius:9px;background:rgba(10,5,24,.6);
-  border:2.5px solid var(--ink);overflow:hidden;box-shadow:inset 0 2px 4px rgba(0,0,0,.4);}
-.powerfill{height:100%;width:0;border-radius:7px;background:linear-gradient(90deg,#ffd23a,#ff9e1f);
-  box-shadow:inset 0 2px 0 rgba(255,255,255,.45);transition:width .55s var(--ease-overshoot);}
-.powerfill.maxed{background:linear-gradient(90deg,#7fe3ff,#5f6dff);}   /* MAX POWER reads distinct */
-.basecol-hero .loadout{flex:1 1 auto;min-height:0;overflow-y:auto;}   /* scrolls if the column is short; the hero above stays pinned */
-.loadout .loadout-row{display:flex;align-items:center;gap:10px;}
-.loadout-lbl{font-size:11px;color:#9b94c9;min-width:52px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;}
-.loadout .equiprow{justify-content:flex-start;flex:1;}
-/* RIGHT — collection showcases */
-.basecol-coll{flex:1 1 380px;min-width:300px;max-width:610px;display:flex;flex-direction:column;gap:10px;
-  align-self:stretch;max-height:100%;overflow-y:auto;padding-right:2px;}
-.basecard{background:linear-gradient(180deg,rgba(28,18,58,.62),rgba(18,11,40,.5));border:2px solid #4a3a86;border-radius:16px;padding:11px 14px;
-  display:flex;flex-direction:column;gap:8px;min-width:0;box-shadow:0 6px 16px rgba(0,0,0,.28);}
-.basecard-h{display:flex;align-items:center;gap:7px;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:16px;color:var(--gold);}
-.ccount{margin-left:auto;font-family:'Bangers',cursive;font-size:15px;color:#e0d2ff;letter-spacing:.5px;
-  background:rgba(10,5,24,.5);border:1.5px solid #4a3a86;border-radius:9px;padding:1px 9px;}
-.basecard-sub{font-size:12px;color:#9b94c9;letter-spacing:.02em;}
-.basecard .gemshelf{min-height:40px;background:rgba(10,5,24,.32);border-color:#352a63;}
-.baseactions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:4px;}
-.baseactions .btn{font-size:clamp(20px,3.4vw,30px);padding:12px 26px;}
+/* ===================== THE HERO ROOM (diegetic Hero Base) =====================
+   The painted room fills the screen; its painted objects ARE the UI (rendered as a
+   viewBox-locked SVG in #roomWrap by roomSVG(), same pattern as the world map). */
+#scrBase{justify-content:center;align-items:center;gap:0;padding:0;overflow:hidden;}
+#roomWrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% 42%, #2a1c12, #140b05 86%);}   /* warm letterbox fill blends the 3:2 room into 4:3 */
+#roomWrap .roomsvg{width:100%;height:100%;display:block;}
+.roomsvg .rmframe,.roomsvg .rmjar,.roomsvg .rmpeg,.roomsvg .rmgems,.roomsvg .rmact,.roomsvg .rmdecorspot{
+  transition:transform .12s ease;transform-box:fill-box;transform-origin:50% 50%;}
+.roomsvg .rmframe:active,.roomsvg .rmjar:active,.roomsvg .rmpeg:active,.roomsvg .rmgems:active,
+.roomsvg .rmact:active,.roomsvg .rmdecorspot:active{transform:scale(1.08);}
+.roomsvg .rmempty{opacity:.62;}
+/* coin counter — also the Shop entry (bottom-left, clear of the HUD stars + rank pill) */
+.roomcoins{position:absolute;bottom:16px;left:16px;z-index:6;display:flex;align-items:center;gap:6px;
+  font-family:'Bangers',cursive;font-size:24px;color:var(--gold);cursor:pointer;
+  background:rgba(10,5,24,.72);border:2.5px solid var(--gold);border-radius:14px;padding:4px 14px;
+  box-shadow:0 4px 12px rgba(0,0,0,.4);}
+.roomcoins:active{transform:scale(1.05);}
+/* shared room modal (collection viewer + decoration picker) */
+#roomColl,#roomDecor{position:absolute;inset:0;z-index:30;display:none;align-items:center;justify-content:center;
+  background:rgba(8,4,20,.72);backdrop-filter:blur(3px);padding:18px;}
+#roomColl.on,#roomDecor.on{display:flex;}
+.rc-card{background:linear-gradient(180deg,rgba(34,22,66,.97),rgba(20,12,42,.97));border:3px solid var(--gold);
+  border-radius:22px;padding:20px 22px;max-width:min(720px,94vw);max-height:90vh;overflow-y:auto;
+  display:flex;flex-direction:column;gap:14px;align-items:center;box-shadow:0 16px 44px rgba(0,0,0,.55);}
+.rc-h{display:flex;align-items:center;gap:10px;font-family:'Bangers',cursive;font-size:26px;color:var(--gold);letter-spacing:1px;}
+.rc-grid{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;}
+#rdGrid .rd-item{display:flex;flex-direction:column;align-items:center;gap:4px;width:96px;min-height:96px;
+  background:rgba(16,10,38,.6);border:2.5px solid #4a3a86;border-radius:16px;padding:10px 6px;cursor:pointer;
+  font-family:'Baloo 2',sans-serif;font-weight:700;color:#e8e2ff;font-size:12px;line-height:1.1;}
+#rdGrid .rd-item:active{transform:scale(1.06);border-color:var(--gold);}
+.rd-item .rd-ic{font-size:42px;line-height:1;}
+.rd-item.rd-clear{font-size:36px;color:#ff9a9a;justify-content:center;}
 
 /* ---- crisp letters that POP on any gem / busy graded background ---- */
 .tile{ -webkit-text-stroke:3px var(--ink); paint-order:stroke; text-shadow:0 2px 5px rgba(0,0,0,.42); }

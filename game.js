@@ -1305,75 +1305,171 @@ function showBase(){ clearFlow(); show("scrBase");
     Aud.play(["base1","vault_nudge"]); }
   else Aud.play("base1");
 }
-function paintBase(){
-  $("baseHero").innerHTML=heroNow(Math.min(260,window.innerWidth*0.34));
-  const o=heroOpts();
-  { const hp=heroProgress(); $("powerLbl").textContent="⚡ "+hp.name;
-    const pf=$("powerFill"); if(pf){ pf.style.width=hp.pct+"%"; pf.classList.toggle("maxed",hp.max&&hp.pct>=100); } }
-  /* weapons — HANDS + every weapon skin unlocked in THIS act */
-  const wrow=$("weaponRow"); wrow.innerHTML="";
-  const weapons=[["none","HANDS"],...ownedWeapons().map(w=>[w.k,w.lbl])];
-  weapons.forEach(([k,lbl])=>{ const b=document.createElement("button");
-    b.className="echip"+(S.equip.weapon===k?" onsel":""); b.textContent=lbl;
-    b.onclick=()=>{S.equip.weapon=k;save();Aud.ding();paintBase();};
-    wrow.appendChild(b); });
-  if(weapons.length===1){ const hint=document.createElement("div"); hint.className="baselbl";
-    hint.style.fontSize="15px"; hint.textContent="Forge words to earn weapons!"; wrow.appendChild(hint); }
-  /* capes */
-  const crow=$("capeRow"); crow.innerHTML="";
-  const capes=[["red","RED",0],["gold","GOLD",15],["purple","PURPLE",27]];
-  capes.forEach(([k,lbl,need])=>{ const locked=S.stars<need;
-    const b=document.createElement("button");
-    b.className="echip"+(S.equip.cape===k?" onsel":"")+(locked?" lockd":"");
-    b.textContent=locked?(lbl+" · ⚡"+need):lbl;
-    b.onclick=()=>{S.equip.cape=k;save();Aud.ding();paintBase();};
-    crow.appendChild(b); });
-  /* gem shelf: earned letters only */
-  const shelf=$("gemShelf"); shelf.innerHTML="";
-  let any=false;
-  ORDER.forEach(g=>{ if(S.done[LETTER_MISSION[g]]){ any=true;
-    /* earned gems twinkle; a RETAINED gem (proficient + remembered across days, #4) earns a gold ✦
-       (collection meets durable mastery — a visible "you truly own this one" reward). */
-    shelf.innerHTML+=`<span class="gembox${retainedItem(g)?" mastered":""}">${gemSVG(g, GEMCOLOR[g], 48)}</span>`; } });
-  if(!any)shelf.innerHTML='<div class="baselbl" style="font-size:15px;">Rescue gems on missions to fill your shelf!</div>';
-  { const got=ORDER.filter(g=>S.done[LETTER_MISSION[g]]).length, gc=$("gemCount"); if(gc)gc.textContent=got+" / "+ORDER.length; }
-  /* league */
-  const lg=$("leagueShelf"); lg.innerHTML="";
-  let anyL=false;
-  LEAGUE.forEach(t=>{ if(allyFreed(t.kind)){ anyL=true;   /* durable freed-state (grandfathered) */
-    const b=document.createElement("button"); b.className="leaguebtn"; b.title="See "+t.real+"\u2019s hero card";
-    b.innerHTML=`<svg viewBox="-32 -36 64 86" width="54"><g>${allyFace(t.kind)}</g><text y="42" text-anchor="middle" font-family="Bangers" font-size="13" fill="#ffc93c">${t.real}</text><text y="55" text-anchor="middle" font-family="Bangers" font-size="9.5" fill="#9b94c9" letter-spacing=".5">"${t.name}"</text></svg>`;
-    b.onclick=()=>openHeroCard(t.kind); lg.appendChild(b); } });
-  if(!anyL)lg.innerHTML='<div class="baselbl" style="font-size:15px;">Smash Vex\u2019s cages to free your friends!</div>';
-  { const freed=LEAGUE.filter(t=>allyFreed(t.kind)).length, lc=$("leagueCount"); if(lc)lc.textContent=freed+" / "+LEAGUE.length; }
-  paintBossShelf();   /* captured-villain cages */
-  /* coins + trophy shelf (Training Room collection) */
-  const cn=$("baseCoins"); if(cn)cn.textContent=S.coins||0;
-  const tro=$("trophyShelf");
-  if(tro){ const owned=BASE_ITEMS.filter(it=>S.owned&&S.owned[it.id]);
-    tro.innerHTML = owned.length
-      ? owned.map(it=>`<span class="trophy" title="${it.nm}">${it.ic}</span>`).join("")
-      : '<div class="baselbl" style="font-size:15px;">Train to earn coins, then shop for trophies!</div>';
-    const tc=$("trophyCount"); if(tc)tc.textContent=owned.length+" / "+BASE_ITEMS.length; }
-  /* Memory Vault: label the Recharge button with today's due count + glow it gently when gems are due */
-  { const due=vaultDueRoutable().length, vb=$("btnVault");
-    if(vb){ vb.textContent = due ? ("🔋 RECHARGE ("+due+")") : "🔋 RECHARGE";
-      vb.classList.toggle("vaultdue", due>0); } }
-  /* Treasure chests: show the GIFTS button only when a present is waiting (pulses to invite, never nags) */
-  { const n=pendingChests(), gb=$("btnGifts");
-    if(gb){ gb.style.display=n>0?"":"none"; gb.textContent="🎁 GIFTS ("+n+")"; gb.classList.toggle("vaultdue", n>0); } }
-  /* U7 zero-state: hide an EMPTY collection card so a fresh save isn't four "0 / N · go earn it" rows
-     at once. Gems stays as the single "first goal" when nothing's earned yet; league/villains/trophies
-     appear only once they have something (strictly honours "show only EARNED items" — CLAUDE.md). */
-  { const anyBoss=BOSSES.some(b=>S.done[b.mid]), anyTro=BASE_ITEMS.some(it=>S.owned&&S.owned[it.id]);
-    const anyColl=any||anyL||anyBoss||anyTro;
-    const setCard=(id,on)=>{ const sh=$(id), c=sh&&sh.closest(".basecard"); if(c)c.style.display=on?"":"none"; };
-    setCard("gemShelf",  any || !anyColl);   /* fresh save → gems is the lone first goal */
-    setCard("leagueShelf", anyL);
-    setCard("bossShelf",   anyBoss);
-    setCard("trophyShelf", anyTro); }
+/* ===================== THE HERO ROOM (diegetic Hero Base) =====================
+   One painted medieval lair (art/bg-base-room.png) whose painted objects ARE the
+   interactive UI. We overlay the SAME painted-SVG pattern the world map uses: an
+   <image> + hotspots in one viewBox (1536x1024) with preserveAspectRatio="meet",
+   so every hotspot stays glued to its painted object at any viewport. Collections
+   AUTO-FILL their fixtures as Teddy earns them (gems->niches, friends->frames,
+   villains->jars, weapons/capes->rack); loose cosmetics are hand-PLACED into open
+   decor spots; the door/crystal/chest are the diegetic action objects. */
+const ROOM={
+  hero:[434,342,244,520],          /* nested-svg rect for heroNow(): x,y,w,h (feet land on the central dais) */
+  rank:[555,932],                  /* rank pill + power bar centre (on the rug, below the dais) */
+  /* ACTION objects: [x,y,w,h] hit rect over the painted object */
+  door:   [310,250,120,415],       /* -> Training Room (the wooden door) */
+  crystal:[1035,455,160,205],      /* -> Recharge (the glowing blue crystal) */
+  chests: [1168,604,360,250],      /* -> Gifts (the treasure chests) */
+  /* AUTO-FILL fixtures */
+  frames: [[688,418],[820,398],[916,448]],   /* friend-face centres in the wall portrait frames (League) */
+  jars:   [[718,556],[800,556]],              /* villain-jar centres on the shelf (Captured Villains) */
+  rack:   [275,290,600],                      /* weapon rack on the painted ladder: x-centre, top-y, bottom-y */
+  capePeg:[350,712],                          /* cape swatches: horizontal row on the rug in front of the rack */
+  niches: [1455,540,140,230],                 /* gem reliquary (far-right hex niches) */
+  /* open DECORATION spots [x,y] — clear wall/floor areas, away from fixtures */
+  decor:  [[160,430],[200,650],[560,150],[1230,430]]
+};
+function _stripSvg(s){ return s.replace(/^[\s\S]*?<svg[^>]*>/,"").replace(/<\/svg>[\s\S]*$/,""); }
+/* place a piece of art (its native viewBox) into a rect in the room's 1536x1024 space */
+function _nest(content,vb,x,y,w,h,extra){
+  return `<svg x="${x}" y="${y}" width="${w}" height="${h}" viewBox="${vb}" preserveAspectRatio="xMidYMid meet" ${extra||""}>${content}</svg>`; }
+/* gentle count badge over an active action object */
+function _badge(x,y,n,col){ return n>0?`<g pointer-events="none"><circle cx="${x}" cy="${y}" r="20" fill="${col}" stroke="#0c0820" stroke-width="3"/><text x="${x}" y="${y+8}" text-anchor="middle" font-family="Bangers" font-size="24" fill="#1a1430">${n}</text></g>`:""; }
+
+function roomSVG(){
+  const hp=heroProgress();
+  /* --- HERO on the pedestal (parametric heroNow -> shows the equipped weapon/cape) --- */
+  const [hx,hy,hw,hh]=ROOM.hero;
+  const hero=`<g pointer-events="none" class="rmhero">${_nest(_stripSvg(heroNow(200)),"-30 -150 310 660",hx,hy,hw,hh)}</g>`;
+  /* --- RANK pill + power bar (the comprehensible level meter) on the rug --- */
+  const [rx,ry]=ROOM.rank, rfill=Math.max(0,Math.min(100,hp.pct)), rname=("⚡ "+hp.name);
+  const rw=210, rank=`<g pointer-events="none">
+    <rect x="${rx-rw/2}" y="${ry-46}" width="${rw}" height="30" rx="14" fill="rgba(10,5,24,.7)" stroke="#ffce3a" stroke-width="3"/>
+    <text x="${rx}" y="${ry-24}" text-anchor="middle" font-family="Bangers" font-size="22" fill="#ffe08a" letter-spacing="1">${rname}</text>
+    <rect x="${rx-rw/2}" y="${ry-10}" width="${rw}" height="18" rx="9" fill="rgba(10,5,24,.7)" stroke="#0c0820" stroke-width="2.5"/>
+    <rect x="${rx-rw/2+2}" y="${ry-8}" width="${(rw-4)*rfill/100}" height="14" rx="7" fill="${hp.max?'#5f6dff':'#ffb01f'}"/></g>`;
+  /* --- WEAPON RACK = live loadout: HANDS + every weapon unlocked this act, hung down the rack --- */
+  const [rkx,rkTop,rkBot]=ROOM.rack;
+  const weps=[{k:"none",ic:"✋",lbl:"HANDS"},...ownedWeapons().map(w=>({k:w.k,ic:(w.lbl.match(/\s(\S+)$/)||[,"⚔️"])[1],lbl:w.lbl}))];
+  let rack=""; const rn=weps.length, gap=(rkBot-rkTop)/Math.max(rn,1);
+  weps.forEach((w,i)=>{ const wy=rkTop+gap*(i+.5), on=(S.equip.weapon||"none")===w.k;
+    rack+=`<g class="rmpeg" data-weap="${w.k}"><title>${w.lbl}</title>
+      <circle cx="${rkx}" cy="${wy}" r="30" fill="${on?'rgba(255,206,58,.34)':'rgba(10,5,24,.4)'}" stroke="${on?'#ffce3a':'#5a4a92'}" stroke-width="${on?4:2.5}"/>
+      <text x="${rkx}" y="${wy+13}" text-anchor="middle" font-size="34">${w.ic}</text></g>`; });
+  /* CAPE swatches — a horizontal row on the rug (red always; gold/purple gate on stars, per the old loadout) */
+  const [cpx,cpy]=ROOM.capePeg;
+  const capes=[["red","#e23b3b",0],["gold","#ffce3a",15],["purple","#a06ae8",27]];
+  let capeG=""; capes.forEach(([k,col,need],i)=>{ const cx2=cpx+i*60, locked=S.stars<need, on=(S.equip.cape||"red")===k;
+    capeG+=`<g class="${locked?'rmcapeoff':'rmpeg'}" ${locked?'':`data-cape="${k}"`}><title>${k.toUpperCase()} cape${locked?` · ⚡${need}`:''}</title>
+      <rect x="${cx2-22}" y="${cpy-22}" width="44" height="44" rx="9" fill="${locked?'#2a2348':col}" stroke="${on?'#fff':'#0c0820'}" stroke-width="${on?4:2.5}" opacity="${locked?.5:1}"/>
+      ${locked?`<text x="${cx2}" y="${cpy+7}" text-anchor="middle" font-size="22">🔒</text>`:''}</g>`; });
+  /* --- FRAMES = Hero League (freed friends' faces); tap a face -> hero card --- */
+  let frames=""; const freed=LEAGUE.filter(t=>allyFreed(t.kind));
+  ROOM.frames.forEach((sp,i)=>{ const t=freed[i]; if(!t)return; const [x,y]=sp;
+    frames+=`<g class="rmframe" data-kind="${t.kind}"><title>${t.real} - "${t.name}"</title>
+      ${_nest(allyFace(t.kind),"-32 -36 64 86",x-46,y-52,92,104)}</g>`; });
+  if(freed.length>ROOM.frames.length){ const [x,y]=ROOM.frames[ROOM.frames.length-1];
+    frames+=_badge(x+44,y-44,freed.length-ROOM.frames.length,"#ffce3a"); }
+  /* --- JARS = Captured Villains; tap -> boss cage quip --- */
+  let jars=""; const beaten=BOSSES.filter(b=>S.done[b.mid]);
+  ROOM.jars.forEach((sp,i)=>{ const b=beaten[i]; if(!b)return; const [x,y]=sp;
+    jars+=`<g class="rmjar" data-mid="${b.mid}"><title>${b.name}</title>
+      <ellipse cx="${x}" cy="${y-6}" rx="34" ry="42" fill="rgba(150,180,255,.22)"/>
+      ${_nest(_stripSvg(b.art(48)),"-72 -116 144 256",x-38,y-56,76,92)}</g>`; });
+  if(beaten.length>ROOM.jars.length){ const [x,y]=ROOM.jars[ROOM.jars.length-1];
+    jars+=_badge(x+40,y-40,beaten.length-ROOM.jars.length,"#b46bd6"); }
+  /* --- NICHES = Gem Collection (earned letters); tap -> full gem grid --- */
+  const earned=ORDER.filter(g=>S.done[LETTER_MISSION[g]]);
+  const [nx,ny,nw,nh]=ROOM.niches; let gems="";
+  if(earned.length){ const showg=earned.slice(0,6), cols=2, cw2=nw/cols, rh=nh/3;
+    showg.forEach((g,i)=>{ const gx2=nx-nw/2+cw2*(i%cols)+cw2/2, gy2=ny-nh/2+rh*Math.floor(i/cols)+rh/2;
+      gems+=_nest(_stripSvg(gemSVG(g,GEMCOLOR[g],40)),"-26 -28 52 56",gx2-22,gy2-22,44,44); });
+    gems=`<g class="rmgems"><title>Gem Collection - ${earned.length}/${ORDER.length}</title>
+      <rect x="${nx-nw/2}" y="${ny-nh/2}" width="${nw}" height="${nh}" fill="transparent"/>${gems}
+      ${_badge(nx+nw/2-8,ny-nh/2+8,earned.length,"#3ec9c9")}</g>`; }
+  /* --- DECORATIONS the kid has placed + faint "+" invites when there's something to place --- */
+  const placed=(S.decor&&typeof S.decor==="object")?S.decor:{};
+  const ownUnplaced=BASE_ITEMS.filter(it=>S.owned&&S.owned[it.id]&&!Object.values(placed).includes(it.id));
+  let decor=""; ROOM.decor.forEach((sp,i)=>{ const [x,y]=sp, id=placed["s"+i], it=id&&BASE_ITEMS.find(b=>b.id===id);
+    if(it){ decor+=`<g class="rmdecorspot" data-spot="${i}"><title>${it.nm}</title>
+        <text x="${x}" y="${y+18}" text-anchor="middle" font-size="54">${it.ic}</text></g>`; }
+    else if(ownUnplaced.length){ decor+=`<g class="rmdecorspot rmempty" data-spot="${i}"><title>Place a decoration</title>
+        <circle cx="${x}" cy="${y}" r="26" fill="rgba(255,206,58,.14)" stroke="#ffce3a" stroke-width="2.5" stroke-dasharray="5 5"/>
+        <text x="${x}" y="${y+11}" text-anchor="middle" font-size="34" fill="#ffce3a">＋</text></g>`; } });
+  /* --- ACTION objects (transparent hit rects over the painted door / crystal / chests) --- */
+  const due=vaultDueRoutable().length, pend=pendingChests();
+  const [dx,dy,dw,dh]=ROOM.door, [cx,cy,cw,ch]=ROOM.crystal, [gx,gy,gw,gh]=ROOM.chests;
+  const act=`
+    <g class="rmact" data-act="train"><title>Training Room</title>
+      <rect x="${dx}" y="${dy}" width="${dw}" height="${dh}" rx="14" fill="transparent"/>
+      <g pointer-events="none"><circle cx="${dx+dw/2}" cy="${dy+dh+6}" r="20" fill="rgba(10,5,24,.72)" stroke="#9fe870" stroke-width="3"/><text x="${dx+dw/2}" y="${dy+dh+14}" text-anchor="middle" font-size="22">🏋️</text></g></g>
+    <g class="rmact ${due?'rmpulse':''}" data-act="recharge"><title>Recharge the Gems</title>
+      ${due?`<ellipse cx="${cx+cw/2}" cy="${cy+ch/2}" rx="84" ry="96" fill="url(#rmGlow)" pointer-events="none"/>`:''}
+      <rect x="${cx}" y="${cy}" width="${cw}" height="${ch}" rx="14" fill="transparent"/>
+      ${_badge(cx+cw-10,cy+10,due,"#7fd9ff")}</g>
+    <g class="rmact ${pend?'rmpulse':''}" data-act="gifts" style="${pend?'':'display:none'}"><title>Open a Gift</title>
+      ${pend?`<ellipse cx="${gx+gw/2}" cy="${gy+gh/2}" rx="150" ry="110" fill="url(#rmGlow)" pointer-events="none"/>`:''}
+      <rect x="${gx}" y="${gy}" width="${gw}" height="${gh}" rx="18" fill="transparent"/>
+      ${_badge(gx+gw-30,gy+24,pend,"#ffce3a")}</g>`;
+  return `<svg viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid meet" class="roomsvg">
+    <defs>
+      <radialGradient id="rmGlow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff7d0" stop-opacity=".7"/><stop offset=".5" stop-color="#ffd24a" stop-opacity=".35"/><stop offset="1" stop-color="#ffd24a" stop-opacity="0"/></radialGradient>
+      <style>.rmact,.rmpeg,.rmframe,.rmjar,.rmgems,.rmdecorspot{cursor:pointer}
+        @media (prefers-reduced-motion:no-preference){.rmpulse{animation:rmpulse 2.2s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}}
+        @keyframes rmpulse{0%,100%{opacity:1}50%{opacity:.55}}</style>
+    </defs>
+    <image href="art/bg-base-room.png" x="0" y="0" width="1536" height="1024" preserveAspectRatio="xMidYMid meet"/>
+    ${gems}${frames}${jars}${rack}${capeG}${decor}
+    ${hero}${rank}
+    ${act}</svg>`;
 }
-{ const bb=$("btnBaseBack"); if(bb)bb.onclick=()=>{Aud.stop();toMap();}; }   /* CITY MAP button removed from the Base (map-exit lives in ☰ MENU); guard kept for safety */
+function paintBase(){
+  const cn=$("baseCoins"); if(cn)cn.textContent=S.coins||0;
+  const wrap=$("roomWrap"); if(!wrap)return; wrap.innerHTML=roomSVG();
+  /* action objects */
+  wrap.querySelectorAll(".rmact").forEach(g=>g.addEventListener("click",()=>{
+    const a=g.dataset.act;
+    if(a==="train"){ Aud.pick&&Aud.pick(); showTrain(); }
+    else if(a==="recharge"){ Aud.pick&&Aud.pick(); startVault(); }
+    else if(a==="gifts"){ const t=nextChestTier(); if(!t)return; Aud.pick&&Aud.pick(); openChest(t); }
+  }));
+  /* loadout: tap a hung weapon / cape to equip */
+  wrap.querySelectorAll(".rmpeg").forEach(g=>g.addEventListener("click",()=>{
+    if(g.dataset.weap!=null){ S.equip.weapon=g.dataset.weap; }
+    else if(g.dataset.cape){ S.equip.cape=g.dataset.cape; }
+    save(); Aud.ding(); paintBase(); }));
+  /* collections */
+  wrap.querySelectorAll(".rmframe").forEach(g=>g.addEventListener("click",()=>openHeroCard(g.dataset.kind)));
+  wrap.querySelectorAll(".rmjar").forEach(g=>g.addEventListener("click",()=>{ const b=BOSSES.find(x=>x.mid==g.dataset.mid); if(b)openBossCage(b); }));
+  const gemsG=wrap.querySelector(".rmgems"); if(gemsG)gemsG.addEventListener("click",openGemColl);
+  /* decoration spots */
+  wrap.querySelectorAll(".rmdecorspot").forEach(g=>g.addEventListener("click",()=>openDecorPicker(+g.dataset.spot)));
+}
+/* full gem collection grid (earned letters; a RETAINED gem earns a gold star, #4) */
+function openGemColl(){ const earned=ORDER.filter(g=>S.done[LETTER_MISSION[g]]);
+  $("rcTitle").textContent="💎 GEM COLLECTION"; $("rcCount").textContent=earned.length+" / "+ORDER.length;
+  $("rcGrid").innerHTML=earned.map(g=>`<span class="gembox${retainedItem(g)?" mastered":""}">${gemSVG(g,GEMCOLOR[g],58)}</span>`).join("")
+    || '<div class="baselbl">Rescue gems on missions to fill your case!</div>';
+  $("roomColl").classList.add("on"); Aud.pick&&Aud.pick(); }
+{ const c=$("rcClose"); if(c)c.onclick=()=>$("roomColl").classList.remove("on");
+  const r=$("roomColl"); if(r)r.onclick=e=>{ if(e.target.id==="roomColl")r.classList.remove("on"); } }
+/* decoration picker: choose an owned-but-unplaced cosmetic to drop into spot i */
+let __decorSpot=0;
+function openDecorPicker(i){ __decorSpot=i;
+  const placed=(S.decor&&typeof S.decor==="object")?S.decor:{};
+  const ownUnplaced=BASE_ITEMS.filter(it=>S.owned&&S.owned[it.id]&&!Object.values(placed).includes(it.id));
+  const g=$("rdGrid"); g.innerHTML="";
+  if(placed["s"+i]){ const b=document.createElement("button"); b.className="rd-item rd-clear"; b.innerHTML="🚫<div class='rd-nm'>Clear spot</div>";
+    b.onclick=()=>{ delete S.decor["s"+i]; save(); Aud.ding(); $("roomDecor").classList.remove("on"); paintBase(); }; g.appendChild(b); }
+  ownUnplaced.forEach(it=>{ const b=document.createElement("button"); b.className="rd-item";
+    b.innerHTML=`<div class="rd-ic">${it.ic}</div><div class="rd-nm">${it.nm}</div>`;
+    b.onclick=()=>{ S.decor=(S.decor&&typeof S.decor==="object")?S.decor:{}; S.decor["s"+i]=it.id; save(); Aud.ding(); burstAt(b);
+      $("roomDecor").classList.remove("on"); paintBase(); }; g.appendChild(b); });
+  if(!ownUnplaced.length && !placed["s"+i]){ g.innerHTML='<div class="baselbl">Earn coins, then buy decorations in the Shop!</div>'; }
+  $("roomDecor").classList.add("on"); Aud.pick&&Aud.pick(); }
+{ const c=$("rdClose"); if(c)c.onclick=()=>$("roomDecor").classList.remove("on");
+  const s=$("rdShop"); if(s)s.onclick=()=>{ $("roomDecor").classList.remove("on"); openShop(); };
+  const r=$("roomDecor"); if(r)r.onclick=e=>{ if(e.target.id==="roomDecor")r.classList.remove("on"); } }
 
 /* ---------------- HERO CARD (Pokémon-style full-body popup) ----------------
    Tap a freed friend on the Base league shelf → a flip card: full-body art +
@@ -1547,7 +1643,7 @@ function trainWin(el,w){ const bonus=combo>=3?2:1; const before=S.coins||0; S.co
 function coinFloat(el,n){ const s=$("stage"); if(!s||!el)return; const r=el.getBoundingClientRect(),st=s.getBoundingClientRect();
   const c=document.createElement("div"); c.className="combochip"; c.style.color="#ffd75e";
   c.style.top=(r.top-st.top-20)+"px"; c.textContent="+"+n+" 💰"; s.appendChild(c); setTimeout(()=>c.remove(),900); }
-$("btnTrain").onclick=()=>showTrain();
+/* Training now launches from the painted DOOR in the Hero Room (see paintBase). */
 $("btnTrainBack").onclick=()=>{ __inTraining=false; Aud.stop(); showBase(); };
 
 /* ---------------- MEMORY VAULT — the dedicated recharge activity (rec #1, deterministic) ----------------
@@ -1620,12 +1716,13 @@ function vaultBuild(it){ const w=it.w, sight=!!it.sight, units=vaultUnits(w,sigh
         if(vaultMiss>=2)cr.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===want)x.classList.add("hint");});
         if(!sight)Aud.play(["snd_"+want]); setTimeout(()=>b.classList.remove("dim"),900); } };
     cr.appendChild(b); }); }
-$("btnVault").onclick=()=>{ Aud.pick(); startVault(); };
+/* Recharge now launches from the painted CRYSTAL in the Hero Room (see paintBase). */
 $("btnVaultBack").onclick=()=>{ Aud.stop(); showBase(); };
 /* open the next pending chest (gold → silver → wood) on tap */
 { const gb=$("btnGifts"); if(gb)gb.onclick=()=>{ const t=nextChestTier(); if(!t)return; Aud.pick&&Aud.pick(); openChest(t); }; }
 /* ---- shop ---- */
 function openShop(){ paintShop(); $("shopPanel").classList.add("on"); }
+{ const rc=$("roomCoins"); if(rc)rc.onclick=()=>{ Aud.pick&&Aud.pick(); openShop(); }; }   /* coin counter in the Hero Room → Shop */
 function paintShop(){ $("shopCoins").textContent=S.coins||0;
   const g=$("shopGrid"); g.innerHTML="";
   BASE_ITEMS.forEach(it=>{ const owned=!!S.owned[it.id], can=(S.coins||0)>=it.cost;
@@ -1638,7 +1735,7 @@ function paintShop(){ $("shopCoins").textContent=S.coins||0;
         else Aud.play("shop_need"); };
       d.appendChild(buy); }
     g.appendChild(d); }); }
-$("btnShop").onclick=()=>openShop();
+/* Shop opens from the COIN counter / the decoration picker in the Hero Room. */
 $("btnShopClose").onclick=()=>{ $("shopPanel").classList.remove("on"); paintBase(); };
 
 /* ---------------- SETTINGS ---------------- */
