@@ -197,7 +197,7 @@ ${kgear}
    inkblotSVG/vixenSVG. ---- */
 const RASTER={ "teddy-m0":true,"teddy-m1":true,"teddy-m2":true,
   "teddy-knight-m0":true,"teddy-knight-m1":true,"teddy-knight-m2":true,
-  "ally-tank":true };
+  "ally-tank":true, "ally-sunny":true };
 function rasterArt(file,w=210,a0="#ffce3a",a1="#3a7bff"){
 const u="r"+(__huid++);
 return `<svg viewBox="0 0 240 256" width="${w}" aria-hidden="true">
@@ -356,7 +356,7 @@ const BODY_CFG={
 /* dispatch: characters with a real-life outfit get a bespoke body; the rest use
    the generic caped super-suit template. */
 function allyBody(kind,w=200){
-  if(RASTER["ally-"+kind])return rasterArt("ally-"+kind, w, "#ffb43a", "#ff7a2a");   /* generated raster (warm aura) once published */
+  if(RASTER["ally-"+kind]){ const ac=(typeof ALLY_COL!=="undefined"&&ALLY_COL[kind])||"#ffb43a"; return rasterArt("ally-"+kind, w, ac, ac); }   /* generated raster, aura in the ally's signature colour */
   if(kind==="tank")return archieBody(w);
   if(kind==="flip")return ellieBody(w);
   if(kind==="heart")return ameliaBody(w);
