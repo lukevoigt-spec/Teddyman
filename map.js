@@ -115,7 +115,6 @@ function mapPaintSVG(){
 function toMap(){ sessionTick();
   if(!actMissions(currentAct()).length){ actComingSoon(); return; }  /* act with no content yet → safe landing */
   GEO=geomFor(currentAct()); show("scrMap");
-  $("hudTitle").textContent=actInfo(currentAct()).city;
   $("mapSVGwrap").innerHTML=mapPaintSVG();
   const zs=actZones(currentAct());
   document.querySelectorAll("#mapSVGwrap .mnode").forEach(n=>{

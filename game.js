@@ -618,6 +618,9 @@ $("hudTitle").onclick=e=>{ e.stopPropagation(); const m=$("navMenu"); if(m)m.cla
 $("navMap").onclick=()=>navGo(toMap);
 $("navBase").onclick=()=>navGo(showBase);
 $("navHome").onclick=()=>navGo(()=>{ paintTitle(); show("scrTitle"); });
+/* Settings now lives IN the menu as a gated item (the cognitive math-gate replaces the old hidden
+   3s-hold gear) — one nav surface, declutters the HUD. The gate stops a kid who taps it. */
+{ const ng=$("navGrown"); if(ng)ng.onclick=()=>{ closeNav(); Aud.pick&&Aud.pick(); parentGate(); }; }
 document.addEventListener("click",closeNav);   /* tap anywhere else closes the menu */
 
 /* ---------------- MISSION FLOW ---------------- */
@@ -655,7 +658,7 @@ function pickFoils(g, pool, n){ const cands=pool.filter(x=>x!==g);
   const twin=(CONFUSE[g]||[]).find(p=>cands.includes(p));
   const out = twin ? [twin].concat(shuf(cands.filter(x=>x!==twin)).slice(0,n-1)) : shuf(cands).slice(0,n);
   return shuf(out); }
-function startMission(m){ clearFlow(); combo=0; CUR=m; $("hudTitle").textContent=m.lbl.toUpperCase();
+function startMission(m){ clearFlow(); combo=0; CUR=m;
   if(m.type==="learn")startLearn(m);
   else if(m.type==="patrol")startPatrol(m.set);
   else if(m.type==="read")startRead(m);
@@ -697,7 +700,7 @@ function missionComplete(){
    (letters/digraphs/vowel-teams, all voiced) vs magic-e units (re-taught via their Magic-E mission). */
 function soundReviewSet(weak){ return weak.filter(g=>!MAGICE_UNITS.includes(g)); }
 function magicReviewSet(weak){ return weak.filter(g=>MAGICE_UNITS.includes(g)); }
-function masteryReview(weak){ $("hudTitle").textContent="POWER-UP PATROL";
+function masteryReview(weak){
   /* re-teach a weak magic-e unit via its own Magic-E mission (records the unit -> clears the gate);
      startFind would play a non-existent snd_a_e and show a nonsensical a_e gem. */
   const mw=magicReviewSet(weak);
@@ -1275,7 +1278,6 @@ function showRest(nextM){ show("scrRest");
 const LETTER_MISSION={s:0,a:1,t:3,p:5,i:6,n:7,m:9,d:10,g:12,o:14,c:15,k:16,e:18,u:19,r:21,h:23,b:24,f:25,
   l:37,j:38,v:40,w:41,x:43,y:44,z:45,q:46};
 function showBase(){ clearFlow(); show("scrBase");
-  $("hudTitle").textContent="HERO BASE";
   paintBase();
   /* gentle once-a-day Memory-Vault nudge, layered after the base greeting (never forced — constraint #8) */
   if(vaultDueRoutable().length>0 && S.vaultNudge!==dayKey()){ S.vaultNudge=dayKey(); save();
@@ -1719,15 +1721,8 @@ function paintPlayers(){ const list=$("playersList"); if(!list)return; list.inne
       x.onclick=()=>{ if(confirm("Remove player \""+p.name+"\" and their progress?")){ removeProfile(p.id); paintPlayers(); paintTitle(); } }; row.appendChild(x); }
     list.appendChild(row); }); }
 $("btnAddPlayer").onclick=()=>{ const nm=prompt("New player name?"); if(nm&&nm.trim()){ addProfile(nm); paintPlayers(); paintTitle(); } };
-/* ADULT GATE: the Grown-Up Corner opens only on a 3-second PRESS-AND-HOLD (the INTENT trigger so
-   Teddy can't wander in), THEN a quick MATH challenge confirms a grown-up (U3 P3). The gear grows
-   while held. */
-(function(){ const g=$("btnGear"); if(!g)return; let t=null;
-  const start=e=>{ if(e&&e.preventDefault)e.preventDefault(); clearTimeout(t); g.classList.add("holding");
-    t=setTimeout(()=>{ g.classList.remove("holding"); Aud.pick&&Aud.pick(); parentGate(); },3000); };
-  const cancel=()=>{ clearTimeout(t); g.classList.remove("holding"); };
-  g.addEventListener("pointerdown",start);
-  ["pointerup","pointerleave","pointercancel"].forEach(ev=>g.addEventListener(ev,cancel)); })();
+/* ADULT GATE: the Grown-Up Corner opens from the ☰ MENU ▸ Grown-Ups item (the old hidden 3s-hold
+   gear is gone now that the cognitive MATH gate below does the real gatekeeping). */
 /* COGNITIVE GATE (U3 P3): adult-easy / kid-hard — two 2-digit addends WITH regrouping (a 7yo learning
    math can't breeze a single-digit sum). Pass → open + remember for the session; re-challenged when the
    app is backgrounded or after a few idle minutes. Wrong = gentle dismiss (no scold, no entry). */

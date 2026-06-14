@@ -63,6 +63,7 @@ const SCENES = {
   read:    `(function(){ CUR={id:5}; readWords=["cat"]; readIx=0; readGoal=1; readMiss=0; show('scrRead'); nextRead(); return 1; })()`,
   picons:  `(function(){ var words=(arguments,Object.keys(PICONS)); show('scrRead'); document.getElementById('readWord').innerHTML=''; document.querySelector('.bubble#readText').style.display='none'; var cr=document.getElementById('readChoices'); cr.style.flexWrap='wrap'; cr.style.maxWidth='900px'; cr.innerHTML=''; words.forEach(function(o){ var wrap=document.createElement('div'); wrap.style.cssText='display:flex;flex-direction:column;align-items:center;'; var b=document.createElement('div'); b.className='tile picktile'; b.style.cssText='font-size:46px;width:78px;height:78px;'; b.innerHTML=picIcon(o,''); var l=document.createElement('div'); l.textContent=o; l.style.cssText='color:#fff;font-size:12px;font-family:sans-serif;'; wrap.appendChild(b); wrap.appendChild(l); cr.appendChild(wrap); }); return 1; })()`,
   scanintro: `(function(){ show('scrScan'); narrate('scan',document.getElementById('scanText'),['scan_intro']); clearFlow(); return 1; })()`,
+  menu: `(function(){ toMap(); document.getElementById('navMenu').classList.add('on'); return 1; })()`,
   basefull:`(function(){ [1,3,4,6,8].forEach(function(i){S.done[i]=true;}); S.coins=40; S.owned={banner:1}; paintBase(); show('scrBase'); return 1; })()`,
 };
 
