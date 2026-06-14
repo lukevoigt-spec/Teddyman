@@ -1373,7 +1373,7 @@ function paintBase(){
     setCard("bossShelf",   anyBoss);
     setCard("trophyShelf", anyTro); }
 }
-$("btnBaseBack").onclick=()=>{Aud.stop();toMap();};
+{ const bb=$("btnBaseBack"); if(bb)bb.onclick=()=>{Aud.stop();toMap();}; }   /* CITY MAP button removed from the Base (map-exit lives in ☰ MENU); guard kept for safety */
 
 /* ---------------- HERO CARD (Pokémon-style full-body popup) ----------------
    Tap a freed friend on the Base league shelf → a flip card: full-body art +
