@@ -3,6 +3,12 @@ tools/node_modules/
 tools/shots/
 tools/package-lock.json
 
+# Root-level dev render/npm scratch (no-build static deploy — these never ship)
+node_modules/
+package.json
+package-lock.json
+.render/
+
 # Secrets — API keys live on the local machine only, NEVER in git
 .env
 *.local
