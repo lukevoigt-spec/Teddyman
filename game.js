@@ -409,6 +409,41 @@ function burstAt(el,word){ const r=el.getBoundingClientRect(),st=$("stage").getB
   if(word){ const z=document.createElement("div"); z.className="zapword"; z.textContent=word;
     z.style.left=(cx-60)+"px"; z.style.top=(r.top-st.top-40)+"px";
     $("stage").appendChild(z); setTimeout(()=>z.remove(),900); shakeStage(); flashScreen(); } }
+/* count a counter UP to a value (never just set) + a scale-bounce — the satisfying "destination
+   reaction" (engagement §8 #6). easeOutQuad; instant on reduced-motion / no rAF. */
+function countUp(el,to,dur){ if(!el)return; const from=parseInt(el.textContent,10)||0;
+  if(from===to||REDUCE||typeof requestAnimationFrame==="undefined"){ el.textContent=to; return; }
+  dur=dur||340; let t0=null;
+  function step(ts){ if(t0==null)t0=ts; const p=Math.min(1,(ts-t0)/dur), e=1-(1-p)*(1-p);
+    el.textContent=Math.round(from+(to-from)*e); if(p<1)requestAnimationFrame(step); else el.textContent=to; }
+  requestAnimationFrame(step); }
+/* REWARD-FLY (engagement §8.3): pooled coin/gem sprites ARC from a source to a HUD counter while the
+   counter counts up + bounces. Transform/opacity only (GPU), zero deps (WAAPI), detail-tier aware.
+   Per §6.0 the coin juice is a notch QUIETER than the reading/mastery cues — never out-shines "you read it!". */
+let __flyPool=[];
+function flyReward(fromEl,toEl,n,opts){ opts=opts||{}; if(!toEl||!n)return;
+  const cur=parseInt(toEl.textContent,10)||0, to=cur+n;
+  const bounce=()=>{ toEl.classList.add("ctrpop"); void toEl.offsetWidth; toEl.classList.remove("ctrpop"); void toEl.offsetWidth; toEl.classList.add("ctrpop"); };
+  if(typeof Sfx!=="undefined")Sfx.coin();
+  const lite=(document.body&&document.body.classList.contains("lite"))||REDUCE;
+  const calm=document.body&&document.body.classList.contains("calm");
+  if(lite || !fromEl || typeof fromEl.animate!=="function"){ toEl.textContent=to; bounce(); return; }   /* instant */
+  if(calm){ countUp(toEl,to,320); bounce(); return; }                                                    /* number-tween, no sprites */
+  const sr=fromEl.getBoundingClientRect(), tr=toEl.getBoundingClientRect();
+  const sx=sr.left+sr.width/2, sy=sr.top+sr.height/2, tx=tr.left+tr.width/2, ty=tr.top+tr.height/2;
+  const count=Math.max(1,Math.min(n,opts.cap||8));
+  countUp(toEl,to,360+count*40); bounce();
+  for(let i=0;i<count;i++){ const sp=__flyPool.pop()||document.createElement("div");
+    sp.style.cssText="position:fixed;left:0;top:0;z-index:30;pointer-events:none;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff2b0,#ffce3a 55%,#d8920f);border:2px solid #9c6a12;will-change:transform,opacity;";
+    document.body.appendChild(sp);
+    const cx=sx+(Math.random()*70-35), cy=sy-(36+Math.random()*44);   /* arc up via a mid control point */
+    sp.animate([
+      {transform:`translate(${sx-9}px,${sy-9}px) scale(.5)`,opacity:0},
+      {transform:`translate(${cx-9}px,${cy-9}px) scale(1)`,opacity:1,offset:.45},
+      {transform:`translate(${tx-9}px,${ty-9}px) scale(.5)`,opacity:.85}
+    ],{duration:520+Math.random()*120,delay:i*45,easing:"cubic-bezier(.45,0,.75,1)",fill:"forwards"})
+      .finished.then(()=>{ sp.remove(); if(__flyPool.length<16)__flyPool.push(sp); }).catch(()=>{ try{sp.remove();}catch(e){} });
+  } }
 
 /* ---------------- TITLE ---------------- */
 $("titleHero").innerHTML=heroMarquee(210);
@@ -1443,9 +1478,10 @@ function trainDecode(w){ trainCur=w; trainMiss=0;
       else { record("w_"+w,false); trainMiss++; b.classList.add("dim");
         if(trainMiss>=2)cr.querySelectorAll(".picktile").forEach(x=>{if(x.dataset.w===w)x.classList.add("hint");}); readSoundOut(w); } };
     cr.appendChild(b); }); }
-function trainWin(el,w){ const bonus=combo>=3?2:1; S.coins=(S.coins||0)+bonus; trainReps++; save();
-  if(typeof Sfx!=="undefined")Sfx.coin();
-  burstAt(el); coinFloat(el,bonus); updateTrainHUD();
+function trainWin(el,w){ const bonus=combo>=3?2:1; const before=S.coins||0; S.coins=before+bonus; trainReps++; save();
+  burstAt(el); coinFloat(el,bonus);                                  /* burst + the floating "+N" pop (§8 #7) */
+  $("trainReps").textContent=trainReps; $("trainCoins").textContent=before;   /* counter starts pre-reward… */
+  flyReward(el,$("trainCoins"),bonus);                               /* …then coins arc in + it counts up + bounces (plays Sfx.coin) */
   flow(Aud.play(["train_yes"].concat(wordAudio(w))),()=>setTimeout(trainRound,260)); }
 function coinFloat(el,n){ const s=$("stage"); if(!s||!el)return; const r=el.getBoundingClientRect(),st=s.getBoundingClientRect();
   const c=document.createElement("div"); c.className="combochip"; c.style.color="#ffd75e";

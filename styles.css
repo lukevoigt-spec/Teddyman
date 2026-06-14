@@ -232,6 +232,9 @@ body[data-act="2"] .navitem{border-color:#6a5436;background:rgba(50,38,18,.55);c
 @keyframes combochip{0%{transform:translateX(-50%) scale(.4) rotate(-6deg);opacity:0}
   25%{transform:translateX(-50%) scale(1.2) rotate(-6deg);opacity:1}100%{transform:translateX(-50%) scale(1) translateY(-26px) rotate(-6deg);opacity:0}}
 .combochip.big{font-size:clamp(40px,8vw,68px);color:#ffd23a;}
+/* reward counter count-up bounce (engagement §8 #6) */
+.ctrpop{display:inline-block;animation:ctrpop .34s ease-out;}
+@keyframes ctrpop{0%{transform:scale(1)}40%{transform:scale(1.22)}100%{transform:scale(1)}}
 /* MASTERY flourish — the LOUDEST micro-celebration (mastery > participation): fires when an item
    crosses into "mastered". Short + auto-removing (never blocks the flow / next prompt). */
 .masterpop{position:absolute;top:38%;left:50%;transform:translateX(-50%);z-index:14;pointer-events:none;white-space:nowrap;
