@@ -293,6 +293,51 @@ already built** (those notes are now partly stale). Don't re-do these:
 > **Doc hygiene:** CLAUDE.md's UI/NAV BACKLOG (i–iv) should be updated to mark (iii)+(iv) DONE and re-scope (i)+(ii) to
 > the polish items above — that's a CLAUDE.md (product) edit, so it's **Neo's** to make (flagging it here, not editing it).
 
+### 9.1 Settings game-feel pass — DETAILED SPEC (item #2 expanded)
+**Reality check first:** the Grown-Up Corner is already in good shape — `#settingsPanel` is a painted overlay
+(`bg-base.jpeg` + dark gradient, `styles.css:260`), the hub→drill-down + adult gate work, and `.setcard`/`.switch`/
+`.segctl`/`.setrange` are all custom-styled with an Act-2 skin. So this is a **craft/affordance polish pass (paint
+only), not a rebuild.** **Iron rule: keep every bound ID** (`volSlider`, `sfxSlider`, `musicSlider`, `detailSeg`,
+`cloudSecret`, `saveBox`, `btnReset*`, the `hub*`/`secback` handlers, …) — change CSS + light markup, never the JS
+wiring. `transform`/`opacity`/`box-shadow` only; reduced-motion aware; `.setcard-sub` stays **Andika** (parent reading).
+> **Tap-target nuance (§7/#6):** the ≥96px rule is for **child**-tapped controls. The Grown-Up Corner is parent-gated,
+> so its controls only need a comfortable **~44pt** (HIG floor) — *don't* bloat sliders/switches to child sizes here.
+
+**A. Hub landing = the first impression — make it feel like a real game's settings home.** (`.hubcard`, `styles.css:288`)
+1. **Color-code each card by function** (recognition over recall, §7 rule #3): Players = `--blue`, Progress = `--green`,
+   Settings = `--gold`, Voice Studio = `--purp`. Tint the border + a soft matching idle glow per card.
+2. **Premium chrome** (reuse the §3 `.btn` craft): add a glossy top **sheen** pseudo-element + a gentle `box-shadow`
+   glow; keep the press-compress. Put the emoji on a **circular "chip" disc** (`.hc-ic` in a 56px radial-gradient
+   coin) so it reads crafted, not bare-emoji.
+3. **Add a one-line subtitle** under each `.hc-t` ("Switch who's playing" / "See what he's learned" / "Sound, display &
+   sync" / "Record the voices") — markup-only, a `.hc-sub` span; turns four labels into self-explaining cards.
+4. **Dashboard overview** (`.hubover`, `styles.css:282`): present the existing stat rows as a game-style **profile
+   header** — bigger value type, a small icon per stat (🎯 missions · ⏱ minutes · ☁️ sync), the today/training split as
+   a thin progress bar. Same data (`paintHub()`), richer presentation.
+
+**B. Section cards + controls** (`.setcard` `:619`, `.setrange` `:628`, `.switch` `:636`, `.segctl` `:643`)
+- `.setcard`: bump border to **2px gem-purple** with a faint outer glow on the *open* section; give `.sc-ic` the same
+  chip-disc treatment as the hub for consistency.
+- **Volume sliders** = the most "game" control: render a **filled track** (gradient fill from 0→thumb, e.g. via a
+  `background:linear-gradient(--gold ...)` sized off the value, set in `paintVol()`) so each slider reads like a game
+  volume bar, not a generic range input. Bigger gold thumb (already 26px — fine).
+- `.switch`: add an inner shadow + a faint ON-glow when `.on`; optional ✓/✕ glyph in the knob for clarity.
+- `.segctl` (Full/Calm/Lite): add the §3 **gold sheen** on the active segment so the selected detail tier pops.
+
+**C. "Real game" structure touches**
+- **Consistent close + back:** a single persistent **✕ close** top-right of `#settingsPanel` (always, every section) +
+  the existing ‹ Back on drill-in — so the parent never hunts for the exit (§7 rule #6). Wire to the existing
+  `btnCloseSettings` pattern; don't add new exits, just make the one consistent/visible.
+- **Order by frequency:** Sound first (most-touched), then Display, Sync, Reset last in its **danger** card (already
+  separated — keep it). 
+- **Act-2 parity:** the existing `body[data-act="2"]` overrides skin `.setcard`/`.setcard-h`; **extend them to
+  `.hubcard`** (stone/bronze) so the medieval skin covers the new hub chrome too.
+
+**D. Build order + verify**
+hub cards (biggest first-impression win) → setcard/slider/switch polish → consistent ✕ close → Act-2 `.hubcard`
+parity. Pure `styles.css` + tiny markup; **re-verify the gate still opens it**, every slider/toggle still binds, and
+shoot the settings scene (`shot.mjs`/`shot-cloud.mjs`) in Act 1 + Act 2; keep `save`/`curriculum` green.
+
 ## 10. Sources
 **Game feel / juice canon + web-anim perf:** [GameAnalytics — squeezing more juice](https://www.gameanalytics.com/blog/squeezing-more-juice-out-of-your-game-design) ·
 [Game Developer — juice (Jonasson/Purho lineage)](https://www.gamedeveloper.com/design/squeezing-more-juice-out-of-your-game-design-) ·
