@@ -651,6 +651,78 @@ map Teddy (M1 — raster already exists, just wire it) → **Vex + Dragon** (bos
 
 ---
 
+## 🎨 UI FINDINGS — Hero Base (Trinity, 2026-06-14)
+
+Refs: markup `index.html:116–160`; CSS `styles.css:308–347, 817–847`; `paintBase` `game.js:1131+`.
+Good news: the **basecards** (gradient panels + Baloo headers, styles.css:845) already match the premium
+settings style — Base *chrome* is in decent shape. The gaps are characters + buttons, plus one tension:
+
+**B1. The Base hero is the parametric `heroSVG` — and it *must* stay that way, so it'll read "lesser"
+than raster Teddy.** `baseHero` = `heroNow` (game.js:1131) = old `heroSVG`, because the Base **previews the
+equipped weapon/cape/gear** (the raster has no weapon/cape variants — audit nuance ‡). So title/win show the
+gorgeous raster Teddy, but the Base permanently shows the flat parametric one — a jarring quality drop on the
+hub screen. **Mitigations:** (a) accept it; (b) **give `heroSVG` a shading pass** (like the dragon got — form
+shadow/rim light) so the parametric hero isn't jarring next to raster, and every parametric use benefits;
+(c) split the Base into a **raster "hero portrait"** up top + a small parametric **"fitting-room" preview**
+shown only while editing the loadout. My lean: **(b) now** (cheap, helps everywhere), consider (c) if the gap
+still bugs you.
+**B2 (cross-ref):** the **league / captured-villain shelves** render old-SVG characters (`allyFace`,
+`inkblotSVG`/`dragonSVG`; Vixen already raster) — fixed by the character-art resolver rollout above.
+**B3 (cross-ref):** loadout **`.echip`** chips + the **TRAINING/SHOP/MAP** buttons are the same flat pills as
+finding **H2** — solve with one button language.
+
+— Trinity, 2026-06-14
+
+---
+
+## 🗂️ UI GLOW-UP — PRIORITIZED PUNCH-LIST for Neo (Trinity, 2026-06-14)
+
+Synthesizes today's findings (home H1–4, intro/calibration I1–2, map M1–2, Base B1, the audit, the
+character-art SPEC) into a sequence. Rule of thumb: **do the quick wins + build the resolver first, then run
+the art-gen and premium-chrome tracks in parallel.**
+
+### Phase 1 — Quick wins (low-risk, high-impact, no new art)
+| Item | What | Why first |
+|---|---|---|
+| **H3** | Subtitle → generic tagline | One-line change; kills the Act-1-only text |
+| **H4** | Collapse START+CONTINUE → one **PLAY** (→ map; keep first-run intro branch) | Both already call `toMap()`; clarifies the whole entry |
+| **M1 (wire only)** | Point the **map** hero at the existing `teddyArt` (raster already exists) + fix placement | Removes the most-seen "old Teddy on a circle" |
+| **B1(b)** | Shading pass on parametric `heroSVG` | Lifts the Base hero + every parametric use at once |
+
+### Phase 2 — Foundation (unlocks everything else)
+- **Build the character-art resolver** (`RASTER` manifest + `charArt()` + uniform canvas) and **wire the call
+  sites** (SPEC above). Ship it with `teddy`+`vixen` already true — no visible change yet, but every future
+  character becomes a one-boolean drop-in. Decide the **map approach (inline vs overlay)** here and use it for
+  hero + allies.
+
+### Phase 3 — Art-gen track (parallel; needs the desktop gen pipeline)
+Generate on the **uniform canvas**, then flip the `RASTER` flag. Order by screen-time:
+**Vex → Dragon** (boss battles + cages) → **Noah** (Act-2 onboarding) → **allies** (faces+bodies+map tokens)
+→ interlude (captive/portal/city). Each auto-upgrades everywhere `charArt` is wired. *(Extend `hero-lab` +
+the smoke test per the SPEC / Morpheus #3.)*
+
+### Phase 4 — Premium chrome track (parallel; mostly CSS, some art)
+| Item | What | Note |
+|---|---|---|
+| **H2** | Premium buttons (`.btn`/`.echip`) | **CSS-premium first** (bevel/texture/accents); 9-slice `border-image` if using gen art — never text-baked. Propagates to every screen. |
+| **M2** | Diegetic map nodes + signage labels | Same button language as H2; keep done/current/locked state readable |
+| **I2** | Scan-calibration tiles → gem chrome | Keep Andika + sound→letter |
+| **I1** | Intro: drop the boxy `.panelart`, full-bleed + generated art | Biggest lift; **pilot one beat**; shared with the interlude; keep faceSpeak/cutsceneFX/skip |
+| **H1** | Title logo treatment / bespoke wordmark | Lowest urgency; watch the `.comic` act-swap + webfont traps |
+
+### Dependencies / sequencing notes
+- **Phase 2 (resolver) should precede Phase 3** so art lands as drop-ins, not bespoke wiring per character.
+- **H2 (button language) precedes M2** (map labels reuse it) and overlaps B3 (Base chips) — design the button
+  system once, apply everywhere.
+- Phase 1 items are independent — Neo can ship them immediately for a fast visible win while the resolver +
+  art-gen spin up.
+- Every phase: tests green (`save`+`curriculum`), constraints intact (≥96px touch, Andika, no
+  timers/failure, audio can't hang), Lite/Calm tiers flatten heavy effects.
+
+— Trinity, 2026-06-14
+
+---
+
 **Test commit by Grok (xAI):** Write access verified successfully! Added this line on 2026-06-13.
 
 ## 2026-06-13 Grok (xAI) Review — Latest Main (commit 060066c)
