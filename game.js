@@ -701,15 +701,26 @@ function startTrace(g){ show("scrTrace");
   svg.innerHTML=`<text class="guide" x="150" y="232" text-anchor="middle" font-size="260">${g}</text><polyline id="trailLine" fill="none" stroke="#ffc93c" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>`;
   paintDots();
   svg.onpointerdown=svg.onpointermove=ev=>{ if(ev.buttons===0&&ev.type==="pointermove")return; handleTracePoint(ev); }; }
-function paintDots(){ const svg=$("traceSVG");
-  svg.querySelectorAll(".tdot").forEach(d=>d.remove());
-  strokes.forEach((st,si)=>st.forEach((p,pi)=>{
-    if(si<strokeIx)return; if(si===strokeIx&&pi<dotIx)return;
-    const c=document.createElementNS("http://www.w3.org/2000/svg","circle");
-    c.setAttribute("cx",p[0]);c.setAttribute("cy",p[1]);
-    c.setAttribute("r",si===strokeIx&&pi===dotIx?16:11);
-    c.setAttribute("class","tdot"+(si===strokeIx&&pi===dotIx?" next":""));
-    svg.appendChild(c); })); }
+/* U9: O-G trace guide — a faint DASHED path through each remaining stroke (shows the direction to
+   draw) + a stroke-ORDER number at each stroke's start, UNIFORM dots, and a clearly-marked NEXT dot.
+   Together with the ghost letterform (#traceWrap .guide) a pre-reader can infer stroke order/direction. */
+function paintDots(){ const svg=$("traceSVG"), NS="http://www.w3.org/2000/svg";
+  svg.querySelectorAll(".tdot,.tpath,.tnum").forEach(d=>d.remove());
+  strokes.forEach((st,si)=>{
+    if(si<strokeIx)return;                                   /* completed strokes drop their guide */
+    const startPi=(si===strokeIx)?dotIx:0, pts=st.slice(startPi);
+    if(pts.length>1){ const pl=document.createElementNS(NS,"polyline");
+      pl.setAttribute("points",pts.map(p=>p[0]+","+p[1]).join(" ")); pl.setAttribute("class","tpath"); svg.appendChild(pl); }
+    if(pts[0]){ const t=document.createElementNS(NS,"text"); t.setAttribute("x",pts[0][0]); t.setAttribute("y",pts[0][1]-17);
+      t.setAttribute("class","tnum"); t.setAttribute("text-anchor","middle"); t.textContent=(si+1); svg.appendChild(t); }
+    st.forEach((p,pi)=>{ if(si===strokeIx&&pi<dotIx)return;
+      const isNext=(si===strokeIx&&pi===dotIx);
+      const c=document.createElementNS(NS,"circle");
+      c.setAttribute("cx",p[0]);c.setAttribute("cy",p[1]);
+      c.setAttribute("r",isNext?15:12);
+      c.setAttribute("class","tdot"+(isNext?" next":""));
+      svg.appendChild(c); });
+  }); }
 function handleTracePoint(ev){ const svg=$("traceSVG"),r=svg.getBoundingClientRect();
   const x=(ev.clientX-r.left)/r.width*300, y=(ev.clientY-r.top)/r.height*300;
   trail.push(x+","+y); if(trail.length>400)trail.shift();

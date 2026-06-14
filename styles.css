@@ -186,6 +186,9 @@ body[data-act="2"] .navitem{border-color:#6a5436;background:rgba(50,38,18,.55);c
 #traceWrap{position:relative;width:min(64dvh,86vw);aspect-ratio:1;background:rgba(255,246,227,.08);border:5px solid var(--txt);border-radius:28px;}
 #traceSVG{width:100%;height:100%;touch-action:none;}
 .tdot{fill:var(--gold);stroke:var(--ink);stroke-width:3;}
+/* U9: dashed stroke-direction guide + stroke-order number */
+.tpath{fill:none;stroke:#fff;stroke-width:4;stroke-linecap:round;stroke-dasharray:3 12;opacity:.7;}
+.tnum{fill:var(--gold);font-family:'Bangers',cursive;font-size:24px;stroke:var(--ink);stroke-width:3.5;paint-order:stroke;}
 .tdot.next{animation:hintpulse 1.4s infinite;transform-origin:center;transform-box:fill-box;}
 .tdot.hit{fill:var(--green);}
 .guide{font-family:'Andika',sans-serif;font-weight:700;fill:rgba(255,246,227,.34);}   /* brighter trace-me letter (was .16 — too faint on the painted ground) */
