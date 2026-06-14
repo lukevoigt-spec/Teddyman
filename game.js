@@ -185,6 +185,10 @@ function heroOpts(){ /* muscle + gear come from THIS act's progress, so a new ac
            theme: actInfo(a).theme||"hero",
            belt2:gear.includes("Power Belt"), boots2:gear.includes("Rocket Boots") }; }
 function heroNow(w){ return heroSVG(w,heroOpts()); }
+/* PAINTED marquee hero: the generated per-muscle Teddy art for the Act-1 superhero
+   (title / win / rest / origin reveal). The Act-2 knight keeps the parametric SVG
+   (pose changes with gear; no painted knight set yet). heroOpts() gives the muscle tier. */
+function heroMarquee(w){ const o=heroOpts(); return o.theme==="hero" ? teddyArt(w,o.muscle) : heroSVG(w,o); }
 /* ---------------- SCREEN MGMT ---------------- */
 const $=id=>document.getElementById(id);
 /* Painted-scene slots: screen -> art/bg-<name>.* . Add an image to swap a scene;
@@ -313,7 +317,7 @@ function burstAt(el,word){ const r=el.getBoundingClientRect(),st=$("stage").getB
     $("stage").appendChild(z); setTimeout(()=>z.remove(),900); shakeStage(); flashScreen(); } }
 
 /* ---------------- TITLE ---------------- */
-$("titleHero").innerHTML=heroNow(210);
+$("titleHero").innerHTML=heroMarquee(210);
 function vpMsg(){ const n=(typeof VOICEPACK!=="undefined")?Object.keys(VOICEPACK).length:0;
   const c=Object.keys(CUSTOM).length;
   const parts=[];
@@ -322,7 +326,7 @@ function vpMsg(){ const n=(typeof VOICEPACK!=="undefined")?Object.keys(VOICEPACK
   return parts.length? parts.join(" · ") : "Using built-in voice — record your own in Grown-Up Corner ▸ Voices"; }
 /* paint the title for the ACTIVE player (auto-loaded last player) */
 function paintTitle(){ const nm=$("playerName"); if(nm)nm.textContent=profileName(ACTIVE);
-  $("titleHero").innerHTML=heroNow(210);
+  $("titleHero").innerHTML=heroMarquee(210);
   $("btnContinue").style.display=S.intro?"inline-block":"none";
   $("btnPlayer").style.display=profiles().length>1?"inline-block":"none"; }
 paintTitle();
@@ -388,7 +392,7 @@ const INTRO=[
  {art:inkblotSVG(300), id:"panel2", fx:"villain"},
  {art:`<div style="display:flex;justify-content:center;padding:24px;">${mentorChips(280)}</div>`, id:"panel3"},
  {art:`<div style="display:flex;justify-content:center;padding:20px;"><svg viewBox="0 0 200 90" width="300"><g stroke="#1d4fb8" stroke-width="9" fill="#cfe6ff" fill-opacity=".4" stroke-linejoin="round"><rect x="20" y="20" width="62" height="50" rx="12"/><rect x="116" y="20" width="62" height="50" rx="12"/><line x1="82" y1="42" x2="116" y2="42"/></g></svg></div>`, id:"panel4"},
- {art:`<div style="display:flex;justify-content:center;">${heroSVG(220,{theme:"hero",muscle:1,cape:"red",weapon:"none"})}</div>`, id:"panel5", fx:"heroic"}  /* the Act-1 ORIGIN superhero — never the knight, even if he's reached Act 2 */
+ {art:`<div style="display:flex;justify-content:center;">${teddyArt(220,1)}</div>`, id:"panel5", fx:"heroic"}  /* the Act-1 ORIGIN superhero (painted) — never the knight, even if he's reached Act 2 */
 ];
 let introIx=0;
 function startIntro(){ introIx=0; show("scrIntro"); paintIntro(); }
@@ -1062,7 +1066,7 @@ function showWin(firstTime){ show("scrWin");
   flashScreen("rgba(255,255,255,.5)"); confetti(CUR.finale||CUR.rescue||CUR.type==="fortress"?110:64);
   if(CUR.finale||CUR.rescue||CUR.type==="fortress")setTimeout(()=>confetti(90),520);  /* extra pop on big milestones */
   const ally=CUR.rescue?"heart":(CUR.type==="fortress"?(currentAct()===2?"kendall":"leighton"):null);
-  $("winHero").innerHTML=heroNow(170)+
+  $("winHero").innerHTML=heroMarquee(170)+
     (ally?`<svg viewBox="-32 -36 64 80" width="98" style="vertical-align:bottom;">${allyFace(ally)}<text y="42" text-anchor="middle" font-family="Bangers" font-size="12" fill="#ffc93c">${ally==="leighton"?"LEIGHTON":ally==="kendall"?"MISS KENDALL":"HEARTGUARD"}</text></svg>`:"");
   $("winHero").className="winpose"+(1+Math.floor(Math.random()*4));   /* random victory celebration */
   const gear=GEAR_AT[CUR.id];
@@ -1096,7 +1100,7 @@ function showWin(firstTime){ show("scrWin");
   $("btnWinNext").onclick=()=>{ if(S.session.count>=3&&!S.session.rest){S.session.rest=true;save();showRest(MISSIONS[ix+1]);} else startMission(MISSIONS[ix+1]); };
   $("btnWinMap").onclick=()=>{ if(S.session.count>=3&&!S.session.rest){S.session.rest=true;save();showRest(null);} else toMap(); }; }
 function showRest(nextM){ show("scrRest");
-  $("restHero").innerHTML=heroNow(160);
+  $("restHero").innerHTML=heroMarquee(160);
   narrate("rest",$("restText"),["rest1","rest2"]);
   $("btnRestDone").onclick=()=>{Aud.stop();show("scrTitle");};
   $("btnRestMore").onclick=()=>{ nextM?startMission(nextM):toMap(); }; }
