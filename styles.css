@@ -30,7 +30,7 @@ body{
   box-shadow:0 8px 0 #9c6a12, 0 14px 24px rgba(0,0,0,.35);
   transition:transform .12s ease, box-shadow .12s ease;
 }
-.btn:active{transform:translateY(6px);box-shadow:0 2px 0 #9c6a12;}
+.btn:active{transform:translateY(2px);box-shadow:0 3px 8px rgba(0,0,0,.4);}
 .btn.blue{background:linear-gradient(180deg,#5ea0ff,#2257c4);color:#fff;box-shadow:0 8px 0 #143a85,0 14px 24px rgba(0,0,0,.35);}
 .btn.blue:active{box-shadow:0 2px 0 #143a85;}
 .btn.ghost{background:transparent;color:var(--txt);border-color:var(--txt);box-shadow:none;font-size:clamp(20px,3vw,26px);padding:10px 24px;}
@@ -66,7 +66,7 @@ body{
   display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;
   box-shadow:0 8px 0 #143a85;transition:transform .12s,opacity .3s,filter .3s;
 }
-.tile:active{transform:translateY(5px);box-shadow:0 3px 0 #143a85;}
+.tile:active{transform:translateY(2px);box-shadow:0 5px 12px rgba(0,0,0,.45);}
 .tile.dim{opacity:.32;filter:grayscale(.6);pointer-events:none;}
 .tile.hint{animation:hintpulse 1.6s ease-in-out infinite;}
 @keyframes hintpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
@@ -74,7 +74,7 @@ body{
 /* Read-It: small tappable letter tiles of the word + big picture choices */
 .tile.rletter{width:clamp(64px,11vw,96px);height:clamp(64px,11vw,96px);font-size:clamp(38px,7vw,60px);
   background:linear-gradient(180deg,#ffd75e,#f0a82b);color:var(--ink);box-shadow:0 6px 0 #9c6a12;}
-.tile.rletter:active{box-shadow:0 2px 0 #9c6a12;}
+.tile.rletter:active{box-shadow:0 4px 10px rgba(0,0,0,.4);}
 .picktile{font-size:clamp(50px,10vw,82px);background:linear-gradient(180deg,#fff6e3,#e7dcc0);color:var(--ink);}
 /* confusable-letter contrast cue (b vs d) on the learn screen */
 #letterCue{align-items:center;gap:14px;}
@@ -396,11 +396,11 @@ body.calm .gembox>svg,body.calm .trophy,body.calm .gembox.mastered::after{animat
 
 /* premium buttons: glossy top sheen + outer glow + crisp press */
 .btn{position:relative;overflow:visible;border-width:6px;
-  box-shadow:0 7px 0 #9c6a12, 0 9px 12px rgba(0,0,0,.4);}
+  box-shadow:0 8px 16px rgba(0,0,0,.42);}
 .btn::after{content:"";position:absolute;left:0;right:0;top:0;height:48%;pointer-events:none;overflow:hidden;
   background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(255,255,255,0));
   border-radius:22px 22px 50% 50%/24px 24px 36% 36%;}
-.btn.blue{box-shadow:0 7px 0 #143a85, 0 9px 12px rgba(0,0,0,.4);}
+.btn.blue{box-shadow:0 8px 16px rgba(0,0,0,.42);}
 .btn.ghost{overflow:visible;background:rgba(16,10,38,.42);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   box-shadow:0 6px 16px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.14);}
 .btn.ghost::after{display:none;}
@@ -410,16 +410,16 @@ body.calm .gembox>svg,body.calm .trophy,body.calm .gembox.mastered::after{animat
   background-image:
     radial-gradient(74% 62% at 30% 14%, rgba(255,255,255,.55), rgba(255,255,255,0) 58%),
     linear-gradient(180deg,#ffe07a,#f3ad2e 52%,#dc8f1d);
-  box-shadow:0 7px 0 #9c6a12, 0 9px 14px rgba(0,0,0,.42),
+  box-shadow:0 8px 16px rgba(0,0,0,.42),
     inset 0 3px 0 rgba(255,255,255,.62), inset 0 -11px 18px rgba(120,68,8,.42), inset 0 0 0 2px rgba(255,255,255,.16);}
 .btn.blue{
   background-image:
     radial-gradient(74% 62% at 30% 14%, rgba(255,255,255,.5), rgba(255,255,255,0) 58%),
     linear-gradient(180deg,#6fb0ff,#2f6fe0 52%,#1c47a8);
-  box-shadow:0 7px 0 #143a85, 0 9px 14px rgba(0,0,0,.42),
+  box-shadow:0 8px 16px rgba(0,0,0,.42),
     inset 0 3px 0 rgba(255,255,255,.55), inset 0 -11px 18px rgba(8,28,80,.5), inset 0 0 0 2px rgba(255,255,255,.14);}
-.btn:not(.ghost):active{box-shadow:0 2px 0 #9c6a12, inset 0 3px 0 rgba(255,255,255,.45), inset 0 -8px 14px rgba(120,68,8,.4), inset 0 0 0 2px rgba(255,255,255,.14);}
-.btn.blue:active{box-shadow:0 2px 0 #143a85, inset 0 3px 0 rgba(255,255,255,.4), inset 0 -8px 14px rgba(8,28,80,.45), inset 0 0 0 2px rgba(255,255,255,.12);}
+.btn:not(.ghost):active{box-shadow:0 3px 8px rgba(0,0,0,.4), inset 0 2px 0 rgba(255,255,255,.4), inset 0 -6px 12px rgba(120,68,8,.45), inset 0 0 0 2px rgba(255,255,255,.14);}
+.btn.blue:active{box-shadow:0 3px 8px rgba(0,0,0,.4), inset 0 2px 0 rgba(255,255,255,.38), inset 0 -6px 12px rgba(8,28,80,.5), inset 0 0 0 2px rgba(255,255,255,.12);}
 
 /* glass HUD chips + round buttons */
 .chip,.roundbtn{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(16,10,38,.5);
@@ -445,7 +445,7 @@ body.calm .gembox>svg,body.calm .trophy,body.calm .gembox.mastered::after{animat
   background:
     radial-gradient(66% 50% at 32% 20%, rgba(255,255,255,.72), rgba(255,255,255,0) 55%),
     linear-gradient(155deg,#7cc0ff,#3f93ff 46%,#1c47a8);
-  box-shadow:0 8px 0 #143a85, 0 12px 16px rgba(0,0,0,.5), 0 0 13px rgba(70,130,235,.34),
+  box-shadow:0 9px 18px rgba(0,0,0,.5), 0 0 13px rgba(70,130,235,.34),
     inset 0 3px 0 rgba(255,255,255,.62), inset 0 -12px 20px rgba(8,18,55,.58), inset 0 0 0 2px rgba(255,255,255,.14);
 }
 .tile::before{   /* crystal facet shine streak */
@@ -455,20 +455,20 @@ body.calm .gembox>svg,body.calm .trophy,body.calm .gembox.mastered::after{animat
   background:
     radial-gradient(66% 50% at 32% 20%, rgba(255,255,255,.72), rgba(255,255,255,0) 55%),
     linear-gradient(155deg,#86f3c6,#2fd98a 46%,#118a59);
-  box-shadow:0 8px 0 #137044, 0 12px 16px rgba(0,0,0,.45), 0 0 16px rgba(55,205,140,.46),
+  box-shadow:0 9px 18px rgba(0,0,0,.45), 0 0 18px rgba(55,205,140,.5),
     inset 0 3px 0 rgba(255,255,255,.6), inset 0 -12px 20px rgba(6,55,35,.5), inset 0 0 0 2px rgba(255,255,255,.16);}
 .tile.rletter{   /* gold gem for the read-it letters */
   background:
     radial-gradient(66% 50% at 32% 20%, rgba(255,255,255,.8), rgba(255,255,255,0) 55%),
     linear-gradient(155deg,#ffe07a,#ffce3a 46%,#e07f1f);
-  box-shadow:0 6px 0 #9c6a12, 0 9px 14px rgba(0,0,0,.45), 0 0 12px rgba(235,175,55,.32),
+  box-shadow:0 9px 16px rgba(0,0,0,.45), 0 0 12px rgba(235,175,55,.32),
     inset 0 3px 0 rgba(255,255,255,.62), inset 0 -10px 16px rgba(90,50,8,.5), inset 0 0 0 2px rgba(255,255,255,.16);}
 .tile.picktile{   /* picture choices = light crystal frames so the picture pops (distinct from letter gems) */
   background:
     radial-gradient(66% 50% at 32% 20%, rgba(255,255,255,.95), rgba(255,255,255,0) 55%),
     linear-gradient(155deg,#fff8ea,#efe3c8 46%,#cdbf9c);
   color:var(--ink);
-  box-shadow:0 8px 0 #9c8a5e, 0 12px 16px rgba(0,0,0,.45), 0 0 10px rgba(225,205,155,.28),
+  box-shadow:0 9px 16px rgba(0,0,0,.45), 0 0 10px rgba(225,205,155,.28),
     inset 0 3px 0 rgba(255,255,255,.85), inset 0 -10px 16px rgba(120,100,60,.4), inset 0 0 0 2px rgba(255,255,255,.2);}
 /* cut-crystal frame: a thin faceted light edge just inside the gem border (premium
    'framed gem' read) + a hair of inner depth. Static — no motion on learning tiles,
@@ -886,15 +886,15 @@ body[data-act="2"] .btn{
   background:
     radial-gradient(74% 62% at 30% 14%, rgba(255,247,225,.4), rgba(255,255,255,0) 58%),
     linear-gradient(180deg,#c5a273,#7a5e3a);color:#fff4e0;border-color:#241a0c;
-  box-shadow:0 8px 0 #4a3620, 0 14px 24px rgba(0,0,0,.4),
+  box-shadow:0 8px 16px rgba(0,0,0,.42),
     inset 0 3px 0 rgba(255,240,210,.4), inset 0 -11px 18px rgba(50,34,14,.55), inset 0 0 0 2px rgba(255,240,210,.12);text-shadow:0 2px 3px rgba(0,0,0,.5);}
-body[data-act="2"] .btn:active{box-shadow:0 2px 0 #4a3620, inset 0 3px 0 rgba(255,240,210,.3), inset 0 -8px 14px rgba(50,34,14,.5);}
+body[data-act="2"] .btn:active{box-shadow:0 3px 8px rgba(0,0,0,.4), inset 0 2px 0 rgba(255,240,210,.3), inset 0 -6px 12px rgba(50,34,14,.5);}
 body[data-act="2"] .btn.blue{background:
     radial-gradient(74% 62% at 30% 14%, rgba(230,244,255,.4), rgba(255,255,255,0) 58%),
     linear-gradient(180deg,#7ba0ba,#39576f);border-color:#16222c;
-  box-shadow:0 8px 0 #1d303f, 0 14px 24px rgba(0,0,0,.4),
+  box-shadow:0 8px 16px rgba(0,0,0,.42),
     inset 0 3px 0 rgba(235,245,255,.4), inset 0 -11px 18px rgba(12,26,38,.55), inset 0 0 0 2px rgba(235,245,255,.12);}
-body[data-act="2"] .btn.blue:active{box-shadow:0 2px 0 #1d303f;}
+body[data-act="2"] .btn.blue:active{box-shadow:0 3px 8px rgba(0,0,0,.4), inset 0 2px 0 rgba(235,245,255,.3);}
 body[data-act="2"] .btn.ghost{background:transparent;color:#f0e2c4;border-color:#caa15a;box-shadow:none;}
 body[data-act="2"] .bubble{
   background:rgba(34,26,16,.88);border-color:#c39a54;
