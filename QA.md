@@ -723,6 +723,67 @@ the smoke test per the SPEC / Morpheus #3.)*
 
 ---
 
+## 📐 SPEC FOR NEO — Title: collapse START + CONTINUE into one PLAY (H4) (Trinity, 2026-06-14)
+
+Phase-1 quick win. Refs: title markup `index.html:73–81`; handlers `game.js:330–356`, `btnTitleBase` `:492`.
+
+### The design call (make it explicitly, with the parent)
+The parent's ask was "one PLAY → a launch page with options (map, hero base, settings)." **Recommendation:
+PLAY → the MAP, do NOT build a separate hub screen.** Reasoning (the gotcha worth surfacing):
+- The **map already IS the hub** — the HUD nav chip (World Map / Hero Base / Home, index.html:58–62) + the
+  parent-gated gear are on every non-title screen, and `toMap()` already drops a returning player on their
+  **current zone's next undone mission** (auto-resume).
+- A dedicated hub screen would **add a tap to content** (Title → Hub → Map) — worse for an ADHD 7yo — and
+  **duplicate** the HUD. So PLAY→map delivers the parent's goal (map/base/settings all reachable) with *fewer*
+  taps, not more. If the parent still wants an explicit hub after seeing this, spec variant at the end.
+
+### New title = brand + ONE primary action
+Landing shows: logo + tagline (H3) + hero, then:
+- **One big `PLAY` button** (`.btn`, ≥96px) — replaces both START and CONTINUE.
+- **"<name> — switch"** (`btnPlayer`) stays, shown only when `profiles().length>1` (game.js:333) — it's a
+  legit pre-play choice (who's playing).
+- **Remove the title `HERO BASE` shortcut** (`btnTitleBase`) you don't love — Base is one tap away via the
+  map HUD. (Or keep as a tiny secondary; default: remove, declutter the landing.)
+
+### PLAY logic (it's literally today's `btnStart`, minus the CONTINUE duplicate)
+```js
+$("btnPlay").onclick = ()=>{ Aud.pick();                       // FIRST user gesture — unlocks iOS audio (keep!)
+  if(!S.intro) startIntro();                                   // brand-new player → origin cutscene → scan → map
+  else { Aud.play("welcome"); toMap(); } };                    // returning → resume on the map
+```
+- **Delete `btnContinue`** (HTML + its `paintTitle` show/hide at game.js:332). It only ever called
+  `toMap()` — identical to START for any returning player.
+- `paintTitle` keeps the `playerName` + the `btnPlayer` visibility line; drop the `btnContinue` line.
+
+### Edge cases / gotchas
+- **Don't lose first-run onboarding:** the `if(!S.intro) startIntro()` branch IS the reason two buttons
+  existed — keep it. Verify: fresh save → PLAY → intro→scan→map; returning save → PLAY → map.
+- **iOS audio unlock:** PLAY must stay the first user gesture (`Aud.pick()`), or narration won't start on
+  iPad. Don't move audio init off the button.
+- **Empty/under-construction act:** `toMap()` already guards (`actComingSoon()`); no change.
+- **Settings stays off the landing on purpose** — it's parent-gated via the map HUD gear (3s hold). A
+  kid-facing landing should NOT expose Settings. (If the parent wants settings access *without* playing, the
+  only options are: keep the current "must enter to reach the gear," or add a parent-gated gear to the title
+  too — adds a control to the clean landing; default: leave off.)
+- **Level-override / reset** paths (game.js:1429, 1465) already route through `show("scrTitle")` + `paintTitle`
+  — they keep working since PLAY reads live `S.intro`.
+- **Label & feel:** "PLAY" (parent's word), primary `.btn`; this pairs naturally with the H2 button glow-up
+  and the H3 subtitle (same screen — ship them together for one clean landing).
+
+### Verify (no unit test — it's DOM wiring)
+Manual: (1) fresh profile → PLAY → intro plays; (2) returning profile → PLAY → map at next mission;
+(3) audio starts on the first iPad tap; (4) `>1` profile shows the switch; (5) Base reachable via the map HUD.
+Add a `scrTitle` + a post-PLAY `scrMap` shot to `tools/shot.mjs` for the before/after.
+
+### If the parent insists on an explicit hub (variant)
+Add a `scrHub` screen with 3 big art tiles (World Map / Hero Base / Settings-parent-gated) shown after PLAY;
+`toMap()`/`showBase()` wire to the tiles. Cost: +1 tap to play, and keep it from burying the Map tile. Not
+recommended over PLAY→map, but low-risk if desired.
+
+— Trinity, 2026-06-14
+
+---
+
 **Test commit by Grok (xAI):** Write access verified successfully! Added this line on 2026-06-13.
 
 ## 2026-06-13 Grok (xAI) Review — Latest Main (commit 060066c)
