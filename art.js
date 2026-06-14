@@ -53,11 +53,11 @@ if(o.weapon==="mace"){weapon=`<g transform="translate(202 4) rotate(14)" stroke=
 <rect x="-7" y="18" width="14" height="150" rx="7" fill="#6b6f7a"/>
 <polygon points="0,-82 9,-58 32,-66 16,-46 34,-30 9,-38 0,-12 -9,-38 -34,-30 -16,-46 -32,-66 -9,-58" fill="#9aa0ad"/>
 <circle cx="0" cy="-48" r="20" fill="url(#${u}gold)"/><circle cx="-7" cy="-55" r="6" fill="#fff0bd" stroke="none"/></g>`;}
-if(o.weapon==="lance"){weapon=`<g transform="translate(206 78) rotate(-26)" stroke="#150f2e" stroke-width="5" stroke-linejoin="round">
-<rect x="-6" y="-28" width="12" height="150" rx="6" fill="#8a5a33"/>
-<polygon points="0,-120 16,-74 -16,-74" fill="url(#${u}gold)"/><polygon points="0,-120 6,-92 -6,-92" fill="#fff0bd"/>
-<rect x="-19" y="-76" width="38" height="14" rx="6" fill="#b0b6c4"/>
-<rect x="-15" y="100" width="30" height="22" rx="8" fill="#6b6f7a"/></g>`;}
+if(o.weapon==="lance"){weapon=`<g transform="translate(208 80) rotate(-24)" stroke="#150f2e" stroke-width="5" stroke-linejoin="round">
+<rect x="-6" y="-96" width="12" height="208" rx="6" fill="#8a5a33"/>
+<polygon points="0,-150 15,-96 -15,-96" fill="url(#${u}gold)"/><polygon points="0,-150 6,-114 -6,-114" fill="#fff0bd"/>
+<rect x="-20" y="-94" width="40" height="13" rx="6" fill="#b0b6c4"/>
+<rect x="-13" y="104" width="26" height="20" rx="8" fill="#6b6f7a"/></g>`;}
 const heldWeapon = ["hammer","sword","lasso","bow","mace","lance"].includes(o.weapon);
 const biceps = m>=1 ? `<ellipse cx="44" cy="196" rx="${13+5*m}" ry="${11+4*m}" fill="url(#${u}suit)" stroke="#150f2e" stroke-width="5"/>`+(heldWeapon?``:`<ellipse cx="204" cy="196" rx="${13+5*m}" ry="${11+4*m}" fill="url(#${u}suit)" stroke="#150f2e" stroke-width="5"/>`) : "";
 /* arms: left fist always on hip; right hand either on hip OR raised gripping the weapon */
@@ -231,10 +231,6 @@ return `<svg viewBox="-70 -130 320 360" width="${w}" aria-hidden="true">
 <path d="M112 -25 L74 -14 L78 -3 L110 -8Z" fill="#e62e2e" stroke="#150f2e" stroke-width="4.5"/>
 <path d="M40 -19 L60 -12 M104 -19 L84 -12" stroke="#ffd2c9" stroke-width="3" stroke-linecap="round"/>
 <g stroke="#150f2e" stroke-width="4"><line x1="56" y1="6" x2="56" y2="22"/><line x1="72" y1="6" x2="72" y2="24"/><line x1="88" y1="6" x2="88" y2="22"/></g>
-<g font-family="Andika,sans-serif" font-weight="700" fill="#9fe870" opacity=".85">
-<text x="-52" y="-40" font-size="30" transform="rotate(-18 -52 -40)">?</text>
-<text x="176" y="96" font-size="28" transform="rotate(-8 176 96)">?</text>
-</g>
 </g></g></svg>`;}
 
 /* ---- mentors (Mom & Dad chips) — unchanged ---- */
