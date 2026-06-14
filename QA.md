@@ -96,6 +96,20 @@ One line each; long detail/spec blocks were removed on consolidation.
 ## 🔧 OPEN WORK — BY TOPIC
 
 ### UI Chrome & Buttons
+- 🎯 **U14 (PARENT-DIRECTED) — restyle the scan/forge "tap to start" orb (`#tapStart`) YouTube-style.** *What it is:*
+  the U4 primary CTA shown during the **scan + forge intro-narration** phases (`showTapStart`, game.js:586/1145;
+  auto-hidden on round start + any nav) — tapping starts the round early (same as ⏭). **NOT a cutscene control.**
+  *Problem (parent, with screenshot):* the **opaque gold disc** (`.tapstart`, styles.css:1002) sits dead-center over
+  the villain/scene and a 7yo doesn't read it as "play." *Fix (CSS-only — borrow the universally-recognized YouTube
+  affordance, Jakob's Law / STYLE.md §7):*
+  - **Translucent dark disc** instead of the gold gradient: `background:rgba(8,6,20,.5)` + `backdrop-filter:blur(3px)`
+    (glassy) — so it stops covering the painted art.
+  - **White triangle:** set `color:#fff` (the SVG triangle uses `currentColor`) → white play-glyph on dark = classic
+    YouTube. Drop the 6px ink border for a thin ring: `border:3px solid rgba(255,255,255,.85)`; soften the shadow.
+  - **Keep** size (≥96px tap), the `tapbob` pulse (reduced-motion aware) for affordance, the placement (scan 72% /
+    forge 50%), and the behavior (onclick → start round). Optional: a soft expanding pulse-ring to say "tap me."
+  - *Why:* kids navigate YouTube; translucent-disc + white-triangle is the most recognizable "play" signifier, and the
+    translucency fixes it obscuring the character. Verify on the forge + scan intros (`shot.mjs`).
 - 📋 **H1 — Title logo font.** Bangers `.title-logo` (styles.css:243/478) is generic vs the premium art. Options:
   keep / elevate treatment (gradient+bevel+gem accents) / bespoke SVG-PNG wordmark (act-agnostic, no font load).
   ⚠️ Restyle **`.title-logo` only**, NOT `.comic` (used app-wide); lock the logo font regardless of `data-act`
