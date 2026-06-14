@@ -43,6 +43,29 @@ Read both before working.
    before other work. (Subscriptions are per-PR, so the open event can't auto-notify; the human may also
    just ping "guest pushed.")
 
+## Design working-principle — how we "juice" (feedback & game-feel)
+Durable philosophy distilled from the game-feel research (full mechanics + architecture-feasibility in
+**`DESIGN-ENGAGEMENT.md §8`**; visual tokens in `STYLE.md`). Every agent applies these so feedback stays consistent
+and never fights the pedagogy:
+1. **Juice is a feature, not decoration.** Fast, satisfying feedback *is* engagement — and for an ADHD learner the
+   research is blunt: rewards must be **immediate, tangible, and VISIBLE** (coins + spoken praise build the very
+   attention/inhibitory-control we teach). A correct answer should *feel* like a win.
+2. **Layer many small effects, not one big one.** Motion + scale-bounce + flash + a `+N` number + a sound, stacked,
+   beats a single large effect (the core "Juice It or Lose It" lesson).
+3. **Juice the REWARD layer, NEVER the learning prompt.** The learning tile stays the most salient thing on screen;
+   over-juicing what the child must read/decode is a known failure (constraints #4 anti-gaming, #6 large/legible). Coins,
+   counters, chests, win screens = loud; the active prompt = calm.
+4. **Reward, never punish.** "Surprise/variable" means *which good thing*, never *whether* — no gambling-loss, no
+   empty rewards, no streak-loss, no timers/countdowns (constraints #1, #2). Juice celebrates; it never threatens.
+5. **Build it cheap & native.** `transform`/`opacity` only (GPU-composited, 60fps), Web Animations API / CSS — **no
+   library, no build step**; pool DOM nodes (no leaks). Our stack already does everything we need.
+6. **Always degrade across the detail tiers.** One code path, three budgets: **Full** (full effect) → **Calm** (lighter)
+   → **Lite / `prefers-reduced-motion`** (instant + a single pulse). Reuse `S.detail` / `body.calm` / `body.lite`.
+7. **Save-safe & cosmetic.** New `S.*` fields migrate (+ a `save.test` assertion); juice/cosmetics are **zero
+   pay-to-win** — they buy delight, never a learning advantage.
+
+— Trinity, 2026-06-14
+
 ## Branch protection
 **Leave it OFF for now.** GitHub branch protection is all-or-nothing per branch, so "require a PR"
 would also block Trinity's (and Neo's) direct commits. The guest-PR → squash-merge flow is enforced
