@@ -1993,6 +1993,33 @@ These are suggestions, not mandates.
 9. **Replayable boss remixes:** once an act is cleared, allow short remixed boss encounters that target current weak items while using already-loved villains/animations.
 10. **Consistent studio art bible:** add a small gallery/spec for SVG proportions, shadows, animation timing, color palettes, and reduced-motion expectations so future agents don’t drift visually.
 
+---
+
+## 🔎 Trinity vet of Morpheus PR #4 (UI/progression pass) — 2026-06-14
+I verified both findings against the code before merging. Result: **#1 declined (false alarm), #2 accepted + recorded
+below.** PR #4 itself was NOT squash-merged (it carried the incorrect #1); this is the curated outcome on `main`.
+
+**❌ M-#1 "Rest-break cadence never resets (`sessionTick()` has no call site)" — DISMISSED, not a bug.**
+`sessionTick()` **is** called — `map.js:115`, the first line of `toMap()` — and has been since the map split (commit
+`49cbe08`, present at the PR's own base `593c311`). The `rg "sessionTick"` in the PR simply missed it. Since `toMap()`
+is the central hub the player passes through between missions, `S.session` resets on the first map visit of each new
+day, so the gentle three-mission rest nudge **does** re-arm across days. No change needed. (Minor latent nicety, not a
+bug: if a player somehow never opened the map on a new day, the reset would wait until they did — benign.)
+
+**✅ M-#2 "Hero Base loadout can overflow under the bottom action row at 1024×768" — CONFIRMED (credit: Morpheus).**
+The CSS mechanism is real: `#scrBase` is a fixed-height flex column (`styles.css:855`) with `.baseactions` rendered
+**after** the growing/shrinking `.basewrap` (`flex:1 1 auto; min-height:0`, `index.html:166-170`); only the right
+`.basecol-coll` gets `overflow-y:auto` (`styles.css:882-883`) — the **left `.basecol-hero` + Loadout have no scroll
+path**, so at constrained landscape heights the loadout can overflow toward/under `TRAINING ROOM / SHOP / RECHARGE /
+CITY MAP`, making earned gear controls partially hidden/untappable (distinct from U7's crowding/zero-state — this is
+specifically the *loadout* losing its "try the new gear now" payoff). *Fix (for Neo):* give `.basecol-hero` a real
+scroll path on short landscape (`max-height:100%; overflow-y:auto`) **or** reserve safe space for the action row (e.g.
+the action row as a fixed bottom rail with matching bottom-padding on `.basewrap`). Keep ≥96px targets; re-verify with
+`shot.mjs base basefull` + Act-2 Base at 1024×768 and a portrait viewport. *(Ties to STYLE.md §7.4 rule #4 — actions
+belong on a dedicated bottom rail, off the content area.)*
+
+— Trinity, 2026-06-14
+
 ### Queries for the coding agent / product owner
 
 1. Should the large `voicepack.js` remain a single generated file for simplicity, or should the studio start outputting a core pack plus lazy optional packs?
