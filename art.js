@@ -197,6 +197,8 @@ return `<svg viewBox="-70 -130 320 360" width="${w}" aria-hidden="true">
 <linearGradient id="vxd" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#363b58"/><stop offset="1" stop-color="#0f1122"/></linearGradient>
 <radialGradient id="vxr" cx=".42" cy=".4" r=".62"><stop offset="0" stop-color="#fff1ec"/><stop offset=".35" stop-color="#ff6b5e"/><stop offset=".7" stop-color="#e62e2e"/><stop offset="1" stop-color="#5a0c0c"/></radialGradient>
 <radialGradient id="${u}aura" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff2e2e" stop-opacity=".66"/><stop offset=".55" stop-color="#c01020" stop-opacity=".22"/><stop offset="1" stop-color="#c01020" stop-opacity="0"/></radialGradient>
+<linearGradient id="${u}form" x1=".82" y1="1" x2=".25" y2="0"><stop offset="0" stop-color="#05060f" stop-opacity=".5"/><stop offset=".6" stop-color="#05060f" stop-opacity="0"/></linearGradient>
+<linearGradient id="${u}sheen" x1=".2" y1="0" x2=".7" y2="1"><stop offset="0" stop-color="#cfe0ff" stop-opacity=".3"/><stop offset=".5" stop-color="#cfe0ff" stop-opacity="0"/></linearGradient>
 <filter id="${u}soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4.5"/></filter>
 <filter id="${u}lit" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="4" result="b"/><feSpecularLighting in="b" surfaceScale="5" specularConstant=".55" specularExponent="20" lighting-color="#cfe0ff" result="s"><fePointLight x="40" y="-150" z="160"/></feSpecularLighting><feComposite in="s" in2="SourceAlpha" operator="in" result="sc"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="sc"/></feMerge></filter>
 <filter id="${u}glow" x="-90%" y="-90%" width="280%" height="280%"><feGaussianBlur stdDeviation="5"/></filter>
@@ -234,10 +236,16 @@ return `<svg viewBox="-70 -130 320 360" width="${w}" aria-hidden="true">
 <g stroke="#150f2e" stroke-width="4"><line x1="56" y1="6" x2="56" y2="22"/><line x1="72" y1="6" x2="72" y2="24"/><line x1="88" y1="6" x2="88" y2="22"/></g>
 </g>
 <g class="vshade" stroke="none">
+<path d="M38 -64 L106 -64 L118 -36 L114 14 L100 30 L44 30 L30 14 L26 -36Z" fill="url(#${u}form)"/>
+<path d="M16 30 L128 30 L142 70 L128 150 L16 150 L2 70 Z" fill="url(#${u}form)"/>
+<path d="M40 150 L104 150 L96 196 L48 196 Z" fill="url(#${u}form)"/>
+<path d="M40 -60 Q34 -34 40 26 L58 26 Q52 -34 58 -60Z" fill="url(#${u}sheen)"/>
+<path d="M18 34 Q8 70 22 146 L44 146 Q34 70 44 34Z" fill="url(#${u}sheen)"/>
 <ellipse cx="72" cy="32" rx="42" ry="6" fill="#070710" opacity=".42" filter="url(#${u}soft)"/>
 <ellipse cx="72" cy="-32" rx="30" ry="5" fill="#070710" opacity=".34" filter="url(#${u}soft)"/>
 <g fill="none" stroke="#cfe0ff" stroke-linecap="round" opacity=".7" filter="url(#${u}glow)">
 <path d="M42 -61 L102 -61" stroke-width="3"/>
+<path d="M30 -58 Q24 -34 30 22" stroke-width="2.4" opacity=".55"/>
 <path d="M18 31 L82 31" stroke-width="2.6" opacity=".5"/>
 <path d="M2 70 L16 32" stroke-width="2.4" opacity=".55"/>
 </g>
@@ -577,14 +585,20 @@ return `<svg viewBox="-60 -120 280 350" width="${w}" aria-hidden="true">
 <g class="xshade" stroke="none">
 <path d="M30 150 Q50 120 80 120 Q110 120 130 150 L150 226 L10 226Z" fill="url(#${u}form)"/>
 <path d="M28 30 Q-2 90 10 168 Q34 130 50 150 Q40 90 64 50Z" fill="url(#${u}form)"/>
+<path d="M132 30 Q162 90 150 168 Q126 130 110 150 Q120 90 96 50Z" fill="url(#${u}form)"/>
+<path d="M44 52 Q44 104 80 116 Q116 104 116 52 Q116 12 80 12 Q44 12 44 52Z" fill="url(#${u}form)" opacity=".8"/>
+<path d="M6 150 Q-20 60 14 24 Q20 96 58 120 L58 150Z" fill="url(#${u}form)" opacity=".7"/>
+<path d="M154 150 Q180 60 146 24 Q140 96 102 120 L102 150Z" fill="url(#${u}form)" opacity=".7"/>
 <ellipse cx="80" cy="126" rx="30" ry="8" fill="#07020a" opacity=".34" filter="url(#${u}soft)"/>
 <path d="M116 52 Q116 104 80 116 Q98 100 100 56 Q100 22 88 13 Q116 18 116 52Z" fill="#5c2f3a" opacity=".22" filter="url(#${u}soft)"/>
+<ellipse cx="58" cy="34" rx="11" ry="16" fill="#fff3ee" opacity=".18" filter="url(#${u}soft)"/>
 <g fill="none" stroke="#ff9ec4" stroke-linecap="round" opacity=".85" filter="url(#${u}glow)">
 <path d="M31 152 Q14 188 11 224" stroke-width="3.4"/>
 <path d="M30 32 Q0 90 11 164" stroke-width="2.8" opacity=".6"/>
 <path d="M44 50 Q44 100 76 115" stroke-width="2.4" opacity=".5"/>
+<path d="M14 26 Q20 96 56 119" stroke-width="2.2" opacity=".45"/>
 </g>
-<g fill="#ffe1ec" opacity=".7"><circle cx="64" cy="48" r="1.5"/><circle cx="38" cy="60" r="1.3"/></g>
+<g fill="#ffe1ec" opacity=".7"><circle cx="64" cy="48" r="1.5"/><circle cx="38" cy="60" r="1.3"/><circle cx="50" cy="28" r="1.2"/></g>
 </g></g>
 <g class="xember" fill="#ff5d8f"><circle cx="18" cy="150" r="3"/><circle cx="150" cy="140" r="2.5"/></g>
 <g class="xember" fill="#ffd0e0" style="animation-delay:1.6s"><circle cx="40" cy="172" r="2"/><circle cx="128" cy="166" r="2.5"/></g>
