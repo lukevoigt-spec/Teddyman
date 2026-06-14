@@ -244,9 +244,9 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
   reads the backstory (land/villain/what Teddy will learn) — COMIC-book style for Act 1, MEDIEVAL
   storybook for Act 2; great for setting expectations in-context. (E) FULL-BODY ART for JJ (small, dark
   hair, thin, wild), Cal (mischievous grin, strawberry-blonde, freckles), Nora (petite, hair in a bun),
-  Miss Kendall (tall, dark hair in a low ponytail). ART CONSTRAINT: this is a 7-year-old's app and the
-  cast are his real family/friends — keep ALL character art wholesome and age-appropriate (heroic/strong
-  is fine, e.g. a superhero-fit Dad; do NOT make any character sexualized).
+  Miss Kendall (tall, dark hair in a low ponytail). ART NOTE: this is a 7-year-old's app, so draw the
+  cast warm, fun and age-appropriate for that young audience (heroic/strong is great — e.g. a
+  superhero-fit Dad, an athletic Mom).
 - UI / NAV BACKLOG (parent, 2026-06-14 — notes to revisit, NOT yet done): (i) BUTTONS feel too plain —
   revisit ALL buttons; explore image-based/textured button art for a more premium "game" feel (keep
   touch targets ~96px+, high contrast). (ii) TITLE/HOME: parent doesn't love the button under START
