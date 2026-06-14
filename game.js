@@ -812,7 +812,7 @@ function nextRead(){
   const foils=Object.keys(POOL).filter(x=>x!==w).sort(()=>Math.random()-.5).slice(0,2);
   const opts=[w,...foils].sort(()=>Math.random()-.5);
   const cr=$("readChoices"); cr.innerHTML="";
-  opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.textContent=POOL[o]; b.dataset.w=o;
+  opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.innerHTML=picIcon(o, POOL[o]); b.dataset.w=o;
     b.onclick=()=>{ if(o===w){ record("w_"+w,true); b.classList.add("win"); burstAt(b); Aud.ding();
         if(magicE(w))record(magicE(w).unit,true);   /* credit the long-vowel rule */
         readIx++; flow(Aud.play(["read_yes",...graphemeSounds(w),"word_"+w]),()=>setTimeout(nextRead,200)); }
@@ -1010,7 +1010,7 @@ function fortRead(){ const RW=readPool(); const ws=Object.keys(RW); const w=ws[M
   toGraphemes(w).forEach(c=>{ const t=document.createElement("button"); t.className="tile read rletter"; t.textContent=c; t.onclick=()=>Aud.play("snd_"+c); wr.appendChild(t); });
   const foils=ws.filter(x=>x!==w).sort(()=>Math.random()-.5).slice(0,2);
   const row=$("fortChoices"); row.innerHTML="";
-  [w,...foils].sort(()=>Math.random()-.5).forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.textContent=RW[o]; b.dataset.w=o;
+  [w,...foils].sort(()=>Math.random()-.5).forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.innerHTML=picIcon(o, RW[o]); b.dataset.w=o;
     b.onclick=()=>{ if(o===w){ record("w_"+w,true); b.classList.add("win"); fortHit(w.toUpperCase()+"!"); }
       else { record("w_"+w,false); fortMissHint(); b.classList.add("dim");
         if(fMiss>=2)row.querySelectorAll(".picktile").forEach(x=>{if(x.dataset.w===w)x.classList.add("hint");}); readSoundOut(w); } };
@@ -1414,7 +1414,7 @@ function trainDecode(w){ trainCur=w; trainMiss=0;
   w.split("").forEach(c=>{ const t=document.createElement("button"); t.className="tile read rletter"; t.textContent=c; t.onclick=()=>Aud.play("snd_"+c); wr.appendChild(t); });
   const opts=shuf([w].concat(shuf(Object.keys(READWORDS).filter(x=>x!==w)).slice(0,2)));
   const cr=$("trainChoices"); cr.innerHTML="";
-  opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.textContent=READWORDS[o]; b.dataset.w=o;
+  opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.innerHTML=picIcon(o, READWORDS[o]); b.dataset.w=o;
     b.onclick=()=>{ if(o===w){ record("w_"+w,true); b.classList.add("win"); trainWin(b,w); }
       else { record("w_"+w,false); trainMiss++; b.classList.add("dim");
         if(trainMiss>=2)cr.querySelectorAll(".picktile").forEach(x=>{if(x.dataset.w===w)x.classList.add("hint");}); readSoundOut(w); } };
