@@ -252,6 +252,79 @@ the spacing effect. Keep it short and frequent; let spacing (#1) do the heavy li
 
 ---
 
+## 📐 SPEC FOR NEO — "Memory Vault": expanding-interval spaced review (Trinity, 2026-06-14)
+
+Implements research-brief rec #1 (the highest-leverage retention upgrade). Today `pickWeak`/`masteryReview`
+target *weak* items **within** a session, but nothing brings a *mastered* item back **days later** — so
+retention isn't actively protected. The Vault resurfaces mastered items on an expanding schedule.
+
+### Data model (save-safe, additive — no migrate change needed)
+`S.mastery[key]` is `{seen,ok,str}` (game.js:142). Add three OPTIONAL fields, set lazily on enrollment:
+- `box` — interval index 0..4 (Leitner level)
+- `due` — `dayKey()` string ("YYYY-MM-DD", state-save.js:136) the item is next due
+- `last` — `dayKey()` last reviewed (telemetry/debug)
+
+Absent = "not enrolled" → `migrate()` needs **no** change (defaults are just `undefined`; never wipes old
+saves — constraint #7). Keys span graphemes (letters/digraphs/magic-e/vowel-teams) AND words (`w_<word>`,
+`sw_<word>`) exactly as today, so the Vault is **act-agnostic** (mastery persists across acts).
+
+### Constants (tune later)
+`const VAULT_INTERVALS=[1,3,7,14,30], VAULT_MAXBOX=4, VAULT_CAP=6;`
+(CAP = max items/session — keep it short for ADHD; overflow carries to next day, oldest-due first.)
+Needs a tiny `addDays(dayKeyStr, n)` helper (parse YYYY-MM-DD, add days, reformat).
+
+### Algorithm
+- **Enroll:** first time `masteredItem(key)` flips true (hook just after the str/seen update in `record()`,
+  game.js:143–146) → if `box==null`: `box=0; due=addDays(dayKey(),INTERVALS[0]); last=dayKey();`
+- **Due set:** `vaultDue()` = keys where `due!=null && due<=dayKey() && masteredItem(key)`, sorted by `due`
+  ascending, sliced to `VAULT_CAP`.
+- **Review correct:** `box=min(MAXBOX,box+1); due=addDays(today,INTERVALS[box]); last=today;`
+- **Review miss:** `box=max(0,box-1); due=addDays(today,INTERVALS[box]); last=today;` (demote one step —
+  never full reset; gentler). The underlying `record(key,ok)` STILL runs so str/acc stay honest.
+- **Demote out:** if a miss drops the item below `masteredItem`, clear `box/due` (leave the Vault); it
+  re-enters the normal active pools (`pickWeak`) and re-enrolls when re-mastered.
+
+### Surfacing / UX — reuse existing mechanics, build NO new task type
+Route each due item by TYPE:
+- **grapheme** → a `startFind` sound-ID round (target-independent prompt → anti-gaming #4 ✓).
+  ⚠️ **EXCLUDE** graphemes with no `snd_` clip — the magic-e units `a_e/i_e/o_e/u_e` (ties to verified
+  finding #3). Add a small `hasSoundClip(g)` guard and route those to a WORD review instead.
+- **word** (`w_`/`sw_`) → a `startRead` (decode) or forge (build) round.
+
+Present as a gentle, capped **"Memory Vault"** mini-activity — frame it as *recharging gems* (fits his
+collection love + the gem motif), launchable from **Hero Base**, with a once-a-day soft nudge when items are
+due (never forced). No timer, no fail; misses use the existing gentle replay+retry. ≤ `VAULT_CAP` items.
+
+**MVP path (fast first cut):** boost `pickTrainWord` (game.js:1255) to prefer due `w_` words + feed due
+graphemes into `masteryReview`/patrols → ships spacing *probabilistically* in a day. Then graduate to the
+dedicated scheduled warm-up for *deterministic* intervals (the real spacing win).
+
+### Edge cases
+1. Fresh save / nothing mastered → Vault empty → hide it / "Nothing to recharge yet."
+2. Nothing due today → "Vault's fully charged! ✨" and skip.
+3. Backlog > CAP → oldest-due first; remainder waits (no penalty).
+4. Miss demotes below mastery → leave Vault (clear box/due); rejoin active learning.
+5. Clock / timezone / day-rollover → compare `due<=dayKey()` (local date string). Clock back → items wait;
+   forward → more due (acceptable). Never throw on odd dates.
+6. Profiles → `S.mastery` is already per-profile (keyFor) — no cross-talk.
+7. Cloud → new fields ride inside `S` (newer-wins) automatically.
+8. Calm/Lite/reduced-motion → reuse existing gating; content unaffected.
+
+### Tests to add
+- **save.test:** `migrate()` leaves old `{seen,ok,str}` records untouched (no box/due injected); round-trips
+  with the new fields present.
+- **scheduling unit check** (inject a fake `dayKey`): enroll on mastery; correct → box++ & due pushed out;
+  miss → box-- & due pulled in; demote-out below mastery; `vaultDue()` returns only due+mastered, capped,
+  oldest-first.
+- **curriculum.test:** the Vault never routes a no-clip grapheme (magic-e) into a sound-ID task.
+
+### Parent visibility (optional)
+Progress tab: "🔋 Vault: N items, M due today" so the parent can see retention working.
+
+— Trinity, 2026-06-14
+
+---
+
 **Test commit by Grok (xAI):** Write access verified successfully! Added this line on 2026-06-13.
 
 ## 2026-06-13 Grok (xAI) Review — Latest Main (commit 060066c)
