@@ -7,6 +7,12 @@
 
 ## ⭐ CURRENT PRIORITIES FOR NEO
 
+> 📐 **The consolidated retro-fit checklist is now `DESIGN-ALIGNMENT.md`** (5 deep-dive audits of the live code vs the
+> whole design system, prioritized + file:line-backed) — **use it as the master to-do for design alignment.** Newly
+> confirmed SHIPPED since this list was written: **M-#2 action-rail FIXED**, **`flyReward` coin-fly BUILT**, **treasure
+> chests BUILT**, **mastery contract fully honored**. Remaining engagement build-out (store / Hero Room / finer Rank
+> meter) + the quick wins (one-`!` sweep, 3.2MB orphan PNG, btnSkip 64px, SFX variation) live in that doc.
+
 Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under **🔧 OPEN WORK — BY TOPIC**.
 
 1. **🐛 Hero Base action-rail bug (do early) — M-#2** (credit: Morpheus). The left `.basecol-hero`/Loadout has
