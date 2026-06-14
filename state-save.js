@@ -120,13 +120,19 @@ function cloudEndpoint(){ return cloudActive() ? cloudURL.replace(/\/+$/,"")+"?k
 function cloudAuth(extra){ const h=Object.assign({},extra||{}); if(cloudSecret)h["Authorization"]="Bearer "+cloudSecret; return h; }
 function cloudStatus(s){ const el=document.getElementById("cloudState"); if(el)el.textContent=s; }
 let __cloudT=null;
+/* tracks whether the LAST cloudPull saw a 401 (wrong family code) — distinct from a benign
+   "no newer data"/offline result (both of which also resolve false). cloudConnect reads it so a
+   wrong code is reported + cleared instead of being cached behind a false "Connected ✓" (CLOUD-1). */
+let __lastAuthFail=false;
 function cloudPush(){ const u=cloudEndpoint(); if(!u)return; clearTimeout(__cloudT);
   __cloudT=setTimeout(()=>{ cloudStatus("Saving to cloud…");
     fetch(u,{method:"PUT",headers:cloudAuth({"Content-Type":"application/json"}),body:JSON.stringify(S)})
       .then(r=>cloudStatus(r.ok?"Synced to cloud ✓":(r.status===401?"Wrong family code — saved on device":"Cloud error — saved on device")))
       .catch(()=>cloudStatus("Offline — saved on device")); },2500); }
-async function cloudPull(){ const u=cloudEndpoint(); if(!u)return false;
-  try{ const r=await fetch(u,{headers:cloudAuth()}); if(!r.ok)return false; const t=(await r.text()).trim(); if(!t)return false;
+async function cloudPull(){ const u=cloudEndpoint(); if(!u)return false; __lastAuthFail=false;
+  try{ const r=await fetch(u,{headers:cloudAuth()});
+    __lastAuthFail=(r.status===401);   /* exactly 401 = wrong code; an empty slot returns 200 "" (offline throws → stays false) */
+    if(!r.ok)return false; const t=(await r.text()).trim(); if(!t)return false;
     const d=migrate(JSON.parse(t));
     if(d&&(d.ts||0)>(S.ts||0)){ S=d;
       try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} return true; } }
@@ -139,7 +145,11 @@ function cloudConnect(secret){ cloudSecret=(secret||"").trim();
   cloudURL=resolveCloudURL(stored);
   if(!cloudActive()){ cloudStatus("Cloud sync off (saved on this device)"); return; }
   cloudStatus("Connecting…");
-  cloudPull().then(changed=>{ if(changed){ GEO=geomFor(currentAct()); }
+  cloudPull().then(changed=>{
+    if(__lastAuthFail){   /* CLOUD-1: wrong code — say so, clear the cached secret, do NOT push (would re-fail) */
+      cloudSecret=""; try{ localStorage.removeItem("teddyCloudSecret"); }catch(e){}
+      cloudStatus("Wrong family code — check it and try again"); return; }
+    if(changed){ GEO=geomFor(currentAct()); }
     cloudStatus(changed?"Connected ✓ — restored his cloud progress":"Connected ✓ — this device now backs up to the cloud");
     cloudPush(); }); }
 /* parent turns sync off: drop the cached code (the gate) AND tombstone the URL so boot stays off. */

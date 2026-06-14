@@ -155,10 +155,38 @@ grp("cloud sync OFF survives reload via the 'off' sentinel (QA #4)");
 ok("'off' sentinel resolves to disabled/empty (not the baked default)", resolveCloudURL("off")==="");
 ok("unset/empty resolves to the baked DEFAULT_CLOUD_URL", resolveCloudURL("")===DEFAULT_CLOUD_URL);
 ok("a custom URL is preserved as-is", resolveCloudURL("https://x.workers.dev")==="https://x.workers.dev");
+
+grp("CLOUD-1: a wrong family code is flagged + cleared, never cached behind a false 'Connected ✓'");
+// cloudPull's 401 path is async; run it in a promise the host awaits before reporting (ctx.setTimeout is a stub).
+__pending = (async function(){
+  var realFetch = fetch;
+  try{
+    // (a) a 401 (wrong code) → cloudPull still resolves FALSE (so callers' if(changed) never bogus-repaints)
+    //     AND records the distinct auth failure. Arm state directly to avoid cloudConnect's own async clear.
+    fetch = function(){ return Promise.resolve({ ok:false, status:401, text:function(){ return Promise.resolve("x"); } }); };
+    cloudOff(); cloudSecret="wrong-code"; cloudURL=DEFAULT_CLOUD_URL;   // active endpoint + a bad secret
+    var pulled = await cloudPull();
+    ok("cloudPull resolves FALSE on a 401 (no bogus 'changed' repaint for boot/switch callers)", pulled===false, pulled);
+    ok("cloudPull records the 401 as a distinct auth failure (not offline/no-data)", __lastAuthFail===true);
+    // (b) cloudConnect with a wrong code CLEARS the cached secret + leaves sync inactive (was: cached + 'Connected ✓')
+    cloudOff(); cloudConnect("still-wrong");
+    for(var i=0;i<8;i++) await Promise.resolve();   // flush cloudConnect's pull().then() microtasks
+    ok("a wrong family code is NOT cached (secret cleared, sync inactive after connect)", cloudSecret==="" && cloudEndpoint()===null, {cloudSecret:cloudSecret});
+    // (c) a benign offline error is NOT mistaken for an auth failure (so a correct code isn't wrongly cleared)
+    fetch = function(){ return Promise.reject(new Error("offline")); };
+    cloudOff(); cloudSecret="right-code"; cloudURL=DEFAULT_CLOUD_URL;
+    await cloudPull();
+    ok("an offline fetch error is never flagged as an auth failure", __lastAuthFail===false);
+  } finally { fetch = realFetch; cloudOff(); }
+})();
 `;
 vm.runInContext(fs.readFileSync(path.join(ROOT, "data-missions.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-content.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-lines.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "state-save.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "audio.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "allies.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "map.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "sfx.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "music.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 
-const R = ctx.RESULT;
-console.log(R.lines.join("\n"));
-console.log("\n" + (R.fail === 0 ? "ALL PASS" : R.fail + " FAILED") + " (" + R.pass + " passed, " + R.fail + " failed)");
-process.exit(R.fail === 0 ? 0 : 1);
+(async () => {
+  // await any async assertions (CLOUD-1's 401 path) queued on ctx.__pending before reporting
+  if (ctx.__pending) { try { await ctx.__pending; } catch (e) { ctx.RESULT.fail++; ctx.RESULT.lines.push("  XX  async cloud test threw  -> " + e.message); } }
+  const R = ctx.RESULT;
+  console.log(R.lines.join("\n"));
+  console.log("\n" + (R.fail === 0 ? "ALL PASS" : R.fail + " FAILED") + " (" + R.pass + " passed, " + R.fail + " failed)");
+  process.exit(R.fail === 0 ? 0 : 1);
+})();
