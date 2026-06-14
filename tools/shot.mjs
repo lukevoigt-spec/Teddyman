@@ -39,6 +39,12 @@ const SCENES = {
   map:   `(window.toMap && toMap(), 1)`,
   base:  `(window.paintBase && paintBase(), show('scrBase'), 1)`,
   settings: `(window.openSettings && openSettings(), 1)`,
+  // Memory Vault: seed a due word + a due grapheme, then render a recharge round directly
+  // (bypass the intro flow() so the round DOM is present at screenshot time).
+  vault: `(function(){ S.mastery={ "w_cat":{seen:5,ok:5,str:5,box:0,due:"2020-01-01"}, t:{seen:5,ok:5,str:5,box:0,due:"2020-01-01"} };
+            vaultPlan=vaultDueRoutable(); vaultPos=0; show('scrVault'); vaultStep(); return 1; })()`,
+  vaultfull: `(function(){ S.mastery={}; startVault(); return 1; })()`,
+  vaultbase: `(function(){ S.mastery={ "w_cat":{seen:5,ok:5,str:5,box:0,due:"2020-01-01"} }; paintBase(); show('scrBase'); return 1; })()`,
 };
 
 const args = process.argv.slice(2);

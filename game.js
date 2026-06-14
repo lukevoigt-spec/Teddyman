@@ -266,7 +266,7 @@ const $=id=>document.getElementById(id);
    if the file is missing the layer stays transparent and the original look shows.
    Several screens intentionally share one scene (e.g. learn/trace, boss/forge). */
 const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrInter:"intro", scrScan:"lab", scrRead:"learn", scrSpell:"learn", scrMagic:"learn", scrSent:"learn", scrCloze:"learn", scrScramble:"learn", scrFortress:"battle",
-  scrBase:"base", scrTrain:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
+  scrBase:"base", scrTrain:"base", scrVault:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
   scrBoss:"battle", scrForge:"battle", scrWin:"victory", scrRest:"rest" };
 /* SCENE HARMONIZER tones: each scene's dominant ambient KEY light + an accent
    RIM, picked to match its painted background. show() pushes these to body as
@@ -1198,7 +1198,10 @@ const LETTER_MISSION={s:0,a:1,t:3,p:5,i:6,n:7,m:9,d:10,g:12,o:14,c:15,k:16,e:18,
 function showBase(){ clearFlow(); show("scrBase");
   $("hudTitle").textContent="HERO BASE";
   paintBase();
-  Aud.play("base1");
+  /* gentle once-a-day Memory-Vault nudge, layered after the base greeting (never forced — constraint #8) */
+  if(vaultDueRoutable().length>0 && S.vaultNudge!==dayKey()){ S.vaultNudge=dayKey(); save();
+    Aud.play(["base1","vault_nudge"]); }
+  else Aud.play("base1");
 }
 function paintBase(){
   $("baseHero").innerHTML=heroNow(Math.min(260,window.innerWidth*0.34));
@@ -1250,6 +1253,10 @@ function paintBase(){
       ? owned.map(it=>`<span class="trophy" title="${it.nm}">${it.ic}</span>`).join("")
       : '<div class="baselbl" style="font-size:15px;">Train to earn coins, then shop for trophies!</div>';
     const tc=$("trophyCount"); if(tc)tc.textContent=owned.length+" / "+BASE_ITEMS.length; }
+  /* Memory Vault: label the Recharge button with today's due count + glow it gently when gems are due */
+  { const due=vaultDueRoutable().length, vb=$("btnVault");
+    if(vb){ vb.textContent = due ? ("🔋 RECHARGE ("+due+")") : "🔋 RECHARGE";
+      vb.classList.toggle("vaultdue", due>0); } }
 }
 $("btnBaseBack").onclick=()=>{Aud.stop();toMap();};
 
@@ -1388,6 +1395,79 @@ function coinFloat(el,n){ const s=$("stage"); if(!s||!el)return; const r=el.getB
   c.style.top=(r.top-st.top-20)+"px"; c.textContent="+"+n+" 💰"; s.appendChild(c); setTimeout(()=>c.remove(),900); }
 $("btnTrain").onclick=()=>showTrain();
 $("btnTrainBack").onclick=()=>{ __inTraining=false; Aud.stop(); showBase(); };
+
+/* ---------------- MEMORY VAULT — the dedicated recharge activity (rec #1, deterministic) ----------------
+   The scheduler (vaultDue/vaultTouch, near line 200) decides WHAT is due; this is the gentle, capped
+   "Recharge the Gems" mini-activity launched from the Hero Base that actually RE-EXPOSES each due item.
+   Per spec it builds NO new task type — each due item is routed to an existing one:
+     • a grapheme that owns a snd_ clip → a one-round SOUND-ID (target-independent prompt → anti-gaming #4),
+     • everything else (w_/sw_ words, and the no-clip magic-e units reviewed inside a word) → a BUILD round.
+   Completing a round calls record(), so the existing record()→vaultTouch path advances the spaced schedule
+   for free (a genuinely-due item promotes; a missed one demotes one step). No timer, no fail (constraints
+   #1/#2): a miss dims + replays the sound and the child retries. */
+let vaultPlan=[], vaultPos=0, vaultMiss=0;
+/* a decodable read-pool word that uses a given no-clip magic-e unit, so the unit can be reviewed in a word */
+function vaultWordForUnit(unit){ const pools=Object.keys((typeof READWORDS2!=="undefined"&&READWORDS2)||{}).concat(Object.keys(READWORDS||{}));
+  return pools.find(w=>{ const me=magicE(w); return me && me.unit===unit; }) || null; }
+/* tile units for a BUILD round: a SIGHT word is split letter-by-letter (never tokenised — "said" stays
+   s-a-i-d, not s-ai-d), every other word by grapheme (a digraph/team is ONE tile). */
+function vaultUnits(w, sight){ return sight ? w.split("") : toGraphemes(w); }
+/* route a due key to a reviewable round; null = can't review it cleanly this session (skip it). */
+function vaultRoute(key){
+  if(key.indexOf("sw_")===0) return {mode:"build", key, w:key.slice(3), sight:true};
+  if(key.indexOf("w_")===0)  return {mode:"build", key, w:key.slice(2)};
+  if(hasSoundClip(key))      return {mode:"find",  key, g:key};
+  const w=vaultWordForUnit(key);                         /* no-clip grapheme (magic-e unit) → review inside a word */
+  return w ? {mode:"build", key, w} : null;
+}
+/* the due items we can actually recharge today (vaultDue already caps + orders oldest-first) */
+function vaultDueRoutable(){ return vaultDue().map(vaultRoute).filter(Boolean); }
+function startVault(){ clearFlow(); show("scrVault"); vaultPlan=vaultDueRoutable(); vaultPos=0;
+  S.vaultNudge=dayKey(); save();                         /* opening the Vault counts as today's nudge */
+  $("vaultWord").innerHTML=""; $("vaultChoices").innerHTML="";
+  if(!vaultPlan.length){ $("vaultProg").textContent="✨";
+    narrate("vault",$("vaultText"),["vault_full"],"Your gems are fully charged! ✨"); return; }
+  flow(narrate("vault",$("vaultText"),["vault_intro"]),()=>vaultStep()); }
+function vaultStep(){
+  if(vaultPos>=vaultPlan.length){ confetti(40);
+    flow(narrate("vault",$("vaultText"),["vault_done"],"All charged up! ⚡"),()=>{ Aud.stop(); showBase(); }); return; }
+  $("vaultProg").textContent=(vaultPos+1)+" / "+vaultPlan.length;
+  const it=vaultPlan[vaultPos]; vaultMiss=0;
+  (it.mode==="find") ? vaultFind(it) : vaultBuild(it); }
+function vaultFind(it){ const g=it.g;
+  $("vaultWord").innerHTML="";
+  narrate("vault",$("vaultText"),["find_prompt","snd_"+g],"Find the gem that makes the sound…");
+  const opts=[g,...pickFoils(g, taughtGraphemes(), 3)].sort(()=>Math.random()-.5);
+  const row=$("vaultChoices"); row.innerHTML="";
+  opts.forEach(o=>{ const t=document.createElement("button"); t.className="tile read"; t.textContent=o; t.dataset.g=o;
+    t.onclick=()=>{ if(o===g){ lockRow(row); record(g,true); t.classList.add("win"); burstAt(t); Aud.ding();
+        vaultPos++; flow(Aud.play(["yes","snd_"+g]),()=>setTimeout(vaultStep,180)); }
+      else { record(g,false); vaultMiss++; t.classList.add("dim");
+        if(vaultMiss>=2)row.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===g)x.classList.add("hint");});
+        Aud.play(["almost","snd_"+g]); } };
+    row.appendChild(t); }); }
+function vaultBuild(it){ const w=it.w, sight=!!it.sight, units=vaultUnits(w,sight); let slot=0;
+  narrate("vault",$("vaultText"),["vault_build"].concat(wordAudio(w)),"Recharge it — build the word you hear!");
+  const wr=$("vaultWord"); wr.innerHTML="";
+  units.forEach(()=>{ const s=document.createElement("div"); s.className="slot read"; wr.appendChild(s); });
+  const foilPool=(sight?taughtLetters():taughtGraphemes()).filter(x=>!units.includes(x));
+  const choices=shuf([...new Set(units)].concat(shuf(foilPool).slice(0,2)));
+  const cr=$("vaultChoices"); cr.innerHTML="";
+  choices.forEach(c=>{ const b=document.createElement("button"); b.className="tile read"; b.textContent=c; b.dataset.g=c;
+    b.style.width=b.style.height="clamp(72px,12vw,108px)"; b.style.fontSize="clamp(40px,6.5vw,60px)";
+    b.onclick=()=>{ const want=units[slot];
+      if(c===want){ record(c,true); const s=wr.children[slot]; s.textContent=c; s.classList.add("filled"); Aud.ding(); slot++;
+        if(slot>=units.length){ record(it.key,true);                       /* credit the DUE item → advances its schedule */
+          const meu=magicE(w); if(meu && meu.unit!==it.key)record(meu.unit,true);   /* also credit an embedded magic-e unit (parity with decode), unless it IS the due key */
+          burstAt(b); vaultPos++;
+          flow(Aud.play(sight?["yes","sw_"+w]:["yes",...graphemeSounds(w),"word_"+w]),()=>setTimeout(vaultStep,200)); }
+        else if(!sight) Aud.play("snd_"+c); }
+      else { record(c,false); vaultMiss++; b.classList.add("dim");
+        if(vaultMiss>=2)cr.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===want)x.classList.add("hint");});
+        if(!sight)Aud.play(["snd_"+want]); setTimeout(()=>b.classList.remove("dim"),900); } };
+    cr.appendChild(b); }); }
+$("btnVault").onclick=()=>{ Aud.pick(); startVault(); };
+$("btnVaultBack").onclick=()=>{ Aud.stop(); showBase(); };
 /* ---- shop ---- */
 function openShop(){ paintShop(); $("shopPanel").classList.add("on"); }
 function paintShop(){ $("shopCoins").textContent=S.coins||0;

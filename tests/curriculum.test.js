@@ -202,6 +202,14 @@ ok("every magic-e unit lacks a snd_ clip (must be reviewed as a WORD, never show
 ok("every letter / digraph / vowel-team HAS a snd_ clip (so it IS routable to a sound-ID round)", ["s","a","t","p","i","n"].concat(DIGRAPHS).concat(VOWELTEAMS).every(function(g){ return hasSoundClip(g); }));
 ok("soundReviewSet (the sound-ID router) filters OUT the no-clip magic-e units, keeps the rest", (function(){ var s=soundReviewSet(["s","a_e","sh","o_e","ai"]); return s.indexOf("a_e")<0 && s.indexOf("o_e")<0 && s.indexOf("s")>=0 && s.indexOf("sh")>=0 && s.indexOf("ai")>=0; })());
 ok("a pure magic-e weak set yields an EMPTY sound-ID set (those route to word/magic review instead)", soundReviewSet(MAGICE_UNITS).length===0);
+// the dedicated Recharge activity's router (vaultRoute) must honour the same safety + the sight-word rule
+ok("vaultRoute sends a no-clip magic-e unit to a BUILD round (never sound-ID), reviewed inside a word that uses it",
+  MAGICE_UNITS.every(function(u){ var r=vaultRoute(u); return r && r.mode==="build" && r.w && magicE(r.w) && magicE(r.w).unit===u; }));
+ok("vaultRoute sends a clip grapheme (sh) to a SOUND-ID round", (function(){ var r=vaultRoute("sh"); return r && r.mode==="find" && r.g==="sh"; })());
+ok("vaultRoute sends a w_ word to a BUILD round (encode, not sound-ID)", (function(){ var r=vaultRoute("w_cat"); return r && r.mode==="build" && r.w==="cat" && !r.sight; })());
+ok("vaultRoute flags a sw_ sight word so it's built letter-by-letter", (function(){ var r=vaultRoute("sw_the"); return r && r.mode==="build" && r.w==="the" && r.sight===true; })());
+ok("vaultUnits SPLITS a sight word letter-by-letter ('said' = s,a,i,d — never tokenised as a team)", vaultUnits("said",true).join(",")==="s,a,i,d");
+ok("vaultUnits tokenises a non-sight word by GRAPHEME (a digraph is one tile: ship = sh,i,p)", vaultUnits("ship",false).join(",")==="sh,i,p");
 `;
 vm.runInContext(fs.readFileSync(path.join(ROOT, "data-missions.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-content.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-lines.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "state-save.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "audio.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "allies.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "map.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "sfx.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "music.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 

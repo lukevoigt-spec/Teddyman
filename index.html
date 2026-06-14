@@ -151,8 +151,19 @@
     <div class="baseactions">
       <button class="btn" id="btnTrain">TRAINING ROOM</button>
       <button class="btn" id="btnShop">SHOP</button>
+      <button class="btn" id="btnVault">🔋 RECHARGE</button>
       <button class="btn blue" id="btnBaseBack">CITY MAP ➜</button>
     </div>
+  </div>
+
+  <!-- MEMORY VAULT (spaced review — recharge mastered gems on their due day; no story gating) -->
+  <div class="screen" id="scrVault">
+    <div class="hudtitle" style="margin-top:46px;font-family:'Bangers',cursive;font-size:clamp(26px,5vw,40px);color:var(--gold);">🔋 RECHARGE THE GEMS</div>
+    <div class="baselbl" style="font-size:18px;">💎 <span id="vaultProg">0 / 0</span></div>
+    <div class="bubble" id="vaultText"><span></span><div class="ear" data-ear="vault">🔊</div></div>
+    <div id="vaultWord" class="slotrow"></div>
+    <div id="vaultChoices" class="tilerow"></div>
+    <button class="btn blue" id="btnVaultBack">🏠 BACK TO BASE</button>
   </div>
 
   <!-- TRAINING ROOM (daily practice — earns coins, no story gating) -->
