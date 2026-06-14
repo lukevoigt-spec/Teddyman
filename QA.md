@@ -110,6 +110,19 @@ One line each; long detail/spec blocks were removed on consolidation.
     forge 50%), and the behavior (onclick → start round). Optional: a soft expanding pulse-ring to say "tap me."
   - *Why:* kids navigate YouTube; translucent-disc + white-triangle is the most recognizable "play" signifier, and the
     translucency fixes it obscuring the character. Verify on the forge + scan intros (`shot.mjs`).
+- 🐛 **U15 (PARENT-SPOTTED) — trace ghost letter is MISALIGNED with the trace dots.** *Root cause (unintentional):*
+  the faint ghost is the **Andika font glyph** (`<text class="guide" x=150 y=232 font-size=260>`, startTrace
+  game.js:749) positioned by FONT METRICS, while the dots come from a **separate hand-authored table** `TRACE[g]`
+  (data-content.js). Two independent representations of the letter, never registered → the glyph and the dot-path
+  don't overlap. The U9 brightening (.16→.34) made the long-standing mismatch obvious. *Why it matters:* the ghost is
+  meant to work **with** the dots to teach stroke order/shape (O-G multisensory); misaligned it confuses the
+  pre-reader/dyslexia profile trace exists for. *Fix (recommended — single source of truth):* render the ghost from
+  the **SAME `TRACE[g]` points** — a faint, thick, rounded stroked `<polyline>` per stroke (the letter's stroke
+  skeleton) **instead of** the `<text>` glyph. Then ghost + dots align by construction, it shows the true handwriting
+  stroke (more O-G correct than a typographic glyph), and it's font-load-independent. Keep faint (~`rgba(255,246,227,
+  .30)`), thick (~24–32px), behind the dots; drop `<text class="guide">`. *(Alt, NOT recommended: per-letter tune the
+  `<text>` x/y/font-size to register — fragile, font-metric-dependent, breaks on late font load.)* Verify each `TRACE`
+  letter (`shot.mjs`; Act-1 only — digraphs skip trace).
 - 📋 **H1 — Title logo font.** Bangers `.title-logo` (styles.css:243/478) is generic vs the premium art. Options:
   keep / elevate treatment (gradient+bevel+gem accents) / bespoke SVG-PNG wordmark (act-agnostic, no font load).
   ⚠️ Restyle **`.title-logo` only**, NOT `.comic` (used app-wide); lock the logo font regardless of `data-act`
