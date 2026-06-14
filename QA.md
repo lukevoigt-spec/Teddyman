@@ -71,8 +71,9 @@ Every UI finding/spec logged so far, by screen. Full detail in the dated section
 **Home / Title**
 - **H1** 📋 Title logo font — taste call; style `.title-logo` only (act-swap + webfont traps).
 - **H2** 📋 Buttons too plain — CSS-premium / 9-slice; *never text-baked images*. **Cross-cutting** (every screen).
-- **H3** 📋 **Ph1** Subtitle is Act-1-only → generic tagline.
-- **H4** 📐 **Ph1** Collapse START+CONTINUE → one **PLAY** (→ map; keep first-run intro). *Decision: PLAY→map ✅.*
+- **H3** ✅ **SHIPPED+verified** — generic subtitle "A HERO READS. A HERO RISES." (index.html:75; not re-Act-1-ized).
+- **H4** ✅ **SHIPPED+verified** — one **PLAY** (game.js:343): `Aud.pick()` + `if(!S.intro)startIntro else welcome+toMap`;
+  clean removal of START/CONTINUE/title-Base, first-run intro + iOS audio-unlock preserved.
 
 **Intro / Calibration**
 - **I1** 📋 Intro boxy `.panelart` frame → full-bleed / generated (shared w/ interlude; pilot one beat).
