@@ -18,15 +18,20 @@ this is the "what we're doing right now" index.
     Use it to self-check EVERY art change instead of working blind: e.g.
     `node tools/svg-shot.mjs "dragonSVG(200)" d.png` then Read the PNG.
   - `tools/shot.mjs` — screenshots the **real game** in Chromium **and WebKit (Safari ≈ iPad)**,
-    serving over http + driving the game's own nav fns. **Local desktop only** (Chromium
-    download is firewalled in the cloud env).
+    serving over http + driving the game's own nav fns. Desktop = Playwright. **CLOUD: also works now** —
+    `tools/shot.mjs` can't (Playwright's browser download is firewalled), BUT a cloud Trinity CAN screenshot
+    the real game via an **npm-packaged Chromium**: `npm i @sparticuz/chromium puppeteer-core` (registry is
+    reachable; this bypasses the blocked browser-download host), serve the repo + `puppeteer.launch({args:
+    chromium.args, executablePath: await chromium.executablePath(), headless:"shell"})`, block the
+    `fonts.googleapis/gstatic` CDN (else it hangs → system-fallback fonts), `goto domcontentloaded`, then
+    `page.evaluate("toMap()")` etc. **Verified 2026-06-14.** *(A durable `tools/shot-cloud.mjs` would be a nice
+    add — Neo's lane.)*
   - `tools/gen.mjs` — generate character art from a prompt via `XAI_API_KEY` or `OPENAI_API_KEY`
     → `art/incoming/`. Local only; keys never committed.
   - `tools/README.md` = setup. `art/CHARACTER-ART-PROMPTS.md` = house style + per-character
     generation prompts (the "generated heroes" pipeline).
 - **Workflow for art:** edit `art.js` → render with `svg-shot.mjs` → Read the PNG → iterate →
-  commit. On the desktop, also `shot.mjs` for full composed screens. The parent can run the
-  harness and share PNGs back if the working instance is the cloud one.
+  commit. Full composed screens: desktop `shot.mjs`, OR cloud Trinity via the npm-Chromium recipe above.
 
 ### Crew & workflow (see `AGENTS.md`)
 **Neo** (Lead Coder, desktop) — the only one who edits code + merges to `main`; final say. **Trinity** (cloud,
@@ -920,6 +925,12 @@ cluster. Refs: `map.js:39–100` (mapPaintSVG), `ZONESPOTS` `map.js:17–20`, `m
 `art/bg-map*.jpeg`, nav HUD `index.html:55–67`.
 
 **MR1. Overstimulation = no visual hierarchy (not "too much energy").**
+> 🖥️ **Confirmed on a real-screen cloud screenshot (Trinity, 2026-06-14):** on the actual map, the **zone-name
+> labels are nearly ILLEGIBLE** — low-contrast grey text on the vivid painting (a real constraint-#6 high-contrast
+> failure, not just aesthetics). So MR1's "push the painting back" should explicitly include **label legibility**:
+> a solid/darker pill behind each label + higher-contrast text. (MAP-1 verified fixed — raster Teddy stands at the
+> node; the path/nodes read OK.)
+
 The painted bg is already very high-contrast/saturated, and EVERY node carries a blurred bloom (`obloom`,
 `#mglow`) + specular highlights, all at similar brightness — ~70+ bright elements + friend figures + hero +
 portal over a loud painting. Nothing says "go HERE next." Direction:
