@@ -95,6 +95,47 @@ One line each; long detail/spec blocks were removed on consolidation.
 
 ## 🔧 OPEN WORK — BY TOPIC
 
+### 🧭 NAVIGATION VALIDATION — first-principles (Trinity, 2026-06-14)
+Validated the **shipped** nav (code + the parent's real forge/trace screenshots) against the STYLE.md §7 canon. Holistic
+verdict: **architecture is SOUND — Neo did the hard structural work well; the gaps are about a pre-reader's
+discoverability + tablet ergonomics, and they converge on one move (which also generalizes the open MR3).**
+
+**✅ First-principles SOLID (don't churn these):**
+- **One global nav surface, same place every screen** (Jakob / §7 #2) — the top-left chip+menu is consistent on every
+  non-title screen. Strong foundation.
+- **Status + nav co-located + always an exit** (visibility of status + user-control-and-freedom / #8) — Home in the
+  menu, `⏭` skip bottom-right, explicit Map↔Base buttons. No dead-ends; locked map nodes gated.
+- **Spatial wayfinding** (the journey map, done/current/locked) — a pre-reader reads progress without literacy.
+- **Progressive disclosure** — parent gear behind hold+math. **One primary action** on the title (PLAY). **Nav
+  structure identical across acts** (only reskinned). All textbook-correct.
+
+**⚠️ First-principles GAPS (prioritized):**
+1. **🔑 The global nav is HIDDEN behind a TEXT-chip dropdown — the weakest link for a pre-reader.** The primary
+   wayfinding control is a city *name he can't read* + a tiny `▾`; he must first discover the chip is tappable and that
+   `▾` means "menu." This violates §7 #3 (**icon+audio, never text alone**) at the most important level. On mission/
+   learn screens the dropdown is the *only* global nav. **This is the same issue MR3 raised for the map — but it's
+   holistic, not map-only.**
+2. **Nav lives in the TOP zone (hardest thumb reach on a landscape tablet).** §7 #4 = status top, **actions bottom/
+   corners**. The chip-nav (an action) is top-left = the stretch zone; only `⏭` (bottom-right) and the map's bottom-left
+   Base button are well-placed. Persistent nav should sit in the **bottom corners**.
+3. **The chip is overloaded** — it's simultaneously the location *label* (status, changes every screen) AND the nav
+   *trigger* (constant). Mixing changing-status with constant-control hurts learnability; separate "where am I" from
+   "where can I go."
+4. **Possible one-too-many destinations + "Home vs Base" model ambiguity** (Hick/Miller). Three jumps — Map / Base /
+   Home(title) — with **two "home-like" anchors**: Hero **Base** (his hub) and **Home** (title, which then needs PLAY
+   again). For a 7-yo, consider Map+Base as the two clear "places" and demote Home/title/profile to the parent area or a
+   quieter spot.
+
+**🎯 Holistic recommendation (single highest-leverage move):** evolve the global nav from a **text-chip dropdown** into
+an **always-visible icon control-cluster** (🗺️ Map / 🏰 Base, + Home), each **icon + tap-to-hear** its name, parked in a
+**bottom corner** for thumb reach; keep the chip as pure **status** ("where am I"). This (a) fixes the pre-reader
+discoverability gap (#1, #3), (b) fixes the ergonomics (#2), and (c) **is exactly MR3 — so promote MR3 from "map-only"
+to the standing global-nav pattern** (one cluster, every screen, both acts). Keep ≥96px, the locked-gate, and an Act-2
+skin variant. *(Validate the cluster doesn't overlap painted landmarks — anchor to the screen, not the 1000×750 SVG.)*
+
+**Net:** the bones are right; the one change that most improves the *holistic* experience is making the global nav
+**seen, not discovered** — visible icons a non-reader recognizes, in the easy-reach zone.
+
 ### UI Chrome & Buttons
 - 🎯 **U14 (PARENT-DIRECTED) — restyle the scan/forge "tap to start" orb (`#tapStart`) YouTube-style.** *What it is:*
   the U4 primary CTA shown during the **scan + forge intro-narration** phases (`showTapStart`, game.js:586/1145;
