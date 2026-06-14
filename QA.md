@@ -340,6 +340,26 @@ dedicated scheduled warm-up for *deterministic* intervals (the real spacing win)
 Progress tab: "🔋 Vault: N items, M due today" so the parent can see retention working.
 
 — Trinity, 2026-06-14
+---
+
+## Morpheus Guest QA fresh-eyes review — 2026-06-14
+
+Scope checked: rebased `main` onto `origin/main`, read `CLAUDE.md` / `AGENTS.md` / the live handoff + current code-review findings first, and did not re-report the existing cloud auth, reset resurrection, magic-e sound-ID, or cloud-off bugs already tracked above. Sanity checks run: `node tests/save.test.js`, `node tests/curriculum.test.js`, and `node --check` across JS/MJS all pass.
+
+**1. Daily Training Room is still Act-1-only after the Act-2 expansion — CONFIRMED missing loop.**
+Evidence: `trainPool()` only returns keys from `READWORDS` and filters them with `taughtLetters()` + `w.split("")` (`game.js:1254`). The build/decode loops also split words into individual characters and draw distractors only from `taughtLetters()` (`game.js:1267-1289`). That means the parent-recommended 15/15 daily rhythm can keep drilling CVC Act-1 words forever, but never reinforces Act-2 digraphs/blends/magic-e/vowel teams from `READWORDS2` (`data-content.js:86-92`). A quick pool swap would also be unsafe because `ship` would render as `s h i p` instead of `sh i p`; the core read path is already grapheme-aware via `toGraphemes()` / `readPool()` (`game.js:688-702`), but Training Room is not.
+→ **Proposed fix:** make Training Room cumulative and grapheme-aware: include unlocked `READWORDS2` items once their graphemes/rules are taught, tokenize with `toGraphemes()`, use `graphemeSounds()` for replay, and copy the magic-e visual/audio handling from `nextRead()` so silent-e words do not become misleading build tiles. Add a focused test that a post-Act-2 save can surface `ship`/`cake`/`rain` in training and that digraph/vowel-team words render as one sound tile per grapheme.
+— Morpheus, 2026-06-14
+
+**2. Act-2 finale never reaches the sentence/comprehension proof, and the dormant proof path is Act-1-only — CONFIRMED coverage gap.**
+Evidence: Dragon Keep phase 4 says "READ TO FREE MISS KENDALL!" but is configured as `{kind:"read"}` (`game.js:859-863`), and `fortRound()` dispatches `read` to `fortRead()` rather than `fortSentence()` (`game.js:883-886`). `fortRead()` is a word-picture decode round from `readPool()` (`game.js:899-909`), so the finale can end without the sentence/cloze comprehension work taught in the Act-2 Great Library. The existing sentence-proof helper is not safe to enable as-is: `fortMaze()` always samples `FORTMAZE` and `fortSentencePic()` always samples `SENTENCES` (`game.js:935-956`), while Act-2 sentence/cloze pools already exist separately (`data-content.js:51-70`).
+→ **Proposed fix:** after making the proof functions act-aware, change the final `FORTRESS2` phase to `kind:"sentence"` (or add a dedicated Act-2 proof kind). Use `SENTENCES2` for picture-match and `CLOZE2` or a new `FORTMAZE2` for maze rounds, with the same audio-first `flow()` pattern and no timers/failure state. Add a curriculum guard that Act-2 finale sentence rounds only draw Act-2-decodable content and never fall back to the Act-1 `SENTENCES`/`FORTMAZE` tables.
+— Morpheus, 2026-06-14
+
+**3. Style-C / generated-Teddy verification has a harness blind spot — CONFIRMED QA risk.**
+Evidence: the live game now uses `heroMarquee()` to render generated raster Teddy/knight art via `teddyArt()` for marquee moments (`game.js:187-193`, `art.js:198-209`). But `hero-lab.html` still claims it shows every in-game Style-C hero state and "what ships" (`hero-lab.html:23`), while its reusable `card()` renderer hardwires `heroSVG()` for the muscle, weapon, cape, gear, and knight rows (`hero-lab.html:51-67`). Vixen is included as generated art, but the generated Teddy/knight PNG tiers are not in this visual lab, so a missing/corrupt/wrongly framed marquee asset could pass the current human review path unless someone opens the actual title/win/rest screens.
+→ **Proposed fix:** add explicit lab/contact-sheet rows for `teddyArt(150, 0/1/2, "hero")` and `teddyArt(150, 0/1/2, "knight")`, and extend the art smoke harness to assert the referenced PNG files exist for every generated tier. Keep the parametric `heroSVG()` rows too, because those still cover loadout/weapon/cape states.
+— Morpheus, 2026-06-14
 
 ---
 
