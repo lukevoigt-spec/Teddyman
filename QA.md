@@ -572,6 +572,85 @@ most visible "old art" problem.
 
 ---
 
+## 📐 SPEC FOR NEO — Character-art resolver + map-hero (M1) + full rollout (Trinity, 2026-06-14)
+
+Goal: one mechanism so **generated raster replaces the old SVG per-character, incrementally**, everywhere a
+character renders — with a clean fallback so half-finished rollout never breaks a screen. Plus the concrete
+M1 map-hero fix. (`teddyArt`/`vixenSVG` are already the raster pattern; this generalizes them.)
+
+### 1. The resolver (art.js)
+A published-asset **manifest** + a uniform raster wrapper + a per-character resolver:
+```js
+// flip a flag the MOMENT its PNG lands in art/ (uniform canvas — see audit §C.4)
+const RASTER = { teddy:true, vixen:true, vex:false, dragon:false, noah:false,
+                 ellie:false, amelia:false, leighton:false, archie:false, kendall:false,
+                 captive:false, portal:false };
+// any character PNG authored on the standard canvas wraps identically (aura+shadow+float)
+function rasterArt(file, w, a0="#ffce3a", a1="#3a7bff"){ /* == teddyArt body, href art/${file}.png */ }
+// resolver: raster if published, else the EXISTING svg fn (so nothing breaks mid-rollout)
+function charArt(kind, w, o={}){ switch(kind){
+  case "teddy":  return RASTER.teddy  ? rasterArt((o.theme==="knight"?"teddy-knight":"teddy")+"-m"+(o.muscle||0), w, ...) : heroSVG(w,o);
+  case "vex":    return RASTER.vex    ? rasterArt("vex",w,"#ff5a3a","#c01020")    : inkblotSVG(w);
+  case "dragon": return RASTER.dragon ? rasterArt("dragon",w,"#ff6a2a","#c0301a") : dragonSVG(w);
+  case "noah":   return RASTER.noah   ? rasterArt("noah",w,"#ffd75e","#7bd08a")   : noahSVG(w);
+  /* allies: rasterArt("ally-"+kind,...) else allyBody(kind,w) / allyFace(kind) */ }}
+```
+**Manifest, not `onerror`:** a static site can't sync-check file existence, and an `<img onerror>` fallback
+flickers. The explicit `RASTER` flag is the clean switch — Neo flips one boolean per character.
+
+### 2. Wire the call sites to `charArt`
+Replace, so each flips automatically when its flag turns true:
+- `bossSprite()` (game.js:663) + the 7 boss-cage `art:` fns (1225–1231) → `charArt("vex"/"dragon"/"vixen",w)`.
+- Intro `noahSVG`/`inkblotSVG`/`citySVG`/`captiveSVG`/`portalSVG` → `charArt(...)`.
+- Allies: `allyBody`(hero cards), `allyFace`(pops/shelf), `allyMapFig`(map tokens) → `charArt("ally-"+kind,...)`.
+- **Teddy:** `heroNow` everywhere EXCEPT the Base loadout → `charArt("teddy",w,heroOpts())`.
+
+> ⚠️ **KEEP parametric `heroSVG` for the Hero Base loadout** (it must show the equipped **weapon/cape/gear** —
+> raster is a fixed pose). Raster Teddy is for fixed marquee + the map only. (Audit nuance ‡.)
+
+### 3. The M1 map-hero fix (the one with the gotcha)
+`map.js:64` inlines `heroNow(250)` (old `heroSVG`, viewBox `-30 -150 310 660`) at `scale(.26)`,
+`(x-30,y-150)` — perched on the node disc. Two routes:
+- **Route A (inline):** keep the hero inside the map SVG but switch to `charArt("teddy",…)`. The raster
+  `<image>` renders inside SVG fine, BUT re-tune for the **240×256** viewBox: pick a target on-map height H,
+  `scale = H/256`, and translate so the **feet** (image bottom ≈ y226) sit at the **node base** (x, y),
+  not the disc center. Simpler diff; raster is rasterized at the map's scale.
+- **Route B (overlay, recommended for crispness):** render `charArt("teddy",…)` as an absolutely-positioned
+  HTML element over `#mapSVGwrap`. Map the node's viewBox coords (ZONESPOTS 1000×750) → screen px via
+  `#mapSVGwrap.getBoundingClientRect()` ratios; place the hero there (feet at node), reposition on `resize`.
+  Decouples from SVG math, renders the PNG at native sharpness. (Same system then serves map allies.)
+- **Placement either way:** give the **current** node a small **pedestal/platform** to stand on, or seat the
+  feet at the node base — don't center him on the glowing disc.
+
+### 4. Map allies + everyone else, same path
+`allyMapFig` (map.js:36, `scale(.5)`) gets the identical treatment via `charArt("ally-"+kind,…)` once ally
+PNGs exist — until then the resolver returns the SVG, so the map keeps working. Pick **one** map approach
+(A or B) and use it for hero AND allies so they don't render in two different pipelines.
+
+### 5. Edge cases / gotchas
+- **Uniform canvas is load-bearing:** every character PNG MUST share the canvas/baseline (audit §C.4) or the
+  `rasterArt` wrapper mis-frames it. Author to spec; verify in `hero-lab.html`.
+- **Reduced-motion / Calm / Lite:** keep `.rfloat`/aura gating exactly as `teddyArt` does.
+- **Act-theming already flows:** `bossSprite` picks vex(Act1)/dragon(Act2); `theme` picks hero/knight — keep.
+- **Muscle tiers:** pass `heroOpts().muscle` so the map shows the right power tier (raster has m0–2).
+- **Cage sprites** are shrunken behind bars — raster needs a **transparent bg** so the bars read.
+- **Don't raster the Base loadout** (repeat, because it's the easy mistake).
+
+### 6. Tests / harness (also closes Morpheus #3)
+- Extend `tools/svg-shot.mjs --cast` + `hero-lab.html` to render the **raster tiers** (`teddyArt`/`charArt`),
+  not just `heroSVG`.
+- Add a node smoke check: for every `RASTER[k]===true`, assert `art/<file>.png` exists (per tier); and that
+  `charArt(k)` returns an `<svg>` for every kind (raster or fallback).
+
+### 7. Rollout order (most-seen first)
+map Teddy (M1 — raster already exists, just wire it) → **Vex + Dragon** (boss/cages) → **Noah** → **allies**
+(faces+bodies+map tokens) → interlude (captive/portal/city). Each = generate PNG on the uniform canvas → flip
+`RASTER.<kind>=true` → it upgrades everywhere `charArt` is wired.
+
+— Trinity, 2026-06-14
+
+---
+
 **Test commit by Grok (xAI):** Write access verified successfully! Added this line on 2026-06-13.
 
 ## 2026-06-13 Grok (xAI) Review — Latest Main (commit 060066c)
