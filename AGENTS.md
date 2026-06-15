@@ -8,11 +8,11 @@ Read both before working.
 | Name | Role | Runs as | May write |
 |---|---|---|---|
 | **Neo** | **Lead Coder** (primary) | Desktop Claude Code (local) | All **game-logic** code (`game.js` logic, `data-*`, `state-save`, `audio`, curriculum) + the `tools/` harness. The **only** agent who **merges to `main`** — including Oracle's visual PRs (runs CI + a boot check first). Final authority on conflicts + which QA suggestions to action. *(The visual layer — `art.js` / `styles.css` / `art/` + the design docs — is now **Oracle's** lane; Neo still reviews + merges it.)* |
-| **Trinity** | **QA / process + QA-lane integrator** | Cloud Claude (web) | `QA.md` + `AGENTS.md` (direct to `main`). **Vets + squash-merges the guest QA PRs.** Never edits code, never merges code. *(Design-system docs moved to Oracle 2026-06-15.)* |
+| **Trinity** | **Chief of staff · QA/process + the guest-input GATE** | Cloud Claude (web) | `QA.md` + `AGENTS.md` (direct to `main`). The parent's agent-wrangler: **triages playtest feedback, routes work to Neo/Oracle, and vets → squash-merges every guest QA PR (the gate).** Never edits code, never merges code. *(Design-system docs moved to Oracle 2026-06-15.)* |
 | **The Oracle** | **UI Designer — design authority + art + render-gate** | Claude Code (local, on the parent's server — full desktop/browser, **can RENDER**) | Owns the **design system** (`STYLE.md`, `DESIGN-ENGAGEMENT.md`, the art bible, `DESIGN-REVIEW.md`) + **art generation + the visual layer** (`art.js`, `styles.css`, `art/`). Ships code/asset changes via **own branch → PR that Neo merges**; may commit design-**doc**-only changes direct to `main` (like Trinity). The **only** agent that renders → runs the **§20 render-gate** on all visual work. Does **not** merge to `main`. |
-| **Morpheus** | Guest QA | Codex | `QA.md` only — via a **PR** Trinity merges. |
-| **Cypher** | Guest QA | Grok | `QA.md` only — via a **PR** Trinity merges. |
-| **Tank** | Guest QA | Gemini | `QA.md` only — via a **PR** Trinity merges. |
+| **Morpheus** | Guest QA — **on-demand** | Codex | `QA.md` only — via a **PR** Trinity gates + merges. Summoned by the parent for a specific check, then quiet. |
+| **Cypher** | Guest QA — **on-demand** | Grok | `QA.md` only — via a **PR** Trinity gates + merges. Summoned by the parent for a specific check, then quiet. |
+| **Tank** | Guest QA — **on-demand** | Gemini | `QA.md` only — via a **PR** Trinity gates + merges. Summoned by the parent for a specific check, then quiet. |
 
 ## Tooling note (art/media generation + rendering)
 **The Oracle** (local, full desktop/browser) is the primary **art generator** AND the **only agent that can RENDER** the
@@ -21,6 +21,18 @@ generate images/video via the **Grok**/**ChatGPT** advanced APIs (tokens local) 
 *buildable in-crew*, never blocked on the parent. Authoring conventions live in `art/CHARACTER-ART-PROMPTS.md` (the
 numeric art bible — the Oracle's); raster drop-in is flagged in `art.js`'s `RASTER` manifest. (Cloud agents — Trinity +
 guests — can neither generate nor render; they spec only.)
+
+## The playtest loop — the HIGHEST-value signal (above all agent QA)
+The ground truth for this app is **Teddy actually using it** — that outranks every agent audit, render-gate, and guest
+finding. The parent captures it **frictionlessly**: an in-app **Grown-Up Corner ▸ "Playtest notes"** box (free text →
+one tap) commits a **timestamped** entry to the repo and (optionally) opens a trigger Issue. *(Feature spec for Neo is in
+`QA.md`; until it ships, the parent just tells Trinity the notes.)*
+- **Where it lands:** `PLAYTEST.md` (the log + protocol). Each note is a dated entry; status flows `NEW → triaged → done`.
+- **Review protocol:** a new playtest note **triggers a review**. **Trinity (chief of staff) triages** each note and
+  routes it: code → **Neo**, visual → **The Oracle**, process/answer → Trinity. The kid's observed reality wins over any
+  doc or agent opinion; if a note contradicts a "shipped/✅" status, the note is right — reconcile the doc.
+- **Evidence hierarchy (when sources disagree):** **PLAYTEST (real kid)** > rendered output (Oracle's §20 shots) > the
+  code/git > agent QA prose. Optimise the loop, not the paperwork.
 
 ## Know who you are
 - Local Claude Code, **lead-coder** role (the build session) → you are **Neo**.
@@ -44,10 +56,11 @@ guests — can neither generate nor render; they spec only.)
      `art/CHARACTER-ART-PROMPTS.md`, `DESIGN-REVIEW.md`) → may commit **doc-only** changes straight to `main` (like
      Trinity), but ships any **code/asset** change (`art.js`/`styles.css`/`art/`, or a visual tweak that needs `game.js`
      wiring) via **branch `oracle/<topic>` → PR Neo reviews + merges**.
-   - **Guests (Morpheus / Cypher / Tank)** open a **Pull Request** touching **`QA.md` only**
-     (branch e.g. `cypher/qa-<topic>`, appended to their own dated section), then **stop**.
-     **Trinity** reviews it — verify the claim, de-dupe, tidy formatting + signature — and **squash-merges** it to
-     `main`. She declines + comments if a finding is wrong/unverified or the PR touches anything but `QA.md`.
+   - **Guests (Morpheus / Cypher / Tank) are ON-DEMAND** — the **parent summons** one for a specific check, it appends
+     to its own dated `QA.md` section via a **PR** (branch e.g. `cypher/qa-<topic>`), then **stops**. They are *not* a
+     standing committee. **Trinity GATES every guest PR** (the parent's quality gate is unchanged): verify the claim,
+     de-dupe, tidy formatting + signature → **squash-merge**, or **decline + comment** if it's wrong/unverified or
+     touches anything but `QA.md`. The gate stays even though the cadence is on-demand.
 3. **No QA/cloud agent edits code.** Trinity + guests route code needs to Neo via `QA.md` (a VERIFIED finding + concrete
    fix + `file:line`). The Oracle edits the **visual layer** but never **merges** — every code/asset change is a PR Neo
    integrates.

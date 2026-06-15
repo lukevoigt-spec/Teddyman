@@ -20,6 +20,26 @@
 
 Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under **🔧 OPEN WORK — BY TOPIC**.
 
+> ⭐ **PARENT FEATURE — PLAYTEST FEEDBACK BOX (Neo, build-ready; high value — it unlocks the playtest loop in `AGENTS.md`).**
+> A frictionless in-app way for the parent to log what he sees Teddy do, straight to GitHub. **Spec:**
+> - **UI:** Grown-Up Corner ▸ a "Playtest notes" card (parent-gated already by the cognitive math-gate) = a big `<textarea>`
+>   + a **Send** button. Wire via `showSection`/`backToHub` like the other sections. Parent-area text, so plain copy is fine.
+> - **Submit = commit to the repo, reusing the studio's GitHub flow** (`audio-studio.js`): the remembered token
+>   `localStorage["stGhToken"]` (`LS_GH`, `audio-studio.js:15`) + the `ghApi(token,path,opts)` helper + the blob→tree→
+>   commit→patch-ref pattern in `publish()` (`audio-studio.js:305-325`). If no token saved, reuse/point to the studio's
+>   token field. **Write a NEW file** `playtest/<ISO-timestamp>.md` (race-free — no read-modify-write), body = the free
+>   text + ISO timestamp + app version + active profile. Commit msg: `Playtest note <timestamp>`.
+> - **"Trigger a review":** ALSO open a GitHub Issue via `ghApi(token,"/issues",{method:"POST",body:{title:"Playtest: "+
+>   firstLine, body:note}})` as the assignable trigger surface — **graceful if the token lacks Issues:write (catch 403, the
+>   committed file is still the record).** (If the parent wires a Claude-Code-on-web trigger on issue-open, reviews auto-launch.)
+> - **Resilience (mirror the save layer):** optimistic "Sent ✓ — the team will review" message; if `fetch` fails, **queue
+>   the note in localStorage and retry on next Grown-Up Corner open** — never block, never lose a note, never break play.
+> - **Verify:** boot → Grown-Up Corner → type → Send (test token) → confirm `playtest/…md` appears on the branch + the
+>   Issue opens (or 403 is handled); offline path queues + flushes; `save`+`curriculum`+`ui-emoji` green; no console errors.
+> - **Files:** `index.html` (the box markup) + `game.js`/a small `playtest.js` (handler + `showSection` wiring) reusing the
+>   studio's `ghApi`/token (factor a tiny shared `ghCommitFile()` if cleaner). Token stays device-only, never committed.
+> — Trinity, 2026-06-15 (parent-requested; logs land in `PLAYTEST.md`/`playtest/`)
+
 1. **🐛 Hero Base action-rail bug (do early) — M-#2** (credit: Morpheus). The left `.basecol-hero`/Loadout has
    **no scroll path**, so at 1024×768 landscape it overflows under `.baseactions` (TRAINING/SHOP/RECHARGE/CITY MAP),
    hiding earned-gear controls. `#scrBase` fixed-height flex col (`styles.css:855`); `.baseactions` after the
