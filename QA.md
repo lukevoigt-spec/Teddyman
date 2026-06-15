@@ -27,7 +27,8 @@ Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under *
 >   map (`showWin`/finale). Build a new cutscene after `kendall1-3`: portal **home** → present-day Star Force City → the
 >   **whole cast** celebrates → affirmation that is **earned + specific + PROCESS-praise** ("you *sounded out every word*,
 >   you never quit — you're a **reader** now, ready for school"), NOT trait praise. *Neo* wires it into the finale flow +
->   `data-lines.js`; *Oracle* the cinematic art; *Trinity* drafts the script for parent approval (draft in `STORY.md §B`).
+>   `data-lines.js`; *Oracle* the cinematic art; **script ✅ APPROVED — `STORY.md §F`** (8 lines `home1-8`; Mom/Dad
+>   verbatim → split role P into Mom/Dad for real-voice recording; school = second grade; "proof" beat = his mastered words glow).
 > - **② INTRO HOOK — elevate `startIntro`** to a cold-open: threat/wonder by sec 5, hero's desire by 20, "your job" by 45.
 > - **③ CINEMATIC SVG PASS over beats 2–6** (Ken Burns `scale3d/translate3d` + 2.5D parallax layers over existing painted
 >   art + `cutsceneFX`/`faceSpeak`; optional vendored `gsap.min.js` for timeline sequencing; **skip Lottie/SMIL**; keep

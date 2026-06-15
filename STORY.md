@@ -123,7 +123,7 @@ clears the §20 Premium Bar; the SVG portal stays as fallback**). The core narra
 SVG cinematic pass, the squire fix — proceeds regardless; the portal clip is an optional experiment. Build tickets routed
 in `QA.md`.
 
-## F. BEAT-7 ENDING — DRAFT SCRIPT (pending parent approval; then Neo adds to `data-lines.js`)
+## F. BEAT-7 ENDING — ✅ APPROVED SCRIPT (parent 2026-06-15; Neo adds to `data-lines.js`)
 Plays after the Dragon Keep win + `kendall1-3`. Tone: tender-triumphant, a touch slower than the boss beats but still
 tight (each line ≤~8s, all skippable). SVG motion-comic (Ken Burns on the painted present-day city + parallax cast +
 `faceSpeak`). **The "proof" beat is key**: as Miss Kendall speaks, show the actual gems/words *he mastered* glowing — the
@@ -134,7 +134,7 @@ praise points at what he really did. Lines (`id` · voice · text):
 3. `home3` · **L** (Leighton) — *the welcome:* "Look — our hero is home!" *(whole cast turns, lights up)*
 4. `home4` · **K** (Miss Kendall) — *kneels; PROCESS praise + the reading proof:* "Teddy, you read your way through a whole castle of dragons to find me. You sounded out every word, and you never gave up on the hard ones." *(the mastered words/gems glow behind them)*
 5. `home5` · **Mom** *(parent's own words, verbatim):* "Oh Bud! Good boy… I mean good Teddy!"
-6. `home6` · **K** (Miss Kendall) — *school-readiness:* "You're ready now, Teddy. Ready for big-kid school. I'll see you there, and you are going to do great."
+6. `home6` · **K** (Miss Kendall) — *school-readiness:* "You're ready now, Teddy. Ready for second grade — and you are going to do great." *(school name TBD; "I'll see you there" dropped since the school isn't settled — re-add if Miss Kendall will be his teacher)*
 7. `home7` · **A** (Narrator, cast cheer by name — relatedness) — "Your whole team cheers your name — Archie, Ellie, William, Amelia, Leighton, JJ, Nora, and Cal: Super Teddy! Super Teddy!" *(fx: big confetti/heroic burst, cast lifts him up)*
 8. `home8` · **Dad** *(parent's own words, verbatim — the closing button):* "Way to go, buddy boy! I'm proud of how hard you worked. You never gave up and you gave it your best, and now look at you… you can actually read! Now let's go play some Minecraft." *(tender settle → CONTINUE → title)*
 
@@ -146,7 +146,9 @@ never gave up" — exactly what the research says builds a reader).
 
 **Wiring (Neo):** after the Act-2 finale win + `kendall1-3`, CONTINUE runs `startHomecoming()` (mirror `startInterlude`,
 screen `scrInter`); ends back at the title/map. All audio-first + `flow()`/watchdog skippable.
-*(Status: DRAFT — Trinity, 2026-06-15, pending parent approval of wording.)*
+*(Status: ✅ APPROVED — parent, 2026-06-15. Wording locked: Mom/Dad verbatim, school = second grade. Next: Neo wires
+`startHomecoming()` + adds the lines to `data-lines.js` (split role P → Mom/Dad); The Oracle builds the scene with the
+mastered-words "proof" beat; parent records Mom/Dad in their real voices via the Studio.)*
 
 ## Sources
 Huynh et al. 2021 (*IEEE TVCG*, narrative ↑ engagement, not test scores) · Przybylski, Rigby & Ryan 2010 (Self-Determination
