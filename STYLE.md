@@ -36,9 +36,13 @@ letter content, ≥96px targets, high contrast, audio-first, no-fail/no-timer, a
 constraint for polish. Premium **in service of a 7-year-old learning to read** — heroic, juicy, gorgeous, and still *his*.
 
 **First move (don't silently repaint everything):** research → bring the parent a **benchmarked art-direction proposal**
-(2–3 directions, named references, a sample render of each) via `AskUserQuestion`; let him pick; *then* drive it. Anchor
-on the existing taste signals (`CLAUDE.md`: Minecraft / superheroes / collection / Sneaky-Sasquatch-style progression) +
-whatever gold-standard apps the parent names.
+(2–3 directions, named references, a sample render of each) via `AskUserQuestion`; let him pick; *then* drive it.
+
+**RECORDED ANCHOR (parent, 2026-06-15):** aim for **top mobile-game polish — Supercell-tier (Clash Royale / Brawl Stars):
+bold, glossy, juicy, high-energy, punchy reward moments — it should read as a LEGIT GAME a kid would *choose* to play,
+NOT a "kids'-learning-app" look.** The learning lives *inside* that game feel. The parent named no single gold-standard
+app (he'll react to your proposal), so research the exemplars yourself and bring 2–3 directions. Still anchored to the
+existing taste signals (`CLAUDE.md`: Minecraft / superheroes / collection / Sneaky-Sasquatch-style progression).
 
 — Trinity, recording the parent's mandate, 2026-06-15
 
