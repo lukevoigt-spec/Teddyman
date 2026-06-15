@@ -604,7 +604,8 @@ function actComingSoon(){ show("scrInter");
    Kendall speaks. Mirrors startInterlude (screen scrInter); audio-first, faceSpeak, every beat
    skippable via flow()/⏭. ART is placeholder on-model SVG — the Oracle elevates the cinematic look
    via a later PR (STORY.md ownership: Oracle = look, Neo = wiring + the data-lines script). */
-function hFace(kind,w){ return `<svg viewBox="-34 -40 68 86" width="${w||190}" aria-hidden="true">${allyFace(kind)}</svg>`; }
+function hFace(kind,w){ return allyRasterImg(kind,w||190)   /* homecoming showcases the newer raster allies; SVG face only as fallback (e.g. Kendall placeholder) */
+  || `<svg viewBox="-34 -40 68 86" width="${w||190}" aria-hidden="true">${allyFace(kind)}</svg>`; }
 function hCast(){ return `<div style="display:flex;justify-content:center;gap:4px;flex-wrap:wrap;max-width:560px;">`
   + ["tank","flip","sunny","heart","leighton","kendall"].map(k=>hFace(k,84)).join("")+`</div>`; }
 /* the reading PROOF: the gems Teddy actually mastered, glowing — praise pointed at what he really did */
@@ -1447,7 +1448,7 @@ const HERO_BIO={
 const OWNS_LBL={boss:"Boss Battles",trace:"Letter Tracing",patrol:"Patrols",win:"Every Victory"};
 function openHeroCard(kind){
   const t=LEAGUE.find(x=>x.kind===kind); if(!t)return;
-  $("hcArt").innerHTML=allyBody(kind,170);
+  $("hcArt").innerHTML=allyRasterImg(kind,190)||allyBody(kind,170);   /* newer raster ally art; parametric SVG only as fallback */
   $("hcAlias").textContent=t.name;
   $("hcName").textContent=t.real;
   $("hcBackName").textContent=t.name;

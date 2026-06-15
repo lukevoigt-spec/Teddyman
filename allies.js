@@ -44,6 +44,12 @@ const LEAGUE=[...CAGED.map(t=>({mid:t.mid,kind:t.kind,name:t.name,real:t.real}))
 /* a small LIVING friend on the map — recognizable little figure; captive ones
    wave for help with a ball-and-chain, freed ones cheer with arms up. */
 const ALLY_COL={tank:"#e6453c", flip:"#3a9bff", sunny:"#ffce3a", heart:"#ff7d9c", leighton:"#a06ae8", kendall:"#5fa86a"};
+/* the newer RASTER ally art (real-photo-based standing token) where it exists (tank/flip/sunny/
+   heart/leighton); null otherwise (kendall/jj/cal/nora/mom/dad → caller falls back to the SVG).
+   Used for the FULL-FIGURE showcases (hero card, homecoming) so they no longer show the old
+   parametric SVG body. Small face-buttons keep allyFace (real-photo SVG likeness, reads fine tiny). */
+function allyRasterImg(kind, w){ return (typeof RASTER!=="undefined" && RASTER["ally-"+kind])
+  ? `<img src="art/ally-${kind}.png" width="${w}" height="${w}" alt="" style="display:block;object-fit:contain;" aria-hidden="true">` : null; }
 function allyMapFig(kind, freed){
   /* RESCUED ally with generated art -> show the raster token (feet grounded at ~y50, centred at x0),
      same footprint as the SVG figure so map placement is unchanged. Captive (or no-raster) allies keep
