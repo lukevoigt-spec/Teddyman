@@ -68,6 +68,16 @@ const CLOZE2=[
   {t:["you","can","ride","a","_"],     ans:"bike", foils:["bath","ring"], pic:"🚲"},
   {t:["the","goat","is","on","a","_"], ans:"boat", foils:["bike","cake"], pic:"⛵"}
 ];
+/* ACT 2 — Dragon Keep finale Maze. DISTINCT from the Dojo CLOZE2 so the climax
+   isn't a rerun (same design as Act-1 FORTMAZE vs CLOZE). Only Act-2-decodable
+   words proven in SENTENCES2/CLOZE2 + sight words; curriculum.test guards it. */
+const FORTMAZE2=[
+  {t:["the","king","has","a","_"], ans:"ring", foils:["rose","boat"], pic:"💍"},
+  {t:["a","fish","and","I","_"],   ans:"swim", foils:["jump","ride"], pic:"🐟"},
+  {t:["the","rose","is","_"],      ans:"red",  foils:["big","wet"],   pic:"🌹"},
+  {t:["the","train","is","_"],     ans:"fast", foils:["red","big"],   pic:"🚂"},
+  {t:["a","_","can","jump"],       ans:"frog", foils:["fish","ship"], pic:"🐸"}
+];
 /* Sight ("heart") words — not fully decodable; learned as wholes. h = indices
    of the "heart"/tricky letters that don't say their usual sound. */
 const SIGHT={

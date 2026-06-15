@@ -122,6 +122,17 @@ MISSIONS.forEach(function(m){
 ok("sentence/cloze missions reference valid pool indices", ix.length===0, ix);
 ok("Act 2 now has sentence-level reading before the Dragon Keep finale",
   actMissions(2).some(function(m){ return m.type==="sentence"; }) && actMissions(2).some(function(m){ return m.type==="cloze"; }));
+// the Act-2 finale (Dragon Keep / FORTRESS2) must PROVE sentence reading at the climax (the 2nd-grade goal),
+// not end on word-picture decoding — and its sentence/maze pools must be Act-2-decodable, never Act-1 fallback.
+ok("Act-2 finale (FORTRESS2) climaxes on SENTENCE/comprehension, not a word-picture 'read' phase",
+  FORTRESS2[FORTRESS2.length-1].kind==="sentence");
+var fm2=[];
+FORTMAZE2.forEach(function(c,i){ c.t.forEach(function(w){ if(w!=="_" && !a2ok(w)) fm2.push("FM2["+i+"] '"+w+"'"); });
+  [c.ans].concat(c.foils).forEach(function(w){ if(!a2ok(w)) fm2.push("FM2["+i+"] choice '"+w+"'"); }); });
+ok("every Act-2 finale Maze (FORTMAZE2) word is decodable by Great-Library play order (never an Act-1 fallback)", fm2.length===0, fm2);
+ok("FORTMAZE2 has a blank + a valid answer in every item", FORTMAZE2.every(function(c){ return c.t.indexOf("_")>=0 && c.ans && Array.isArray(c.foils) && c.foils.length>=1; }));
+ok("FORTMAZE2 is DISTINCT from the Dojo CLOZE2 (the climax isn't a rerun — mirrors Act-1 FORTMAZE vs CLOZE)",
+  FORTMAZE2.every(function(f){ return !CLOZE2.some(function(c){ return JSON.stringify(c.t)===JSON.stringify(f.t) && c.ans===f.ans; }); }));
 
 grp("bug #3: magic-e units never reach a sound-ID (snd_) round");
 // magic-e (a_e/i_e/o_e/u_e) is a SPLIT grapheme with no phoneme clip — it must never be a find/boss gem

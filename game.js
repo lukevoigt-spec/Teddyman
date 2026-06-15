@@ -1045,7 +1045,10 @@ const FORTRESS2=[
   {kind:"sound",n:5, banner:"BREAK THE DRAGON WARD!",     prompt:"f2_p1", taunt:"f2_t1"},
   {kind:"read", n:5, banner:"SHATTER THE RUNE-LOCKS!",    prompt:"f2_p2", taunt:"f2_t2"},
   {kind:"spell",n:3, banner:"CAST YOUR SPELLS!",          prompt:"f2_p3", taunt:"f2_t3"},
-  {kind:"read", n:4, banner:"READ TO FREE MISS KENDALL!", prompt:"f2_p4", taunt:"f2_t4"}
+  /* finale climax: SENTENCE/comprehension (the 2nd-grade goal) — was {kind:"read"}
+     (word-picture), which let the Act-2 climax end on decoding, not sentence reading.
+     Now act-aware (fortSentencePic/fortMaze use SENTENCES2/FORTMAZE2). */
+  {kind:"sentence",n:4, banner:"READ TO FREE MISS KENDALL!", prompt:"f2_p4", taunt:"f2_t4"}
 ];
 let FCONF=FORTRESS;
 let fPhase,fRound,fHP,fHPmax,fMiss;
@@ -1118,7 +1121,7 @@ function fortSpell(){ const pool=taughtSight().length?taughtSight():["the","a","
    rest are Maze/Cloze (read the sentence, pick the word that fits) — the
    research-validated comprehension check, so the win = real reading. */
 function fortSentence(){ if(fRound===0) fortSentencePic(); else fortMaze(); }
-function fortMaze(){ const c=FORTMAZE[Math.floor(Math.random()*FORTMAZE.length)];
+function fortMaze(){ const POOL=currentAct()===2?FORTMAZE2:FORTMAZE; const c=POOL[Math.floor(Math.random()*POOL.length)];
   narrate("fort",$("fortText"),["sent_prompt"],"Read it to free "+(currentAct()===2?"Miss Kendall":"Leighton")+"… tap the word that fits the blank!");
   const wr=$("fortWord"); wr.innerHTML="";
   c.t.forEach(w=>{ if(w==="_"){ const s=document.createElement("div"); s.className="wordslot read"; s.id="fortBlank"; s.textContent="?"; wr.appendChild(s); }
@@ -1131,7 +1134,7 @@ function fortMaze(){ const c=FORTMAZE[Math.floor(Math.random()*FORTMAZE.length)]
       else { record("sent_fort",false); fortMissHint(); b.classList.add("dim");
         if(fMiss>=2)row.querySelectorAll(".wordtile").forEach(x=>{if(x.dataset.w===c.ans)x.classList.add("hint");}); Aud.play(["almost",...done.flatMap(wordAudio)]); } };
     row.appendChild(b); }); }
-function fortSentencePic(){ const s=SENTENCES[Math.floor(Math.random()*SENTENCES.length)];
+function fortSentencePic(){ const POOL=currentAct()===2?SENTENCES2:SENTENCES; const s=POOL[Math.floor(Math.random()*POOL.length)];
   narrate("fort",$("fortText"),["sent_prompt"],"Read it to free "+(currentAct()===2?"Miss Kendall":"Leighton")+"… tap the picture!");
   const wr=$("fortWord"); wr.innerHTML="";
   s.t.forEach(w=>{ const t=document.createElement("button"); t.className="tile wordtile read"+(SIGHT[w]?" heartword":""); t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>Aud.play(wordAudio(w)); wr.appendChild(t); });
