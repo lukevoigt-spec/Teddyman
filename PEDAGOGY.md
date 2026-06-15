@@ -109,11 +109,12 @@ ADHD / language delay) and **pace to the child, not the syndrome.** The variabil
 
 ## 3. Gaps & risks — the prioritized focus list (this is where the work is)
 
-1. **[HIGH · CURRICULUM] Close the TEKS Grade-2 gaps: r-controlled vowels + multisyllabic/affixes.** *Verified missing* —
-   no r-controlled (ar/er/ir/or/ur) and no multisyllabic / prefix-suffix (un-, re-, -ed, -ing, -er, -est) content exists in
-   `data-content.js` / `data-missions.js`. These are the **distinctly Grade-2, "ready-for-3rd-grade" rungs** of the TEKS
-   ladder. Without them, the stated GOAL (~2nd-grade/TEKS by end of Act 2) is **not actually met.** → Add them to the Act-2
-   ladder (after vowel teams) + extend `curriculum.test`. **This is the single biggest threat to objective #1.** *(Ticket in QA.md for Neo.)*
+1. **[✅ SHIPPED 2026-06-15 — was the #1 gap] Close the TEKS Grade-2 gaps: r-controlled vowels + multisyllabic/affixes.**
+   **DONE** (Neo, commit `cd79486`, built to `CURRICULUM-GRADE2.md`): Act-2 zones **107 Pirate Cove** (r-controlled
+   ar/or/er/ir/ur) + **108 Giant's Bridge** (multisyllabic + prefixes/suffixes), in play order after vowel teams, before
+   the Great Library; `RCONTROLLED`→`GRAPH2`, new `syllabify`/`startSyllable`, finale gates on r-controlled. `curriculum.test`
+   100/100 with new guards. The stated GOAL (~2nd-grade/TEKS by end of Act 2) is now **met** — the full letter→…→
+   multisyllabic ladder is live end-to-end. *(This was "the single biggest threat to objective #1"; now resolved.)*
 
 2. **[HIGH · DESIGN GUARDRAIL] Bind the ARENA/beauty push with the seductive-details rule.** The evidence is unambiguous:
    decoration *during* the decision depresses learning, worst for novices like Teddy. With The Oracle now mandated to make

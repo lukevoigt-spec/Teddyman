@@ -57,14 +57,12 @@ Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under *
 > keep the bob; recorded/generated audio gets the real flap. Phoneme/viseme lip-sync = overkill, skip. Detail-tier /
 > reduced-motion gated. — Trinity, 2026-06-15
 
-> 🐛🎨 **VISUAL BUG (Oracle, backlog) — WIN screen hero shows a hard SQUARE + is cut off** (parent screenshot 2026-06-15).
-> On `scrWin` / `#winHero`, the Super-Teddy raster character renders inside a visible **rectangular box** (a hard square
-> edge framing the hero + his spotlight glow) and the art is **clipped/cut off** at that edge instead of bleeding into the
-> painted background. Likely cause: the raster PNG's bounding box (non-transparent / edged) OR a `#winHero`/wrapper
-> container with a background / box-shadow / `overflow:hidden` clipping the art, and/or the spotlight being a rect not a
-> soft radial. **Fix (Oracle):** repro via `node tools/shot.mjs win` (Act 1 + 2), make the hero art + glow edgeless
-> (transparent bleed / soft radial, no clipping container), render-gate against §20 (a visible box on a hero screen = a
-> Premium-Bar fail). — Trinity, 2026-06-15
+> ✅ **WIN-screen "hard square" — FIXED 2026-06-15** (Oracle, commit `abe5775`). Root cause was NOT a clipping container:
+> the character **aura ellipse overflowed the SVG viewBox**, so `overflow:hidden` clipped the soft glow to the viewBox
+> **rectangle** — invisible on Chromium, but on iPad/WebKit the `#winHero>svg` drop-shadow *outlined* that clipped rect →
+> the reported hard square. Fix: fit every character aura inside its viewBox (hero + allies + villains). **⚠ Render-gated
+> on Chromium only — the WebKit gate is blocked by SHOT-1, so PARENT please confirm on the iPad** that the square is gone.
+> — Trinity, 2026-06-15
 >
 > ⏱️ **DAILY TARGET 30 → 15 min/day (Neo, parent 2026-06-15).** Change the daily goal from **30 min** (old 15 missions + 15
 > training) to **~15 min/day TOTAL, split between daily practice (Training Room) + missions** (~7–8 each — a split, not two
@@ -95,19 +93,10 @@ Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under *
 >   `VStore`, sidesteps the SW 206 gotcha). Budget a 3–4×+ reroll; never the character/likeness beats.
 > *(All cutscenes stay audio-first + `flow()`/watchdog skippable — hard constraint #8.) — Trinity, 2026-06-15*
 
-> 📚 **PEDAGOGY GAP (Neo — HIGH, objective #1) — close the TEKS Grade-2 rungs: R-CONTROLLED VOWELS + MULTISYLLABIC/AFFIXES.**
-> *Verified missing* (grep + read): `data-content.js` + `data-missions.js` have **no r-controlled** (ar/er/ir/or/ur) and **no
-> multisyllabic / prefix-suffix** (un-, re-, -ed, -ing, -er, -est) content. These are the distinctly **Grade-2,
-> "ready-for-3rd-grade" rungs** of the TEKS ladder — without them the stated GOAL (~2nd-grade/TEKS by end of Act 2) is **not
-> met** (see `PEDAGOGY.md §1/§3`). **Build (append ids 100+, never renumber):** (a) an **R-CONTROLLED** zone after vowel teams
-> (ar/er/ir/or/ur = one sound each, GRAPH2-style tokenisation; learn→find→forge→read→finale), then (b) a **MULTISYLLABIC +
-> AFFIXES** zone (closed/open syllable split; common prefixes/suffixes; base+affix decoding). Reuse the grapheme model +
-> handlers; sight/heart words stay sound-mapped. **Extend `curriculum.test`** (taught-before-use for the new graphemes;
-> r-controlled tokenisation; affix words decodable by play order). Render-gate any new screens (Oracle). **→ FULL BUILD SPEC
-> READY: `CURRICULUM-GRADE2.md`** — grapheme/affix order, verified-decodable word banks, mission ladders (ids 150–159
-> r-controlled / 160–172 multisyllabic), engine hooks (`RCONTROLLED`→`GRAPH2`, `startSyllable`+`syllabify`, the schwa-FLEX
-> retry), `curriculum.test` extensions, audio to record. Re-confirm the gap by reading the data files first, then build to
-> spec. — Trinity, 2026-06-15
+> ✅ **PEDAGOGY GAP — SHIPPED 2026-06-15** (was *the* #1 threat to objective #1): r-controlled + multisyllabic/affixes built
+> to `CURRICULUM-GRADE2.md` (Neo, commit `cd79486` — Act-2 zones **107 Pirate Cove** + **108 Giant's Bridge**, missions
+> 150–172; `curriculum.test` 100/100). Verified by Trinity (zones/hooks live, tests green); `PEDAGOGY.md §3` reconciled to
+> CLOSED. *(See the SHIPPED+FYI note at top.)* — Trinity, 2026-06-15
 >
 > 🎨 **PEDAGOGY GUARDRAIL (The Oracle) — add a "calm learning moment" check to the §20 Premium Bar.** Per `PEDAGOGY.md §3#2`
 > (seductive-details effect, worst for novices like Teddy): the active decision moment (sound→letter / build / decode) must
