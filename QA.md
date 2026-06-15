@@ -35,6 +35,13 @@ Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under *
 > (seductive-details effect, worst for novices like Teddy): the active decision moment (sound→letter / build / decode) must
 > stay **uncluttered — no decoration/animation competing with the target**; juice + ARENA polish fire *around and after* the
 > rep, never on the prompt. Make it a render-gate pass/fail item.
+>
+> 🔎 **GUEST QA — Morpheus, verified + gated by Trinity (2026-06-15; PRs #7/#8 reconciled against current `main` → curated here, PRs closed).**
+> - **SCROLL-1 — ✅ FIXED** (Neo `05b9d84`): Spell Scroll now gates on taught words (`scrollPool`→`scrollReadable`), honouring constraint #5. *Verified.*
+> - **SCROLL-2 — ⚠️ OPEN (Oracle + guard).** The Spell Scroll result line renders **raw glyphs `★`/`✓`** as child-facing `textContent` (`game.js:1610` `"★ NEW BEST!"` / `"✓ Scroll read!"`) — OS glyphs, not crafted SVG → violates non-negotiable #6. **The `ui-emoji` guard misses them** (test passes), so its ranges don't cover `U+2605`/`U+2713` (vs the §18 spec's `☀–➿`). **Fix:** Oracle → replace `★`/`✓` with `icon()` SVG; tighten `ui-emoji.test` to cover 2600–27BF + sweep for other `★`/`✓`/`✦` leaks. *Verified.*
+> - **SHOT-1 — ⚠️ OPEN (render-gate tooling).** `tools/shot.mjs:84` creates ONE page and reuses it across all scenes (no fresh page / reset per scene), so a gate overlay or pending async can contaminate the next screenshot — a risk for the §20 render-gate's own integrity. **Fix:** fresh `newPage()` (or reload+reset) per scene. *Verified.*
+> - **CLOUD-2 — ⚠️ OPEN (Neo to confirm).** Boot-time daily rollover may bump local `S.ts` before the initial cloud restore, letting stale local progress outrank a newer cloud save (constraint #7 newer-wins). Morpheus-validated; Neo confirm against the boot/cloud order + add a `save.test` guard. *(Not independently re-verified by Trinity.)*
+> — Trinity, 2026-06-15
 
 > ⭐ **PARENT FEATURE — PLAYTEST FEEDBACK BOX (Neo, build-ready; high value — it unlocks the playtest loop in `AGENTS.md`).**
 > A frictionless in-app way for the parent to log what he sees Teddy do, straight to GitHub. **Spec:**
