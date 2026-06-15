@@ -171,3 +171,23 @@ The shipped Act-2 route hugged the river (read as in-water) on the climb to the 
 `MAPSPOTS_V2[2]` against a grid+nodes diagnostic overlay so the route stays on land: village → bottom
 meadow → **stone bridge (single crossing)** → swings WIDE onto the right-bank grass (clear of the river)
 → dragon keep. Verified by cropping the upper segment (dots on grass, right of the river). `curriculum`/`save` green.
+
+## 2026-06-15 · Act 2 → 8 zones — map layout LOCKED, ⚠️ NEO ADD 2 ZONES (parent-approved)
+Parent wants Act 2 to grow from **6 → 8 zones**. The map is ready; the 2 new banners only render once
+the **game content exists** (the map draws one banner per real `actZones(2)`), so this needs Neo.
+
+**Locked 8-node layout (parent's marks; on land, single bridge crossing, right-bank climb to the keep)** —
+drop-in for `map.js` `MAPSPOTS_V2[2]` **at the same time** the 2 zones are added:
+```
+2:[[335,875],[500,850],[640,815],[720,765],[880,665],[1085,565],[1110,410],[1120,255]]
+```
+Index→meaning: 0 start (village, hero) · 1–2 meadow · 3 bridge approach (nudged up) · **4 NEW** (after
+bridge, right grass) · 5 right-bank · **6 NEW** · 7 the Dragon Keep (finale, moved right).
+
+**⚠️ NEO action (game content, your lane):** add **2 new Act-2 zones + their missions** in play order so
+`actZones(2).length === 8`, inserted as map indices **4 and 6** (i.e. after the bridge zone, and between
+the right-bank zone and the finale). **The Dragon-Keep finale must stay the LAST zone** so it maps to
+index 7 (the keep) and Miss Kendall stays captive there (`mapAlliesV2` is LEAGUE-derived, so she follows
+her finale mission's zone automatically). Swap `MAPSPOTS_V2[2]` to the 8-array above **in the same PR** as
+the zones (atomic — shipping the 8 spots before the zones would put the finale at index 5, not the keep).
+Until then the live map correctly stays at 6 (PR #13). Content/curriculum of the 2 new zones is your call.
