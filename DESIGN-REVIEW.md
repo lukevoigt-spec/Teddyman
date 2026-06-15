@@ -165,3 +165,9 @@ via the new `mapRepaint()` on a debounced `resize` so rotation stays correct. Re
 - **Render-gate (Chromium @2x):** `arena-map-a2-day/twi/portrait.png` — continuous path crossing on the bridge,
   banners, knight Teddy at CASTLETON, captive Kendall at the keep, readable late-dusk, all 6 nodes on-screen in
   portrait (meet). `curriculum` 79/79. **PASS.**
+
+## 2026-06-15 · Act 2 map — path-fix (parent: "you went in the water")
+The shipped Act-2 route hugged the river (read as in-water) on the climb to the keep. Re-calibrated
+`MAPSPOTS_V2[2]` against a grid+nodes diagnostic overlay so the route stays on land: village → bottom
+meadow → **stone bridge (single crossing)** → swings WIDE onto the right-bank grass (clear of the river)
+→ dragon keep. Verified by cropping the upper segment (dots on grass, right of the river). `curriculum`/`save` green.

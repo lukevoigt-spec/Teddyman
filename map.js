@@ -27,7 +27,7 @@ const MAPSPOTS_V2={
   1:[[235,872],[300,712],[252,556],[404,470],[565,540],[690,650],[902,600],[1062,468],[1208,322]],
   /* Act 2 (6 zones): one continuous route village -> bottom meadow -> stone bridge (single river
      crossing) -> up the open right meadow -> the dragon keep. Stays on grass, avoids the forest. */
-  2:[[200,800],[370,792],[540,802],[700,790],[855,505],[1050,252]]
+  2:[[210,800],[400,825],[590,805],[700,790],[980,470],[1110,250]]
 };
 /* day/twilight by the DEVICE clock (the iPad is in the family's timezone): 6am-6pm day, else dusk. */
 function mapBgFor(a){
