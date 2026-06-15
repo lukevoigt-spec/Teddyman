@@ -36,6 +36,16 @@ Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under *
 >   Studio role pickers; best in the real kids' voices). Trigger: every ~8–12 reps (jittered), unlocked allies only, rotate lines.
 > - **DE-EMOJI the Training Room (Oracle) + tighten `ui-emoji.test`** — emoji still present here (the guard's coverage gap, cf SCROLL-2).
 > - **Full Training Room REDESIGN (Oracle — "not great") to the §20 Premium Bar**, render-gated. — Trinity, 2026-06-15
+>
+> 🗣️ **MOUTH-MOVE / talking upgrade (Oracle + Neo, parent-asked 2026-06-15) — vector makes this EASIER, not harder.** We
+> already bob the speaking portrait (`faceSpeak`); the upgrade = **amplitude-driven mouth open/close**: a Web-Audio
+> `AnalyserNode` on the playing clip (RMS → mouth openness) animates a parametric SVG **mouth element** on the face.
+> Convincing jaw-flap, cheap (one shape, transform/opacity), **zero per-line data**, works for ANY recorded / ElevenLabs /
+> voicepack clip — upgrades ALL speaking characters (cutscenes, the beat-7 ending, training allies). **Oracle:** expose a
+> controllable mouth element + open/closed art in `allyFace`/the portraits. **Neo:** the analyser→mouth driver, hooked into
+> `faceSpeak`/`Aud.play`, reused for the training `allyPop`. **Caveat:** browser TTS exposes no tappable stream → TTS lines
+> keep the bob; recorded/generated audio gets the real flap. Phoneme/viseme lip-sync = overkill, skip. Detail-tier /
+> reduced-motion gated. — Trinity, 2026-06-15
 
 > 🐛🎨 **VISUAL BUG (Oracle, backlog) — WIN screen hero shows a hard SQUARE + is cut off** (parent screenshot 2026-06-15).
 > On `scrWin` / `#winHero`, the Super-Teddy raster character renders inside a visible **rectangular box** (a hard square
