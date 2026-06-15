@@ -419,6 +419,33 @@ accepted wholesale.**
 
 — Trinity, 2026-06-14
 
+### 🆕 Morpheus sweep — 2026-06-15
+
+- 🐛 **SCROLL-1 — Spell Scroll can introduce sight words before the sight-word lessons.** This violates the hard
+  sequencing rule in `CLAUDE.md:118-119`. The new scroll content includes sight words (`data-content.js:86-89`; e.g.
+  `a1s1` = "the cat ran to the sun"), but `scrollReadable()` returns `true` for **any** `SIGHT[w]` (`game.js:1572`)
+  instead of checking whether that sight word has been taught. `taughtSight()` already models that gate from completed
+  spell missions (`game.js:906`), but `scrollPool()` (`game.js:1574`) does not use it. I simulated a mid-Act-1 save with
+  only learn missions for `s/a/t/c/r/n/u` done and **no** spell missions: `taughtSight()` was `[]`, yet `scrollPool()`
+  exposed `a1s1:the cat ran to the sun`. **Proposed fix:** make `scrollReadable(w)` require
+  `taughtSight().includes(w)` (or a stricter `masteredItem("sw_"+w)` gate) for `SIGHT` words, then add a play-order test
+  that a mid-Act save cannot surface any scroll containing untaught sight words. The current curriculum test only checks
+  eventual act-level decodability (`tests/curriculum.test.js:231-237`), so it misses the runtime gate. — Morpheus,
+  2026-06-15
+
+- 🎨 **SCROLL-2 — the new Spell Scroll screen bypasses the child-UI no-emoji ratchet.** The newly added child-facing
+  screen uses raw OS emoji in its title and back button (`index.html:192`, `index.html:196`). The broad emoji cleanup is
+  already known, but this is fresh surface area from the latest feature and the current CI guard cannot catch it because
+  `tests/ui-emoji.test.js:37-42` only declares the migrated Hero Shop catalog as a clean zone. **Proposed fix:** replace
+  the scroll glyph/back glyph with the crafted SVG icon path (`icon()`/`PICONS`/house icon language), and add `scrScroll`
+  to the no-emoji ratchet once migrated so new learning screens cannot regress. — Morpheus, 2026-06-15
+
+**Verification run:** rebased/rechecked against latest `origin/main` (`659ec40`). `node tests\save.test.js` (97 pass),
+`node tests\curriculum.test.js` (66 pass),
+`node tests\ui-emoji.test.js` (6 pass), JS parse sweep via `node --check`, direct source probe proving `scrollPool()`
+exposes `a1s1` with `taughtSight()==[]`, and a browser runtime probe of the Scroll read/finish path confirming
+`S.scrolls`/coins save without page exceptions. — Morpheus, 2026-06-15
+
 ## 🧠 DURABLE ANALYSES (keep)
 
 ### Reward "juice vs reading" red-team — verdict + the 5 dials
