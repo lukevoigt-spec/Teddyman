@@ -284,7 +284,17 @@ const LINES={
   trace_prompt2:{t:"Trace along the glowing stars to free the gem!"}, trace_prompt3:{t:"Follow the stars with your finger to cut it loose!"},
   read_prompt2:{t:"Sound it out... then tap what it means!"}, read_prompt3:{t:"Read the word, then tap its picture!"},
   sent_prompt2:{t:"Read it all... then tap the picture it tells about!"}, sent_prompt3:{t:"Read the whole thing — which picture fits?"},
-  train_yes2:{t:"Coin for you!"}, train_yes3:{t:"Ka-ching! Keep it up!"}
+  train_yes2:{t:"Coin for you!"}, train_yes3:{t:"Ka-ching! Keep it up!"},
+  /* ---- BEAT-7 HOMECOMING ENDING (STORY.md §F, parent-APPROVED 2026-06-15). PROCESS praise fused to
+     the reading proof. Mom & Dad = the single combined role P (home5/home8, parent's words VERBATIM). ---- */
+  home1:{t:"You did it, Sir Teddy. You set the whole kingdom free. Now go home, brave reader — your family is waiting.", v:"N"},
+  home2:{t:"In a swirl of light, Super Teddy and his friends tumble home — back to Star Force City, safe and sound."},
+  home3:{t:"Look — our hero is home!", v:"L"},
+  home4:{t:"Teddy, you read your way through a whole castle of dragons to find me. You sounded out every word, and you never gave up on the hard ones.", v:"K"},
+  home5:{t:"Oh Bud! Good boy… I mean good Teddy!", v:"P"},
+  home6:{t:"You're ready now, Teddy. Ready for second grade — and you are going to do great.", v:"K"},
+  home7:{t:"Your whole team cheers your name — Archie, Ellie, William, Amelia, Leighton, JJ, Nora, and Cal: Super Teddy! Super Teddy!"},
+  home8:{t:"Way to go, buddy boy! I'm proud of how hard you worked. You never gave up and you gave it your best, and now look at you… you can actually read! Now let's go play some Minecraft.", v:"P"}
 };
 /* High-frequency lines that ROTATE to fight repetition fatigue (parent 2026-06-14): base id -> its
    variant pool (incl. the base). varyLine() (called by Aud.play) returns a fresh one != the last

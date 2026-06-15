@@ -296,6 +296,13 @@ grp("Gear PACING (P2-A) — power gear spread across zones, not front-loaded in 
   ok("Word Hammer stays an EARLY weapon (zone 1)", gearZone("Word Hammer")===1);
   ok("no power gear except the Hammer is front-loaded in zone 1", ["Gem Sword","Power Belt","Rocket Boots"].every(function(g){return gearZone(g)!==1;}), pz);
 })();
+
+grp("Beat-7 homecoming ending (STORY.md §F) — script present, correctly voiced + wired");
+ok("home1..home8 all exist in LINES with text", [1,2,3,4,5,6,7,8].every(function(n){ var l=LINES["home"+n]; return l && l.t && l.t.length>0; }));
+ok("Mom & Dad lines (home5/home8) carry the single combined role P (verbatim, parent's call)", LINES.home5.v==="P" && LINES.home8.v==="P");
+ok("Noah=N, Leighton=L, Miss Kendall=K on their homecoming lines", LINES.home1.v==="N" && LINES.home3.v==="L" && LINES.home4.v==="K" && LINES.home6.v==="K");
+ok("the two narrator beats (home2/home7) use the default narrator voice (no override role)", !LINES.home2.v && !LINES.home7.v);
+ok("HOMECOMING has 8 beats mapped to home1..home8 in order", typeof HOMECOMING!=="undefined" && HOMECOMING.length===8 && HOMECOMING.every(function(b,i){ return b.id==="home"+(i+1); }));
 `;
 vm.runInContext(fs.readFileSync(path.join(ROOT, "data-missions.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-content.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-lines.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "state-save.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "audio.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "allies.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "map.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "sfx.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "music.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 

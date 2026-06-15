@@ -597,6 +597,42 @@ function actComingSoon(){ show("scrInter");
   $("btnInterNext").textContent="BACK TO TITLE";
   $("btnInterNext").onclick=()=>{ Aud.stop(); show("scrTitle"); }; }
 
+/* ---------------- BEAT-7 HOMECOMING ENDING (the emotional climax — STORY.md §F, parent-approved) ----
+   Plays after the Act-2 Dragon Keep win + kendall1-3 (the finale CONTINUE runs startHomecoming).
+   Tender-triumphant SVG motion-comic: portal home → present-day city → the cast celebrates, with
+   PROCESS praise (Dweck) FUSED to the reading proof — the gems he actually mastered glow as Miss
+   Kendall speaks. Mirrors startInterlude (screen scrInter); audio-first, faceSpeak, every beat
+   skippable via flow()/⏭. ART is placeholder on-model SVG — the Oracle elevates the cinematic look
+   via a later PR (STORY.md ownership: Oracle = look, Neo = wiring + the data-lines script). */
+function hFace(kind,w){ return `<svg viewBox="-34 -40 68 86" width="${w||190}" aria-hidden="true">${allyFace(kind)}</svg>`; }
+function hCast(){ return `<div style="display:flex;justify-content:center;gap:4px;flex-wrap:wrap;max-width:560px;">`
+  + ["tank","flip","sunny","heart","leighton","kendall"].map(k=>hFace(k,84)).join("")+`</div>`; }
+/* the reading PROOF: the gems Teddy actually mastered, glowing — praise pointed at what he really did */
+function hProof(){ const earned=ORDER.filter(g=>S.done[LETTER_MISSION[g]]);
+  return earned.length
+    ? `<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:520px;">`+earned.map(g=>`<span class="gembox mastered">${gemSVG(g,GEMCOLOR[g],36)}</span>`).join("")+`</div>`
+    : `<div style="font-family:Bangers,cursive;color:#ffd75e;font-size:26px;">★ A HERO READER ★</div>`; }
+const HOMECOMING=[
+ {art:()=>`<div style="display:flex;justify-content:center;gap:8px;align-items:center;">${noahSVG(150)}${portalSVG(150)}</div>`, id:"home1", fx:"portal"},
+ {art:()=>`<div style="display:flex;justify-content:center;">${typeof citySVG==="function"?citySVG(300):heroNow(220)}</div>`, id:"home2", fx:"heroic"},
+ {art:()=>`<div style="display:flex;justify-content:center;">${hCast()}</div>`, id:"home3"},
+ {art:()=>`<div style="display:flex;flex-direction:column;align-items:center;gap:10px;">${hFace("kendall",168)}${hProof()}</div>`, id:"home4"},
+ {art:()=>`<div style="display:flex;justify-content:center;">${hFace("mom",200)}</div>`, id:"home5"},
+ {art:()=>`<div style="display:flex;justify-content:center;">${hFace("kendall",200)}</div>`, id:"home6"},
+ {art:()=>`<div style="display:flex;flex-direction:column;align-items:center;gap:8px;">${heroNow(190)}${hCast()}</div>`, id:"home7", fx:"heroic"},
+ {art:()=>`<div style="display:flex;justify-content:center;">${hFace("dad",200)}</div>`, id:"home8"}
+];
+let homeIx=0;
+function startHomecoming(){ homeIx=0; show("scrInter"); paintHome(); }
+function paintHome(){ const p=HOMECOMING[homeIx];
+  $("interArt").innerHTML=(typeof p.art==="function")?p.art():p.art;
+  faceSpeak($("interArt"),"inter",$("interText"),[p.id]); cutsceneFX($("interArt"),p.fx);
+  if(homeIx===6){ try{ confetti(72); }catch(e){} }   /* home7 — the cast lifts him up: big celebratory burst */
+  $("btnInterNext").textContent = homeIx<HOMECOMING.length-1?"NEXT ➜":"✅ THE END";
+  $("btnInterNext").onclick=()=>{ homeIx++;
+    if(homeIx<HOMECOMING.length)paintHome(); else finishHomecoming(); }; }
+function finishHomecoming(){ Aud.stop(); paintTitle(); show("scrTitle"); }
+
 /* ---------------- POWER SCAN ----------------
    One-time baseline, zone-1 letters only (new zones are met in missions). */
 const SCAN_SET=ZONES[0].letters;
@@ -1290,9 +1326,9 @@ function showWin(firstTime){ show("scrWin");
   const ix=MISSIONS.findIndex(x=>x.id===CUR.id);
   if(CUR.type==="fortress"){
     $("btnWinNext").style.display="none";
-    if(currentAct()===2){   /* Act-2 finale = end of the medieval quest → back to the (now-complete) map */
-      $("btnWinMap").textContent="MAGIC KINGDOM ➜";
-      $("btnWinMap").onclick=()=>toMap();
+    if(currentAct()===2){   /* Act-2 finale = the END → the beat-7 homecoming ending (STORY.md §F) */
+      $("btnWinMap").textContent="CONTINUE ➜";
+      $("btnWinMap").onclick=()=>startHomecoming();
     } else {                /* Act-1 finale → the Act-1→Act-2 handoff cutscene */
       $("btnWinMap").textContent="CONTINUE ➜";
       $("btnWinMap").onclick=()=>startInterlude();
