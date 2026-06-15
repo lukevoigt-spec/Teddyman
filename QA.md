@@ -31,8 +31,9 @@ Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under *
 >   ~15-min daily-split goal — ties to the 30→15 change). Fills as he practices; gentle, **never a countdown/quota** (#1).
 > - **Ally INTERRUPTS during training (Neo + Oracle + Trinity).** Every N reps an **UNLOCKED** ally pops in (uses `allyPop` +
 >   the NEW ally art): **Archie encourages; William & JJ tell silly jokes** — short, audio-first, skippable, `flow()`-safe,
->   BETWEEN reps only. Content: **Trinity drafts the lines** (starter set 2026-06-15 → `data-lines.js`; Archie = role T,
->   William = role W, **JJ = needs a new role**, e.g. "J"; best recorded in the real kids' voices).
+>   BETWEEN reps only. **Content DRAFTED → `TRAINING-INTERRUPTS.md`** (~20 lines each for Archie/William/JJ, pending parent
+>   approval, then `data-lines.js`). **New voice roles assigned: JJ=J, Nora=R, Cal=X** (CLAUDE.md canon updated; add to the
+>   Studio role pickers; best in the real kids' voices). Trigger: every ~8–12 reps (jittered), unlocked allies only, rotate lines.
 > - **DE-EMOJI the Training Room (Oracle) + tighten `ui-emoji.test`** — emoji still present here (the guard's coverage gap, cf SCROLL-2).
 > - **Full Training Room REDESIGN (Oracle — "not great") to the §20 Premium Bar**, render-gated. — Trinity, 2026-06-15
 

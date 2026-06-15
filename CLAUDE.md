@@ -443,7 +443,8 @@ beautiful are the **amplifiers** that make the learning happen — they get him 
 - Voice roles (line `v` field → a voice the parent assigns per role in the Studio): A = Mentor/Narrator,
   B = Amelia (Heartguard), C = Vexbots/Lord Vex (robotic), T = Archie (Tank), F = Ellie (Flip),
   W = William (Sunny), V = THE VIXEN (Act-2 villain), N = NOAH THE RED (Act-2 wizard mentor),
-  P = MOM & DAD, L = LEIGHTON (Starlight Princess), K = MISS KENDALL (teacher). NOTE: Vixen + Noah used
+  P = MOM & DAD, L = LEIGHTON (Starlight Princess), K = MISS KENDALL (teacher), J = JJ, R = NORA, X = CAL
+  (the three Act-2 captured friends; their Training-Room jokes/cheers best recorded in the real kids' voices). NOTE: Vixen + Noah used
   to SHARE role "V" (a bug — Vixen spoke in Noah's voice); now split, and Noah's Act-2 lines (rune/blend/
   magic intros, noah1-3, act2_win, f2_intro) carry v:"N", the Mom&Dad message carries v:"P". The two
   RESCUED heroines also used to be mis-voiced (leighton1/3 + kendall1/3 fell to the narrator, leighton2/
