@@ -122,22 +122,40 @@
     <div id="mapScroll"><div id="mapSVGwrap"></div></div>
   </div>
 
-  <!-- HERO BASE — the diegetic HERO ROOM: one painted medieval lair whose painted
-       objects ARE the interactive UI (pedestal=hero, door=training, crystal=recharge,
-       chest=gifts, rack=loadout, frames=league, jars=villains, niches=gems). -->
+  <!-- HERO BASE — LAYERED HUB: the painted room is a full-screen BACKDROP (just art,
+       nothing pinned to it), with a clean UI layer on top: centered hero + rank, a
+       bottom action bar of big labelled icon buttons, and the dense stuff (collections,
+       loadout, decorate) on focused sub-screens (research: one task per screen). -->
   <div class="screen" id="scrBase">
-    <div id="roomWrap"></div>
-    <button class="roomcoins" id="roomCoins" title="Hero Shop">
-      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#ffd75e" stroke="#9c6a12" stroke-width="2"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="#c98a1a" stroke-width="1.4"/><path d="M12 8l1.3 2.6 2.7.3-2 1.9.5 2.7-2.5-1.3-2.5 1.3.5-2.7-2-1.9 2.7-.3z" fill="#c98a1a"/></svg><span id="baseCoins">0</span></button>
-    <!-- generic collection viewer (gems "see all" grid; titled per fixture) -->
+    <div id="roomBackdrop"></div>
+    <div class="hubtop">
+      <button class="roomcoins" id="roomCoins" title="Hero Shop">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#ffd75e" stroke="#9c6a12" stroke-width="2"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="#c98a1a" stroke-width="1.4"/><path d="M12 8l1.3 2.6 2.7.3-2 1.9.5 2.7-2.5-1.3-2.5 1.3.5-2.7-2-1.9 2.7-.3z" fill="#c98a1a"/></svg><span id="baseCoins">0</span></button>
+    </div>
+    <div class="hubhero">
+      <button id="baseHero" class="herobtn" title="Loadout"></button>
+      <div class="baserank"><span id="powerLbl"></span><div class="powerbar" title="Hero Power"><div class="powerfill" id="powerFill"></div></div></div>
+    </div>
+    <div class="hubactions" id="hubActions">
+      <button class="hubbtn" data-act="train"><span class="hi">🏋️</span><span class="hl">TRAIN</span></button>
+      <button class="hubbtn" data-act="recharge"><span class="hi">🔋</span><span class="hl">RECHARGE</span><span class="hbadge" id="badgeVault"></span></button>
+      <button class="hubbtn" data-act="shop"><span class="hi">🛒</span><span class="hl">SHOP</span></button>
+      <button class="hubbtn" data-act="decorate"><span class="hi">🎨</span><span class="hl">TROPHIES</span></button>
+      <button class="hubbtn" data-act="gifts" id="hubGifts" style="display:none;"><span class="hi">🎁</span><span class="hl">GIFTS</span><span class="hbadge" id="badgeGifts"></span></button>
+      <button class="hubbtn coll" data-act="league"><span class="hi">🦸</span><span class="hl">FRIENDS</span><span class="hcount" id="cntLeague"></span></button>
+      <button class="hubbtn coll" data-act="gems"><span class="hi">💎</span><span class="hl">GEMS</span><span class="hcount" id="cntGems"></span></button>
+      <button class="hubbtn coll" data-act="villains"><span class="hi">🏆</span><span class="hl">VILLAINS</span><span class="hcount" id="cntVill"></span></button>
+    </div>
+    <!-- focused collection / loadout viewer (titled per category) -->
     <div id="roomColl"><div class="rc-card">
       <div class="rc-h"><span id="rcTitle">COLLECTION</span> <span class="ccount" id="rcCount"></span></div>
       <div class="rc-grid" id="rcGrid"></div>
       <button class="btn blue" id="rcClose">✅ DONE</button>
     </div></div>
-    <!-- decoration picker (choose an owned cosmetic to place into an open spot) -->
+    <!-- decoration / trophy shelf -->
     <div id="roomDecor"><div class="rc-card">
-      <div class="rc-h">PLACE A DECORATION</div>
+      <div class="rc-h">🎨 TROPHY SHELF</div>
+      <div class="rc-sub" id="rdSub"></div>
       <div class="rc-grid" id="rdGrid"></div>
       <button class="btn" id="rdShop">🛒 GET MORE IN THE SHOP</button>
       <button class="btn blue" id="rdClose">✅ DONE</button>

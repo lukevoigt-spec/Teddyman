@@ -881,39 +881,80 @@ body.calm .uc-rays{animation:none;}
 @media (prefers-reduced-motion:reduce){.uc-inner{animation:none}.uc-rays{animation:none}}
 
 /* ===================== HERO BASE — character-screen layout ===================== */
-/* ===================== THE HERO ROOM (diegetic Hero Base) =====================
-   The painted room fills the screen; its painted objects ARE the UI (rendered as a
-   viewBox-locked SVG in #roomWrap by roomSVG(), same pattern as the world map). */
-#scrBase{justify-content:center;align-items:center;gap:0;padding:0;overflow:hidden;}
-#roomWrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(ellipse at 50% 42%, #2a1c12, #140b05 86%);}   /* warm letterbox fill blends the 3:2 room into 4:3 */
-#roomWrap .roomsvg{width:100%;height:100%;display:block;}
-.roomsvg .rmframe,.roomsvg .rmjar,.roomsvg .rmpeg,.roomsvg .rmgems,.roomsvg .rmact,.roomsvg .rmdecorspot{
-  transition:transform .12s ease;transform-box:fill-box;transform-origin:50% 50%;}
-.roomsvg .rmframe:active,.roomsvg .rmjar:active,.roomsvg .rmpeg:active,.roomsvg .rmgems:active,
-.roomsvg .rmact:active,.roomsvg .rmdecorspot:active{transform:scale(1.08);}
-.roomsvg .rmempty{opacity:.62;}
-/* coin counter — also the Shop entry (bottom-left, clear of the HUD stars + rank pill) */
-.roomcoins{position:absolute;bottom:16px;left:16px;z-index:6;display:flex;align-items:center;gap:6px;
-  font-family:'Bangers',cursive;font-size:24px;color:var(--gold);cursor:pointer;
-  background:rgba(10,5,24,.72);border:2.5px solid var(--gold);border-radius:14px;padding:4px 14px;
-  box-shadow:0 4px 12px rgba(0,0,0,.4);}
+/* ===================== THE HERO BASE — LAYERED HUB =====================
+   Layer 0: the painted room as a full-screen dimmed BACKDROP (just art, nothing
+   pinned, so the UI can't drift). Layer 1: a centred hero showcase + rank. Layer 2:
+   a bottom bar of big labelled icon buttons. Dense content lives on focused panels. */
+#scrBase{justify-content:flex-start;align-items:center;gap:0;padding:0;overflow:hidden;}
+#roomBackdrop{position:absolute;inset:0;z-index:0;background:#140b05 url("art/bg-base-room.png") center/cover no-repeat;}
+#roomBackdrop::after{content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 70% at 50% 38%, rgba(8,4,20,.12), rgba(8,4,20,.62) 100%),
+    linear-gradient(180deg, rgba(8,4,20,.30), rgba(8,4,20,.20) 40%, rgba(8,4,20,.66));}   /* dim so UI pops */
+.hubhero,.hubactions{position:relative;z-index:1;}   /* UI layer above the backdrop (NOT the backdrop itself) */
+.hubtop{position:absolute;top:54px;right:14px;z-index:4;display:flex;gap:10px;}
+.roomcoins{display:flex;align-items:center;gap:6px;font-family:'Bangers',cursive;font-size:24px;color:var(--gold);cursor:pointer;
+  background:rgba(10,5,24,.78);border:2.5px solid var(--gold);border-radius:14px;padding:4px 14px;box-shadow:0 4px 12px rgba(0,0,0,.4);}
 .roomcoins:active{transform:scale(1.05);}
-/* shared room modal (collection viewer + decoration picker) */
+/* hero showcase — centred focal point */
+.hubhero{margin-top:clamp(58px,11vh,104px);display:flex;flex-direction:column;align-items:center;gap:10px;flex:1 1 auto;justify-content:center;min-height:0;}
+.herobtn{background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:flex-end;filter:drop-shadow(0 14px 22px rgba(0,0,0,.5));transition:transform .14s var(--ease-overshoot);}
+.herobtn:active{transform:scale(1.04);}
+.herobtn svg{height:clamp(190px,34vh,300px);width:auto;}
+.baserank{display:flex;flex-direction:column;align-items:center;gap:7px;}
+.baserank #powerLbl{font-family:'Bangers',cursive;font-size:24px;color:var(--gold);-webkit-text-stroke:3px var(--ink);paint-order:stroke;
+  background:rgba(10,5,24,.7);border:2.5px solid var(--gold);border-radius:13px;padding:2px 18px;letter-spacing:1px;}
+.powerbar{width:190px;max-width:62vw;height:16px;border-radius:9px;background:rgba(10,5,24,.66);
+  border:2.5px solid var(--ink);overflow:hidden;box-shadow:inset 0 2px 4px rgba(0,0,0,.4);}
+.powerfill{height:100%;width:0;border-radius:7px;background:linear-gradient(90deg,#ffd23a,#ff9e1f);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.45);transition:width .55s var(--ease-overshoot);}
+.powerfill.maxed{background:linear-gradient(90deg,#7fe3ff,#5f6dff);}
+/* bottom ACTION BAR — big labelled icon buttons */
+.hubactions{flex:0 0 auto;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:stretch;
+  width:min(1040px,96vw);padding:14px 12px clamp(14px,3vh,26px);}
+.hubbtn{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  min-width:104px;min-height:96px;padding:10px 14px;cursor:pointer;
+  background:linear-gradient(180deg,#3a2c70,#241858);border:2.5px solid #6a57b8;border-radius:18px;
+  box-shadow:0 5px 0 #1a1140,0 8px 16px rgba(0,0,0,.4);transition:transform .1s ease,box-shadow .1s ease;}
+.hubbtn:active{transform:translateY(4px);box-shadow:0 1px 0 #1a1140,0 3px 8px rgba(0,0,0,.4);}
+.hubbtn .hi{font-size:38px;line-height:1;}
+.hubbtn .hl{font-family:'Bangers',cursive;font-size:17px;letter-spacing:.5px;color:#fff;-webkit-text-stroke:2px var(--ink);paint-order:stroke;}
+.hubbtn.coll{background:linear-gradient(180deg,#2b3a70,#172a55);border-color:#5577c0;box-shadow:0 5px 0 #101e40,0 8px 16px rgba(0,0,0,.4);}
+.hubbtn.coll:active{box-shadow:0 1px 0 #101e40,0 3px 8px rgba(0,0,0,.4);}
+.hubbtn .hcount{font-family:'Bangers',cursive;font-size:12px;color:#cfe0ff;background:rgba(8,4,20,.5);border-radius:8px;padding:0 7px;}
+.hubbtn .hbadge{position:absolute;top:-8px;right:-8px;min-width:26px;height:26px;border-radius:13px;
+  background:#ff5e57;border:2.5px solid #fff;color:#fff;font-family:'Bangers',cursive;font-size:15px;
+  display:flex;align-items:center;justify-content:center;padding:0 5px;box-shadow:0 2px 6px rgba(0,0,0,.4);}
+#hubGifts{background:linear-gradient(180deg,#a8741c,#7a4f10);border-color:#ffce3a;}
+@media (prefers-reduced-motion:no-preference){ #hubGifts,.hubbtn .hbadge{animation:hubpulse 2s ease-in-out infinite;} }
+@keyframes hubpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+body.calm #hubGifts,body.calm .hubbtn .hbadge{animation:none;}
+/* shared focused panel (collection viewer / loadout / trophy shelf) */
 #roomColl,#roomDecor{position:absolute;inset:0;z-index:30;display:none;align-items:center;justify-content:center;
-  background:rgba(8,4,20,.72);backdrop-filter:blur(3px);padding:18px;}
+  background:rgba(8,4,20,.74);backdrop-filter:blur(3px);padding:18px;}
 #roomColl.on,#roomDecor.on{display:flex;}
 .rc-card{background:linear-gradient(180deg,rgba(34,22,66,.97),rgba(20,12,42,.97));border:3px solid var(--gold);
-  border-radius:22px;padding:20px 22px;max-width:min(720px,94vw);max-height:90vh;overflow-y:auto;
+  border-radius:22px;padding:20px 22px;max-width:min(760px,94vw);max-height:90vh;overflow-y:auto;
   display:flex;flex-direction:column;gap:14px;align-items:center;box-shadow:0 16px 44px rgba(0,0,0,.55);}
 .rc-h{display:flex;align-items:center;gap:10px;font-family:'Bangers',cursive;font-size:26px;color:var(--gold);letter-spacing:1px;}
+.rc-sub{font-family:'Bangers',cursive;color:#cfc6f2;font-size:16px;letter-spacing:.5px;}
 .rc-grid{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;}
-#rdGrid .rd-item{display:flex;flex-direction:column;align-items:center;gap:4px;width:96px;min-height:96px;
-  background:rgba(16,10,38,.6);border:2.5px solid #4a3a86;border-radius:16px;padding:10px 6px;cursor:pointer;
-  font-family:'Baloo 2',sans-serif;font-weight:700;color:#e8e2ff;font-size:12px;line-height:1.1;}
-#rdGrid .rd-item:active{transform:scale(1.06);border-color:var(--gold);}
-.rd-item .rd-ic{font-size:42px;line-height:1;}
-.rd-item.rd-clear{font-size:36px;color:#ff9a9a;justify-content:center;}
+/* loadout tiles */
+.rc-loadout{flex-direction:column;align-items:stretch;width:100%;gap:6px;}
+.rc-rowlbl{font-size:12px;color:#9b94c9;letter-spacing:.1em;font-weight:700;text-transform:uppercase;align-self:flex-start;}
+.rc-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:6px;}
+.echip-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:84px;min-height:84px;
+  padding:8px;border-radius:16px;cursor:pointer;background:rgba(16,10,38,.6);border:2.5px solid #4a3a86;
+  font-family:'Bangers',cursive;color:#e8e2ff;font-size:13px;letter-spacing:.5px;}
+.echip-tile.onsel{background:linear-gradient(180deg,#ffd75e,#f0a82b);color:var(--ink);border-color:#fff;}
+.echip-tile.lockd{opacity:.45;cursor:default;}
+.echip-tile:not(.lockd):active{transform:scale(1.06);}
+.echip-tile .et-ic{font-size:34px;line-height:1;}
+.echip-tile .et-sw{width:34px;height:34px;border-radius:8px;border:2px solid var(--ink);}
+/* trophy shelf cards */
+.trophy-card{display:flex;flex-direction:column;align-items:center;gap:5px;width:104px;min-height:104px;justify-content:center;
+  background:linear-gradient(180deg,rgba(40,28,80,.7),rgba(22,14,46,.7));border:2.5px solid #5a4a92;border-radius:16px;padding:10px;
+  font-family:'Baloo 2',sans-serif;font-weight:700;color:#e8e2ff;font-size:12px;text-align:center;line-height:1.1;}
+.trophy-card .tc-ic{font-size:46px;line-height:1;}
 
 /* ---- crisp letters that POP on any gem / busy graded background ---- */
 .tile{ -webkit-text-stroke:3px var(--ink); paint-order:stroke; text-shadow:0 2px 5px rgba(0,0,0,.42); }

@@ -73,8 +73,10 @@ const SCENES = {
       S.coins=88; S.chests={wood:1,silver:1,gold:0}; S.owned={banner:1,plant:1,trophy:1,lamp:1}; S.decor={s0:"banner",s2:"lamp"};
       S.mastery={"w_cat":{seen:5,ok:5,str:5,box:0,due:"2020-01-01"}}; S.equip={weapon:"sword",cape:"gold"};
       paintBase(); show('scrBase'); return 1; })()`,
-  roomgems:`(function(){ [0,1,3,5,6,7,9,10,12,14,15].forEach(function(i){S.done[i]=true;}); paintBase(); show('scrBase'); openGemColl(); return 1; })()`,
-  roomdecor:`(function(){ S.coins=40; S.owned={banner:1,plant:1,lamp:1}; paintBase(); show('scrBase'); openDecorPicker(1); return 1; })()`,
+  roomgems:`(function(){ [0,1,3,5,6,7,9,10,12,14,15].forEach(function(i){S.done[i]=true;}); paintBase(); show('scrBase'); openCollection('gems'); return 1; })()`,
+  roomleague:`(function(){ [1,3,6,8,17,48].forEach(function(i){S.done[i]=true;}); S.freed={tank:1,flip:1,sunny:1,heart:1,leighton:1}; paintBase(); show('scrBase'); openCollection('league'); return 1; })()`,
+  roomload:`(function(){ S.gearByAct={1:["Word Hammer","Gem Sword","Gem Gauntlet"]}; S.stars=20; S.equip={weapon:"sword",cape:"gold"}; paintBase(); show('scrBase'); openLoadout(); return 1; })()`,
+  roomdecor:`(function(){ S.coins=40; S.owned={banner:1,plant:1,lamp:1,trophy:1}; paintBase(); show('scrBase'); openDecorate(); return 1; })()`,
   roomact2:`(function(){ S.act=2; [100,101,102,103,104,105,106,107,108,109,110,128].forEach(function(i){S.done[i]=true;});
       S.freed={kendall:1}; S.gearByAct={2:["Gem Sword","Power Belt"]}; S.equip={weapon:"mace",cape:"red"};
       [0,1,3,5,6,7].forEach(function(i){S.done[i]=true;}); paintBase(); show('scrBase'); return 1; })()`,
