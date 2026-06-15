@@ -8,8 +8,9 @@
 >
 > **NEW voice roles to add (Act-2 friends — update the CLAUDE.md voice-role list + the Studio role pickers):**
 > **J = JJ · R = NORA · X = CAL.** (Keys are internal — any free letter works; what matters is each gets its own Studio
-> voice slot.) Existing: Archie = **T**, William = **W**. *(Nora/Cal roles reserved here; their banks can be added next —
-> say the word and I'll write them.)*
+> voice slot.) Existing: Archie = **T**, William = **W**. **All five freed friends now have banks** — *cheers* from Archie
+> (pumped) + Nora (sweet/clever); *jokes* from William, JJ, and Cal (mischievous) — so the rotation varies by type, not just
+> by voice.
 >
 > Status: **DRAFT — pending parent approval / swaps**, then → `data-lines.js`. — Trinity, 2026-06-15
 
@@ -86,7 +87,51 @@ Mix tellers (Archie cheer ↔ William/JJ joke). Pauses the rep flow for the line
 19. What do you get from a spoiled cow? Rotten milk!
 20. What do you call a fake noodle? An im-PASTA!
 
+## NORA — encouragement, sweet/clever (role **R**)  `train_nora1…20`
+1. You're doing so well, Teddy — I'm cheering for you!
+2. Look how much you've learned. That's amazing!
+3. Take a breath — you've got this. I believe in you!
+4. Wow, you read that beautifully! Keep going!
+5. You're getting smarter every single minute!
+6. I love watching you read, Teddy. You're a star!
+7. One word at a time — you're doing great!
+8. Your brain is a superpower. Go use it!
+9. That one was tricky and you did it anyway. So proud!
+10. Keep it up — you're closer than you think!
+11. You make learning look fun. Let's keep going!
+12. Every try makes you better. You're awesome!
+13. High five, Teddy! That was wonderful reading!
+14. You never give up — that's what makes you a hero!
+15. So close to your goal. You can do it!
+16. Reading is your superpower, and it's getting STRONG!
+17. You're shining today, Teddy. Keep going!
+18. I always knew you were smart. Look at you now!
+19. Little by little, you're becoming a super-reader!
+20. You should be so proud of yourself — because I am!
+
+## CAL — silly jokes, mischievous (role **X**)  `train_cal1…20`
+1. Why did the kid eat his homework? The teacher said it was a piece of cake!
+2. What do you call a snowman in summer? A puddle!
+3. What's a vampire's favorite fruit? A neck-tarine!
+4. Why did the picture go to jail? Because it was FRAMED!
+5. What do you call a pig that tells jokes? A real HAM!
+6. What did the booger say to the finger? Quit picking on me!
+7. Why are fish so smart? They live in SCHOOLS!
+8. What do you call two birds in love? TWEET-hearts!
+9. What's a skeleton's least favorite room? The LIVING room!
+10. Why did the boy throw butter out the window? To see a butter-FLY!
+11. What's a cow's favorite holiday? MOO Year's Day!
+12. What sound does a nut make when it sneezes? Ca-SHEW!
+13. What did one toot say to the other? You blow me away!
+14. Why did the toilet paper roll to the party? It was a party POOPER!
+15. What's a ghost's favorite ride? The roller-GHOSTER!
+16. What do you call a lazy kangaroo? A pouch potato!
+17. Why can't a leopard hide? It's always SPOTTED!
+18. What do you call a fish wearing a crown? A KING fish!
+19. What sound does a poop make in the pool? Plop-plop!
+20. What's a tornado's favorite game? TWISTER!
+
 ---
 
 *~20 per teller on purpose (they get old fast). Swap any you don't like; add your own. Once approved, Neo drops them into
-`data-lines.js` (ids above, `v` roles T/W/J) and you regenerate the audio in the Studio.*
+`data-lines.js` (ids above, `v` roles T/W/J/R/X) and you regenerate the audio in the Studio.*
