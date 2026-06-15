@@ -314,6 +314,17 @@ body.calm .masterpop{animation-duration:.5s;}
 .hubcard .hc-ic{font-size:40px;line-height:1;}
 .hubcard .hc-t{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:17px;text-align:center;}
 .secback{align-self:flex-start;}
+/* Playtest notes box (Grown-Up Corner) */
+#ptText{width:100%;box-sizing:border-box;min-height:120px;resize:vertical;border-radius:12px;
+  border:2px solid #3a2d72;background:#1c1540;color:#f0ecff;padding:12px 14px;
+  font-family:'Baloo 2',sans-serif;font-size:16px;line-height:1.35;}
+#ptText:focus{outline:none;border-color:var(--gold);}
+.pt-status{min-height:20px;font-size:14px;color:#9fe870;font-weight:700;text-align:center;}
+.pt-status.warn{color:#ffd23a;}
+.pt-tok{width:100%;font-size:13px;color:#b3aad3;}
+.pt-tok summary{cursor:pointer;color:#cfc6f2;}
+.pt-tok input{width:100%;box-sizing:border-box;margin-top:6px;border-radius:10px;border:2px solid #3a2d72;
+  background:#1c1540;color:#f0ecff;padding:9px 12px;font-size:14px;}
 /* Progress tab */
 .pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;}
 .pcard{background:#241b4d;border:2px solid #3a2d72;border-radius:14px;padding:10px;text-align:center;}
@@ -423,7 +434,9 @@ body.calm .gembox>svg,body.calm .trophy,body.calm .gembox.mastered::after{animat
 #shopGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;width:min(680px,94vw);}
 .shopitem{background:rgba(21,15,46,.7);border:3px solid #3a2d72;border-radius:16px;padding:12px 8px;
   display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;}
-.shopitem .ic{font-size:42px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.4));}
+.shopitem .ic{display:flex;align-items:center;justify-content:center;height:72px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.45));}
+.shopitem .ic .shopart{display:block;}
+.shopitem.owned .ic .shopart{filter:drop-shadow(0 0 7px rgba(62,201,126,.7));}
 .shopitem .nm{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:14px;color:var(--txt);}
 .shopitem .buy{font-family:'Bangers',cursive;font-size:17px;letter-spacing:.04em;padding:6px 14px;border-radius:12px;
   border:3px solid var(--ink);background:linear-gradient(180deg,#ffd75e,#f0a82b);color:var(--ink);cursor:pointer;}

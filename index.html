@@ -334,6 +334,7 @@
         <button class="hubcard" id="hubProgress"><span class="hc-ic">📊</span><span class="hc-t">Progress &amp; Reports</span></button>
         <button class="hubcard" id="hubSettings"><span class="hc-ic">⚙️</span><span class="hc-t">Settings</span></button>
         <button class="hubcard" id="hubAudio"><span class="hc-ic">🎙️</span><span class="hc-t">Voice Studio</span></button>
+        <button class="hubcard" id="hubPlaytest"><span class="hc-ic">📝</span><span class="hc-t">Playtest notes</span></button>
       </div>
     </div>
 
@@ -350,6 +351,24 @@
     <div id="tabProgress" class="tabpane">
       <button class="btn ghost sm secback">‹ Back</button>
       <div id="progBody" class="read"></div>
+    </div>
+
+    <!-- PLAYTEST NOTES — frictionless: parent logs what Teddy does → one tap commits a
+         timestamped note to the repo + opens a trigger Issue (spec: QA.md, Trinity 2026-06-15). -->
+    <div id="tabPlaytest" class="tabpane">
+      <button class="btn ghost sm secback">‹ Back</button>
+      <div class="setcard">
+        <div class="setcard-h"><span class="sc-ic">📝</span> Playtest notes</div>
+        <div class="setcard-sub">Jot what you saw Teddy do &mdash; what worked, what confused him, what to change. One tap sends it to the team to review. (Notes are saved even offline and sent when you&rsquo;re back online.)</div>
+        <textarea id="ptText" rows="5" placeholder="e.g. Teddy loved the coin burst, but tapped the wrong gem on the /b/ sound twice before getting it…"></textarea>
+        <button class="btn cta" id="ptSend">Send to the team</button>
+        <div id="ptStatus" class="pt-status" role="status" aria-live="polite"></div>
+        <details class="pt-tok">
+          <summary>GitHub token (advanced)</summary>
+          <div class="setcard-sub">Stored only on this iPad (shared with Voice Studio &rsaquo; Save to all devices). Needs a fine-grained token with Contents: write.</div>
+          <input type="password" id="ptToken" placeholder="github_pat_…" autocomplete="off" spellcheck="false">
+        </details>
+      </div>
     </div>
 
     <div id="tabSettings" class="tabpane">
@@ -544,6 +563,7 @@
 <script src="sfx.js"></script>
 <script src="music.js"></script>
 <script src="audio-studio.js"></script>
+<script src="playtest.js"></script>
 <script>
 /* register the service worker (offline resilience). Network-first, so deploys
    always land when online. Defensive: only on https/localhost, never blocks. */
