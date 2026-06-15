@@ -26,9 +26,10 @@ beautiful are the **amplifiers** that make the learning happen — they get him 
 
 > **The evidence base for objective #1 — every reading mechanic mapped to the science, the open gaps, and the cognitive-load
 > guardrail that binds all "beautiful/addicting" work — lives in `PEDAGOGY.md` (the learning north-star). Read it before any
-> curriculum or learning-flow change.** Known priority gap (verified): **r-controlled vowels + multisyllabic/affix decoding
-> are missing** vs the Grade-2/TEKS target — see `PEDAGOGY.md §3`; **full build spec ready in `CURRICULUM-GRADE2.md`** (the
-> two new zones, decodable word banks, mission ladders, engine hooks). Guardrail (seductive-details effect):
+> curriculum or learning-flow change.** Former priority gap (now CLOSED): **r-controlled vowels + multisyllabic/affix
+> decoding** — once missing vs the Grade-2/TEKS target (`PEDAGOGY.md §3`) — **shipped** as Act-2 zones 107 (Pirate Cove,
+> Bossy R) + 108 (Giant's Bridge, big words), built to `CURRICULUM-GRADE2.md`. The full TEKS Grade-2 ladder is now live
+> end-to-end (see the Act-2 content bullets below). Guardrail (seductive-details effect):
 > the **learning moment stays calm/uncluttered**; juice + beauty fire *around and after* reps, never on the active prompt.
 
 ## Repo layout
@@ -234,11 +235,21 @@ beautiful are the **amplifiers** that make the learning happen — they get him 
   (act-scoped via actGearList; weapon auto-equips on forge). RANK PROGRESSION: the knight advances
   SQUIRE→SOLDIER→KNIGHT by power tier (KNIGHT_TIER in heroSVG: leather cap → steel nose-guard cap →
   full closed helm; armor colour shifts per tier; Base/Progress power label reads the rank in Act 2).
-- ACT 2 IS CONTENT-COMPLETE (the full ~2nd-grade ladder is live): zones 101 CASTLETON (digraphs) →
-  102 DRAGONSTEEL FORGE (blends) → 103 ENCHANTER'S TOWER (magic-e) → 104 THE SINGING GLADE (VOWEL
-  TEAMS ai/ee/oa, missions 129–137) → 105 THE GREAT LIBRARY (FLUENCY: rapid mixed word decoding 138–141,
+- ACT 2 IS CONTENT-COMPLETE (the full ~2nd-grade / TEKS Grade-2 ladder is live, 8 zones): zones 101 CASTLETON
+  (digraphs) → 102 DRAGONSTEEL FORGE (blends) → 103 ENCHANTER'S TOWER (magic-e) → 104 THE SINGING GLADE (VOWEL
+  TEAMS ai/ee/oa, missions 129–137) → 107 THE PIRATE COVE (R-CONTROLLED / Bossy R, 150–159) → 108 THE GIANT'S
+  BRIDGE (MULTISYLLABIC + AFFIXES, 160–172) → 105 THE GREAT LIBRARY (FLUENCY: rapid mixed word decoding 138–141,
   THEN SENTENCE-LEVEL reading — Story Stones sentence→picture 142/144 + Word Riddles cloze/maze 143/145,
-  the 2nd-grade rung) → 106 DRAGON KEEP (finale, rescue Miss Kendall, mission 128). SENTENCE FLUENCY:
+  the 2nd-grade rung) → 106 DRAGON KEEP (finale, rescue Miss Kendall, mission 128). NOTE play order ≠ id order:
+  107/108 append in the 100-range but slot after 104 / before 105 via ZONES array order (map positions by zone).
+  R-CONTROLLED (zone 107, cd79486): RCONTROLLED=["ar","or","er","ir","ur"] folded into GRAPH2 → toGraphemes()
+  longest-match (star=[s,t,ar], church=[ch,ur,ch]); er/ir/ur are HOMOPHONES (/ər/) — snd_ir/ur alias→snd_er
+  (PHON_ALIAS), pickFoils() excludes same-sound foils (no two valid sound-ID gems), and forge PRE-PLACES the
+  /ər/ gem (no choose-by-sound rule; ar/or built normally). MULTISYLLABIC (zone 108): new mission types
+  "syllable"/"affix" → startSyllable (chop→read chunks→push→check, the FLEX procedure not syllable-type names,
+  Kearns 2020); syllabify(word)=compound(KNOWN_WORDS)→prefix/suffix peel→VCCV(split between consonant GEMS so a
+  digraph is never cut)→VCV-flex(open-first, VCV_CLOSED exceptions). Both fold into Great Library fluency +
+  Dragon Keep finale; actGraphemes() gates the finale on r-controlled too. curriculum.test guards both. SENTENCE FLUENCY:
   SENTENCES2/CLOZE2 (data-content.js) use Act-2 words (digraphs/blends/magic-e/vowel-teams) + sight words,
   all decodable by zone-105 play order (curriculum.test guards it); startSentence/startCloze pick the
   act's pool via currentAct()===2 (Act-1 fortSentencePic stays on SENTENCES). VOWEL
@@ -250,9 +261,10 @@ beautiful are the **amplifiers** that make the learning happen — they get him 
   order). VOWELTEAM_MISSION feeds taughtVowelTeams → taughtGraphemes + actGraphemes (so the finale
   gates on digraphs+magic-e+vowel-teams). Learn screen: 2-char graphemes SKIP the trace ("FIND IT!").
 - ACT-2 POLISH TODO (not content): real Vixen/Miss-Kendall/friend art; long-vowel + digraph + vowel-
-  team phoneme recordings (parent, via the Voice Studio — the snd_ai/ee/oa lines already appear there).
-  Act-2 sentence-level fluency is now DONE (Great Library Story Stones + Word Riddles), so the full
-  letter→digraph→blend→magic-e→vowel-team→word-fluency→SENTENCE ladder is live end-to-end.
+  team + r-controlled phoneme recordings (parent, via the Voice Studio — the snd_ai/ee/oa + snd_ar/or/er
+  lines already appear there; snd_ir/ur reuse the snd_er clip via PHON_ALIAS, so recording snd_er covers all
+  three /ər/ spellings). The full letter→digraph→blend→magic-e→vowel-team→R-CONTROLLED→MULTISYLLABIC/affix→
+  word-fluency→SENTENCE ladder is live end-to-end (the TEKS Grade-2 target is met).
 - PLAYTEST BACKLOG (parent, 2026-06-13 — explore after bugs): (A) NAVIGATION OVERHAUL — tap the city
   name (top-left chip) to drop a menu (Hero Base / Home-Rest / Settings) reachable from EVERY screen, so
   it's not all crammed on the map (where painted objects overlap the controls); Hero Base reachable from

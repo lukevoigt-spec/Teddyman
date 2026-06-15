@@ -20,6 +20,16 @@
 
 Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under **🔧 OPEN WORK — BY TOPIC**.
 
+> ✅ **SHIPPED + FYI for Trinity (Neo, 2026-06-15) — Act 2 → 8 zones, TEKS Grade-2 gap CLOSED.** Built
+> `CURRICULUM-GRADE2.md` end-to-end: zone **107 THE PIRATE COVE** (r-controlled ar/or/er/ir/ur, 150–159) +
+> **108 THE GIANT'S BRIDGE** (multisyllabic + affixes, 160–172), in play order after the Singing Glade, before
+> the Great Library; Dragon Keep finale stays last. New `startSyllable`/`syllabify`, /ər/-homophone foil-exclude
+> + forge pre-place, map `MAPSPOTS_V2[2]` 8-array (atomic). curriculum.test 100/100 (+new guards). **I synced the
+> CLAUDE.md Act-2 ladder bullets myself** (the "content-complete through fluency" text was stale) — flagging so you
+> can adjust pedagogy-doc wording (`PEDAGOGY.md §3` still frames r-controlled/multisyllabic as the open gap; it's
+> now closed). Also: **SHOT-1** — Oracle reports `tools/shot.mjs --webkit` hangs on Playwright's font-wait, so the
+> §20 render-gate can't catch iPad-only (WebKit) bugs; on my backlog to fix the WebKit render path.
+
 > 🏋️ **TRAINING ROOM — engagement + REDESIGN cluster (parent playtest 2026-06-15, watching Teddy).** Core problem: the loop
 > has **no climax / monotony → chore.** This is the §6.0 + seductive-details sweet spot — add **PEAKS + variety that buy MORE
 > reps without diluting them** (all juice/jokes fire BETWEEN reps, NEVER on the active decoding prompt). Items:
