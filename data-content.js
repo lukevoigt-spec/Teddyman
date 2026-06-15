@@ -78,6 +78,19 @@ const FORTMAZE2=[
   {t:["the","train","is","_"],     ans:"fast", foils:["red","big"],   pic:"🚂"},
   {t:["a","_","can","jump"],       ans:"frog", foils:["fish","ship"], pic:"🐸"}
 ];
+/* SPELL SCROLLS — short DECODABLE passages for repeated-reading fluency (rec #2,
+   Lee & Yoon 2016). Per act, only decodable words + sight words; the runtime pool
+   filters to what's TAUGHT so far (scrollReadable), and curriculum.test guards that
+   every scroll is eventually decodable in its act. No speech-rec — the child reads
+   aloud and taps each word in order; tap-pace is a soft personal-best, never a score. */
+const SCROLLS=[
+  {id:"a1s1", act:1, t:["the","cat","ran","to","the","sun"]},
+  {id:"a1s2", act:1, t:["a","big","dog","can","dig","in","the","mud"]},
+  {id:"a1s3", act:1, t:["you","and","I","had","a","red","bug"]},
+  {id:"a2s1", act:2, t:["I","see","a","big","ship"]},
+  {id:"a2s2", act:2, t:["the","frog","can","jump","and","swim"]},
+  {id:"a2s3", act:2, t:["the","king","has","a","cake","and","a","rose"]}
+];
 /* Sight ("heart") words — not fully decodable; learned as wholes. h = indices
    of the "heart"/tricky letters that don't say their usual sound. */
 const SIGHT={

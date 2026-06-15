@@ -227,6 +227,17 @@ ok("MOUTHCUE has a cue for every single letter (the 26)", ORDER.every(function(g
 ok("MOUTHCUE has a cue for every digraph + vowel team (2-char graphemes use the Learn screen too)", DIGRAPHS.concat(VOWELTEAMS).every(function(g){ return !!MOUTHCUE[g]; }));
 ok("MOUTHCUE never lists a magic-e unit (those teach via startMagic, not the Learn screen)", MAGICE_UNITS.every(function(u){ return !MOUTHCUE[u]; }));
 ok("every MOUTHCUE entry has a mouth-shape id + a kid cue line", Object.keys(MOUTHCUE).every(function(k){ var c=MOUTHCUE[k]; return c && typeof c.shape==="string" && typeof c.say==="string" && c.say.length>0; }));
+
+grp("Spell Scroll passages (rec #2 — repeated-reading fluency) are decodable + well-formed");
+function a1ok(w){ return !!SIGHT[w] || w.split("").every(function(c){ return ORDER.indexOf(c)>=0; }); }
+var sc=[];
+SCROLLS.forEach(function(s,i){
+  var okfn=(s.act===2)?a2ok:a1ok;
+  s.t.forEach(function(w){ if(!okfn(w)) sc.push("SCROLL "+s.id+" '"+w+"' not decodable in act "+(s.act||1)); }); });
+ok("every Spell Scroll word is decodable in its act (Act-1 = letters/sight, Act-2 = grapheme/magic-e/team/sight)", sc.length===0, sc);
+ok("Spell Scroll ids are unique", (function(){ var ids=SCROLLS.map(function(s){return s.id;}); return new Set(ids).size===ids.length; })());
+ok("every Spell Scroll has act 1 or 2 + a non-empty word list", SCROLLS.every(function(s){ return (s.act===1||s.act===2) && Array.isArray(s.t) && s.t.length>=3; }));
+ok("Spell Scrolls exist for BOTH acts", SCROLLS.some(function(s){return s.act===1;}) && SCROLLS.some(function(s){return s.act===2;}));
 `;
 vm.runInContext(fs.readFileSync(path.join(ROOT, "data-missions.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-content.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-lines.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "state-save.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "audio.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "allies.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "map.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "sfx.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "music.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 

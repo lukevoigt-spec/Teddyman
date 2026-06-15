@@ -289,7 +289,7 @@ const $=id=>document.getElementById(id);
    if the file is missing the layer stays transparent and the original look shows.
    Several screens intentionally share one scene (e.g. learn/trace, boss/forge). */
 const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrInter:"intro", scrScan:"lab", scrRead:"learn", scrSpell:"learn", scrMagic:"learn", scrSent:"learn", scrCloze:"learn", scrScramble:"learn", scrFortress:"battle",
-  scrBase:"base", scrTrain:"base", scrVault:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
+  scrBase:"base", scrTrain:"base", scrVault:"base", scrScroll:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
   scrBoss:"battle", scrForge:"battle", scrWin:"victory", scrRest:"rest" };
 /* SCENE HARMONIZER tones: each scene's dominant ambient KEY light + an accent
    RIM, picked to match its painted background. show() pushes these to body as
@@ -1508,10 +1508,13 @@ function pickTrainWord(){ const pool=trainPool(); if(!pool.length)return null;
   let r=Math.random()*wt.reduce((a,b)=>a+b,0);
   for(let i=0;i<pool.length;i++){ r-=wt[i]; if(r<=0)return pool[i]; }
   return pool[0]; }
-function showTrain(){ clearFlow(); trainReps=0; show("scrTrain"); updateTrainHUD();
+function showTrain(){ clearFlow(); trainReps=0; __scrollServed=false; show("scrTrain"); updateTrainHUD();
   flow(narrate("train",$("trainText"),["train_intro"]),()=>trainRound()); }
 function updateTrainHUD(){ $("trainCoins").textContent=S.coins||0; $("trainReps").textContent=trainReps; }
-function trainRound(){ const w=pickTrainWord();
+function trainRound(){
+  /* once per training session, if a Spell Scroll is due, read it first (fluency, Vault-scheduled) */
+  if(!__scrollServed && scrollDue().length){ __scrollServed=true; startScroll(scrollDue()[0],true); return; }
+  const w=pickTrainWord();
   if(!w){ flow(narrate("train",$("trainText"),["train_none"]),()=>{ __inTraining=false; showBase(); }); return; }
   (trainReps%2===0) ? trainBuild(w) : trainDecode(w); }
 function trainBuild(w){ trainCur=w; trainSlot=0; trainMiss=0;
@@ -1555,6 +1558,56 @@ function coinFloat(el,n){ const s=$("stage"); if(!s||!el)return; const r=el.getB
   c.style.top=(r.top-st.top-20)+"px"; c.textContent="+"+n+" 💰"; s.appendChild(c); setTimeout(()=>c.remove(),900); }
 $("btnTrain").onclick=()=>showTrain();
 $("btnTrainBack").onclick=()=>{ __inTraining=false; Aud.stop(); showBase(); };
+
+/* ---------------- SPELL SCROLL (rec #2 — repeated-reading fluency) ----------------
+   A short DECODABLE passage. PHASE 1 listening preview: the mentor reads it, each word
+   lighting up in turn. PHASE 2: the child reads ALOUD and taps each word in order — no
+   speech-rec; tapping paces the read + record()s each word's mastery. A SILENT personal
+   best celebrates a faster read; NEVER a countdown or penalty (constraint #1). Re-presents
+   on the Vault's Leitner schedule (S.scrolls, reusing VAULT_INTERVALS). Lives in the
+   Training Room; flow()-driven so it can never hang (#8). */
+let scrollCur=null, scrollPos=0, scrollT0=0, scrollFromTrain=false, __scrollServed=false;
+function scrollReadable(w){ if(SIGHT[w])return true; const me=magicE(w); if(me && !taughtGraphemes().includes(me.unit))return false;
+  return toGraphemes(w).every(g=>taughtGraphemes().includes(g)); }
+function scrollPool(){ const a=currentAct(); return SCROLLS.filter(s=>(s.act||1)===a && s.t.every(scrollReadable)); }
+function scrollDue(){ const t=dayKey();
+  return scrollPool().filter(s=>{ const r=S.scrolls&&S.scrolls[s.id]; return !r || r.due==null || r.due<=t; })
+    .sort((a,b)=>{ const ra=(S.scrolls&&S.scrolls[a.id])||{}, rb=(S.scrolls&&S.scrolls[b.id])||{};
+      return (ra.due||"")<(rb.due||"")?-1:((ra.due||"")>(rb.due||"")?1:0); }); }
+/* a completed repeated read promotes one Leitner box + reschedules; returns true on a new personal best */
+function scrollTouch(id,ms){ S.scrolls=(S.scrolls&&typeof S.scrolls==="object")?S.scrolls:{};
+  const r=S.scrolls[id]||{reps:0,bestMs:0,box:-1}; r.reps=(r.reps||0)+1;
+  const best=!r.bestMs||ms<r.bestMs; if(best)r.bestMs=ms;
+  r.box=Math.min(VAULT_MAXBOX,(r.box==null?-1:r.box)+1); r.due=addDays(dayKey(),VAULT_INTERVALS[r.box]); r.last=dayKey();
+  S.scrolls[id]=r; save(); return best; }
+function startScroll(s,fromTrain){ clearFlow(); scrollCur=s; scrollPos=0; scrollFromTrain=!!fromTrain; show("scrScroll");
+  $("scrollMeter").textContent=""; renderScrollWords(false);
+  flow(narrate("scroll",$("scrollText"),["scroll_intro"]),()=>scrollPreview(0)); }
+function renderScrollWords(tappable){ const wr=$("scrollWords"); wr.innerHTML="";
+  scrollCur.t.forEach((w,i)=>{ const b=document.createElement("button"); b.className="scrollword read"+(SIGHT[w]?" heartword":"");
+    b.dataset.i=i; b.innerHTML=SIGHT[w]?spellWordHTML(w):w;
+    b.onclick=()=>{ if(tappable)scrollTap(i); else Aud.play(wordAudio(w)); }; wr.appendChild(b); }); }
+function scrollHi(i){ const wr=$("scrollWords"); [...wr.children].forEach((c,j)=>c.classList.toggle("lit",j===i)); }
+function scrollPreview(i){ if(!scrollCur)return; if(i>=scrollCur.t.length){ scrollHi(-1); scrollReadPhase(); return; }
+  scrollHi(i); flow(Aud.play(wordAudio(scrollCur.t[i])),()=>scrollPreview(i+1)); }
+function scrollReadPhase(){ scrollPos=0; scrollT0=Date.now(); renderScrollWords(true);
+  const wr=$("scrollWords"); if(wr.children[0])wr.children[0].classList.add("next");
+  narrate("scroll",$("scrollText"),["scroll_read"],"Now YOU read it — say each word and tap it, in order!"); }
+function scrollTap(i){ const wr=$("scrollWords");
+  if(i!==scrollPos){ Aud.play(wordAudio(scrollCur.t[i])); return; }   /* out-of-order = gentle replay, never a penalty */
+  const w=scrollCur.t[scrollPos], tile=wr.children[scrollPos];
+  tile.classList.remove("next"); tile.classList.add("done");
+  record(SIGHT[w]?("sw_"+w):("w_"+w), true);                          /* repeated reading strengthens each word */
+  Aud.play(wordAudio(w)); scrollPos++;
+  if(scrollPos>=scrollCur.t.length){ scrollFinish(); return; }
+  wr.children[scrollPos].classList.add("next"); }
+function scrollFinish(){ const ms=Date.now()-scrollT0, best=scrollTouch(scrollCur.id,ms);
+  try{ confetti(36); if(typeof Sfx!=="undefined"&&Sfx.win)Sfx.win(); }catch(e){}
+  S.coins=(S.coins||0)+2; save();                                     /* coins from LEARNING (§6.0) */
+  $("scrollMeter").textContent = best ? "★ NEW BEST!" : "✓ Scroll read!";
+  flow(Aud.play([best?"scroll_best":"scroll_done"]),()=>{ Aud.stop();
+    if(scrollFromTrain){ scrollFromTrain=false; show("scrTrain"); updateTrainHUD(); trainRound(); } else showBase(); }); }
+$("btnScrollBack").onclick=()=>{ Aud.stop(); scrollFromTrain=false; showBase(); };
 
 /* ---------------- MEMORY VAULT — the dedicated recharge activity (rec #1, deterministic) ----------------
    The scheduler (vaultDue/vaultTouch, near line 200) decides WHAT is due; this is the gentle, capped

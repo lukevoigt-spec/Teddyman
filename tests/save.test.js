@@ -60,6 +60,9 @@ ok("missing equip filled", legacy.equip && legacy.equip.weapon==="none");
 ok("missing coins/owned filled", legacy.coins===0 && typeof legacy.owned==="object");
 var partial = migrate({v:1, done:{0:true}, equip:{weapon:"sword"}});
 ok("partial keeps real progress", partial.done[0]===true && partial.equip.weapon==="sword");
+ok("fresh() seeds scrolls:{} (Spell Scroll spaced-review state)", (function(){ var f=fresh(); return f.scrolls && typeof f.scrolls==="object" && Object.keys(f.scrolls).length===0; })());
+ok("migrate() adds scrolls to an old save without it (additive, save-safe)", typeof legacy.scrolls==="object" && legacy.scrolls!==null);
+ok("migrate() PRESERVES existing scroll progress", (function(){ var m=migrate({v:1, scrolls:{a1s1:{reps:3,bestMs:8000,box:2,due:"2026-07-01"}}}); return m.scrolls.a1s1 && m.scrolls.a1s1.reps===3 && m.scrolls.a1s1.box===2; })());
 
 grp("load() recovers from a damaged primary via the backup");
 clearStore();
