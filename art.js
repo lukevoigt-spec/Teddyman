@@ -205,7 +205,7 @@ const u="r"+(__huid++);
 return `<svg viewBox="0 0 240 256" width="${w}" aria-hidden="true">
 <defs><radialGradient id="${u}a" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="${a0}" stop-opacity=".4"/><stop offset=".5" stop-color="${a1}" stop-opacity=".16"/><stop offset="1" stop-color="${a1}" stop-opacity="0"/></radialGradient></defs>
 <style>@media (prefers-reduced-motion: no-preference){.${u}f{animation:${u}k 4.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}}@keyframes ${u}k{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}</style>
-<g><ellipse cx="120" cy="117" rx="127" ry="141" fill="url(#${u}a)"/></g>
+<g><ellipse cx="120" cy="120" rx="116" ry="120" fill="url(#${u}a)"/></g>
 <ellipse cx="120" cy="240" rx="65" ry="13" fill="#0a0a18" opacity=".4"/>
 <g class="${u}f"><image x="8" y="2" width="224" height="224" href="art/${file}.png"/></g>
 </svg>`;}
@@ -223,7 +223,7 @@ const u="v"+(__huid++);
 return `<svg viewBox="0 0 240 252" width="${w}" aria-hidden="true">
 <defs><radialGradient id="${u}a" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff2e2e" stop-opacity=".5"/><stop offset=".5" stop-color="#c01020" stop-opacity=".18"/><stop offset="1" stop-color="#c01020" stop-opacity="0"/></radialGradient></defs>
 <style>@media (prefers-reduced-motion: no-preference){.vfloat{animation:${u}fl 4.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}}@keyframes ${u}fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}</style>
-<g class="vaura"><ellipse cx="120" cy="116" rx="130" ry="142" fill="url(#${u}a)"/></g>
+<g class="vaura"><ellipse cx="120" cy="122" rx="116" ry="120" fill="url(#${u}a)"/></g>
 <ellipse cx="120" cy="240" rx="64" ry="13" fill="#0a0510" opacity=".42"/>
 <g class="vfloat"><image x="6" y="0" width="228" height="228" href="art/vex.png"/></g>
 </svg>`;}
@@ -522,7 +522,7 @@ return `<svg viewBox="0 0 240 252" width="${w}" aria-hidden="true">
 .xember{animation:${u}em 3.2s ease-in-out infinite}}
 @keyframes ${u}fl{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6px) rotate(.5deg)}}
 @keyframes ${u}em{0%{opacity:0;transform:translateY(0)}30%{opacity:.9}100%{opacity:0;transform:translateY(-26px)}}</style>
-<g class="xaura"><ellipse cx="120" cy="116" rx="132" ry="146" fill="url(#${u}aura)"/></g>
+<g class="xaura"><ellipse cx="120" cy="122" rx="116" ry="120" fill="url(#${u}aura)"/></g>
 <ellipse cx="120" cy="236" rx="62" ry="12" fill="#160410" opacity=".4"/>
 <g class="xfloat"><image x="6" y="-6" width="228" height="228" href="art/vixen.png"/></g>
 <g class="xember" fill="#ff5d8f"><circle cx="30" cy="150" r="3"/><circle cx="210" cy="138" r="2.5"/></g>

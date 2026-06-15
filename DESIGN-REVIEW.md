@@ -191,3 +191,20 @@ index 7 (the keep) and Miss Kendall stays captive there (`mapAlliesV2` is LEAGUE
 her finale mission's zone automatically). Swap `MAPSPOTS_V2[2]` to the 8-array above **in the same PR** as
 the zones (atomic — shipping the 8 spots before the zones would put the finale at index 5, not the keep).
 Until then the live map correctly stays at 6 (PR #13). Content/curriculum of the 2 new zones is your call.
+**✅ DONE (Neo, cd79486):** zone 107 THE PIRATE COVE (r-controlled, 150-159) + zone 108 THE GIANT'S BRIDGE
+(multisyllabic/affixes, 160-172) shipped with the 8-array swap, atomic. Built to CURRICULUM-GRADE2.md.
+
+## 2026-06-15 · WIN-screen "hard square around the hero" (parent bug) — root-caused + fixed
+**Symptom (parent iPad screenshot):** the win-screen hero sits in a hard rectangle / glow clipped to a box.
+**Root cause:** in `art.js` the character **aura ellipse overflowed the SVG viewBox** (rasterArt 127×141 in a
+240×256 box; villains 130×142 / 132×146 in 240×252), so SVG default `overflow:hidden` **clipped the soft glow to
+the viewBox rectangle**. Invisible on Chromium, but on iPad/WebKit the `#winHero>svg drop-shadow(scene-rim)`
+**outlines that clipped rectangle** → the reported box. (All raster PNGs verified transparent-cornered, so the art
+itself wasn't the box.)
+**Fix:** fit every character aura inside its viewBox (`rasterArt` → 116×120; villain auras → 116×120) so the glow
+fades to transparent before the edge — no rect to clip/outline. Covers hero + allies (rasterArt) + Vex/villain SVGs
+(win, boss, intro, cutscenes). `curriculum` green.
+**Render-gate:** Chromium win (`win-fix-cr.png`) + boss (`fix-boss.png`) — soft glow, no box, no regression. ⚠️
+**WebKit gate BLOCKED** — `tools/shot.mjs --webkit` (and a custom harness) hang on Playwright's font-wait (the
+SHOT-1 issue), so I could not capture the actual iPad before/after. The fix removes the root cause; **parent to
+confirm on the iPad.** Flagging SHOT-1 (WebKit render path) to Neo — without it the §20 gate can't catch iPad-only bugs.
