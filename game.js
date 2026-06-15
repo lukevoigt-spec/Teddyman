@@ -1648,11 +1648,19 @@ function warmBlend(w){ const opts=shuf([w].concat(shuf(warmPool().filter(x=>x!==
       else { record("w_"+w,false); warmMiss++; b.classList.add("dim");
         if(warmMiss>=2)c.querySelectorAll(".picktile").forEach(x=>{if(x.dataset.w===w)x.classList.add("hint");}); Aud.play(["almost"].concat(graphemeSounds(w))); } };
     c.appendChild(b); }); }
+/* dice-style pip face for a count — NON-NUMERIC (Teddy struggles with numerals), so
+   the segment task shows quantity as dots, not digits. Canonical 3x3 die layout, 1..6. */
+function dicePips(n,size){ size=size||72;
+  const P={1:[[50,50]],2:[[30,30],[70,70]],3:[[30,30],[50,50],[70,70]],
+    4:[[30,30],[70,30],[30,70],[70,70]],5:[[30,30],[70,30],[50,50],[30,70],[70,70]],
+    6:[[30,30],[30,50],[30,70],[70,30],[70,50],[70,70]]}[n]||[[50,50]];
+  const dots=P.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="9.5" fill="#1a1430"/>`).join("");
+  return `<svg viewBox="0 0 100 100" width="${size}" height="${size}" aria-hidden="true"><rect x="7" y="7" width="86" height="86" rx="18" fill="#fff" stroke="#1a1430" stroke-width="5"/>${dots}</svg>`; }
 function warmSegment(w){ const n=graphemeSounds(w).length;
-  narrate("warm",$("warmText"),["warmup_seg"].concat(wordAudio(w)),"How many sounds do you hear? Tap the number!");
+  narrate("warm",$("warmText"),["warmup_seg"].concat(wordAudio(w)),"How many sounds do you hear? Tap the dice!");
   const set=new Set([n]); let guard=0; while(set.size<3 && guard++<20){ const d=n+(Math.random()<.5?-1:1)*(1+Math.floor(Math.random()*2)); if(d>=2&&d<=6)set.add(d); }
   const c=warmChoices();
-  shuf([...set]).forEach(o=>{ const b=document.createElement("button"); b.className="tile read"; b.textContent=o; b.dataset.n=o;
+  shuf([...set]).forEach(o=>{ const b=document.createElement("button"); b.className="tile dice"; b.innerHTML=dicePips(o); b.dataset.n=o;
     b.onclick=()=>{ if(o===n){ lockRow(c); record("w_"+w,true); b.classList.add("win"); burstAt(b); warmRevealWord(w);
         flow(Aud.play(["yes"].concat(graphemeSounds(w))),warmNext); }
       else { warmMiss++; b.classList.add("dim");

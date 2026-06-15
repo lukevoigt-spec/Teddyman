@@ -201,7 +201,7 @@ const LINES={
   scroll_best:{t:"A new personal best! You read it like a true hero!"},
   warmup_intro:{t:"Sound Warm-Up! Let's get your super ears ready, hero."},
   warmup_blend:{t:"Listen to the sounds… what word is it? Tap the picture!"},
-  warmup_seg:{t:"How many sounds do you hear? Tap the number!"},
+  warmup_seg:{t:"How many sounds do you hear? Tap the dice with that many dots!"},
   warmup_iso:{t:"What sound does it start with? Tap the gem!"},
   warmup_done:{t:"Ears warmed up! Now you're ready to train, Super Teddy!"},
   vault_intro:{t:"Time to recharge your gems, Super Teddy! Let's power up the ones you already know!"},
