@@ -20,6 +20,22 @@
 
 Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under **🔧 OPEN WORK — BY TOPIC**.
 
+> 🏋️ **TRAINING ROOM — engagement + REDESIGN cluster (parent playtest 2026-06-15, watching Teddy).** Core problem: the loop
+> has **no climax / monotony → chore.** This is the §6.0 + seductive-details sweet spot — add **PEAKS + variety that buy MORE
+> reps without diluting them** (all juice/jokes fire BETWEEN reps, NEVER on the active decoding prompt). Items:
+> - **Coin STACK → gold bars → diamonds (Neo + Oracle).** Coins (earned per correct rep) accumulate into a visible stack; at
+>   thresholds they **convert up a tier** (e.g. 10 coins → 1 gold bar, 10 bars → 1 diamond — tunable) with a satisfying
+>   milestone burst = the missing "climax." Bind §6.0 (a "which-good-thing" reward off *correct* reps; never a loss/gamble).
+>   Crafted SVG coin/bar/diamond (**no emoji**, §18). Persist in `S` (migrate + `save.test`).
+> - **Daily-practice PROGRESS indicator (Neo + Oracle).** A **non-timed** "how much is left today" bar (reps toward the
+>   ~15-min daily-split goal — ties to the 30→15 change). Fills as he practices; gentle, **never a countdown/quota** (#1).
+> - **Ally INTERRUPTS during training (Neo + Oracle + Trinity).** Every N reps an **UNLOCKED** ally pops in (uses `allyPop` +
+>   the NEW ally art): **Archie encourages; William & JJ tell silly jokes** — short, audio-first, skippable, `flow()`-safe,
+>   BETWEEN reps only. Content: **Trinity drafts the lines** (starter set 2026-06-15 → `data-lines.js`; Archie = role T,
+>   William = role W, **JJ = needs a new role**, e.g. "J"; best recorded in the real kids' voices).
+> - **DE-EMOJI the Training Room (Oracle) + tighten `ui-emoji.test`** — emoji still present here (the guard's coverage gap, cf SCROLL-2).
+> - **Full Training Room REDESIGN (Oracle — "not great") to the §20 Premium Bar**, render-gated. — Trinity, 2026-06-15
+
 > 🐛🎨 **VISUAL BUG (Oracle, backlog) — WIN screen hero shows a hard SQUARE + is cut off** (parent screenshot 2026-06-15).
 > On `scrWin` / `#winHero`, the Super-Teddy raster character renders inside a visible **rectangular box** (a hard square
 > edge framing the hero + his spotlight glow) and the art is **clipped/cut off** at that edge instead of bleeding into the

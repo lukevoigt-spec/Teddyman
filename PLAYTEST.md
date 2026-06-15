@@ -26,6 +26,16 @@ contradicts another doc, **the note wins** — reconcile the doc to reality.
 > Format per entry: `### <ISO timestamp> — <NEW|triaged|done>` then the raw note, then `→ routed:` / `→ done:` lines.
 > The in-app box prepends new entries here automatically; Trinity curates status.
 
+### 2026-06-15 09:42 — triaged (parent watching Teddy play the Training Room)
+RAW: Training Room has **no climax / monotony → becomes a chore**. Wants: a coin **STACK** that converts to **gold bars →
+diamonds** at thresholds (the missing peak); a **non-timed daily-practice PROGRESS indicator** (how much is left); **unlocked
+HEROES showing up during training to encourage** — Archie cheers, William & JJ tell silly jokes — to break the monotony.
+Also: **emojis still on the Training Room page**; the whole Training Room **design needs an Oracle rebuild** ("not great").
+→ The §6.0 + seductive-details sweet spot: add PEAKS + variety that buy MORE reps without diluting them (juice/jokes fire
+BETWEEN reps, never on the decoding prompt). → **routed:** `QA.md` "Training Room — engagement + redesign" cluster — Neo
+(coin→gold→diamond, daily progress bar, ally-interrupt wiring), Oracle (de-emoji + full redesign + new coin/bar/diamond +
+ally art), Trinity (drafts the Archie/William/JJ interrupt lines — starter set delivered for approval).
+
 ### 2026-06-15 — protocol seeded
 Log created. Awaiting the first real session. *(No playtest data yet — do not infer the app is good or bad from silence;
 schedule a session.)*
