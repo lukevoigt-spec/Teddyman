@@ -28,6 +28,15 @@ Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under *
 > soft radial. **Fix (Oracle):** repro via `node tools/shot.mjs win` (Act 1 + 2), make the hero art + glow edgeless
 > (transparent bleed / soft radial, no clipping container), render-gate against §20 (a visible box on a hero screen = a
 > Premium-Bar fail). — Trinity, 2026-06-15
+>
+> ⏱️ **DAILY TARGET 30 → 15 min/day (Neo, parent 2026-06-15).** Change the daily goal from **30 min** (old 15 missions + 15
+> training) to **~15 min/day TOTAL, split between daily practice (Training Room) + missions** (~7–8 each — a split, not two
+> separate 15s). Update the Progress-tab daily-split meter/target + labels. Keep it a **gentle meter, never a quota/
+> countdown** (constraint #1). Files: daily-stats / Progress display (`game.js` + `state-save` `S.daily`). CLAUDE.md canon updated.
+>
+> 🗺️🎨 **MAP ALLY ART STALE (Oracle, parent 2026-06-15).** The character figures on the world map are still the **OLD SVG** —
+> swap to the **NEW ally art** (the updated `allyBody`/`allyFace` likenesses). Files: `map.js` (`mapFriends`) + `allies.js` /
+> `art.js` (`allyMapFig`, `allyBody`, `allyFace`). Render-gate per §20.
 
 > 🎬 **STORYLINE / CUTSCENES (parent-directed 2026-06-15; full plan + research in `STORY.md`). Decision: SVG motion-comic
 > spine + ONE render-gated AI-video portal spike.** Core principle: cutscenes stay SHORT + SKIPPABLE and **fuse the reward

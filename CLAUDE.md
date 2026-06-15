@@ -352,7 +352,8 @@ beautiful are the **amplifiers** that make the learning happen — they get him 
   Cosmetic only — zero pay-to-win, no gameplay perks. paintShop builds cards via createElement.
 - DAILY SPLIT: trainTick counts Training-Room time into S.daily.trainSecs (via __inTraining, set in
   show() when id==="scrTrain"); the Progress tab shows the 🎯 missions vs 🏋️ training minute split so a
-  parent can aim for a ~15/15 balance. Still a gentle meter — never a countdown or penalty.
+  parent can aim for **~15 min/day TOTAL, split between daily practice + missions** (parent 2026-06-15; was 30 = 15
+  missions + 15 training — now 15 total, ~7–8 each). Still a gentle meter — never a countdown or penalty.
 
 ## World canon
 - City: Star Force City, powered by Letter Gems. Villain: LORD VEX (Vader-coded cyborg warlord)
