@@ -1274,7 +1274,7 @@ function showWin(firstTime){ show("scrWin");
   /* Heartguard, once rescued, is the league's cheerleader on every win */
   if(S.done[17]&&!CUR.rescue)ids.push("heart_cheer"+(1+(S.stars%3)));
   /* RANK-UP fanfare — the comprehensible "you leveled up": mentor announces it + a badge + extra pop */
-  if(__rankedUp){ ids.unshift("rankup"); setTimeout(()=>{ confetti(80); flashScreen("rgba(255,210,90,.4)"); },340);
+  if(__rankedUp){ ids.unshift("rankup"); setTimeout(()=>{ confetti(80); flashScreen("rgba(255,210,90,.4)"); if(typeof Sfx!=="undefined"&&Sfx.rankup)Sfx.rankup(); },340);
     $("winGear").innerHTML='<div class="gearbadge">⭐ RANK UP — '+heroProgress().name+'!</div>'+$("winGear").innerHTML; __rankedUp=false; }
   narrate("win",$("winText"),ids);
   const ix=MISSIONS.findIndex(x=>x.id===CUR.id);

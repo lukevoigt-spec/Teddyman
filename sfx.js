@@ -33,17 +33,29 @@ const Sfx={
     g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
     o.connect(g).connect(this.master); o.start(t0); o.stop(t0+dur+0.03); },
   _go(fn){ if(!this.on) return; if(!this._ac()) return; this._resume(); try{ fn(); }catch(e){} },
-  /* the kit */
-  correct(){ this._go(()=>{ this.note(660,0,0.12,"sine",0.5); this.note(990,0.085,0.16,"sine",0.42); }); },
-  wrong(){   this._go(()=>{ this.glide(330,235,0,0.20,"sine",0.30); }); },              /* soft, low, gentle */
-  combo(n){  this._go(()=>{ n=n||3; const b=620+Math.min(12,n)*40; this.note(b,0,0.10,"triangle",0.4); this.note(b*1.5,0.055,0.12,"triangle",0.32); if(n>=5)this.note(b*2,0.11,0.13,"triangle",0.28); }); },
-  /* MASTERY — the most triumphant cue (a rising arpeggio + sparkle top); louder/sweeter than coin/gem
-     so "you mastered it" out-sings any cosmetic reward (mastery > participation). */
-  mastery(){ this._go(()=>{ [659,880,1047,1319].forEach((f,i)=>this.note(f,i*0.07,0.20,"sine",0.46)); this.note(1760,0.30,0.34,"triangle",0.3); }); },
-  coin(){    this._go(()=>{ this.note(988,0,0.07,"triangle",0.34); this.note(1319,0.07,0.14,"triangle",0.34); }); },
-  unlock(){  this._go(()=>{ [523,659,784,1047].forEach((f,i)=>this.note(f,i*0.085,0.18,"sine",0.42)); }); },
-  win(){     this._go(()=>{ [523,659,784,1047,1319].forEach((f,i)=>this.note(f,i*0.09,0.22,"sine",0.46)); this.note(1568,0.52,0.4,"sine",0.26); }); },
-  gem(){     this._go(()=>{ this.note(1568,0,0.10,"triangle",0.3); this.note(2093,0.07,0.14,"triangle",0.24); }); },
+  /* small per-play pitch wobble so a repeated cue never sounds IDENTICAL (anti-fatigue) */
+  _v(){ return 1 + (Math.random()*2-1)*0.045; },
+  /* current answer streak (game.js `combo`) drives the pitch ladder on coins/combo */
+  _combo(){ return (typeof combo!=="undefined" && combo>0) ? combo : 0; },
+  /* the kit — every cue stays SHORT (never masks the audio-first narration, #8) + synthesized.
+     "Reward" cues carry a quiet sub-octave body so they read FATTER without getting louder. */
+  correct(){ this._go(()=>{ const b=660*this._v();
+    this.note(b*0.5,0,0.12,"sine",0.14);                                   /* sub body = fuller "ding" */
+    this.note(b,0,0.12,"sine",0.5); this.note(b*1.5,0.085,0.16,"sine",0.42); }); },
+  wrong(){   this._go(()=>{ this.glide(330,235,0,0.20,"sine",0.30); }); },  /* unchanged: soft, low, gentle (#2) */
+  combo(n){  this._go(()=>{ n=n||3; const b=(620+Math.min(12,n)*40)*this._v();   /* rises in pitch with the streak */
+    this.note(b,0,0.10,"triangle",0.4); this.note(b*1.5,0.055,0.12,"triangle",0.32); if(n>=5)this.note(b*2,0.11,0.13,"triangle",0.28); }); },
+  /* MASTERY — the most triumphant cue (a rising arpeggio + sparkle top + sub layer); louder/sweeter
+     than coin/gem so "you mastered it" out-sings any cosmetic reward (mastery > participation). */
+  mastery(){ this._go(()=>{ [659,880,1047,1319].forEach((f,i)=>{ this.note(f,i*0.07,0.20,"sine",0.46); this.note(f*0.5,i*0.07,0.20,"sine",0.12); }); this.note(1760,0.30,0.34,"triangle",0.3); }); },
+  /* RANK-UP — the grandest milestone fanfare (a full rising run + bright sustained top + sub body),
+     a step ABOVE win/mastery so leveling up is the loudest, sweetest moment (mastery > participation). */
+  rankup(){ this._go(()=>{ [523,659,784,1047,1319,1568].forEach((f,i)=>{ this.note(f,i*0.08,0.24,"sine",0.5); this.note(f*0.5,i*0.08,0.24,"sine",0.13); }); this.note(2093,0.52,0.5,"triangle",0.3); this.note(1568,0.52,0.5,"sine",0.24); }); },
+  coin(){    this._go(()=>{ const lad=1+Math.min(this._combo(),10)*0.03, b=988*this._v()*lad;   /* coins climb on a streak */
+    this.note(b,0,0.07,"triangle",0.34); this.note(b*1.334,0.07,0.14,"triangle",0.34); }); },
+  unlock(){  this._go(()=>{ [523,659,784,1047].forEach((f,i)=>{ this.note(f,i*0.085,0.18,"sine",0.42); this.note(f*0.5,i*0.085,0.18,"sine",0.1); }); }); },
+  win(){     this._go(()=>{ [523,659,784,1047,1319].forEach((f,i)=>{ this.note(f,i*0.09,0.22,"sine",0.46); this.note(f*0.5,i*0.09,0.22,"sine",0.11); }); this.note(1568,0.52,0.4,"sine",0.26); }); },
+  gem(){     this._go(()=>{ const v=this._v(); this.note(1568*v,0,0.10,"triangle",0.3); this.note(2093*v,0.07,0.14,"triangle",0.24); }); },
   /* cutscene/cinematic cues */
   whoosh(){    this._go(()=>{ this.glide(170,920,0,0.5,"sawtooth",0.16); this.glide(900,200,0.18,0.5,"sine",0.12); }); },
   villain(){   this._go(()=>{ this.note(174,0,0.32,"sawtooth",0.22); this.note(146,0.14,0.46,"sawtooth",0.2); }); },   /* low ominous sting */
