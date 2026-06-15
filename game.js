@@ -1352,7 +1352,7 @@ function paintBase(){
   const tro=$("trophyShelf");
   if(tro){ const owned=BASE_ITEMS.filter(it=>S.owned&&S.owned[it.id]);
     tro.innerHTML = owned.length
-      ? owned.map(it=>`<span class="trophy" title="${it.nm}">${it.ic}</span>`).join("")
+      ? owned.map(it=>`<span class="trophy" title="${it.nm}">${itemArt(it,44)}</span>`).join("")
       : '<div class="baselbl" style="font-size:15px;">Train to earn coins, then shop for trophies!</div>';
     const tc=$("trophyCount"); if(tc)tc.textContent=owned.length+" / "+BASE_ITEMS.length; }
   /* Memory Vault: label the Recharge button with today's due count + glow it gently when gems are due */
@@ -1445,17 +1445,20 @@ $("bossCage").onclick=e=>{ if(e.target.id==="bossCage")closeBossCage(); };
    actually strengthens mastery (this is also the rebalance toward blending/
    segmenting). Correct reps earn COINS, spent on a finite COSMETIC collection
    for the Hero Base. No gating, no countdown, no pay-to-win. */
+/* Cosmetic collection for the Hero Base. Icons are crafted SVG (art.js ITEMART /
+   itemArt(), keyed by id) — NOT emoji (Premium UI Overhaul / closes audit U5).
+   ids + costs are SAVE KEYS (S.owned[id]) — never renumber or rename an id (#7). */
 const BASE_ITEMS=[
-  {id:"banner",   nm:"Hero Banner", ic:"🚩", cost:10},
-  {id:"plant",    nm:"Power Plant", ic:"🪴", cost:12},
-  {id:"poster",   nm:"Hero Poster", ic:"🖼️", cost:15},
-  {id:"trophy",   nm:"Gold Trophy", ic:"🏆", cost:20},
-  {id:"medal",    nm:"Gold Medal",  ic:"🥇", cost:25},
-  {id:"lamp",     nm:"Star Lamp",   ic:"⭐", cost:30},
-  {id:"vexbot",   nm:"Vexbot Toy",  ic:"🤖", cost:40},
-  {id:"dragon",   nm:"Dragon Toy",  ic:"🐉", cost:55},
-  {id:"crown",    nm:"Crown Stand", ic:"👑", cost:70},
-  {id:"rocket",   nm:"Mini Rocket", ic:"🚀", cost:90}
+  {id:"banner",   nm:"Hero Banner", cost:10},
+  {id:"plant",    nm:"Gem Cluster", cost:12},
+  {id:"poster",   nm:"Hero Poster", cost:15},
+  {id:"trophy",   nm:"Gold Trophy", cost:20},
+  {id:"medal",    nm:"Gold Medal",  cost:25},
+  {id:"lamp",     nm:"Star Lamp",   cost:30},
+  {id:"vexbot",   nm:"Vexbot Toy",  cost:40},
+  {id:"dragon",   nm:"Dragon Toy",  cost:55},
+  {id:"crown",    nm:"Crown Stand", cost:70},
+  {id:"rocket",   nm:"Mini Rocket", cost:90}
 ];
 /* ---------------- TREASURE CHESTS (engagement §10, bound by §6.0) ----------------
    A chest ALWAYS pays out (coins, often + a cosmetic) — never empty, never a loss, never a gamble:
@@ -1489,7 +1492,7 @@ function openChest(tier,done){ const cfg=CHESTS[tier]; if(!cfg||!(S.chests&&S.ch
   try{ flashScreen("rgba(255,210,90,.42)"); confetti(tier==="gold"?64:40); if(typeof Sfx!=="undefined")Sfx.unlock(); }catch(e){}
   const ctr=$("baseCoins"); if(ctr){ ctr.textContent=before; flyReward($("btnGifts")||$("stage"), ctr, gain); }
   const finish=()=>{ paintBase(); if(done)done(); };
-  if(item)setTimeout(()=>showUnlock('<div style="font-size:90px;line-height:1;">'+item.ic+'</div>', item.nm, "NEW!", finish), 650);
+  if(item)setTimeout(()=>showUnlock('<div style="line-height:1;">'+itemArt(item,120)+'</div>', item.nm, "NEW!", finish), 650);
   else setTimeout(finish, 700); }
 let trainReps=0,trainSlot=0,trainCur,trainMiss=0;
 function trainPool(){ const t=taughtLetters(); return Object.keys(READWORDS).filter(w=>w.split("").every(c=>t.includes(c))); }
@@ -1630,11 +1633,11 @@ function paintShop(){ $("shopCoins").textContent=S.coins||0;
   const g=$("shopGrid"); g.innerHTML="";
   BASE_ITEMS.forEach(it=>{ const owned=!!S.owned[it.id], can=(S.coins||0)>=it.cost;
     const d=document.createElement("div"); d.className="shopitem"+(owned?" owned":"");
-    d.innerHTML=`<div class="ic">${it.ic}</div><div class="nm">${it.nm}</div>`;
+    d.innerHTML=`<div class="ic">${itemArt(it,68)}</div><div class="nm">${it.nm}</div>`;
     if(owned){ const t=document.createElement("div"); t.className="owned-tag"; t.textContent="OWNED ✓"; d.appendChild(t); }
     else { const buy=document.createElement("button"); buy.className="buy"+(can?"":" cant"); buy.textContent="💰 "+it.cost;
       buy.onclick=()=>{ if((S.coins||0)>=it.cost){ S.coins-=it.cost; S.owned[it.id]=true; save(); Aud.ding(); burstAt(d); paintShop();
-          showUnlock(`<div style="font-size:104px;line-height:1;">${it.ic}</div>`, it.nm.toUpperCase(), "NEW ITEM!"); }
+          showUnlock(`<div style="line-height:1;">${itemArt(it,124)}</div>`, it.nm.toUpperCase(), "NEW ITEM!"); }
         else Aud.play("shop_need"); };
       d.appendChild(buy); }
     g.appendChild(d); }); }
