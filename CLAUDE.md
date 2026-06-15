@@ -24,6 +24,12 @@ reading, loudest on mastery; never mere activity), **(2) reading reps per minute
 beautiful are the **amplifiers** that make the learning happen — they get him to do *more* reps, more *gladly*, that build
 *real mastery*. They are never an excuse to dilute the pedagogy or break a learning/accessibility constraint.
 
+> **The evidence base for objective #1 — every reading mechanic mapped to the science, the open gaps, and the cognitive-load
+> guardrail that binds all "beautiful/addicting" work — lives in `PEDAGOGY.md` (the learning north-star). Read it before any
+> curriculum or learning-flow change.** Known priority gap (verified): **r-controlled vowels + multisyllabic/affix decoding
+> are missing** vs the Grade-2/TEKS target — see `PEDAGOGY.md §3` + the QA.md ticket. Guardrail (seductive-details effect):
+> the **learning moment stays calm/uncluttered**; juice + beauty fire *around and after* reps, never on the active prompt.
+
 ## Repo layout
 - `index.html` — the entire game (currently single-file; refactor into modules is welcome,
   but the deployed result must remain a static site that GitHub Pages serves with no build step,

@@ -20,6 +20,22 @@
 
 Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under **🔧 OPEN WORK — BY TOPIC**.
 
+> 📚 **PEDAGOGY GAP (Neo — HIGH, objective #1) — close the TEKS Grade-2 rungs: R-CONTROLLED VOWELS + MULTISYLLABIC/AFFIXES.**
+> *Verified missing* (grep + read): `data-content.js` + `data-missions.js` have **no r-controlled** (ar/er/ir/or/ur) and **no
+> multisyllabic / prefix-suffix** (un-, re-, -ed, -ing, -er, -est) content. These are the distinctly **Grade-2,
+> "ready-for-3rd-grade" rungs** of the TEKS ladder — without them the stated GOAL (~2nd-grade/TEKS by end of Act 2) is **not
+> met** (see `PEDAGOGY.md §1/§3`). **Build (append ids 100+, never renumber):** (a) an **R-CONTROLLED** zone after vowel teams
+> (ar/er/ir/or/ur = one sound each, GRAPH2-style tokenisation; learn→find→forge→read→finale), then (b) a **MULTISYLLABIC +
+> AFFIXES** zone (closed/open syllable split; common prefixes/suffixes; base+affix decoding). Reuse the grapheme model +
+> handlers; sight/heart words stay sound-mapped. **Extend `curriculum.test`** (taught-before-use for the new graphemes;
+> r-controlled tokenisation; affix words decodable by play order). Render-gate any new screens (Oracle). Re-confirm the gap by
+> reading the data files first (status-discipline), then build. — Trinity, 2026-06-15 (from the PEDAGOGY.md review)
+>
+> 🎨 **PEDAGOGY GUARDRAIL (The Oracle) — add a "calm learning moment" check to the §20 Premium Bar.** Per `PEDAGOGY.md §3#2`
+> (seductive-details effect, worst for novices like Teddy): the active decision moment (sound→letter / build / decode) must
+> stay **uncluttered — no decoration/animation competing with the target**; juice + ARENA polish fire *around and after* the
+> rep, never on the prompt. Make it a render-gate pass/fail item.
+
 > ⭐ **PARENT FEATURE — PLAYTEST FEEDBACK BOX (Neo, build-ready; high value — it unlocks the playtest loop in `AGENTS.md`).**
 > A frictionless in-app way for the parent to log what he sees Teddy do, straight to GitHub. **Spec:**
 > - **UI:** Grown-Up Corner ▸ a "Playtest notes" card (parent-gated already by the cognitive math-gate) = a big `<textarea>`
