@@ -80,9 +80,14 @@ function actGearList(a){ const mids=new Set(actMissions(a).map(m=>m.id));
    ids re-paces only future unlocks and can never un-earn the hero's current gear or league. The
    absence guard makes it idempotent (seed once, never overwrite), so a re-map can't wipe the
    stamp; new earns also stamp these live (missionComplete). Returns true if it seeded anything. */
+/* FROZEN pre-2026-06-15 rescue mids — the re-pace moved which mission frees each friend, so the
+   grandfather seed must read the OLD mids (not the live LEAGUE) or a not-yet-migrated save would
+   un-free allies it already earned. New saves seed off the live mids too (OR below). */
+const LEGACY_RESCUE_MID={tank:3,flip:6,sunny:8,heart:17,leighton:48};
 function grandfather(){ let seeded=false;
   if(!S.freed||typeof S.freed!=="object"){ S.freed={}; seeded=true;
-    LEAGUE.forEach(t=>{ if(S.done[t.mid]) S.freed[t.kind]=true; }); }
+    LEAGUE.forEach(t=>{ const old=LEGACY_RESCUE_MID[t.kind];
+      if(S.done[t.mid] || (old!=null && S.done[old])) S.freed[t.kind]=true; }); }
   if(!S.gearByAct||typeof S.gearByAct!=="object"){ S.gearByAct={}; seeded=true;
     ACTS.forEach(a=>{ const mids=new Set(actMissions(a.id).map(m=>m.id));
       S.gearByAct[a.id]=Object.keys(GEAR_AT).filter(id=>mids.has(+id)&&S.done[id]).map(id=>GEAR_AT[id]); }); }

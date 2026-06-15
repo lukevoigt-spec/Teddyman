@@ -160,13 +160,16 @@ ok("unset/empty resolves to the baked DEFAULT_CLOUD_URL", resolveCloudURL("")===
 ok("a custom URL is preserved as-is", resolveCloudURL("https://x.workers.dev")==="https://x.workers.dev");
 
 grp("PACING-SPREAD grandfather plumbing (P1): durable gear/friends survive a future id re-map, no regression");
-// A mid-Act-1 save: belt(m1) boots(m3) hammer(m4) sword(m8) earned; tank(m3) flip(m6) sunny(m8) freed.
+// A mid-Act-1 save under the OLD mapping: belt(m1) boots(m3) hammer(m4) sword(m8) earned; the LEGACY
+// rescue missions 3/6/8 done (freed tank/flip/sunny pre-re-pace). After the 2026-06-15 re-pace those
+// allies' LIVE mids are 8/26/30 — so flip(26)/sunny(30) are freed ONLY via the frozen legacy seed.
 S=fresh(); S.act=1; [1,3,4,6,8].forEach(function(id){ S.done[id]=true; });
-ok("allyMid resolves EVERY league kind incl. leighton/kendall (was -1 before)", allyMid("tank")===3 && allyMid("leighton")===48 && allyMid("kendall")===128);
+ok("allyMid reflects the re-paced mids (tank@8, heart@36, leighton@48, kendall@128)", allyMid("tank")===8 && allyMid("heart")===36 && allyMid("leighton")===48 && allyMid("kendall")===128);
 delete S.freed; delete S.gearByAct;   // OLD-save shape (pre-plumbing): the durable fields are absent
 var seeded=grandfather();
 ok("grandfather() seeds the durable records on an old save (absence is the trigger)", seeded===true && !!S.freed && !!S.gearByAct);
-ok("…S.freed seeded from completed rescue missions (tank@3, flip@6, sunny@8)", S.freed.tank===true && S.freed.flip===true && S.freed.sunny===true);
+ok("…S.freed seeded from the FROZEN legacy mids (tank@3, flip@6, sunny@8) despite the re-pace", S.freed.tank===true && S.freed.flip===true && S.freed.sunny===true);
+ok("…the re-pace freeze is REAL: flip/sunny freed though their NEW mids (26/30) are NOT done", !S.done[26] && !S.done[30] && S.freed.flip===true && S.freed.sunny===true);
 ok("…S.gearByAct[1] seeded from GEAR_AT∩done (belt/boots/hammer/sword)", S.gearByAct[1].indexOf("Power Belt")>=0 && S.gearByAct[1].indexOf("Gem Sword")>=0 && S.gearByAct[1].indexOf("Rocket Boots")>=0 && S.gearByAct[1].indexOf("Word Hammer")>=0);
 ok("NO REGRESSION: right after seeding, actGearList(1) == the derived set (union adds nothing yet)", (function(){ var g=actGearList(1); return g.indexOf("Power Belt")>=0 && g.indexOf("Gem Sword")>=0 && g.indexOf("Rocket Boots")>=0 && g.indexOf("Word Hammer")>=0; })());
 ok("NO REGRESSION: every already-freed friend still reads freed after seeding", allyFreed("tank") && allyFreed("flip") && allyFreed("sunny"));

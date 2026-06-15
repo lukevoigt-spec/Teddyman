@@ -9,7 +9,11 @@
    before-game.js load order is safe. Used by missions (allyPop/allyLine), the
    Hero Base shelf (LEAGUE) and the map (allyMapFig/mapFriends in map.js).
 ========================================================= */
-const CAGED=[{mid:3,kind:"tank",name:"TANK",real:"ARCHIE"},{mid:6,kind:"flip",name:"FLIP",real:"ELLIE"},{mid:8,kind:"sunny",name:"SUNNY",real:"WILLIAM"}];
+/* RESCUE PACING (parent 2026-06-15): one ally freed per zone, ~every 2 zones (was clustered in
+   zone 1). tank=zone1(m8), flip=zone3(m26), sunny=zone5(m30), heart=zone7(m36), leighton=finale(m48).
+   Save-safe: grandfather() seeds S.freed from the FROZEN legacy mids (LEGACY_RESCUE_MID, game.js) so
+   anyone who already freed a friend under the old mids keeps them. */
+const CAGED=[{mid:8,kind:"tank",name:"TANK",real:"ARCHIE"},{mid:26,kind:"flip",name:"FLIP",real:"ELLIE"},{mid:30,kind:"sunny",name:"SUNNY",real:"WILLIAM"}];
 /* Hero League: each friend (a REAL person Teddy knows) owns one mission type and
    cheers him BY NAME during it, once freed. Amelia cheers on every win. */
 const ALLY={
@@ -34,7 +38,7 @@ function allyPop(kind){ const st=$("stage"); if(!st)return;
 /* Full league roster for the Hero Base shelf (mid = mission that frees them).
    real = the actual person Teddy knows; name = their hero alias. */
 const LEAGUE=[...CAGED.map(t=>({mid:t.mid,kind:t.kind,name:t.name,real:t.real})),
-  {mid:17,kind:"heart",name:"HEARTGUARD",real:"AMELIA"},
+  {mid:36,kind:"heart",name:"HEARTGUARD",real:"AMELIA"},
   {mid:48,kind:"leighton",name:"STARLIGHT PRINCESS",real:"LEIGHTON"},
   {mid:128,kind:"kendall",name:"MISS KENDALL",real:"MISS KENDALL"}];
 /* a small LIVING friend on the map — recognizable little figure; captive ones

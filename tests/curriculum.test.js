@@ -271,6 +271,20 @@ ok("varyLine() always returns a member of the requested pool", (function(){ for(
 ok("varyLine() never repeats immediately (3-deep pools rotate)", (function(){ var prev=null,rep=0; for(var i=0;i<30;i++){ var p=varyLine("almost"); if(p===prev)rep++; prev=p; } return rep===0; })());
 ok("variant pools keep the SAME voice role as their base (no cross-voice drift)", Object.keys(LINE_VARIANTS).every(function(b){ var rv=(LINES[b]||{}).v; return LINE_VARIANTS[b].every(function(id){ return ((LINES[id]||{}).v||null)===(rv||null); }); }));
 ok("sound-ID prompt variants stay target-INDEPENDENT (#4 — never name a single letter)", ["find_prompt","find_prompt2","find_prompt3","scan_prompt","scan_prompt2","scan_prompt3"].every(function(id){ return LINES[id] && !/\b[A-Za-z]\b/.test(LINES[id].t); }));
+
+grp("Ally rescue PACING — one friend per zone, spread (parent 2026-06-15)");
+(function(){
+  var a1=LEAGUE.filter(function(t){return Math.floor(t.mid/100)===0;});   // Act-1 allies
+  var bad=a1.filter(function(t){return !MISSIONS.find(function(m){return m.id===t.mid;});});
+  ok("every Act-1 ally rescue mid points at a real mission", bad.length===0, bad.map(function(t){return t.kind+":"+t.mid;}));
+  var zones=a1.map(function(t){var m=MISSIONS.find(function(x){return x.id===t.mid;});return m&&m.z;});
+  ok("at most ONE ally freed per zone (no clustering)", new Set(zones).size===zones.length, zones);
+  ok("ally rescues are spread across >=4 distinct zones (was zone1 x3 + zone2)", new Set(zones).size>=4, zones);
+  var heartMid=(LEAGUE.find(function(t){return t.kind==="heart";})||{}).mid;
+  var hm=MISSIONS.find(function(m){return m.id===heartMid;});
+  ok("the heart (Amelia) rescue mission is flagged rescue:true (mastery-gated arc preserved at the new spot)", !!(hm && hm.rescue===true));
+  ok("old mission 17 is no longer a rescue (flag MOVED, not duplicated)", !(MISSIONS.find(function(m){return m.id===17;})||{}).rescue);
+})();
 `;
 vm.runInContext(fs.readFileSync(path.join(ROOT, "data-missions.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-content.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-lines.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "state-save.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "audio.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "allies.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "map.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "sfx.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "music.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 

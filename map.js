@@ -38,8 +38,8 @@ function zoneNext(z){ const m=zMissions(z); return m.find(x=>!S.done[x.id])||m[0
 function curZoneIx(zs){ const i=zs.findIndex(z=>!zoneDone(z)); return i<0?zs.length-1:i; }
 /* small captive/freed friend figures near their rescue zone (Act-1 league). */
 function mapFriends(a, zs, spots){
-  const rescues = a===2 ? [{mid:128,kind:"kendall"}]
-    : [{mid:3,kind:"tank"},{mid:6,kind:"flip"},{mid:8,kind:"sunny"},{mid:17,kind:"heart"},{mid:48,kind:"leighton"}];
+  /* derive from the LEAGUE roster (by act) so the rescue-pacing re-map lives in ONE place (allies.js) */
+  const rescues = LEAGUE.filter(t=>Math.floor(t.mid/100)===(a-1)).map(t=>({mid:t.mid,kind:t.kind}));
   const byZi={};
   rescues.forEach(r=>{ const m=MISSIONS.find(x=>x.id===r.mid); if(!m)return;
     const zi=zs.findIndex(z=>z.id===m.z); if(zi<0)return; (byZi[zi]=byZi[zi]||[]).push(r); });
@@ -157,8 +157,8 @@ function mapBanner(x,y,st,zi){
 /* CAPTIVE friends waiting AT the zone where they're freed (V2 scale, 1536-space). Once a friend
    is freed (allyFreed) they leave the map — they're in your league now, not stranded on the trail. */
 function mapAlliesV2(a, zs, spots){
-  const rescues = a===2 ? [{mid:128,kind:"kendall"}]
-    : [{mid:3,kind:"tank"},{mid:6,kind:"flip"},{mid:8,kind:"sunny"},{mid:17,kind:"heart"},{mid:48,kind:"leighton"}];
+  /* derive from the LEAGUE roster (by act) so the rescue-pacing re-map lives in ONE place (allies.js) */
+  const rescues = LEAGUE.filter(t=>Math.floor(t.mid/100)===(a-1)).map(t=>({mid:t.mid,kind:t.kind}));
   // group captives by the ZONE they're freed in, so several freed in one zone (e.g. Tank/Flip/Sunny
    // all in zone 1) fan out beside that zone's banner instead of stacking.
   const byZi={};

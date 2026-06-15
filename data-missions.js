@@ -23,7 +23,7 @@ const MISSIONS=[
   {id:14,type:"learn",letter:"o",lbl:"Rescue Gem O",z:2},
   {id:15,type:"learn",letter:"c",lbl:"Rescue Gem C",z:2},
   {id:16,type:"learn",letter:"k",lbl:"Rescue Gem K",z:2},
-  {id:17,type:"forge",words:["cat","dog","mom","kid"],lbl:"Heart Tower: Save Amelia",rescue:true,z:2},
+  {id:17,type:"forge",words:["cat","dog","mom","kid"],lbl:"Heart Tower Battle",z:2},
   /* --- ZONE 3 · THUNDER RIDGE (e u r h b f) — the road to Vex's Fortress --- */
   {id:18,type:"learn",letter:"e",lbl:"Rescue Gem E",z:3},
   {id:19,type:"learn",letter:"u",lbl:"Rescue Gem U",z:3},
@@ -60,7 +60,7 @@ const MISSIONS=[
   /* --- ZONE 7 · STORY GATE — read whole decodable SENTENCES (the goal) --- */
   {id:34,type:"sentence",sents:[0,1,2],lbl:"Story Gate I",z:7},
   {id:35,type:"sentence",sents:[3,4,5],lbl:"Story Gate II",z:7},
-  {id:36,type:"sentence",sents:[6,7],lbl:"Story Gate: First Story",z:7},
+  {id:36,type:"sentence",sents:[6,7],lbl:"Story Gate: Save Amelia",rescue:true,z:7},
   /* --- ZONE 9 · READING DOJO — fluency: Cloze (pick the word that fits) +
      scrambled-sentence ordering. Played AFTER Story Gate, BEFORE the Fortress
      (ids appended; placed here by play order — map positions by zone). --- */
