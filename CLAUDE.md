@@ -27,7 +27,8 @@ beautiful are the **amplifiers** that make the learning happen — they get him 
 > **The evidence base for objective #1 — every reading mechanic mapped to the science, the open gaps, and the cognitive-load
 > guardrail that binds all "beautiful/addicting" work — lives in `PEDAGOGY.md` (the learning north-star). Read it before any
 > curriculum or learning-flow change.** Known priority gap (verified): **r-controlled vowels + multisyllabic/affix decoding
-> are missing** vs the Grade-2/TEKS target — see `PEDAGOGY.md §3` + the QA.md ticket. Guardrail (seductive-details effect):
+> are missing** vs the Grade-2/TEKS target — see `PEDAGOGY.md §3`; **full build spec ready in `CURRICULUM-GRADE2.md`** (the
+> two new zones, decodable word banks, mission ladders, engine hooks). Guardrail (seductive-details effect):
 > the **learning moment stays calm/uncluttered**; juice + beauty fire *around and after* reps, never on the active prompt.
 
 ## Repo layout

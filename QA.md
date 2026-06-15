@@ -48,8 +48,11 @@ Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under *
 > (ar/er/ir/or/ur = one sound each, GRAPH2-style tokenisation; learn→find→forge→read→finale), then (b) a **MULTISYLLABIC +
 > AFFIXES** zone (closed/open syllable split; common prefixes/suffixes; base+affix decoding). Reuse the grapheme model +
 > handlers; sight/heart words stay sound-mapped. **Extend `curriculum.test`** (taught-before-use for the new graphemes;
-> r-controlled tokenisation; affix words decodable by play order). Render-gate any new screens (Oracle). Re-confirm the gap by
-> reading the data files first (status-discipline), then build. — Trinity, 2026-06-15 (from the PEDAGOGY.md review)
+> r-controlled tokenisation; affix words decodable by play order). Render-gate any new screens (Oracle). **→ FULL BUILD SPEC
+> READY: `CURRICULUM-GRADE2.md`** — grapheme/affix order, verified-decodable word banks, mission ladders (ids 150–159
+> r-controlled / 160–172 multisyllabic), engine hooks (`RCONTROLLED`→`GRAPH2`, `startSyllable`+`syllabify`, the schwa-FLEX
+> retry), `curriculum.test` extensions, audio to record. Re-confirm the gap by reading the data files first, then build to
+> spec. — Trinity, 2026-06-15
 >
 > 🎨 **PEDAGOGY GUARDRAIL (The Oracle) — add a "calm learning moment" check to the §20 Premium Bar.** Per `PEDAGOGY.md §3#2`
 > (seductive-details effect, worst for novices like Teddy): the active decision moment (sound→letter / build / decode) must
