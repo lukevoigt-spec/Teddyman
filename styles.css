@@ -159,9 +159,11 @@ body[data-act="2"] .navmenu{border-color:#caa15a;background:rgba(28,20,10,.97);}
 body[data-act="2"] .navitem{border-color:#6a5436;background:rgba(50,38,18,.55);color:#f0e2c4;}
 .starsrow{font-family:'Bangers',cursive;font-size:clamp(24px,3.8vw,34px);color:var(--gold);-webkit-text-stroke:3px var(--ink);paint-order:stroke;letter-spacing:.04em;}   /* U2: bigger + stroked round-progress counter */
 /* Daily Training meter — encouragement only, fills as he plays, never drains/penalizes */
-#dailyMeter{position:absolute;top:calc(env(safe-area-inset-top,8px) + 58px);left:14px;right:14px;z-index:5;pointer-events:none;}
-.dailylabel{font-family:'Bangers',cursive;font-size:clamp(14px,2.4vw,19px);letter-spacing:.06em;color:var(--gold);text-align:center;-webkit-text-stroke:3px var(--ink);paint-order:stroke;}
-.dailybar{height:16px;border-radius:10px;border:3px solid var(--ink);background:rgba(21,15,46,.8);overflow:hidden;box-shadow:0 3px 0 rgba(0,0,0,.3);margin-top:2px;}
+/* compact daily-training meter, centered in the top HUD row between the Menu chip and coins;
+   short bar with the label tucked UNDERNEATH (parent placement, 2026-06-15). */
+#dailyMeter{position:absolute;top:calc(env(safe-area-inset-top,8px) + 6px);left:50%;transform:translateX(-50%);width:min(220px,40vw);z-index:5;pointer-events:none;text-align:center;}
+.dailylabel{font-family:'Bangers',cursive;font-size:clamp(11px,1.9vw,15px);letter-spacing:.05em;color:var(--gold);text-align:center;-webkit-text-stroke:2px var(--ink);paint-order:stroke;margin-top:3px;}
+.dailybar{height:13px;border-radius:8px;border:2.5px solid var(--ink);background:rgba(21,15,46,.82);overflow:hidden;box-shadow:0 2px 0 rgba(0,0,0,.3);}
 #dailyFill{height:100%;width:0%;background:linear-gradient(90deg,#5fe0a0,#23a35f);transition:width .5s ease;}
 #dailyFill.done{background:linear-gradient(90deg,#ffd75e,#f0a82b);}
 

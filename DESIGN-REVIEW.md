@@ -107,3 +107,40 @@ order; **Act-2 stone skin (`body[data-act="2"]`, 0,2,1) still overrides** — me
 scale injection only; the real title spaces correctly. Hero up-scale + per-screen layout polish = a later batch.)*
 
 **Next:** rollout ② — shop cards / collection tiles + de-emoji the price/coins/DONE glyphs (STYLE §21 rollout list).
+
+## 2026-06-15 · ARENA ★ — Act 1 WORLD MAP reimagined (parent-driven, Braveland style)  ·  PASS
+**Branch:** `oracle/arena-map-v2` → PR for Neo. The parent's standing least-favorite (the map look/feel — see
+the map-not-premium memory). Iterated heavily WITH the parent (renders at each step): clean-slate → expert research
+(focal point / leading lines / status-top-actions-corners / landmarks — Game Developer, Sandboxr, MY.GAMES, Eleken,
+Game UI DB) → tried flat-topdown, steep-aerial, Candy-Crush; landed on a **Braveland-style living campaign map** (parent
+shared the reference) on a **brand-new painted landscape**.
+
+**What shipped (Act 1 only; Act 2 stays on the legacy paint until its map is regenerated):**
+- **New art:** `art/bg-map-a1-day.jpeg` + `bg-map-a1-twilight.jpeg` — a path-FREE landscape (hero town = start,
+  Vex's fortress = end, river+bridge, varied non-gem terrain). Generated via gpt-image-1; twilight is an EDIT of the
+  daylight (so geometry matches). Recipe saved in `art/incoming/MAP-PROMPT-act1*.txt` (gitignored) — reused for Act 2.
+- **`map.js` `mapPaintV2(1)`** (dispatched from `mapPaintSVG`; legacy kept for Act 2): viewBox 1536×1024 + `slice`
+  (fills the 4:3 stage). Draws the **single connected dotted route** (travelled bright / ahead dim) through 9 calibrated
+  spots (`MAPSPOTS_V2`), **parchment quest-banner markers** (✓/star/lock, big transparent hit-rect, keeps
+  `.mnode[data-zi]`), Teddy at the current banner, **captive friends ON their freed-zone** (`mapAlliesV2`, fanned when
+  several share a zone), a parchment quest label, and the time portal. `mapBgFor()` swaps **day/twilight by device clock**
+  (6a–6p / 6p–6a).
+- **`index.html`/`styles.css`:** the daily-training meter shortened + centered in the top HUD row (between Menu & coins),
+  label tucked under the bar (parent placement).
+- **`tests/curriculum.test.js`:** friend-guard detector retargeted from the brittle `scale(.5)` string to a stable
+  `class="mfriend"` hook (the MAP-1 pointer-events invariant is unchanged; works across legacy + V2).
+
+**Render-gate (Chromium @2x, day + twilight, served from worktree):** `arena-map-a1-day.png` / `arena-map-a1-twi.png`
+— connected route start→finish, premium banners, alive with characters, readable late-dusk twilight, meter in place.
+`save` 97/97, `curriculum` 68/68. **PASS.**
+
+### ⚠️ Neo action (parent, 2026-06-15) — free ONE friend per zone (payoff pacing)
+Today three friends are freed in **zone 1**: Tank/Archie (`m3`), Flip/Ellie (`m6`), Sunny/William (`m8`) — all `z:1`
+(`data-missions.js`); Heartguard/Amelia=`m17` (z2), Leighton=`m48` (z8). The parent wants **one rescue per zone** so the
+payoff isn't front-loaded. This is **game-logic/curriculum (Neo's lane)** — re-distribute the CAGED friend rescues
+(`allies.js CAGED` mids + the missions they're tied to) across early zones. **No map change needed:** `mapAlliesV2`
+places each captive by its rescue mission's `m.z`, so it reflects the new spread automatically (and `save`/`curriculum`
+guard it). Flagged on PR for Neo.
+
+**Next:** generate the **Act 2 medieval map** pair with the same recipe (medieval start → varied realm → the Vixen's
+keep) once Act 1 lands.
