@@ -20,6 +20,15 @@
 
 Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under **🔧 OPEN WORK — BY TOPIC**.
 
+> 🐛🎨 **VISUAL BUG (Oracle, backlog) — WIN screen hero shows a hard SQUARE + is cut off** (parent screenshot 2026-06-15).
+> On `scrWin` / `#winHero`, the Super-Teddy raster character renders inside a visible **rectangular box** (a hard square
+> edge framing the hero + his spotlight glow) and the art is **clipped/cut off** at that edge instead of bleeding into the
+> painted background. Likely cause: the raster PNG's bounding box (non-transparent / edged) OR a `#winHero`/wrapper
+> container with a background / box-shadow / `overflow:hidden` clipping the art, and/or the spotlight being a rect not a
+> soft radial. **Fix (Oracle):** repro via `node tools/shot.mjs win` (Act 1 + 2), make the hero art + glow edgeless
+> (transparent bleed / soft radial, no clipping container), render-gate against §20 (a visible box on a hero screen = a
+> Premium-Bar fail). — Trinity, 2026-06-15
+
 > 🎬 **STORYLINE / CUTSCENES (parent-directed 2026-06-15; full plan + research in `STORY.md`). Decision: SVG motion-comic
 > spine + ONE render-gated AI-video portal spike.** Core principle: cutscenes stay SHORT + SKIPPABLE and **fuse the reward
 > to the reading act**; invest in the hook + the ending. Build order:
