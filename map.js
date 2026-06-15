@@ -176,6 +176,11 @@ function mapAlliesV2(a, zs, spots){
 function mapPaintV2(a){
   const zs=actZones(a), spots=MAPSPOTS_V2[a]||[];
   const cur=curZoneIx(zs);
+  /* P1 (Codex): the 3:2 painting is full-bleed `slice` in landscape, but in PORTRAIT slice would
+     crop the wide map and push the edge nodes (house/fortress) off-screen → untappable. Use `meet`
+     in portrait so the whole map + all 9 nodes stay visible; toMap() re-renders on orientation change. */
+  const portrait = (typeof window!=="undefined" && window.innerHeight > window.innerWidth);
+  const par = portrait ? "xMidYMid meet" : "xMidYMid slice";
   const lblFont = a===2 ? "MedievalSharp, Bangers" : "Bangers";
   const road = spots.length>1 ? mapSmooth(spots) : "";
   const trav = spots.length>1 ? mapSmooth(spots.slice(0, Math.min(cur+1, spots.length))) : "";
@@ -198,7 +203,7 @@ function mapPaintV2(a){
     <rect x="-250" y="-27" width="500" height="54" rx="15" fill="url(#questgrad)" stroke="#7a5a2a" stroke-width="3.5"/>
     <rect x="-244" y="-22" width="488" height="12" rx="6" fill="#fff" opacity=".18"/>
     <text x="0" y="10" text-anchor="middle" font-family="${lblFont}" font-size="30" fill="#5a3a14" letter-spacing="1.5">${qn}</text></g>`;
-  return `<svg viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid slice">
+  return `<svg viewBox="0 0 1536 1024" preserveAspectRatio="${par}">
     <defs>
       <linearGradient id="questgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3e6bf"/><stop offset="1" stop-color="#d8c188"/></linearGradient>
       <radialGradient id="mapVigV2" cx=".5" cy=".42" r=".78"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#0a0414" stop-opacity=".42"/></radialGradient>
@@ -207,7 +212,7 @@ function mapPaintV2(a){
       <filter id="bs" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="2" dy="4" stdDeviation="2.4" flood-color="#1a1008" flood-opacity=".55"/></filter>
       <style>@media (prefers-reduced-motion:no-preference){.mnode.current{animation:bnPulse 2.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center bottom}.pspin{animation:pspin 6s linear infinite}}@keyframes bnPulse{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes pspin{to{transform:rotate(360deg)}}body.calm .mnode.current{animation:none}</style>
     </defs>
-    <image href="${mapBgFor(a)}" x="0" y="0" width="1536" height="1024" preserveAspectRatio="xMidYMid slice"/>
+    <image href="${mapBgFor(a)}" x="0" y="0" width="1536" height="1024" preserveAspectRatio="${par}"/>
     <rect x="0" y="0" width="1536" height="1024" fill="url(#mapVigV2)"/>
     <path d="${road}" fill="none" stroke="#3a2a14" stroke-width="13" stroke-linecap="round" stroke-dasharray="0.1 26" opacity=".4"/>
     <path d="${road}" fill="none" stroke="#f3e6c2" stroke-width="9" stroke-linecap="round" stroke-dasharray="0.1 26" opacity=".55"/>
@@ -220,9 +225,8 @@ function mapPaintV2(a){
   </svg>`;
 }
 function mapPaintSVG(){ return currentAct()===1 ? mapPaintV2(1) : mapPaintLegacy(); }
-function toMap(){ sessionTick();
-  if(!actMissions(currentAct()).length){ actComingSoon(); return; }  /* act with no content yet → safe landing */
-  GEO=geomFor(currentAct()); show("scrMap");
+/* render the map SVG + (re)bind node/portal taps. Split out so an orientation change can re-render. */
+function mapRepaint(){
   $("mapSVGwrap").innerHTML=mapPaintSVG();
   const zs=actZones(currentAct());
   document.querySelectorAll("#mapSVGwrap .mnode").forEach(n=>{
@@ -232,5 +236,15 @@ function toMap(){ sessionTick();
   });
   const pn=document.querySelector("#mapSVGwrap .portalnode");
   if(pn)pn.addEventListener("click",portalSwitch);
+}
+function toMap(){ sessionTick();
+  if(!actMissions(currentAct()).length){ actComingSoon(); return; }  /* act with no content yet → safe landing */
+  GEO=geomFor(currentAct()); show("scrMap");
+  mapRepaint();
+  /* P1: re-render on orientation/resize so landscape (slice, full-bleed) ↔ portrait (meet, no crop)
+     stays correct and every node remains on-screen + tappable. Bound once; only repaints on the map. */
+  if(typeof window!=="undefined" && !window.__mapResizeBound){ window.__mapResizeBound=true;
+    let t=0; window.addEventListener("resize",()=>{ clearTimeout(t); t=setTimeout(()=>{
+      const sm=$("scrMap"); if(sm && sm.classList.contains("on")) mapRepaint(); }, 180); }); }
   Aud.play("pick");
 }

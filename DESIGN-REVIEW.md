@@ -144,3 +144,10 @@ guard it). Flagged on PR for Neo.
 
 **Next:** generate the **Act 2 medieval map** pair with the same recipe (medieval start → varied realm → the Vixen's
 keep) once Act 1 lands.
+
+## 2026-06-15 · Act 1 map — P1 portrait fix (Codex review on PR #9)
+Codex flagged: the 1536×1024 map at `xMidYMid slice` crops in **portrait** (768×1024) and pushes the edge nodes
+(house/fortress) off-screen → untappable (orientation is `"any"`). Fix (`map.js` `mapPaintV2`): aspect mode is now
+**orientation-aware** — `slice` (full-bleed) in landscape, `meet` (whole map, no crop) in portrait; `toMap` re-renders
+via the new `mapRepaint()` on a debounced `resize` so rotation stays correct. Render-gated landscape + portrait
+(`arena-map-a1-day.png` / `arena-map-a1-portrait.png`): all 9 nodes visible + tappable both ways. `curriculum` 79/79.
