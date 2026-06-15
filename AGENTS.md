@@ -7,48 +7,64 @@ Read both before working.
 ## The crew
 | Name | Role | Runs as | May write |
 |---|---|---|---|
-| **Neo** | **Lead Coder** (primary) | Desktop Claude Code (local) | **Everything.** All code + assets + the `tools/` harness. The **only** agent who edits code and the **only** one who merges to `main`. Final authority on conflicts and on which QA suggestions to action. |
-| **Trinity** | **QA / Reviewer + Docs + QA-lane integrator** | Cloud Claude (web) | `QA.md` + `AGENTS.md` (direct to `main`). **Vets + squash-merges the guest QA PRs.** May ask the human for permission to write elsewhere. Never edits code, never merges code. |
+| **Neo** | **Lead Coder** (primary) | Desktop Claude Code (local) | All **game-logic** code (`game.js` logic, `data-*`, `state-save`, `audio`, curriculum) + the `tools/` harness. The **only** agent who **merges to `main`** — including Oracle's visual PRs (runs CI + a boot check first). Final authority on conflicts + which QA suggestions to action. *(The visual layer — `art.js` / `styles.css` / `art/` + the design docs — is now **Oracle's** lane; Neo still reviews + merges it.)* |
+| **Trinity** | **QA / process + QA-lane integrator** | Cloud Claude (web) | `QA.md` + `AGENTS.md` (direct to `main`). **Vets + squash-merges the guest QA PRs.** Never edits code, never merges code. *(Design-system docs moved to Oracle 2026-06-15.)* |
+| **The Oracle** | **UI Designer — design authority + art + render-gate** | Claude Code (local, on the parent's server — full desktop/browser, **can RENDER**) | Owns the **design system** (`STYLE.md`, `DESIGN-ENGAGEMENT.md`, the art bible, `DESIGN-REVIEW.md`) + **art generation + the visual layer** (`art.js`, `styles.css`, `art/`). Ships code/asset changes via **own branch → PR that Neo merges**; may commit design-**doc**-only changes direct to `main` (like Trinity). The **only** agent that renders → runs the **§20 render-gate** on all visual work. Does **not** merge to `main`. |
 | **Morpheus** | Guest QA | Codex | `QA.md` only — via a **PR** Trinity merges. |
 | **Cypher** | Guest QA | Grok | `QA.md` only — via a **PR** Trinity merges. |
 | **Tank** | Guest QA | Gemini | `QA.md` only — via a **PR** Trinity merges. |
 
-## Tooling note (art/media generation)
-**Neo can generate images AND video** via the **Grok** and **ChatGPT advanced APIs** (tokens configured locally) — so
-art-lane items are *buildable by Neo*, not blocked on the parent. This is why QA art findings (map bg regen, the U10
-intro-city image, character/icon renders, weapon/pet art) can be specced as "regenerate via the gen pipeline." Authoring
-conventions live in `art/CHARACTER-ART-PROMPTS.md`; raster drop-in is flagged in `art.js`'s `RASTER` manifest. (Cloud
-QA agents can't generate — they spec; Neo generates + commits.)
+## Tooling note (art/media generation + rendering)
+**The Oracle** (local, full desktop/browser) is the primary **art generator** AND the **only agent that can RENDER** the
+real game (`tools/shot.mjs` needs a local browser — this is the capability the cloud agents never had). **Neo** can also
+generate images/video via the **Grok**/**ChatGPT** advanced APIs (tokens local) as a fallback. So art-lane items are
+*buildable in-crew*, never blocked on the parent. Authoring conventions live in `art/CHARACTER-ART-PROMPTS.md` (the
+numeric art bible — the Oracle's); raster drop-in is flagged in `art.js`'s `RASTER` manifest. (Cloud agents — Trinity +
+guests — can neither generate nor render; they spec only.)
 
 ## Know who you are
-- Local **desktop** Claude Code session → you are **Neo**.
+- Local Claude Code, **lead-coder** role (the build session) → you are **Neo**.
+- Local Claude Code on the **parent's server**, **design/art** role, can render → you are **The Oracle**.
 - **Cloud / web** Claude session → you are **Trinity**.
 - Codex → **Morpheus** · Grok → **Cypher** · Gemini → **Tank**.
-- The human may assign a name at session start; that overrides the above.
+- The human assigns the name at session start; that overrides the above. **Two local sessions now exist** (Neo + The
+  Oracle) — if you're a local session and haven't been named, **ASK which you are** before writing anything.
 
 ## The rules
-1. **Only Neo touches code and merges to `main`.** Before every push Neo verifies
-   `node tests/save.test.js` + `node tests/curriculum.test.js` are green (plus a runtime boot
-   check), and has the final say. **`QA.md` is ADVISORY, not a mandate:** Neo scrutinises each
-   suggestion against the actual code/product before actioning it, and **comments in `QA.md` (or
-   asks the human) to push back or request clarification** rather than implementing on autopilot.
-   The **human/parent is the ultimate authority** above Neo.
-2. **QA agents write `QA.md` ONLY** (Trinity also `AGENTS.md`). Two commit paths:
-   - **Trinity** commits her `QA.md` / `AGENTS.md` **straight to `main`** as plain commits
-     (`git fetch` + rebase — no feature branch, no merge commits; she's the QA-lane curator).
+1. **Only Neo MERGES to `main`** — the core invariant, one hand on the live app. Neo writes game-logic code; **The
+   Oracle** writes the visual layer but ships it via **branch → PR Neo merges**; cloud/guest agents write no code.
+   Before every merge/push Neo verifies `node tests/save.test.js` + `node tests/curriculum.test.js` (+ `ui-emoji.test`)
+   are green plus a runtime boot check, and has the final say. **`QA.md` is ADVISORY, not a mandate:** Neo scrutinises
+   each suggestion against the actual code/product, and **comments in `QA.md` (or asks the human) to push back** rather
+   than implementing on autopilot. The **human/parent is the ultimate authority** above Neo.
+2. **Doc ownership + commit paths:**
+   - **Trinity** owns `QA.md` + `AGENTS.md` → commits **straight to `main`** (`git fetch` + rebase, no feature branch;
+     she's the QA-lane curator + crew/process keeper).
+   - **The Oracle** owns the **design-system docs** (`STYLE.md`, `DESIGN-ENGAGEMENT.md`, the art bible
+     `art/CHARACTER-ART-PROMPTS.md`, `DESIGN-REVIEW.md`) → may commit **doc-only** changes straight to `main` (like
+     Trinity), but ships any **code/asset** change (`art.js`/`styles.css`/`art/`, or a visual tweak that needs `game.js`
+     wiring) via **branch `oracle/<topic>` → PR Neo reviews + merges**.
    - **Guests (Morpheus / Cypher / Tank)** open a **Pull Request** touching **`QA.md` only**
      (branch e.g. `cypher/qa-<topic>`, appended to their own dated section), then **stop**.
-     **Trinity** reviews it — verify the claim, de-dupe vs existing entries, tidy formatting +
-     signature — and **squash-merges** it to `main` (one clean commit, no merge-commit noise).
-     She declines + comments if a finding is wrong/unverified or the PR touches anything but `QA.md`.
-3. **No QA agent edits code.** Route code needs to Neo by writing them into `QA.md`: a VERIFIED
-   finding + a concrete proposed fix + `file:line` evidence, so Neo can action it directly.
+     **Trinity** reviews it — verify the claim, de-dupe, tidy formatting + signature — and **squash-merges** it to
+     `main`. She declines + comments if a finding is wrong/unverified or the PR touches anything but `QA.md`.
+3. **No QA/cloud agent edits code.** Trinity + guests route code needs to Neo via `QA.md` (a VERIFIED finding + concrete
+   fix + `file:line`). The Oracle edits the **visual layer** but never **merges** — every code/asset change is a PR Neo
+   integrates.
 4. **Sign every entry** `— <name>, <YYYY-MM-DD>`, and date your sections so stale notes are obvious.
 5. **Source-of-truth order:** `CLAUDE.md` (product) → `AGENTS.md` (process) → `QA.md` (advisory).
 6. **Trinity checks PRs on re-engagement.** Whenever a Trinity session is re-engaged after being idle,
    her FIRST action is to list open PRs (`list_pull_requests`) and vet → squash-merge any guest QA PRs
    before other work. (Subscriptions are per-PR, so the open event can't auto-notify; the human may also
    just ping "guest pushed.")
+7. **THE RENDER-GATE — The Oracle owns it (`STYLE.md §20`).** No visual change is **"done"** until The Oracle has
+   **rendered** it (`node tools/shot.mjs <scenes>`, Act 1 + 2, 1024×768 + portrait) and signed off against the **Premium
+   Bar** rubric: *zero emoji · UI lives in the painting (not list-cards over it) · reads like a shipped game, not a web
+   form · consistent crafted icons · clear focal point · inviting zero-state.* The Oracle is the **only** agent that can
+   render, so it **gates Neo's visual work**: it reviews on the PR (or on `main` after a push), logs findings + before/
+   after shots in `DESIGN-REVIEW.md`, and posts **blocking nits as PR review comments** Neo resolves before merge. The
+   **NO-EMOJI** rule (`CLAUDE.md` non-negotiable #6, enforced by `tests/ui-emoji.test.js`) is part of the gate. Reviews
+   are advisory in TONE (no scolding the coder) but **blocking in EFFECT** for the Premium Bar items.
 
 ## Status discipline — keeping `QA.md` honest (added after a real stale-status miss, 2026-06-14)
 `QA.md`'s open/shipped status drifts because **Neo changes the code in his session while only Trinity edits `QA.md`** —
@@ -119,9 +135,10 @@ would also block Trinity's (and Neo's) direct commits. The guest-PR → squash-m
 by **Trinity as the gate**, by convention — not by GitHub. CI (`tests.yml`) still runs on every push.
 
 ## Escalation (when to add process)
-Stay light while Neo is the sole coder/merger — it's the lowest-friction setup for one builder
-plus reviewers. The moment **two or more agents write code in parallel**, flip on
-branch-per-agent → Pull Requests into `main` → **branch protection (require CI green)**, with
-**Neo** reviewing and merging code PRs. Not before.
+Stay light while Neo is the sole *merger* — lowest friction. ⚠️ **TRIGGERED 2026-06-15:** The Oracle now writes the
+visual layer in parallel, so the planned step is **LIVE** — **branch-per-agent (`oracle/<topic>`) → PRs into `main`,
+Neo reviews + merges code/asset PRs.** Branch protection stays **OFF** (Trinity + The Oracle still commit *docs*
+directly; turning it on would block those — revisit only if direct doc-commits start colliding). CI (`tests.yml`) runs
+on every push regardless, and the §20 render-gate (the Oracle) is the visual-quality check the cloud crew couldn't do.
 
-— Trinity, 2026-06-14
+— Trinity, 2026-06-14 (updated 2026-06-15: The Oracle onboarded — design/art/render lane)
