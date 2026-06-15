@@ -30,7 +30,7 @@ The headline: alignment is **strong**. These are confirmed built + aligned in co
 
 ## 🩹 QUICK WINS — cheap + high value (do these first)
 1. **Voice: one-`!`-per-line sweep** of `data-lines.js` (§12). Pervasive: the whole `intro_*` set + `m4_letters`/`read_intro`/`sent_champ` (4 `!`)/`free_flip`/`rankup` run 2–4 `!`. Demote all but one to a period. Pure data, zero logic risk — the single biggest tone gap.
-2. **Perf: delete `art/bg-base-room.png` (3.2 MB, unreferenced)** + the dead `.mcloud`/`mdrift` CSS (`styles.css:433-435`, orphaned from the deleted scroll-map). §9. Free weight off the iPad.
+2. **Perf: delete the dead `.mcloud`/`mdrift` CSS** (`styles.css:433-435`, orphaned from the deleted scroll-map). §9. ⚠️ **CORRECTION (do NOT delete the PNG):** the audit called `art/bg-base-room.png` a "3.2 MB orphan," but commit `a47c54c` deliberately staged it as the **Hero Room background** — the diegetic layout that wires it is the next unbuilt slice. **Keep it and wire it**, don't delete. (A grep-for-references audit can't tell a dead asset from a staged one — a lesson for the process below.)
 3. **Touch target: `#btnSkip` is 64px** (`index.html:70`) — below the **≥96px non-negotiable #2**. Restore to ≥72px visual + ~96px hit-ring; bump short `.navitem` height too. Hard-constraint fix.
 4. **Contrast: add the `.txt-outline` utility** (`styles.css`) — `grep` confirms it's missing (§2/§8/non-neg #3); apply to loose labels on painted art.
 5. **SFX juice (§6.5): `coin()` should ladder on a run** (thread a step index from `flyReward` so a payout pours upward, `sfx.js:43`) + **add subtle bounded variation jitter** in `note()` (±30–50¢ / volume, **ND-safe: keep small + predictable**). The kit is the thinnest standard — every cue is byte-identical today.
