@@ -123,6 +123,25 @@ clears the §20 Premium Bar; the SVG portal stays as fallback**). The core narra
 SVG cinematic pass, the squire fix — proceeds regardless; the portal clip is an optional experiment. Build tickets routed
 in `QA.md`.
 
+## F. BEAT-7 ENDING — DRAFT SCRIPT (pending parent approval; then Neo adds to `data-lines.js`)
+Plays after the Dragon Keep win + `kendall1-3`. Tone: tender-triumphant, a touch slower than the boss beats but still
+tight (each line ≤~8s, all skippable). SVG motion-comic (Ken Burns on the painted present-day city + parallax cast +
+`faceSpeak`). **The "proof" beat is key**: as Miss Kendall speaks, show the actual gems/words *he mastered* glowing — the
+praise points at what he really did. Lines (`id` · voice · text):
+
+1. `home1` · **N** (Noah) — *at the portal:* "You did it, Sir Teddy. You set the whole kingdom free. Now go home, brave reader — your family is waiting." *(fx: portal)*
+2. `home2` · **A** (Narrator) — *arrival:* "In a swirl of light, Super Teddy and his friends tumble home — back to Star Force City, safe and sound." *(fx: portal→heroic; present-day city, golden hour)*
+3. `home3` · **L** (Leighton) — *the welcome:* "Look — our hero is home!" *(whole cast turns, lights up)*
+4. `home4` · **K** (Miss Kendall) — *kneels; PROCESS praise + the reading proof:* "Teddy, you read your way through a whole castle of dragons to find me. You sounded out every word, and you never gave up on the hard ones." *(the mastered words/gems glow behind them)*
+5. `home5` · **P** (Mom & Dad) — *pride + real-world tie:* "We are so proud of you. You didn't just save everyone — you learned to read. And a reader can do anything."
+6. `home6` · **K** (Miss Kendall) — *the school-readiness beat (the whole point):* "You're ready now, Teddy. Ready for big-kid school. I'll see you there, and you are going to do great."
+7. `home7` · **A** (Narrator, cast cheer by name — relatedness) — "Your whole team cheers your name — Archie, Ellie, William, Amelia, Leighton, JJ, Nora, and Cal: Super Teddy! Super Teddy!" *(fx: big confetti/heroic burst, cast lifts him up)*
+8. `home8` · **A** (Narrator, closing identity beat) — "You started as a kid who wanted to read. Now you are Super Teddy — a true hero, and a true reader. This is the end of the story… and the start of everything." *(tender settle → CONTINUE → title)*
+
+**Wiring (Neo):** after the Act-2 finale win + `kendall1-3`, CONTINUE runs `startHomecoming()` (mirror `startInterlude`,
+screen `scrInter`); ends back at the title/map. All audio-first + `flow()`/watchdog skippable.
+*(Status: DRAFT — Trinity, 2026-06-15, pending parent approval of wording.)*
+
 ## Sources
 Huynh et al. 2021 (*IEEE TVCG*, narrative ↑ engagement, not test scores) · Przybylski, Rigby & Ryan 2010 (Self-Determination
 Theory & games) · Mueller & Dweck (process vs. trait praise) · Pixar story-structure craft canon · MDN/WebKit (iPad video
