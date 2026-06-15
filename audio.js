@@ -70,7 +70,9 @@ const Aud={
      on its OWN ended event (snappy, never caps a long line); a 45s hard timeout only catches a
      clip that never plays at all, and the ⏭ skip covers any edge. */
   play(ids){ this.stop(); const my=this.token;
-    const seq=Array.isArray(ids)?ids.slice():[ids];
+    /* rotate the most-repeated lines (yes/almost/prompts) to a fresh variant — anti-fatigue
+       (varyLine in data-lines.js); ids with no variant pool pass through unchanged. */
+    const seq=(Array.isArray(ids)?ids.slice():[ids]).map(x=>typeof varyLine==="function"?varyLine(x):x);
     if(typeof Music!=="undefined" && Music.duck) Music.duck();   /* dip the music under narration */
     if(!this.el){ try{ this.el=new Audio(); }catch(e){ this.el=null; } }
     const a=this.el;

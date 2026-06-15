@@ -272,5 +272,35 @@ const LINES={
   cheer_will2:{t:"Sparkles everywhere! Awesome finding, Super Teddy! Says William!", v:"W"},
   rest1:{t:"The sun is setting over Star Force City..."},
   rest2:{t:"Even heroes rest. Great work today, Super Teddy. The city is safer because of you!"},
-  test:{t:"Hello Super Teddy! This is your mentor speaking. Star Force City needs you!"}
+  test:{t:"Hello Super Teddy! This is your mentor speaking. Star Force City needs you!"},
+  /* ---- LINE VARIATIONS (anti-fatigue, parent 2026-06-14) — the most-repeated cues rotate via
+     varyLine() below. Same meaning + role as the base; sound-ID prompts stay target-INDEPENDENT
+     (#4, never name the letter). New ids auto-appear in the Voice Studio for one bulk ReGen; until
+     recorded they fall back to TTS, so they're always safe. ---- */
+  yes2:{t:"You got it!"}, yes3:{t:"Nice work, hero!"},
+  almost2:{t:"So close — listen again..."}, almost3:{t:"Not quite — here it is once more..."},
+  find_prompt2:{t:"Listen... which gem makes this sound?"}, find_prompt3:{t:"Use your ears — find the gem that says..."},
+  scan_prompt2:{t:"Tap the gem with this sound..."}, scan_prompt3:{t:"Which gem makes this sound? Tap it!"},
+  trace_prompt2:{t:"Trace along the glowing stars to free the gem!"}, trace_prompt3:{t:"Follow the stars with your finger to cut it loose!"},
+  read_prompt2:{t:"Sound it out... then tap what it means!"}, read_prompt3:{t:"Read the word, then tap its picture!"},
+  sent_prompt2:{t:"Read it all... then tap the picture it tells about!"}, sent_prompt3:{t:"Read the whole thing — which picture fits?"},
+  train_yes2:{t:"Coin for you!"}, train_yes3:{t:"Ka-ching! Keep it up!"}
 };
+/* High-frequency lines that ROTATE to fight repetition fatigue (parent 2026-06-14): base id -> its
+   variant pool (incl. the base). varyLine() (called by Aud.play) returns a fresh one != the last
+   played; any id with no pool passes through unchanged. Same meaning + role; a missing variant clip
+   falls back to TTS, so it's always safe; sound-ID prompts stay target-independent (#4). */
+const LINE_VARIANTS={
+  yes:["yes","yes2","yes3"], almost:["almost","almost2","almost3"],
+  find_prompt:["find_prompt","find_prompt2","find_prompt3"],
+  scan_prompt:["scan_prompt","scan_prompt2","scan_prompt3"],
+  trace_prompt:["trace_prompt","trace_prompt2","trace_prompt3"],
+  read_prompt:["read_prompt","read_prompt2","read_prompt3"],
+  sent_prompt:["sent_prompt","sent_prompt2","sent_prompt3"],
+  train_yes:["train_yes","train_yes2","train_yes3"]
+};
+let __lastVar={};
+function varyLine(id){ const pool=LINE_VARIANTS[id]; if(!pool||pool.length<2)return id;
+  let pick=pool[Math.floor(Math.random()*pool.length)], guard=0;
+  while(pool.length>2 && pick===__lastVar[id] && guard++<8) pick=pool[Math.floor(Math.random()*pool.length)];
+  __lastVar[id]=pick; return pick; }

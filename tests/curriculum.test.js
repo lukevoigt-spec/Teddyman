@@ -260,6 +260,16 @@ grp("Spell Scroll honours the sight-word gate at RUNTIME (SCROLL-1 — never sur
   ok("scrolls DO surface once their letters + sight words are taught", scrollPool().length>0);
   S.done=saved; S.act=savedAct;
 })();
+
+grp("Line variations (anti-fatigue, parent 2026-06-14) are well-formed + safe");
+var lv=[];
+Object.keys(LINE_VARIANTS).forEach(function(base){ LINE_VARIANTS[base].forEach(function(id){ if(!LINES[id]||!LINES[id].t) lv.push(base+" -> "+id+" missing from LINES"); }); });
+ok("every line-variant id exists in LINES with TTS-fallback text (a missing clip is never a bare id)", lv.length===0, lv);
+ok("varyLine() passes through an id with no variant pool unchanged", varyLine("snd_s")==="snd_s" && varyLine("word_cat")==="word_cat");
+ok("varyLine() always returns a member of the requested pool", (function(){ for(var i=0;i<40;i++){ if(LINE_VARIANTS.yes.indexOf(varyLine("yes"))<0)return false; } return true; })());
+ok("varyLine() never repeats immediately (3-deep pools rotate)", (function(){ var prev=null,rep=0; for(var i=0;i<30;i++){ var p=varyLine("almost"); if(p===prev)rep++; prev=p; } return rep===0; })());
+ok("variant pools keep the SAME voice role as their base (no cross-voice drift)", Object.keys(LINE_VARIANTS).every(function(b){ var rv=(LINES[b]||{}).v; return LINE_VARIANTS[b].every(function(id){ return ((LINES[id]||{}).v||null)===(rv||null); }); }));
+ok("sound-ID prompt variants stay target-INDEPENDENT (#4 — never name a single letter)", ["find_prompt","find_prompt2","find_prompt3","scan_prompt","scan_prompt2","scan_prompt3"].every(function(id){ return LINES[id] && !/\b[A-Za-z]\b/.test(LINES[id].t); }));
 `;
 vm.runInContext(fs.readFileSync(path.join(ROOT, "data-missions.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-content.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-lines.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "state-save.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "audio.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "allies.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "map.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "sfx.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "music.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 
