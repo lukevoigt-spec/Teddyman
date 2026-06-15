@@ -48,8 +48,11 @@ const ALLY_COL={tank:"#e6453c", flip:"#3a9bff", sunny:"#ffce3a", heart:"#ff7d9c"
    heart/leighton); null otherwise (kendall/jj/cal/nora/mom/dad → caller falls back to the SVG).
    Used for the FULL-FIGURE showcases (hero card, homecoming) so they no longer show the old
    parametric SVG body. Small face-buttons keep allyFace (real-photo SVG likeness, reads fine tiny). */
-function allyRasterImg(kind, w){ return (typeof RASTER!=="undefined" && RASTER["ally-"+kind])
-  ? `<img src="art/ally-${kind}.png" width="${w}" height="${w}" alt="" style="display:block;object-fit:contain;" aria-hidden="true">` : null; }
+function allyRasterImg(kind, w){
+  /* Mom/Dad ship as mom.png/dad.png (not ally-*.png); allies as ally-<kind>.png */
+  const file=(kind==="mom"||kind==="dad") ? kind : ("ally-"+kind);
+  return (typeof RASTER!=="undefined" && RASTER[file])
+    ? `<img src="art/${file}.png" width="${w}" height="${w}" alt="" style="display:block;object-fit:contain;" aria-hidden="true">` : null; }
 function allyMapFig(kind, freed){
   /* RESCUED ally with generated art -> show the raster token (feet grounded at ~y50, centred at x0),
      same footprint as the SVG figure so map placement is unchanged. Captive (or no-raster) allies keep

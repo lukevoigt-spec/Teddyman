@@ -197,7 +197,9 @@ ${kgear}
    inkblotSVG/vixenSVG. ---- */
 const RASTER={ "teddy-m0":true,"teddy-m1":true,"teddy-m2":true,
   "teddy-knight-m0":true,"teddy-knight-m1":true,"teddy-knight-m2":true,
-  "ally-tank":true, "ally-sunny":true, "ally-heart":true, "ally-flip":true, "ally-leighton":true };
+  "ally-tank":true, "ally-sunny":true, "ally-heart":true, "ally-flip":true, "ally-leighton":true,
+  "mom":true, "dad":true,                 /* parents have raster art (mom.png/dad.png) */
+  "vex":true, "vixen":true, "dragon":true, "noah":true };   /* villains + mentor (already used directly by their SVG fns; flagged here for the resolver) */
 function rasterArt(file,w=210,a0="#ffce3a",a1="#3a7bff"){
 const u="r"+(__huid++);
 return `<svg viewBox="0 0 240 256" width="${w}" aria-hidden="true">

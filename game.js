@@ -1433,9 +1433,9 @@ function paintBase(){
    Tap a freed friend on the Base league shelf → a flip card: full-body art +
    alias on the front, a short bio + stats on the back. Pure cosmetic delight. */
 const HERO_BIO={
-  tank:"Archie — Teddy’s mighty cousin. Smashes through Vexbot armies and powers up every Boss Battle.",
+  tank:"Archie — Teddy’s mighty friend. Smashes through Vexbot armies and powers up every Boss Battle.",
   flip:"Ellie — quick and fearless. Flips past danger and guides Teddy through letter tracing.",
-  sunny:"William — the team’s ray of sunshine. Cracks jokes and keeps every patrol bright.",
+  sunny:"William — Teddy’s cousin and the team’s ray of sunshine. Cracks jokes and keeps every patrol bright.",
   heart:"Amelia — the Heartguard. Shields her friends and cheers Teddy on after every victory.",
   leighton:"Leighton — the Starlight Princess, freed from Lord Vex’s Fortress at the end of the Star Force City story.",
   kendall:"Miss Kendall — Teddy’s beloved teacher, rescued from the Vixen’s Dragon Keep.",
