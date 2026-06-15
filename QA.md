@@ -20,6 +20,25 @@
 
 Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under **🔧 OPEN WORK — BY TOPIC**.
 
+> 🎬 **STORYLINE / CUTSCENES (parent-directed 2026-06-15; full plan + research in `STORY.md`). Decision: SVG motion-comic
+> spine + ONE render-gated AI-video portal spike.** Core principle: cutscenes stay SHORT + SKIPPABLE and **fuse the reward
+> to the reading act**; invest in the hook + the ending. Build order:
+> - **① BEAT-7 HOMECOMING ENDING — HIGH (the missing emotional payoff).** Act-2 win currently just returns to the medieval
+>   map (`showWin`/finale). Build a new cutscene after `kendall1-3`: portal **home** → present-day Star Force City → the
+>   **whole cast** celebrates → affirmation that is **earned + specific + PROCESS-praise** ("you *sounded out every word*,
+>   you never quit — you're a **reader** now, ready for school"), NOT trait praise. *Neo* wires it into the finale flow +
+>   `data-lines.js`; *Oracle* the cinematic art; *Trinity* drafts the script for parent approval (draft in `STORY.md §B`).
+> - **② INTRO HOOK — elevate `startIntro`** to a cold-open: threat/wonder by sec 5, hero's desire by 20, "your job" by 45.
+> - **③ CINEMATIC SVG PASS over beats 2–6** (Ken Burns `scale3d/translate3d` + 2.5D parallax layers over existing painted
+>   art + `cutsceneFX`/`faceSpeak`; optional vendored `gsap.min.js` for timeline sequencing; **skip Lottie/SMIL**; keep
+>   `transform`/`opacity` + Lite/reduced-motion gating). **Squire fix:** `interlude_knight` says "Super Teddy the KNIGHT" —
+>   change the reveal to **SQUIRE** (matches the SQUIRE→SOLDIER→KNIGHT ladder + the power-reset). All render-gated (§20).
+> - **④ PORTAL AI-SPIKE (Oracle, optional, render-gated).** ONE short clip for the time-travel portal, keyframed from our
+>   rendered art (Sora-2 cameo / Veo 3.1 / Kling / Grok). Ship ONLY if it clears the Premium Bar; **keep the SVG portal as
+>   fallback**. Serving: H.264 mp4 ~3–5 MB, `<video playsinline>` gesture-launched, **store as IndexedDB Blob** (mirrors
+>   `VStore`, sidesteps the SW 206 gotcha). Budget a 3–4×+ reroll; never the character/likeness beats.
+> *(All cutscenes stay audio-first + `flow()`/watchdog skippable — hard constraint #8.) — Trinity, 2026-06-15*
+
 > 📚 **PEDAGOGY GAP (Neo — HIGH, objective #1) — close the TEKS Grade-2 rungs: R-CONTROLLED VOWELS + MULTISYLLABIC/AFFIXES.**
 > *Verified missing* (grep + read): `data-content.js` + `data-missions.js` have **no r-controlled** (ar/er/ir/or/ur) and **no
 > multisyllabic / prefix-suffix** (un-, re-, -ed, -ing, -er, -est) content. These are the distinctly **Grade-2,

@@ -116,8 +116,12 @@ hard / you didn't quit" builds mastery). Draft lines (for parent approval, then 
   cinematic SVG pass over beats 2–6 + the squire fix → (4) *optional* AI-video portal spike (proven by render, or
   dropped). Each step short, skippable, render-gated.
 
-## E. The one decision for the parent
-How far to push **AI-video** (taste/cost/risk — your call). Recommendation: **#1 below.** *(Teed up via AskUserQuestion.)*
+## E. DECISION (parent, 2026-06-15): SVG motion-comic spine + ONE AI-video portal spike
+All cutscenes are **cinematic SVG motion-comic** (Ken Burns + 2.5D parallax over our on-model art); **The Oracle also
+tries a single AI-video clip for the time-travel portal** (keyframed from our art, render-gated, **shipped only if it
+clears the §20 Premium Bar; the SVG portal stays as fallback**). The core narrative work — beat-7 ending, the hook, the
+SVG cinematic pass, the squire fix — proceeds regardless; the portal clip is an optional experiment. Build tickets routed
+in `QA.md`.
 
 ## Sources
 Huynh et al. 2021 (*IEEE TVCG*, narrative ↑ engagement, not test scores) · Przybylski, Rigby & Ryan 2010 (Self-Determination
