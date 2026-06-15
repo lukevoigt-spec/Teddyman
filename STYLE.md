@@ -11,6 +11,37 @@ Everything here must survive GitHub-Pages-with-no-build.
 
 ---
 
+## ★ THE ORACLE'S DESIGN CHARTER — research, benchmark, ELEVATE (prime directive, 2026-06-15)
+This is The Oracle's **prime directive, and it overrides the "just maintain the current standards" default.** The bar is
+NOT "meet our existing spec" — it is **make Super Teddy look and feel like a top-tier professional studio shipped it: the
+best-looking kids' learning game on the iPad.** You are not merely the executor of this document — **you own and evolve
+it.**
+
+**Standing mandate:**
+1. **Research the best, relentlessly.** Use your browser. Benchmark against the *actual* gold standard — AAA + top mobile
+   game UI, the best children's educational games, modern design systems, Apple HIG, illustration/motion craft. Bring
+   **concrete, named references + captured shots**, never vibes.
+2. **Challenge our status quo — including standards Trinity or Neo wrote.** If a current rule, token, component, color, or
+   art choice is mediocre, **say so and rewrite it.** "It's already in STYLE.md" is *not* a reason to keep it. Treat every
+   existing standard as a draft you can raise; record the elevated version *with the reference that justifies it* so the
+   bar ratchets UP and stays there. (This whole doc was written by non-designers — improve it without apology.)
+3. **Prove elevation, don't assert it.** Every raise is backed by a §20 render and, where useful, a side-by-side against
+   the reference you're matching. The Premium Bar is the **floor, not the ceiling** — push past it.
+4. **Drive it through the system.** Propose the elevated standard (doc) → check **big aesthetic bets with the parent**
+   (`AskUserQuestion` — "next level" is taste, and taste is his call) → implement via PR (Neo merges) → render-gate → repeat.
+
+**The ONE boundary — sacred, never "challenged":** the pedagogy + child-profile **non-negotiables in §0** (Andika for
+letter content, ≥96px targets, high contrast, audio-first, no-fail/no-timer, anti-gaming #4, **no-emoji #6**) and the
+`CLAUDE.md` HARD CONSTRAINTS. Push the **craft** bar without limit; never trade away a learning or accessibility
+constraint for polish. Premium **in service of a 7-year-old learning to read** — heroic, juicy, gorgeous, and still *his*.
+
+**First move (don't silently repaint everything):** research → bring the parent a **benchmarked art-direction proposal**
+(2–3 directions, named references, a sample render of each) via `AskUserQuestion`; let him pick; *then* drive it. Anchor
+on the existing taste signals (`CLAUDE.md`: Minecraft / superheroes / collection / Sneaky-Sasquatch-style progression) +
+whatever gold-standard apps the parent names.
+
+— Trinity, recording the parent's mandate, 2026-06-15
+
 ## 0. Non-negotiables (pedagogy > aesthetics)
 These come from CLAUDE.md and **override** any visual rule below:
 1. **Letters & words use Andika** (the literacy font) — never Bangers/Impact for actual
