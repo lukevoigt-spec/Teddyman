@@ -238,6 +238,14 @@ ok("every Spell Scroll word is decodable in its act (Act-1 = letters/sight, Act-
 ok("Spell Scroll ids are unique", (function(){ var ids=SCROLLS.map(function(s){return s.id;}); return new Set(ids).size===ids.length; })());
 ok("every Spell Scroll has act 1 or 2 + a non-empty word list", SCROLLS.every(function(s){ return (s.act===1||s.act===2) && Array.isArray(s.t) && s.t.length>=3; }));
 ok("Spell Scrolls exist for BOTH acts", SCROLLS.some(function(s){return s.act===1;}) && SCROLLS.some(function(s){return s.act===2;}));
+
+grp("Sound Warm-Up (rec #3A) picture-word pools are well-formed for blend/segment/isolate");
+var allRW=Object.assign({}, READWORDS, typeof READWORDS2!=="undefined"?READWORDS2:{});
+var wu=[];
+Object.keys(allRW).forEach(function(w){ var n=graphemeSounds(w).length;
+  if(n<2||n>6) wu.push(w+" has "+n+" phonemes (segment options assume 2..6)");
+  if(!toGraphemes(w)[0]) wu.push(w+" has no first grapheme (isolate)"); });
+ok("every Read-It picture word has 2..6 phonemes (valid segment counts) + a first sound", wu.length===0, wu);
 `;
 vm.runInContext(fs.readFileSync(path.join(ROOT, "data-missions.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-content.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-lines.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "state-save.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "audio.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "allies.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "map.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "sfx.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "music.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 

@@ -289,7 +289,7 @@ const $=id=>document.getElementById(id);
    if the file is missing the layer stays transparent and the original look shows.
    Several screens intentionally share one scene (e.g. learn/trace, boss/forge). */
 const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrInter:"intro", scrScan:"lab", scrRead:"learn", scrSpell:"learn", scrMagic:"learn", scrSent:"learn", scrCloze:"learn", scrScramble:"learn", scrFortress:"battle",
-  scrBase:"base", scrTrain:"base", scrVault:"base", scrScroll:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
+  scrBase:"base", scrTrain:"base", scrVault:"base", scrScroll:"base", scrWarmup:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
   scrBoss:"battle", scrForge:"battle", scrWin:"victory", scrRest:"rest" };
 /* SCENE HARMONIZER tones: each scene's dominant ambient KEY light + an accent
    RIM, picked to match its painted background. show() pushes these to body as
@@ -1508,10 +1508,12 @@ function pickTrainWord(){ const pool=trainPool(); if(!pool.length)return null;
   let r=Math.random()*wt.reduce((a,b)=>a+b,0);
   for(let i=0;i<pool.length;i++){ r-=wt[i]; if(r<=0)return pool[i]; }
   return pool[0]; }
-function showTrain(){ clearFlow(); trainReps=0; __scrollServed=false; show("scrTrain"); updateTrainHUD();
+function showTrain(){ clearFlow(); trainReps=0; __scrollServed=false; __warmDone=false; show("scrTrain"); updateTrainHUD();
   flow(narrate("train",$("trainText"),["train_intro"]),()=>trainRound()); }
 function updateTrainHUD(){ $("trainCoins").textContent=S.coins||0; $("trainReps").textContent=trainReps; }
 function trainRound(){
+  /* warm the ears first: a short oral-PA Sound Warm-Up once per training session (rec #3A) */
+  if(!__warmDone && warmReady()){ __warmDone=true; startWarmup(true); return; }
   /* once per training session, if a Spell Scroll is due, read it first (fluency, Vault-scheduled) */
   if(!__scrollServed && scrollDue().length){ __scrollServed=true; startScroll(scrollDue()[0],true); return; }
   const w=pickTrainWord();
@@ -1608,6 +1610,67 @@ function scrollFinish(){ const ms=Date.now()-scrollT0, best=scrollTouch(scrollCu
   flow(Aud.play([best?"scroll_best":"scroll_done"]),()=>{ Aud.stop();
     if(scrollFromTrain){ scrollFromTrain=false; show("scrTrain"); updateTrainHUD(); trainRound(); } else showBase(); }); }
 $("btnScrollBack").onclick=()=>{ Aud.stop(); scrollFromTrain=false; showBase(); };
+
+/* ---------------- SOUND WARM-UP (rec #3A — oral phonemic-awareness drill) ----------------
+   A short (<=5-item) ear warm-up: BLEND (hear the separated phonemes -> tap the picture, NO
+   letters shown), SEGMENT (count the sounds), ISOLATE (tap the gem for the FIRST sound). Pure
+   PA — the child says it aloud; we don't measure speech, only the tap. Anti-gaming #4: every
+   PROMPT is audio-only (never shows the target letter); blend/segment responses are pictures/
+   numbers, isolate is sound->letter (letters only as the RESPONSE). Reuses graphemeSounds/
+   toGraphemes; magic-e first-sounds are excluded (no snd_ clip). flow()-driven so it can't hang. */
+let warmItems=[], warmIx=0, warmMiss=0, warmFromTrain=false, __warmDone=false;
+function warmPool(){ const P=currentAct()===2&&typeof READWORDS2!=="undefined"?Object.assign({},READWORDS,READWORDS2):READWORDS;
+  return Object.keys(P).filter(w=>P[w]&&scrollReadable(w)); }
+function warmPic(w){ const P=Object.assign({},READWORDS,typeof READWORDS2!=="undefined"?READWORDS2:{}); return picIcon(w,P[w]||""); }
+function warmReady(){ return warmPool().length>=3; }
+function pickWarmItems(){ const pool=shuf(warmPool().slice()), plan=["blend","segment","isolate","blend"], items=[];
+  plan.forEach(type=>{ let w;
+    if(type==="isolate") w=pool.find(x=>!items.some(it=>it.w===x) && hasSoundClip(toGraphemes(x)[0]));
+    if(!w) w=pool.find(x=>!items.some(it=>it.w===x)) || pool[0];
+    const t=(type==="isolate" && !hasSoundClip(toGraphemes(w)[0])) ? "blend" : type;
+    items.push({type:t, w}); });
+  return items; }
+function startWarmup(fromTrain){ clearFlow(); warmFromTrain=!!fromTrain; warmItems=pickWarmItems(); warmIx=0; show("scrWarmup");
+  $("warmReveal").innerHTML=""; flow(narrate("warm",$("warmText"),["warmup_intro"]),()=>warmStep()); }
+function warmStep(){ warmMiss=0; $("warmReveal").innerHTML="";
+  if(warmIx>=warmItems.length){ warmFinish(); return; }
+  $("warmProg").textContent=(warmIx+1)+" / "+warmItems.length;
+  const it=warmItems[warmIx]; ({blend:warmBlend,segment:warmSegment,isolate:warmIsolate})[it.type](it.w); }
+function warmNext(){ warmIx++; setTimeout(warmStep,220); }
+function warmRevealWord(w){ const r=$("warmReveal"); r.innerHTML=""; toGraphemes(w).forEach(g=>{ const s=document.createElement("span"); s.className="warmg read"; s.textContent=g; r.appendChild(s); }); }
+function warmChoices(){ const c=$("warmChoices"); c.innerHTML=""; return c; }
+function warmBlend(w){ const opts=shuf([w].concat(shuf(warmPool().filter(x=>x!==w)).slice(0,2)));
+  narrate("warm",$("warmText"),["warmup_blend"].concat(graphemeSounds(w)),"Listen to the sounds… what word? Tap the picture!");
+  const c=warmChoices();
+  opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.innerHTML=warmPic(o); b.dataset.w=o;
+    b.onclick=()=>{ if(o===w){ lockRow(c); record("w_"+w,true); b.classList.add("win"); burstAt(b); warmRevealWord(w);
+        flow(Aud.play(["yes"].concat(wordAudio(w))),warmNext); }
+      else { record("w_"+w,false); warmMiss++; b.classList.add("dim");
+        if(warmMiss>=2)c.querySelectorAll(".picktile").forEach(x=>{if(x.dataset.w===w)x.classList.add("hint");}); Aud.play(["almost"].concat(graphemeSounds(w))); } };
+    c.appendChild(b); }); }
+function warmSegment(w){ const n=graphemeSounds(w).length;
+  narrate("warm",$("warmText"),["warmup_seg"].concat(wordAudio(w)),"How many sounds do you hear? Tap the number!");
+  const set=new Set([n]); let guard=0; while(set.size<3 && guard++<20){ const d=n+(Math.random()<.5?-1:1)*(1+Math.floor(Math.random()*2)); if(d>=2&&d<=6)set.add(d); }
+  const c=warmChoices();
+  shuf([...set]).forEach(o=>{ const b=document.createElement("button"); b.className="tile read"; b.textContent=o; b.dataset.n=o;
+    b.onclick=()=>{ if(o===n){ lockRow(c); record("w_"+w,true); b.classList.add("win"); burstAt(b); warmRevealWord(w);
+        flow(Aud.play(["yes"].concat(graphemeSounds(w))),warmNext); }
+      else { warmMiss++; b.classList.add("dim");
+        if(warmMiss>=2)c.querySelectorAll(".tile").forEach(x=>{if(+x.dataset.n===n)x.classList.add("hint");}); Aud.play(graphemeSounds(w)); } };
+    c.appendChild(b); }); }
+function warmIsolate(w){ const first=toGraphemes(w)[0];
+  narrate("warm",$("warmText"),["warmup_iso"].concat(wordAudio(w)),"What sound does it start with? Tap the gem!");
+  const c=warmChoices();
+  shuf([first].concat(pickFoils(first,taughtGraphemes(),2))).forEach(o=>{ const b=document.createElement("button"); b.className="tile read"; b.textContent=o; b.dataset.g=o;
+    b.onclick=()=>{ if(o===first){ lockRow(c); record(first,true); b.classList.add("win"); burstAt(b); Aud.ding();
+        flow(Aud.play(["yes","snd_"+first]),warmNext); }
+      else { record(first,false); warmMiss++; b.classList.add("dim");
+        if(warmMiss>=2)c.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===first)x.classList.add("hint");}); Aud.play(["almost","snd_"+first]); } };
+    c.appendChild(b); }); }
+function warmFinish(){ $("warmProg").textContent=""; $("warmReveal").innerHTML=""; warmChoices();
+  S.coins=(S.coins||0)+1; save(); try{ confetti(24); }catch(e){}
+  flow(Aud.play(["warmup_done"]),()=>{ Aud.stop(); if(warmFromTrain){ warmFromTrain=false; show("scrTrain"); updateTrainHUD(); trainRound(); } else showBase(); }); }
+$("btnWarmBack").onclick=()=>{ Aud.stop(); warmFromTrain=false; showBase(); };
 
 /* ---------------- MEMORY VAULT — the dedicated recharge activity (rec #1, deterministic) ----------------
    The scheduler (vaultDue/vaultTouch, near line 200) decides WHAT is due; this is the gentle, capped
