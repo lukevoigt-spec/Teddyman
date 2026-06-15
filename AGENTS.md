@@ -88,15 +88,15 @@ A free-form agent group-chat dilutes context and produces incompatible decisions
    the PR itself. Each **subscribes to its PRs** (`subscribe_pr_activity`) so a comment or CI result **wakes** the other
    automatically — no parent relay, no live chat, naturally bounded (a PR ends; open-ended pinging doesn't run away).
    *(NATIVE capability — nothing to build; the agent just subscribes when it opens/reviews a PR.)*
-3. **Decisions / taste / intent → escalate DIRECTLY to the parent.** When ANY agent hits a design choice or decision
-   point not settled by the docs + code — aesthetic taste, ambiguous intent, competing priorities, scope, or a
-   cross-agent disagreement — it **poses the question straight to the parent.** Do **not** guess, do **not** negotiate it
-   away, do **not** launder it through Trinity. The parent is the product owner + the kid's proxy; these are his calls.
-   - **Interactive session:** use the **ask/question action** (Claude agents → the `AskUserQuestion` tool) so it surfaces
-     in-session and pauses for the answer.
-   - **Async / background agent:** open a GitHub **Issue labelled `needs-parent`** (title = the question; body = the
-     options + a recommendation), then continue other work or stop. The parent monitors the **`needs-parent` label as a
-     single queue** across all agents, and answers there. Resume the moment it's answered.
+3. **Decisions / taste / intent → each agent asks the PARENT DIRECTLY (`AskUserQuestion`).** When ANY agent hits a
+   design choice or decision point not settled by the docs + code — aesthetic taste, ambiguous intent, competing
+   priorities, scope, or a cross-agent disagreement — it **poses the question straight to the parent via its own
+   `AskUserQuestion`** (a clean 2–4-option multiple-choice + a recommended pick). The **Claude app push-notifies** the
+   parent that a session needs input; he answers in that session and the agent resumes. Do **not** guess, do **not**
+   negotiate it away, and do **not** route decisions through Trinity — **escalations are DIRECT** (parent's call,
+   2026-06-15; chosen over a consolidated queue because escalations are frequent and a per-question push is faster).
+   Accepted trade-off: questions land **per-agent**, not in one consolidated queue. *(Guests are on-demand and don't
+   escalate live; coordination + handoffs still flow through Trinity + artifacts per #1.)*
 - **Resolve-it-yourself vs. escalate:** resolve from docs/code — doc-answerable questions, mechanical handoffs, "how to
   implement" given a clear spec, routing a verified finding. Escalate to the parent — ambiguous intent, taste, competing
   priorities, scope changes, Neo-vs-Oracle approach disagreements. **When in doubt, ASK the parent — never guess on his behalf.**
