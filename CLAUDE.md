@@ -6,6 +6,23 @@ disorder to read, via systematic synthetic phonics wrapped in a superhero advent
 Built and deployed from this repo via GitHub Pages. The parent is a non-developer:
 every commit to `main` goes live on the child's iPad within minutes. Never push broken code.
 
+## North Star (the objective, in priority order — parent, 2026-06-15)
+1. **Teddy learns to read.** The #1 outcome and the reason the app exists — systematic synthetic phonics →
+   ~2nd-grade / TEKS proficiency by the end of Act 2. **Everything below SERVES this; nothing competes with it.**
+
+On top of #1, this app must be:
+2. **FUN** — he *wants* to play; play and learning are the same act.
+3. **ADDICTING** — compelling positive-reward loops that pull him back daily and maximize **reading reps per minute**.
+   "Addicting" = *healthy* engagement (juice, collection, progress, surprise-good-things), **never dark patterns**: no
+   loss-aversion, no streak-punishment, no timers/countdowns, no manipulation (hard constraints #1/#2 + the §6.0
+   mastery-not-participation contract bound this — "variable" means *which good thing*, never *whether*).
+4. **BEAUTIFUL** — professional-studio, "a real game a kid *chooses* to play" polish (the `STYLE.md` Design Charter),
+   in service of #1.
+
+**Tie-breaker when they seem to trade off: optimize for reading reps per minute, then delight.** Fun / addicting /
+beautiful are the **amplifiers** that make the learning happen — they get him to do *more* reps, more *gladly*. They are
+never an excuse to dilute the pedagogy or break a learning/accessibility constraint.
+
 ## Repo layout
 - `index.html` — the entire game (currently single-file; refactor into modules is welcome,
   but the deployed result must remain a static site that GitHub Pages serves with no build step,
