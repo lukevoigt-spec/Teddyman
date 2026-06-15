@@ -129,7 +129,12 @@ const MISSIONS=[
      that gates on Act-2 mastery (digraphs + magic-e) and frees MISS KENDALL. ===== */
   {id:128,type:"fortress",lbl:"Dragon Keep: Free Miss Kendall!",finale:true,climax:true,z:106}
 ];
-const GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield",22:"Gem Gauntlet",47:"Alphabet Star",30:"Reading Crown",33:"Spell Tome",36:"Story Key",52:"Fluency Badge",
+/* GEAR PACING (P2-A, parent 2026-06-15): the power gear was front-loaded into zone 1 (Belt@1,
+   Boots@3, Hammer@4, Sword@8) so the hero maxed out immediately. Now Hammer stays early (m4) and
+   Sword/Belt/Boots spread ~every 2 zones (m26 z3 / m27 z5 / m34 z7) so he visibly re-powers across
+   the whole campaign. Save-safe: grandfather() seeds S.gearByAct from the FROZEN LEGACY_GEAR_AT
+   (game.js) ∪ the live map, so nobody loses gear they already earned under the old mids. */
+const GEAR_AT={4:"Word Hammer",26:"Gem Sword",27:"Power Belt",34:"Rocket Boots",13:"Gem Shield",22:"Gem Gauntlet",47:"Alphabet Star",30:"Reading Crown",33:"Spell Tome",36:"Story Key",52:"Fluency Badge",
   /* ACT 2 — the Vixen stole his powers, so he RE-EARNS gear through the medieval ladder
      (act-scoped: actGearList only counts this act's missions, so Act-1 gear isn't double-counted).
      Reuses the appearance-mapped names so the knight visibly re-powers as he progresses. */

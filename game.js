@@ -84,13 +84,18 @@ function actGearList(a){ const mids=new Set(actMissions(a).map(m=>m.id));
    grandfather seed must read the OLD mids (not the live LEAGUE) or a not-yet-migrated save would
    un-free allies it already earned. New saves seed off the live mids too (OR below). */
 const LEGACY_RESCUE_MID={tank:3,flip:6,sunny:8,heart:17,leighton:48};
+/* FROZEN pre-2026-06-15 GEAR_AT (P2-A re-pace). Same reason as the rescue mids: a not-yet-migrated
+   save must seed its earned gear off the OLD unlock missions or it loses gear after the spread. */
+const LEGACY_GEAR_AT={1:"Power Belt",3:"Rocket Boots",4:"Word Hammer",8:"Gem Sword",13:"Gem Shield",22:"Gem Gauntlet",47:"Alphabet Star",30:"Reading Crown",33:"Spell Tome",36:"Story Key",52:"Fluency Badge",110:"Gem Sword",118:"Power Belt",127:"Rocket Boots"};
 function grandfather(){ let seeded=false;
   if(!S.freed||typeof S.freed!=="object"){ S.freed={}; seeded=true;
     LEAGUE.forEach(t=>{ const old=LEGACY_RESCUE_MID[t.kind];
       if(S.done[t.mid] || (old!=null && S.done[old])) S.freed[t.kind]=true; }); }
   if(!S.gearByAct||typeof S.gearByAct!=="object"){ S.gearByAct={}; seeded=true;
     ACTS.forEach(a=>{ const mids=new Set(actMissions(a.id).map(m=>m.id));
-      S.gearByAct[a.id]=Object.keys(GEAR_AT).filter(id=>mids.has(+id)&&S.done[id]).map(id=>GEAR_AT[id]); }); }
+      const seed=tbl=>Object.keys(tbl).filter(id=>mids.has(+id)&&S.done[id]).map(id=>tbl[id]);
+      /* live ∪ FROZEN-legacy GEAR_AT — earned gear survives the P2-A pacing re-map */
+      S.gearByAct[a.id]=[...new Set([...seed(GEAR_AT), ...seed(LEGACY_GEAR_AT)])]; }); }
   return seeded; }
 /* missions of an act in PLAY ORDER (zones run in ZONES-array order; missions
    within a zone by id). Used by the parent's level-override slider so its order

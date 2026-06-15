@@ -171,6 +171,7 @@ ok("grandfather() seeds the durable records on an old save (absence is the trigg
 ok("…S.freed seeded from the FROZEN legacy mids (tank@3, flip@6, sunny@8) despite the re-pace", S.freed.tank===true && S.freed.flip===true && S.freed.sunny===true);
 ok("…the re-pace freeze is REAL: flip/sunny freed though their NEW mids (26/30) are NOT done", !S.done[26] && !S.done[30] && S.freed.flip===true && S.freed.sunny===true);
 ok("…S.gearByAct[1] seeded from GEAR_AT∩done (belt/boots/hammer/sword)", S.gearByAct[1].indexOf("Power Belt")>=0 && S.gearByAct[1].indexOf("Gem Sword")>=0 && S.gearByAct[1].indexOf("Rocket Boots")>=0 && S.gearByAct[1].indexOf("Word Hammer")>=0);
+ok("…the P2-A gear freeze is REAL: Sword/Belt/Boots seeded though their NEW mids (26/27/34) are NOT done", !S.done[26]&&!S.done[27]&&!S.done[34] && S.gearByAct[1].indexOf("Gem Sword")>=0 && S.gearByAct[1].indexOf("Power Belt")>=0 && S.gearByAct[1].indexOf("Rocket Boots")>=0);
 ok("NO REGRESSION: right after seeding, actGearList(1) == the derived set (union adds nothing yet)", (function(){ var g=actGearList(1); return g.indexOf("Power Belt")>=0 && g.indexOf("Gem Sword")>=0 && g.indexOf("Rocket Boots")>=0 && g.indexOf("Word Hammer")>=0; })());
 ok("NO REGRESSION: every already-freed friend still reads freed after seeding", allyFreed("tank") && allyFreed("flip") && allyFreed("sunny"));
 // Simulate a FUTURE re-map (P2/P3): the gear/rescue missions move to ids this save hasn't completed → clear done.

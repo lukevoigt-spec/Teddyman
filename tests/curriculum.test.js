@@ -285,6 +285,17 @@ grp("Ally rescue PACING — one friend per zone, spread (parent 2026-06-15)");
   ok("the heart (Amelia) rescue mission is flagged rescue:true (mastery-gated arc preserved at the new spot)", !!(hm && hm.rescue===true));
   ok("old mission 17 is no longer a rescue (flag MOVED, not duplicated)", !(MISSIONS.find(function(m){return m.id===17;})||{}).rescue);
 })();
+
+grp("Gear PACING (P2-A) — power gear spread across zones, not front-loaded in zone 1");
+(function(){
+  var a1g=Object.keys(GEAR_AT).filter(function(id){return +id<100;});
+  ok("every Act-1 GEAR_AT id points at a real mission", a1g.every(function(id){return !!MISSIONS.find(function(m){return m.id===+id;});}), a1g);
+  function gearZone(name){ var id=a1g.find(function(i){return GEAR_AT[i]===name;}); var m=MISSIONS.find(function(x){return x.id===+id;}); return m&&m.z; }
+  var pz=["Gem Sword","Power Belt","Rocket Boots"].map(gearZone);
+  ok("Sword/Belt/Boots are spread across >=3 distinct zones (was all zone 1)", new Set(pz).size>=3, pz);
+  ok("Word Hammer stays an EARLY weapon (zone 1)", gearZone("Word Hammer")===1);
+  ok("no power gear except the Hammer is front-loaded in zone 1", ["Gem Sword","Power Belt","Rocket Boots"].every(function(g){return gearZone(g)!==1;}), pz);
+})();
 `;
 vm.runInContext(fs.readFileSync(path.join(ROOT, "data-missions.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-content.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-lines.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "state-save.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "audio.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "allies.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "map.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "sfx.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "music.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 
