@@ -1345,7 +1345,11 @@ function paintBase(){
   let anyL=false;
   LEAGUE.forEach(t=>{ if(allyFreed(t.kind)){ anyL=true;   /* durable freed-state (grandfathered) */
     const b=document.createElement("button"); b.className="leaguebtn"; b.title="See "+t.real+"\u2019s hero card";
-    b.innerHTML=`<svg viewBox="-32 -36 64 86" width="54"><g>${allyFace(t.kind)}</g><text y="42" text-anchor="middle" font-family="Bangers" font-size="13" fill="#ffc93c">${t.real}</text><text y="55" text-anchor="middle" font-family="Bangers" font-size="9.5" fill="#9b94c9" letter-spacing=".5">"${t.name}"</text></svg>`;
+    /* U13: squish only LONG names to the 60-wide band (textLength) so e.g. "MISS KENDALL" fits
+       instead of clipping to "SS KENDA"; short names render naturally. Distortion is fine here
+       (a name label), never on learning letters. */
+    const fit=s=>s.length>7?' textLength="60" lengthAdjust="spacingAndGlyphs"':'';
+    b.innerHTML=`<svg viewBox="-32 -36 64 86" width="54"><g>${allyFace(t.kind)}</g><text y="42" text-anchor="middle" font-family="Bangers" font-size="13" fill="#ffc93c"${fit(t.real)}>${t.real}</text><text y="55" text-anchor="middle" font-family="Bangers" font-size="9.5" fill="#9b94c9" letter-spacing=".5"${fit('"'+t.name+'"')}>"${t.name}"</text></svg>`;
     b.onclick=()=>openHeroCard(t.kind); lg.appendChild(b); } });
   if(!anyL)lg.innerHTML='<div class="baselbl" style="font-size:15px;">Smash Vex\u2019s cages to free your friends!</div>';
   { const freed=LEAGUE.filter(t=>allyFreed(t.kind)).length, lc=$("leagueCount"); if(lc)lc.textContent=freed+" / "+LEAGUE.length; }

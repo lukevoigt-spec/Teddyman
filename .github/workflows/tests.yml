@@ -24,3 +24,10 @@ jobs:
         run: node tests/save.test.js
       - name: UI no-emoji guard (child-facing surfaces)
         run: node tests/ui-emoji.test.js
+      - name: Syntax-check the Cloudflare Worker (ESM-in-.js)
+        # cloud/worker.js is ES-module syntax in a .js file (Workers runtime), so the
+        # main sweep excludes it (node --check would mis-parse it as CommonJS). Check it
+        # as a module via a temp .mjs copy — catches a Worker syntax typo before deploy.
+        run: |
+          cp cloud/worker.js "${RUNNER_TEMP:-/tmp}/worker.mjs"
+          node --check "${RUNNER_TEMP:-/tmp}/worker.mjs"
