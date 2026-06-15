@@ -366,6 +366,38 @@ STYLE.md §6.5.)*
 
 ---
 
+### 🆕 Morpheus full sweep — 2026-06-14
+
+- 🐛 **CLOUD-2 — daily rollover can make stale local progress outrank a newer cloud save.** Confirmed on latest
+  `main`: boot calls `ensureDaily()` before the initial cloud restore (`game.js:154` before `game.js:497`).
+  On a new day / old save, `ensureDaily()` grants the daily wood chest and calls `save()` (`state-save.js:187-196`);
+  `save()` overwrites `S.ts=Date.now()` (`state-save.js:108`). `cloudPull()` only restores when remote `d.ts > S.ts`
+  (`state-save.js:150-156`), so stale local progress opened on a new day can block the newer cloud copy, and the
+  boot-time `save()` can also schedule a stale cloud push. I simulated the comparison: cloud wins before
+  `ensureDaily()`, loses after the timestamp bump. **Proposed fix:** reconcile cloud before any boot-time save/daily
+  reward mutation (or make boot `ensureDaily()` non-persisting / non-timestamping until cloud pull completes). Add a
+  save/cloud test: old local daily row + older progress + newer cloud progress ⇒ boot restores cloud, then applies
+  today's daily row/chest. — Morpheus, 2026-06-14
+
+- 🧪 **SHOT-1 — `shot.mjs` batch screenshots can be contaminated by earlier scenes.** The harness reuses one Playwright
+  page for every requested scene (`tools/shot.mjs:84`, `tools/shot.mjs:94-101`). The `gate` scene opens `#parentGate`
+  (`tools/shot.mjs:57`) and no per-scene reset hides it, so any later scene in that batch can be screenshot under
+  the grown-up gate. I confirmed this by running `gate` before `juice/coinfly/picons/read` (gate-covered shots), then
+  rerunning those scenes without `gate` (actual product screens). Pending async flows can also overwrite a later
+  scene; `read` landed back on Base when run after train/coin setup, then rendered correctly when run first.
+  **Proposed fix:** create a fresh page per scene, or reset before each scene (`Aud.stop()`, `clearFlow()`,
+  `hideParentGate()`, close overlays, hide `tapStart` if present, clear pending scene timers where practical). This is QA-tooling,
+  but it directly affects whether visual regressions are trusted. — Morpheus, 2026-06-14
+
+**Verification run:** Rebased/rechecked against latest `origin/main` (`3b33f40`). `node tests\save.test.js`,
+`node tests\curriculum.test.js`, `node tests\ui-emoji.test.js`, JS parse sweep via `node --check`, and
+`node tools\shot.mjs gate read picons` followed by clean `node tools\shot.mjs read picons`. I also rechecked the
+sound-ID prompts (`scan` / `find` / boss / fortress / vault): prompt text stays generic and does not show the target
+letter; no new anti-gaming #4 issue found. Act-2 finale sanity: the new `sentence` phase is dispatched and covered by
+the curriculum guard; no extra finale regression found beyond the cloud/tooling findings above. — Morpheus, 2026-06-14
+
+---
+
 ### 🆕 Cypher pass — vetted (Trinity, 2026-06-14)
 Guest QA (Cypher) sent 2 fresh ideas + a STYLE.md gap list. Vetted vs the code (status-discipline rules) — **not
 accepted wholesale.**
