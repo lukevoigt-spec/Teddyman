@@ -1569,7 +1569,8 @@ $("btnTrainBack").onclick=()=>{ __inTraining=false; Aud.stop(); showBase(); };
    on the Vault's Leitner schedule (S.scrolls, reusing VAULT_INTERVALS). Lives in the
    Training Room; flow()-driven so it can never hang (#8). */
 let scrollCur=null, scrollPos=0, scrollT0=0, scrollFromTrain=false, __scrollServed=false;
-function scrollReadable(w){ if(SIGHT[w])return true; const me=magicE(w); if(me && !taughtGraphemes().includes(me.unit))return false;
+function scrollReadable(w){ if(SIGHT[w])return taughtSight().includes(w);   /* a sight word is "readable" only once its spell lesson is done (SCROLL-1: no scroll before its sight words are taught) */
+  const me=magicE(w); if(me && !taughtGraphemes().includes(me.unit))return false;
   return toGraphemes(w).every(g=>taughtGraphemes().includes(g)); }
 function scrollPool(){ const a=currentAct(); return SCROLLS.filter(s=>(s.act||1)===a && s.t.every(scrollReadable)); }
 function scrollDue(){ const t=dayKey();

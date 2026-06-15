@@ -246,6 +246,20 @@ Object.keys(allRW).forEach(function(w){ var n=graphemeSounds(w).length;
   if(n<2||n>6) wu.push(w+" has "+n+" phonemes (segment options assume 2..6)");
   if(!toGraphemes(w)[0]) wu.push(w+" has no first grapheme (isolate)"); });
 ok("every Read-It picture word has 2..6 phonemes (valid segment counts) + a first sound", wu.length===0, wu);
+
+grp("Spell Scroll honours the sight-word gate at RUNTIME (SCROLL-1 — never surface before the sight lesson)");
+(function(){ var saved=S.done, savedAct=S.act;
+  // mid-Act-1 save: a batch of LEARN missions done, but NO spell missions -> taughtSight() is empty
+  S.act=1; S.done={};
+  MISSIONS.filter(function(m){return m.type==="learn";}).slice(0,14).forEach(function(m){ S.done[m.id]=true; });
+  var leak=scrollPool().filter(function(s){ return s.t.some(function(w){ return SIGHT[w] && taughtSight().indexOf(w)<0; }); });
+  ok("no scroll with an untaught sight word is in scrollPool() mid-Act", leak.length===0, leak.map(function(s){return s.id;}));
+  // and once the spell missions are done, the gate opens
+  MISSIONS.filter(function(m){return m.type==="spell";}).forEach(function(m){ S.done[m.id]=true; });
+  ORDER.forEach(function(g){ if(LETTER_MISSION[g]!=null)S.done[LETTER_MISSION[g]]=true; });
+  ok("scrolls DO surface once their letters + sight words are taught", scrollPool().length>0);
+  S.done=saved; S.act=savedAct;
+})();
 `;
 vm.runInContext(fs.readFileSync(path.join(ROOT, "data-missions.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-content.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-lines.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "state-save.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "audio.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "allies.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "map.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "sfx.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "music.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 
