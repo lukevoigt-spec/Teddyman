@@ -24,7 +24,12 @@ const ORDER=["s","a","t","p","i","n","m","d","g","o","c","k","e","u","r","h","b"
    compatible — no Act-1 (non-sight) word contains a digraph sequence. ---- */
 const DIGRAPHS=["sh","ch","th","wh","ck","ng"];
 const VOWELTEAMS=["ai","ee","oa"];   /* vowel teams: 2 letters, ONE long-vowel sound (ai→A, ee→E, oa→O) */
-const GRAPH2=DIGRAPHS.concat(VOWELTEAMS);
+/* ACT 2 zone 7 — R-CONTROLLED vowels ("Bossy R"): each = ONE gem = ONE sound.
+   er/ir/ur are HOMOPHONES (all say /ər/) — handled by audio aliasing (snd_ir/ur→snd_er)
+   + a same-sound foil exclusion in pickFoils so a sound-ID never shows two valid answers. */
+const RCONTROLLED=["ar","or","er","ir","ur"];
+const RCTRL_SCHWA=["er","ir","ur"];   /* the /ər/ family — pre-placed in forge (no choose-by-sound rule) */
+const GRAPH2=DIGRAPHS.concat(VOWELTEAMS).concat(RCONTROLLED);
 function isDigraph(g){ return DIGRAPHS.includes(g); }
 function isVowelTeam(g){ return VOWELTEAMS.includes(g); }
 function toGraphemes(w){ const out=[]; for(let i=0;i<w.length;){ const two=w.substr(i,2);
@@ -32,7 +37,8 @@ function toGraphemes(w){ const out=[]; for(let i=0;i<w.length;){ const two=w.sub
 Object.assign(LETTERS,{
   sh:{kw:"ship",icon:"🚢"}, ch:{kw:"cheese",icon:"🧀"}, th:{kw:"thumb",icon:"👍"},
   wh:{kw:"whale",icon:"🐳"}, ck:{kw:"duck",icon:"🦆"}, ng:{kw:"ring",icon:"💍"},
-  ai:{kw:"rain",icon:"🌧️"}, ee:{kw:"bee",icon:"🐝"}, oa:{kw:"boat",icon:"⛵"}
+  ai:{kw:"rain",icon:"🌧️"}, ee:{kw:"bee",icon:"🐝"}, oa:{kw:"boat",icon:"⛵"},
+  ar:{kw:"car",icon:"🚗"}, or:{kw:"corn",icon:"🌽"}, er:{kw:"fern",icon:"🌿"}, ir:{kw:"bird",icon:"🐦"}, ur:{kw:"surf",icon:"🏄"}
 });
 /* ---- ACT 2: LONG VOWELS via MAGIC-E (split grapheme). A silent E at the end
    reaches back over one consonant and flips the vowel from short to long
@@ -58,6 +64,32 @@ function graphemeSounds(w){ const me=magicE(w); const gs=toGraphemes(w); const o
     else out.push("snd_"+g);
     i=end; }
   return out; }
+/* ---- ACT 2 zone 8: MULTISYLLABIC + AFFIXES ("Big Words"). The skill is a PROCEDURE,
+   not syllable-type names (Kearns 2020: V|CV rules are ~30% reliable → teach FLEX): chop →
+   read each chunk → push → check. syllabify(word) returns the chunk split [a,b] (or [word]):
+   compound (two KNOWN words) → prefix/suffix peel → VCCV (split between consonant GEMS, so a
+   digraph is never cut) → VCV (flex: open-first by default, closed for the known exceptions). */
+const KNOWN_WORDS=new Set([
+  /* single-syllable decodable bases + compound halves (used for compound lookup + affix peel) */
+  "sun","set","cob","web","hot","dog","lap","top","back","pack","cat","fish","sand","box","hill",
+  "pig","pen","bath","tub","dust","pan","jack","pot","tan","dish","pond","up","gum","drop","mud",
+  "jump","help","kick","pick","pack","wish","rest","melt","plant","want","hand","mend","fast","long",
+  "soft","rain","do","lock","zip","trust","fill","fit","bend","well","pin","plug","stock","nap","jam" ]);
+const VCV_CLOSED=new Set(["lemon","robin","cabin","wagon","melon"]);   /* closed-first VCV exceptions */
+const PREFIXES=["un","re","dis"];
+const SUFFIXES=["ing","est","ed","er","es","s"];   /* peel longest-first */
+function isVowelGraph(g){ return VOWELS.includes(g)||VOWELTEAMS.includes(g)||RCONTROLLED.includes(g); }
+function syllabify(word){ const w=String(word).toLowerCase();
+  for(let i=2;i<=w.length-2;i++){ const a=w.slice(0,i), b=w.slice(i);
+    if(KNOWN_WORDS.has(a)&&KNOWN_WORDS.has(b))return [a,b]; }                 /* compound */
+  for(const p of PREFIXES){ if(w.startsWith(p)){ const r=w.slice(p.length); if(KNOWN_WORDS.has(r))return [p,r]; } }
+  for(const s of SUFFIXES){ if(w.length>s.length+1 && w.endsWith(s)){ const base=w.slice(0,w.length-s.length); if(KNOWN_WORDS.has(base))return [base,s]; } }
+  const gs=toGraphemes(w); const offs=[]; let off=0; for(const g of gs){ offs.push(off); off+=g.length; }
+  const vIdx=[]; gs.forEach((g,i)=>{ if(isVowelGraph(g))vIdx.push(i); });
+  if(vIdx.length>=2){ const v1=vIdx[0], between=vIdx[1]-v1-1;
+    if(between>=2){ const cut=offs[v1+2]; return [w.slice(0,cut), w.slice(cut)]; }         /* VCCV: split between the consonants */
+    if(between===1){ const cut=offs[ VCV_CLOSED.has(w) ? v1+2 : v1+1 ]; return [w.slice(0,cut), w.slice(cut)]; } }  /* VCV flex */
+  return [w]; }
 /* z = letter-group zone. Foil pools and forge words only ever use letters from
    zones <= the mission's zone — material not yet taught never appears. */
 /* Campaign data (MISSIONS, GEAR_AT, autoNodes, ZONES, ACTS) moved to data-missions.js. */
@@ -298,7 +330,7 @@ const $=id=>document.getElementById(id);
 /* Painted-scene slots: screen -> art/bg-<name>.* . Add an image to swap a scene;
    if the file is missing the layer stays transparent and the original look shows.
    Several screens intentionally share one scene (e.g. learn/trace, boss/forge). */
-const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrInter:"intro", scrScan:"lab", scrRead:"learn", scrSpell:"learn", scrMagic:"learn", scrSent:"learn", scrCloze:"learn", scrScramble:"learn", scrFortress:"battle",
+const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrInter:"intro", scrScan:"lab", scrRead:"learn", scrSpell:"learn", scrMagic:"learn", scrSyllable:"learn", scrSent:"learn", scrCloze:"learn", scrScramble:"learn", scrFortress:"battle",
   scrBase:"base", scrTrain:"base", scrVault:"base", scrScroll:"base", scrWarmup:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
   scrBoss:"battle", scrForge:"battle", scrWin:"victory", scrRest:"rest" };
 /* SCENE HARMONIZER tones: each scene's dominant ambient KEY light + an accent
@@ -692,13 +724,17 @@ function taughtLetters(){ return ORDER.filter(g=>S.done[LETTER_MISSION[g]]); }
 const DIGRAPH_MISSION={sh:100,ch:101,th:103,wh:105,ck:106,ng:107};
 const MAGICE_MISSION={a_e:119,i_e:120,o_e:123,u_e:124};   /* unit -> its "Magic-E Spell" teach mission */
 const VOWELTEAM_MISSION={ai:129,ee:130,oa:133};           /* team -> its "Quest" teach mission */
+/* R-controlled: er/ir/ur share /ər/, so ONE learn mission is enough per spelling.
+   ar=150, or=151, er=154, ir=155, ur=156 (UFLI order ar→or→…→ur). */
+const RCONTROLLED_MISSION={ar:150,or:151,er:154,ir:155,ur:156};
 function taughtDigraphs(){ return DIGRAPHS.filter(d=>S.done[DIGRAPH_MISSION[d]]); }
 function taughtMagicE(){ return MAGICE_UNITS.filter(u=>S.done[MAGICE_MISSION[u]]); }
 function taughtVowelTeams(){ return VOWELTEAMS.filter(t=>S.done[VOWELTEAM_MISSION[t]]); }
-function taughtGraphemes(){ return taughtLetters().concat(taughtDigraphs()).concat(taughtVowelTeams()); }
+function taughtRControlled(){ return RCONTROLLED.filter(g=>S.done[RCONTROLLED_MISSION[g]]); }
+function taughtGraphemes(){ return taughtLetters().concat(taughtDigraphs()).concat(taughtVowelTeams()).concat(taughtRControlled()); }
 /* graphemes/rules taught in the CURRENT act (Act-2 milestones gate on digraphs +
-   magic-e + vowel teams, since the 26 letters are already mastered and carried over) */
-function actGraphemes(){ return currentAct()===2 ? taughtDigraphs().concat(taughtMagicE()).concat(taughtVowelTeams()) : taughtLetters(); }
+   magic-e + vowel teams + r-controlled, since the 26 letters are already mastered and carried over) */
+function actGraphemes(){ return currentAct()===2 ? taughtDigraphs().concat(taughtMagicE()).concat(taughtVowelTeams()).concat(taughtRControlled()) : taughtLetters(); }
 /* Adaptive pick: weight toward the child's weakest graphemes (low strength /
    low accuracy / fewest reps) so patrols self-target what needs work. */
 function pickWeak(pool){ if(!pool.length)return null;
@@ -712,7 +748,11 @@ function pickWeak(pool){ if(!pool.length)return null;
    trains b-vs-d (etc.) discrimination once both are taught. */
 const CONFUSE={ b:["d","p"], d:["b","p"], p:["q","b"], q:["p"], n:["m","u"], m:["n","w"], u:["n"], w:["m"] };
 function shuf(a){ return a.slice().sort(()=>Math.random()-.5); }
-function pickFoils(g, pool, n){ const cands=pool.filter(x=>x!==g);
+/* the phoneme a grapheme makes, for sound-ID foil de-duping: er/ir/ur all say /ər/,
+   so they must never appear together in a "find the gem that says X" round. */
+function phonemeKey(g){ return RCTRL_SCHWA.includes(g) ? "_schwa" : g; }
+function pickFoils(g, pool, n){ const pk=phonemeKey(g);
+  const cands=pool.filter(x=>x!==g && phonemeKey(x)!==pk);   /* drop same-SOUND graphemes (homophones) */
   const twin=(CONFUSE[g]||[]).find(p=>cands.includes(p));
   const out = twin ? [twin].concat(shuf(cands.filter(x=>x!==twin)).slice(0,n-1)) : shuf(cands).slice(0,n);
   return shuf(out); }
@@ -726,6 +766,7 @@ function startMission(m){ clearFlow(); combo=0; curMiss=0; CUR=m;
   else if(m.type==="scramble")startScramble(m);
   else if(m.type==="fortress")startFortress(m);
   else if(m.type==="magic")startMagic(m);
+  else if(m.type==="syllable"||m.type==="affix")startSyllable(m);
   else startForge(m); }
 function missionComplete(){
   /* MASTERY GATE: a milestone only counts once its core items are truly mastered.
@@ -1215,29 +1256,41 @@ function forgeWord(){
   if(forgeWordIx>=forgeWords.length){
     const fs=$("forgeSprite"); if(fs)fs.classList.add("flee");
     flow(Aud.play(["forge_win1","forge_win2"]),missionComplete); return; }
-  const w=forgeWords[forgeWordIx]; forgeSlotIx=0;
+  const w=forgeWords[forgeWordIx];
   const gs=toGraphemes(w);   /* tokenise so digraphs (sh) are ONE build slot, one gem */
   const me=magicE(w), snds=graphemeSounds(w);
+  /* R-controlled #1: PRE-PLACE the /\u0259r/ gem (er/ir/ur) \u2014 there's no rule to CHOOSE it from a sound,
+     so it's a given slot; the child builds the rest. (ar/or are unambiguous \u2192 built normally.) */
+  const prefill=new Set(); gs.forEach((g,j)=>{ if(RCTRL_SCHWA.includes(g))prefill.add(j); });
+  const _fsNext=ix=>{ while(ix<gs.length && prefill.has(ix))ix++; return ix; };
+  forgeSlotIx=_fsNext(0);
+  /* chunk gap for big (multisyllabic) words \u2014 a visible scoop between the two chunks */
+  const parts=syllabify(w); const breakAt=(parts.length===2)?toGraphemes(parts[0]).length:-1;
   narrate("forge",$("forgeText"),["forge_build",...snds,"word_"+w],"Build the word! Listen\u2026");
   const slots=$("forgeSlots"); slots.innerHTML="";
-  gs.forEach((g,j)=>{ const s=document.createElement("div"); s.className="slot read"; if(me&&j===me.e)s.classList.add("silente"); if(me&&j===me.v)s.classList.add("longv"); slots.appendChild(s); });
-  const pool=taughtGraphemes().filter(x=>!gs.includes(x));   /* distractor: taught graphemes only */
+  gs.forEach((g,j)=>{ const s=document.createElement("div"); s.className="slot read";
+    if(me&&j===me.e)s.classList.add("silente"); if(me&&j===me.v)s.classList.add("longv");
+    if(j===breakAt)s.classList.add("sylbreak");
+    if(prefill.has(j)){ s.textContent=g; s.classList.add("filled","given"); }   /* /\u0259r/ gem given */
+    slots.appendChild(s); });
+  const pool=taughtGraphemes().filter(x=>!gs.includes(x)&&!RCTRL_SCHWA.includes(x));   /* distractor: taught graphemes, never an ambiguous /\u0259r/ */
   const foil=pool[Math.floor(Math.random()*pool.length)];
-  const choices=[...new Set(gs)].concat(foil?[foil]:[]).sort(()=>Math.random()-.5);
+  const buildGs=gs.filter((g,j)=>!prefill.has(j));   /* tiles the child actually places */
+  const choices=[...new Set(buildGs)].concat(foil?[foil]:[]).sort(()=>Math.random()-.5);
   const row=$("forgeChoices"); row.innerHTML="";
   choices.forEach(c=>{ const t=document.createElement("button"); t.className="tile read"; t.textContent=c;
     t.style.width=t.style.height="clamp(80px,13vw,120px)"; t.style.fontSize="clamp(44px,7vw,66px)";
     t.onclick=()=>{ const need=gs[forgeSlotIx];
       if(c===need){ record(c,true);
         const slot=slots.children[forgeSlotIx]; slot.textContent=c; slot.classList.add("filled");
-        Aud.ding(); forgeSlotIx++;
+        const justIx=forgeSlotIx; Aud.ding(); forgeSlotIx=_fsNext(forgeSlotIx+1);
         if(forgeSlotIx>=gs.length){
           if(me)record(me.unit,true);   /* credit the long-vowel rule */
           forgeHP--; paintPips("forgePips",forgeHP,forgeWords.length);
           const fs=$("forgeSprite"); fs.classList.add("hitfx"); setTimeout(()=>fs.classList.remove("hitfx"),380);
           burstAt(fs,w.toUpperCase()+"!");
           flow(Aud.play([...snds,"word_"+w,"blast"]),()=>{forgeWordIx++;setTimeout(forgeWord,350);});
-        } else Aud.play([snds[forgeSlotIx-1],"forge_next"]); }
+        } else Aud.play([snds[justIx],"forge_next"]); }
       else { record(need,false); t.classList.add("dim");
         Aud.play(["forge_listen","snd_"+need]);
         setTimeout(()=>t.classList.remove("dim"),2400); } };
@@ -1275,6 +1328,38 @@ function castMagicE(sh,lo){ const wr=$("magicWord");
     $("magicNext").textContent=(magicIx>=magicPairs.length-1)?"DONE ✓":"NEXT ➜";
     $("magicNext").onclick=()=>{ magicIx++; magicStep(); }; });
 }
+
+/* ---------------- BIG WORDS (multisyllabic + affixes, type "syllable"/"affix") ----------------
+   ONE visible action (no metalanguage): show a big word -> tap CHOP -> it splits at the syllabify()
+   boundary, each chunk lights + sounds (each is a part he already reads) -> chunks PUSH together ->
+   credit the whole word. "affix" missions use the same chop (the split IS the peel: jump|ing, un|lock).
+   FLEX is built in via syllabify's VCV open-first/closed default; framed as a power-up, never an error. */
+let sylWords,sylIx,sylM;
+function startSyllable(m){ show("scrSyllable"); sylM=m; sylWords=m.words.slice(); sylIx=0;
+  $("sylChop").style.display="none"; $("sylNext").style.display="none"; $("sylWord").innerHTML="";
+  const intro = m.type==="affix" ? ["affix_intro"] : ["syll_intro"];
+  flow(narrate("syll",$("sylText"),intro),()=>sylStep()); }
+function sylChunkTiles(chunk){ return toGraphemes(chunk).map(g=>`<div class="tile read sylg">${g}</div>`).join(""); }
+function sylStep(){
+  if(sylIx>=sylWords.length){ flow(Aud.play(["syll_done"]),missionComplete); return; }
+  const w=sylWords[sylIx]; sylM._parts=syllabify(w);
+  $("sylProg").textContent=sylIx+" / "+sylWords.length;
+  const wr=$("sylWord"); wr.innerHTML=`<div class="sylchunk">${sylChunkTiles(w)}</div>`; wr.classList.remove("sylpush");
+  $("sylNext").style.display="none";
+  $("sylChop").style.display="inline-block"; $("sylChop").textContent="CHOP! ✂️"; $("sylChop").onclick=()=>chopWord(w);
+  narrate("syll",$("sylText"),["syll_look",...graphemeSounds(w)],"A BIG word! Tap CHOP to split it into chunks."); }
+function chopWord(w){ const parts=sylM._parts||[w]; $("sylChop").style.display="none";
+  const wr=$("sylWord"); const a=parts[0], b=parts.length>1?parts[1]:"";
+  wr.innerHTML=`<div class="sylchunk ca">${sylChunkTiles(a)}</div>`
+    + (b?`<div class="sylgap">✂</div><div class="sylchunk cb">${sylChunkTiles(b)}</div>`:"");
+  shakeStage();
+  record("w_"+w,true);
+  const seq = b ? [...graphemeSounds(a),"syll_and",...graphemeSounds(b),"syll_push","word_"+w]
+                : [...graphemeSounds(w),"word_"+w];
+  flow(Aud.play(seq),()=>{ wr.classList.add("sylpush"); confetti(22); burstAt(wr,w.toUpperCase()+"!"); if(typeof Sfx!=="undefined")Sfx.combo&&Sfx.combo();
+    $("sylNext").style.display="inline-block";
+    $("sylNext").textContent=(sylIx>=sylWords.length-1)?"DONE ✓":"NEXT ➜";
+    $("sylNext").onclick=()=>{ sylIx++; sylStep(); }; }); }
 
 /* ---------------- UNLOCK CARD (reward reveal) ---------------- */
 /* a glowing gold faceted reward gem (no letter) for gear/trophy unlocks */

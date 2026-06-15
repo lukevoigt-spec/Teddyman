@@ -16,7 +16,9 @@ const MAPIMG={1:"art/bg-map.jpeg", 2:"art/bg-map-a2.jpeg"};
    ZONES play order per act — calibrated by eye to sit on the painted golden path. */
 const ZONESPOTS={
   1:[[215,640],[362,432],[298,300],[322,168],[560,212],[592,352],[722,330],[772,206],[838,108]],
-  2:[[182,600],[432,430],[776,224],[712,360],[548,300],[486,128]]
+  /* 8 zones (101,102,103,104,107,108,105,106 in play order). Legacy map is NOT rendered for Act 2
+     (V2 is), but curriculum.test guards a spot per zone — keep parity. */
+  2:[[182,620],[372,500],[560,400],[700,300],[640,230],[470,200],[300,150],[486,80]]
 };
 /* ---- ARENA MAP V2 (Act 1): a Braveland-style living campaign map ----
    The painting is a path-FREE landscape (house = start, Vex's lair = end); we draw the
@@ -25,9 +27,10 @@ const ZONESPOTS={
    onto the open corridor: house -> meadow -> bridge -> canyon -> fortress, 9 zones in order. */
 const MAPSPOTS_V2={
   1:[[235,872],[300,712],[252,556],[404,470],[565,540],[690,650],[902,600],[1062,468],[1208,322]],
-  /* Act 2 (6 zones): one continuous route village -> bottom meadow -> stone bridge (single river
-     crossing) -> up the open right meadow -> the dragon keep. Stays on grass, avoids the forest. */
-  2:[[335,875],[500,850],[640,815],[715,795],[1085,565],[1040,255]]
+  /* Act 2 (8 zones — parent's locked marks): one continuous route on LAND — village -> bottom meadow
+     -> stone bridge (single crossing) -> swing WIDE onto the right-bank grass (clear of the river) ->
+     climb to the dragon keep at index 7. Play order: 101,102,103,104,107(cove),108(bridge),105,106. */
+  2:[[335,875],[500,850],[640,815],[720,765],[880,665],[1085,565],[1110,410],[1120,255]]
 };
 /* day/twilight by the DEVICE clock (the iPad is in the family's timezone): 6am-6pm day, else dusk. */
 function mapBgFor(a){

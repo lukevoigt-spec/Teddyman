@@ -46,7 +46,7 @@ var ids = MISSIONS.map(m=>m.id);
 ok("mission ids are unique", new Set(ids).size === ids.length);
 ok("Act-1 mission ids in 0..99", actMissions(1).every(m=>m.id>=0 && m.id<100));
 ok("Act-2 mission ids in 100..199", actMissions(2).every(m=>m.id>=100 && m.id<200));
-var HANDLED = new Set(["learn","patrol","read","spell","sentence","cloze","scramble","fortress","magic","forge"]);
+var HANDLED = new Set(["learn","patrol","read","spell","sentence","cloze","scramble","fortress","magic","forge","syllable","affix"]);
 ok("every mission type is handled", MISSIONS.every(m=>HANDLED.has(m.type)), MISSIONS.filter(m=>!HANDLED.has(m.type)).map(m=>m.type));
 var zoneIds = new Set(ZONES.map(z=>z.id));
 ok("every mission references an existing zone", MISSIONS.every(m=>zoneIds.has(m.z)), MISSIONS.filter(m=>!zoneIds.has(m.z)).map(m=>m.id));
@@ -107,8 +107,8 @@ ok("vowel teams tokenise as ONE gem (rain->r,ai,n; feet->f,ee,t; boat->b,oa,t)",
 ok("VOWELTEAM_MISSION points at the right learn missions", Object.keys(VOWELTEAM_MISSION).every(t=>{var m=MISSIONS.find(x=>x.id===VOWELTEAM_MISSION[t]); return m && m.type==="learn" && m.letter===t;}));
 
 grp("Act-2 sentence-level fluency (the 2nd-grade rung) is decodable + well-wired");
-// the Great Library plays after every Act-2 skill zone, so the taught set is the 26 letters + all digraphs + magic-e + vowel teams
-var a2t = new Set(ORDER.concat(DIGRAPHS).concat(MAGICE_UNITS).concat(VOWELTEAMS));
+// the Great Library plays after every Act-2 skill zone, so the taught set is the 26 letters + all digraphs + magic-e + vowel teams + r-controlled
+var a2t = new Set(ORDER.concat(DIGRAPHS).concat(MAGICE_UNITS).concat(VOWELTEAMS).concat(RCONTROLLED));
 function a2ok(w){ if(SIGHT[w]) return true; var me=magicE(w); if(me && !a2t.has(me.unit)) return false; return toGraphemes(w).every(g=>a2t.has(g)); }
 var s2 = [];
 SENTENCES2.forEach(function(s,i){ s.t.forEach(function(w){ if(!a2ok(w)) s2.push("S2["+i+"] '"+w+"'"); }); });
@@ -133,6 +133,48 @@ ok("every Act-2 finale Maze (FORTMAZE2) word is decodable by Great-Library play 
 ok("FORTMAZE2 has a blank + a valid answer in every item", FORTMAZE2.every(function(c){ return c.t.indexOf("_")>=0 && c.ans && Array.isArray(c.foils) && c.foils.length>=1; }));
 ok("FORTMAZE2 is DISTINCT from the Dojo CLOZE2 (the climax isn't a rerun — mirrors Act-1 FORTMAZE vs CLOZE)",
   FORTMAZE2.every(function(f){ return !CLOZE2.some(function(c){ return JSON.stringify(c.t)===JSON.stringify(f.t) && c.ans===f.ans; }); }));
+
+grp("Act-2 zone 7 — R-CONTROLLED vowels (Bossy R: ar/or/er/ir/ur)");
+ok("RCONTROLLED_MISSION points at the right learn missions", Object.keys(RCONTROLLED_MISSION).every(function(g){ var m=MISSIONS.find(function(x){return x.id===RCONTROLLED_MISSION[g];}); return m && m.type==="learn" && m.letter===g; }));
+ok("r-controlled tokenises as ONE gem, longest-match (star->s,t,ar; fork->f,or,k; bird->b,ir,d; her->h,er; surf->s,ur,f; church->ch,ur,ch)",
+  JSON.stringify(toGraphemes("star"))==='["s","t","ar"]' && JSON.stringify(toGraphemes("fork"))==='["f","or","k"]' &&
+  JSON.stringify(toGraphemes("bird"))==='["b","ir","d"]' && JSON.stringify(toGraphemes("her"))==='["h","er"]' &&
+  JSON.stringify(toGraphemes("surf"))==='["s","ur","f"]' && JSON.stringify(toGraphemes("church"))==='["ch","ur","ch"]');
+ok("er/ir/ur share ONE phoneme key (the /ər/ family); ar & or are distinct sounds",
+  phonemeKey("er")===phonemeKey("ir") && phonemeKey("ir")===phonemeKey("ur") &&
+  phonemeKey("ar")!==phonemeKey("or") && phonemeKey("ar")!==phonemeKey("er") && phonemeKey("or")!==phonemeKey("er"));
+// a sound-ID for ir must NEVER offer er/ur as a foil (homophones — two valid answers)
+var _foilPool=ORDER.concat(DIGRAPHS).concat(VOWELTEAMS).concat(RCONTROLLED);
+var schwaFoilBad=false; for(var _i=0;_i<40;_i++){ var fs=pickFoils("ir",_foilPool,3); if(fs.some(function(x){return x==="er"||x==="ur"||x==="ir";})) schwaFoilBad=true; }
+ok("pickFoils never offers a same-/ər/ spelling as a foil for ir (no two valid sound-ID answers)", !schwaFoilBad);
+// backward-compat: no taught Act-1 word silently contains an r-controlled sequence (the 'said' guard pattern)
+var rcLeak=[];
+MISSIONS.filter(function(m){return m.z<100 && (m.type==="forge"||m.type==="read");}).forEach(function(m){
+  (m.words||[]).forEach(function(w){ if(toGraphemes(w).some(function(g){return RCONTROLLED.indexOf(g)>=0;})) rcLeak.push("m"+m.id+" '"+w+"'"); }); });
+ok("no Act-1 forge/read word silently contains an r-controlled gem (would decode wrong before Bossy R is taught)", rcLeak.length===0, rcLeak);
+
+grp("Act-2 zone 8 — MULTISYLLABIC + AFFIXES (Big Words: syllabify + chop/peel)");
+// every syllable/affix word is decodable by its play position (everything is taught by zone 8)
+var bigErr=[];
+MISSIONS.filter(function(m){return m.type==="syllable"||m.type==="affix";}).forEach(function(m){
+  (m.words||[]).forEach(function(w){ if(!a2ok(w)) bigErr.push("m"+m.id+" '"+w+"'"); }); });
+ok("every syllable/affix word is decodable (built from already-taught graphemes)", bigErr.length===0, bigErr);
+ok("syllabify splits compounds into two KNOWN words (sunset->sun,set; catfish->cat,fish)",
+  JSON.stringify(syllabify("sunset"))==='["sun","set"]' && JSON.stringify(syllabify("catfish"))==='["cat","fish"]');
+ok("syllabify VCCV splits between the consonants (rabbit->rab,bit; napkin->nap,kin; magnet->mag,net)",
+  JSON.stringify(syllabify("rabbit"))==='["rab","bit"]' && JSON.stringify(syllabify("napkin"))==='["nap","kin"]' && JSON.stringify(syllabify("magnet"))==='["mag","net"]');
+ok("syllabify VCV flexes (tiger->ti,ger open-first; lemon->lem,on closed exception)",
+  JSON.stringify(syllabify("tiger"))==='["ti","ger"]' && JSON.stringify(syllabify("lemon"))==='["lem","on"]');
+ok("syllabify peels affixes (jumping->jump,ing; jumped->jump,ed; faster->fast,er; unlock->un,lock; distrust->dis,trust)",
+  JSON.stringify(syllabify("jumping"))==='["jump","ing"]' && JSON.stringify(syllabify("jumped"))==='["jump","ed"]' &&
+  JSON.stringify(syllabify("faster"))==='["fast","er"]' && JSON.stringify(syllabify("unlock"))==='["un","lock"]' &&
+  JSON.stringify(syllabify("distrust"))==='["dis","trust"]');
+// NEVER split a digraph: the two chunks' graphemes must rejoin to EXACTLY the whole word's graphemes
+function chunksKeepGraphemes(w){ var p=syllabify(w); if(p.length<2)return true; var rejoined=[].concat(toGraphemes(p[0]),toGraphemes(p[1])); return JSON.stringify(rejoined)===JSON.stringify(toGraphemes(w)); }
+ok("syllabify never splits a digraph (bathtub->bath|tub, catfish->cat|fish, backpack->back|pack keep whole gems)",
+  ["bathtub","catfish","backpack","kicking"].every(chunksKeepGraphemes));
+ok("syllabify always returns chunks that rejoin to the whole word",
+  ["sunset","rabbit","tiger","lemon","jumping","unlock","distrust","helmet","basket"].every(function(w){ return syllabify(w).join("")===w; }));
 
 grp("bug #3: magic-e units never reach a sound-ID (snd_) round");
 // magic-e (a_e/i_e/o_e/u_e) is a SPLIT grapheme with no phoneme clip — it must never be a find/boss gem

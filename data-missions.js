@@ -85,7 +85,7 @@ const MISSIONS=[
   {id:110,type:"forge",words:["shop","chin","bath","wing"],lbl:"Dragon Duel!",finale:true,z:101},
   /* === ACT 2 · ZONE 2 · THE IRON FORGE — consonant BLENDS (build+decode clusters) === */
   {id:111,type:"forge",words:["stop","frog","clap"],lbl:"Blend Smith: First Blends",z:102},
-  {id:112,type:"read", words:["frog","drum","flag","crab","star"],lbl:"Blend Reading I",z:102},
+  {id:112,type:"read", words:["frog","drum","flag","crab","tent"],lbl:"Blend Reading I",z:102},   /* "star" moved out: it's r-controlled (s-t-ar), taught in zone 107, not here */
   {id:113,type:"forge",words:["swim","snap","glad","plum"],lbl:"Blend Smith: Twin Blades",z:102},
   {id:114,type:"forge",words:["hand","jump","milk","nest"],lbl:"Blend Smith: End Blends",z:102},
   {id:115,type:"read", words:["hand","jump","lamp","tent","mask"],lbl:"Blend Reading II",z:102},
@@ -118,13 +118,44 @@ const MISSIONS=[
   {id:138,type:"read",words:["ship","frog","cake","rain"],lbl:"Fluency: Mixed Reading I",z:105},
   {id:139,type:"read",words:["chip","jump","home","boat"],lbl:"Fluency: Mixed Reading II",z:105},
   {id:140,type:"read",words:["king","milk","kite","feet"],lbl:"Fluency: Mixed Reading III",z:105},
-  {id:141,type:"read",words:["fish","trap","rose","goat","tree"],lbl:"Fluency Rally!",z:105},
+  {id:141,type:"read",words:["fish","trap","rose","car","bird","rabbit","tree"],lbl:"Fluency Rally!",z:105},   /* folds r-controlled (car/bird) + a big word (rabbit) into fluency, per CURRICULUM-GRADE2 */
   /* SENTENCE-level reading — the 2nd-grade rung: read whole decodable sentences
      (Act-2 words + sight words) for meaning. SENTENCES2/CLOZE2 in data-content.js. */
   {id:142,type:"sentence",sents:[0,1,2,3],lbl:"Story Stones I",z:105},
   {id:143,type:"cloze",items:[0,1,2],lbl:"Word Riddles I",z:105},
   {id:144,type:"sentence",sents:[4,5,6,7,8],lbl:"Story Stones II",z:105},
   {id:145,type:"cloze",items:[3,4,5],lbl:"Word Riddles Rally",z:105},
+  /* === ACT 2 · ZONE 7 · THE PIRATE COVE — R-CONTROLLED vowels ("Bossy R": ar/or/er/ir/ur).
+     One gem = one sound; er/ir/ur are homophones (/ər/), so forge PRE-PLACES the /ər/ gem and
+     sound-ID never shows two /ər/ gems (pickFoils homophone-exclude). Plays AFTER vowel teams
+     (104), BEFORE the Great Library (105) — r-controlled is a prerequisite for multisyllabic. === */
+  {id:150,type:"learn",letter:"ar",lbl:"Quest: Bossy R — AR (arrr!)",z:107},
+  {id:151,type:"learn",letter:"or",lbl:"Quest: Bossy R — OR",z:107},
+  {id:152,type:"forge",words:["car","fork","star","corn"],lbl:"Cove Forge: AR & OR",z:107},
+  {id:153,type:"read", words:["car","star","fork","corn"],lbl:"Cove Reading: AR & OR",z:107},
+  {id:154,type:"learn",letter:"er",lbl:"Quest: the /er/ sound — ER",z:107},
+  {id:155,type:"learn",letter:"ir",lbl:"Quest: another /er/ — IR",z:107},
+  {id:156,type:"learn",letter:"ur",lbl:"Quest: another /er/ — UR",z:107},
+  {id:157,type:"forge",words:["her","bird","fur","girl"],lbl:"Cove Forge: the /er/ Family",z:107},
+  {id:158,type:"read", words:["bird","girl","fur","surf"],lbl:"Cove Reading: the /er/ Family",z:107},
+  {id:159,type:"forge",words:["car","corn","bird","fur","star","turn"],lbl:"Bossy R Showdown",finale:true,z:107},
+  /* === ACT 2 · ZONE 8 · THE GIANT'S BRIDGE — MULTISYLLABIC + AFFIXES ("Big Words"). The skill is a
+     PROCEDURE (chop → read chunks → push → check), built on every prior pattern. New type "syllable"
+     (split a long word) + "affix" (peel an ending/prefix) via startSyllable; forge/read are chunk-aware.
+     Plays after r-controlled (107), before the Great Library (105) + finale. === */
+  {id:160,type:"syllable",words:["sunset","cobweb"],lbl:"Big Words: Two Words HUG",z:108},
+  {id:161,type:"read",words:["sunset","hotdog","laptop","backpack"],lbl:"Bridge Reading: Compounds",z:108},
+  {id:162,type:"syllable",words:["rabbit","napkin"],lbl:"Chop the Giant: Split the Twins",z:108},
+  {id:163,type:"read",words:["rabbit","magnet","basket","helmet"],lbl:"Bridge Reading: Big Words",z:108},
+  {id:164,type:"syllable",words:["tiger","robot","lemon"],lbl:"Try It Both Ways!",z:108},
+  {id:165,type:"read",words:["tiger","robot","lemon","robin"],lbl:"Bridge Reading: Detective Words",z:108},
+  {id:166,type:"affix",words:["jumps","jumping"],lbl:"Word Endings: peel -s, -ing",z:108},
+  {id:167,type:"forge",words:["jumping","helping","kicking","jumped"],lbl:"Bridge Forge: -ing / -ed",z:108},
+  {id:168,type:"affix",words:["jumped","planted","rained"],lbl:"The Three -ed Sounds",z:108},
+  {id:169,type:"forge",words:["faster","fastest","longer","jumper"],lbl:"Endings: -er / -est",z:108},
+  {id:170,type:"affix",words:["undo","redo","unlock","unzip"],lbl:"Word Starts: un- / re-",z:108},
+  {id:171,type:"forge",words:["unlock","jumping","faster","redo","distrust"],lbl:"Bridge Forge: Mix",z:108},
+  {id:172,type:"read",words:["sunset","rabbit","magnet","basket","helmet","hotdog"],lbl:"The Giant Word Champion",finale:true,z:108},
   /* ===== ACT-2 FINALE — the Dragon Keep: a multi-phase boss (sound→read→spell→read)
      that gates on Act-2 mastery (digraphs + magic-e) and frees MISS KENDALL. ===== */
   {id:128,type:"fortress",lbl:"Dragon Keep: Free Miss Kendall!",finale:true,climax:true,z:106}
@@ -138,7 +169,9 @@ const GEAR_AT={4:"Word Hammer",26:"Gem Sword",27:"Power Belt",34:"Rocket Boots",
   /* ACT 2 — the Vixen stole his powers, so he RE-EARNS gear through the medieval ladder
      (act-scoped: actGearList only counts this act's missions, so Act-1 gear isn't double-counted).
      Reuses the appearance-mapped names so the knight visibly re-powers as he progresses. */
-  110:"Gem Sword", 118:"Power Belt", 127:"Rocket Boots"};
+  110:"Gem Sword", 118:"Power Belt", 127:"Rocket Boots",
+  /* Act-2 zones 7 (r-controlled) + 8 (multisyllabic) finales re-arm the knight further */
+  159:"Gem Shield", 172:"Reading Crown"};
 /* ---------------- WORLD ZONES (drive the map) ----------------
    Each ZONE is one letter group with its own painted-scene slot and its
    mission nodes. To add a group, append a zone (autoNodes() lays out the
@@ -196,6 +229,14 @@ const ZONES=[
   /* ===== ACT 2 · zone 4: VOWEL TEAMS (ai/ee/oa) ===== */
   { id:104, name:"THE SINGING GLADE", bg:"spellery", act:2,
     letters:["ai","ee","oa"], nodes:autoNodes(9,{y0:-1240,step:104,phase:2.6}) },
+  /* ===== ACT 2 · zone 7: R-CONTROLLED vowels (Bossy R: ar/or/er/ir/ur). Play order: after the
+     Singing Glade, before the Great Library (r-controlled is a prerequisite for multisyllabic). ===== */
+  { id:107, name:"THE PIRATE COVE", bg:"spellery", act:2,
+    letters:["ar","or","er","ir","ur"], nodes:autoNodes(10,{y0:-2060,step:104,phase:3.0}) },
+  /* ===== ACT 2 · zone 8: MULTISYLLABIC + AFFIXES (Big Words). New skill = the chop/peel PROCEDURE,
+     built on every prior pattern; no new graphemes. ===== */
+  { id:108, name:"THE GIANT'S BRIDGE", bg:"spellery", act:2,
+    letters:[], nodes:autoNodes(13,{y0:-2480,step:96,phase:1.7}) },
   /* ===== ACT 2 · zone 5: FLUENCY (rapid mixed decoding) ===== */
   { id:105, name:"THE GREAT LIBRARY", bg:"spellery", act:2,
     letters:[], nodes:autoNodes(8,{y0:-1640,step:96,phase:1.1}) },

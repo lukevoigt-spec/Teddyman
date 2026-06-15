@@ -76,7 +76,9 @@ const FORTMAZE2=[
   {t:["a","fish","and","I","_"],   ans:"swim", foils:["jump","ride"], pic:"🐟"},
   {t:["the","rose","is","_"],      ans:"red",  foils:["big","wet"],   pic:"🌹"},
   {t:["the","train","is","_"],     ans:"fast", foils:["red","big"],   pic:"🚂"},
-  {t:["a","_","can","jump"],       ans:"frog", foils:["fish","ship"], pic:"🐸"}
+  {t:["a","_","can","jump"],       ans:"frog", foils:["fish","ship"], pic:"🐸"},
+  {t:["I","see","the","_"],        ans:"car",  foils:["bird","corn"], pic:"🚗"},   /* r-controlled proven at the finale */
+  {t:["the","_","can","hop"],      ans:"rabbit",foils:["robot","magnet"],pic:"🐰"} /* big word proven at the finale */
 ];
 /* SPELL SCROLLS — short DECODABLE passages for repeated-reading fluency (rec #2,
    Lee & Yoon 2016). Per act, only decodable words + sight words; the runtime pool
@@ -112,7 +114,12 @@ const READWORDS2={
   frog:"🐸", drum:"🥁", flag:"🚩", crab:"🦀", star:"⭐", hand:"✋",
   jump:"🦘", lamp:"💡", tent:"⛺", mask:"😷", sled:"🛷", gift:"🎁", trap:"🪤", milk:"🥛",
   cake:"🎂", bike:"🚲", gate:"🚪", kite:"🪁", home:"🏠", cube:"🧊", nose:"👃", rose:"🌹",
-  rain:"🌧️", train:"🚂", feet:"🦶", tree:"🌳", bee:"🐝", boat:"⛵", goat:"🐐", coat:"🧥", seed:"🌱"
+  rain:"🌧️", train:"🚂", feet:"🦶", tree:"🌳", bee:"🐝", boat:"⛵", goat:"🐐", coat:"🧥", seed:"🌱",
+  /* zone 7 — r-controlled (Bossy R) */
+  car:"🚗", corn:"🌽", fork:"🍴", bird:"🐦", girl:"👧", fur:"🧣", surf:"🏄", church:"⛪", fern:"🌿", jar:"🫙",
+  /* zone 8 — Big Words (multisyllabic + affixes) */
+  sunset:"🌅", hotdog:"🌭", laptop:"💻", backpack:"🎒", rabbit:"🐰", magnet:"🧲", basket:"🧺",
+  helmet:"⛑️", tiger:"🐅", robot:"🤖", lemon:"🍋", robin:"🐤"
 };
 const TRACE={
   s:[[[205,80],[150,58],[102,86],[106,132],[160,152],[196,188],[172,236],[102,232]]],

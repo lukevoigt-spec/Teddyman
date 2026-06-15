@@ -61,6 +61,12 @@ const SCENES = {
   shop:    `(function(){ S.coins=120; openShop(); return 1; })()`,
   win:     `(function(){ CUR=(typeof MISSIONS!=="undefined"&&MISSIONS.find(function(x){return x.type==="learn";}))||{id:1,lbl:"Letter S"}; showWin(false); return 1; })()`,
   read:    `(function(){ CUR={id:5}; readWords=["cat"]; readIx=0; readGoal=1; readMiss=0; show('scrRead'); nextRead(); return 1; })()`,
+  // Act-2 r-controlled + Big Words (new code paths) — drive the handlers directly to surface any error
+  rctrl_learn: `(function(){ S.act=2; CUR={id:150}; startLearn({letter:"ar"}); return 1; })()`,
+  rctrl_forge: `(function(){ S.act=2; S.done={}; RCONTROLLED.forEach(function(g){S.done[RCONTROLLED_MISSION[g]]=true;}); CUR={id:157}; startForge({id:157,type:"forge",words:["her","bird","fur","girl"]}); forgeWord(); return 1; })()`,
+  bigword: `(function(){ S.act=2; CUR={id:160}; startSyllable({id:160,type:"syllable",words:["sunset","cobweb"]}); sylStep(); return 1; })()`,
+  bigchop: `(function(){ S.act=2; CUR={id:160}; startSyllable({id:160,type:"syllable",words:["sunset"]}); sylStep(); chopWord("sunset"); return 1; })()`,
+  affixchop: `(function(){ S.act=2; CUR={id:170}; startSyllable({id:170,type:"affix",words:["unlock"]}); sylStep(); chopWord("unlock"); return 1; })()`,
   picons:  `(function(){ var words=(arguments,Object.keys(PICONS)); show('scrRead'); document.getElementById('readWord').innerHTML=''; document.querySelector('.bubble#readText').style.display='none'; var cr=document.getElementById('readChoices'); cr.style.flexWrap='wrap'; cr.style.maxWidth='900px'; cr.innerHTML=''; words.forEach(function(o){ var wrap=document.createElement('div'); wrap.style.cssText='display:flex;flex-direction:column;align-items:center;'; var b=document.createElement('div'); b.className='tile picktile'; b.style.cssText='font-size:46px;width:78px;height:78px;'; b.innerHTML=picIcon(o,''); var l=document.createElement('div'); l.textContent=o; l.style.cssText='color:#fff;font-size:12px;font-family:sans-serif;'; wrap.appendChild(b); wrap.appendChild(l); cr.appendChild(wrap); }); return 1; })()`,
   scanintro: `(function(){ show('scrScan'); narrate('scan',document.getElementById('scanText'),['scan_intro']); clearFlow(); return 1; })()`,
   menu: `(function(){ toMap(); document.getElementById('navMenu').classList.add('on'); return 1; })()`,

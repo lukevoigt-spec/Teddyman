@@ -129,6 +129,19 @@ body{
 @keyframes magflyin{ 0%{transform:translateX(70px) scale(.4); opacity:0} 60%{opacity:1} 100%{transform:translateX(0) scale(1); opacity:.5} }
 .rletter.silente, .slot.silente{ opacity:.55; border-style:dashed; }       /* silent E in read tiles / forge slots */
 .rletter.longv{ background:linear-gradient(180deg,#ffd75e,#f0a82b); }
+/* ----- Big Words (multisyllabic + affixes): chop into chunks, then push together ----- */
+.sylchunk{ display:inline-flex; gap:4px; padding:6px; border-radius:18px; transition:transform .45s cubic-bezier(.3,.9,.4,1); }
+.sylchunk.ca,.sylchunk.cb{ background:rgba(255,255,255,.08); box-shadow:inset 0 0 0 3px var(--gold); animation:sylpop .45s ease both; }
+.sylchunk.cb{ animation-delay:.12s; }
+@keyframes sylpop{ 0%{transform:scale(.7);opacity:0} 100%{transform:scale(1);opacity:1} }
+.sylg{ width:clamp(56px,10vw,90px); height:clamp(56px,10vw,90px); font-size:clamp(34px,6vw,54px); }
+.sylgap{ align-self:center; font-size:clamp(28px,5vw,44px); color:var(--gold); margin:0 4px; animation:sylchop .4s ease; }
+@keyframes sylchop{ 0%{transform:translateY(-30px) rotate(-20deg);opacity:0} 100%{transform:translateY(0) rotate(0);opacity:1} }
+#sylWord.sylpush .sylchunk.ca{ transform:translateX(14px); }
+#sylWord.sylpush .sylchunk.cb{ transform:translateX(-14px); }
+#sylWord.sylpush .sylgap{ opacity:0; }
+.slot.sylbreak{ margin-left:clamp(14px,3vw,30px); }    /* the scoop between two chunks in forge */
+.slot.given{ background:linear-gradient(180deg,#ffd75e,#f0a82b); opacity:.92; }   /* a pre-placed (given) gem, e.g. the /ər/ */
 /* heart-word slot: the irregular "remember it" letter, marked with a ♥ */
 .slot.heartslot{position:relative;border-color:var(--red);background:#ffd9e4;}
 .slot.heartslot::after{content:"♥";position:absolute;top:-14px;right:-6px;font-size:30px;color:var(--red);-webkit-text-stroke:3px var(--ink);paint-order:stroke;}

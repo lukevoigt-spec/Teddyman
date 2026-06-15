@@ -40,7 +40,8 @@ VStore.open().then(()=>VStore.all()).then(m=>{ CUSTOM=m||{};
 /* vowel-team phonemes ARE the long-vowel sound (ai=long A, ee=long E, oa=long O),
    so if a parent recorded the long vowels but not ai/ee/oa, reuse those clips
    rather than dropping to TTS. Direct snd_ai/ee/oa clips still win if present. */
-const PHON_ALIAS={ snd_ai:"snd_a_long", snd_ee:"snd_e_long", snd_oa:"snd_o_long" };
+const PHON_ALIAS={ snd_ai:"snd_a_long", snd_ee:"snd_e_long", snd_oa:"snd_o_long",
+  snd_ir:"snd_er", snd_ur:"snd_er" };   /* r-controlled: er/ir/ur all say /ər/ — one recorded clip covers all three */
 function clipFor(id){
   let c = CUSTOM[id] || ((typeof VOICEPACK!=="undefined") && VOICEPACK[id]) || null;
   if(!c && PHON_ALIAS[id]){ const a=PHON_ALIAS[id]; c = CUSTOM[a] || ((typeof VOICEPACK!=="undefined") && VOICEPACK[a]) || null; }
