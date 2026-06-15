@@ -7,11 +7,16 @@
 
 ## ⭐ CURRENT PRIORITIES FOR NEO
 
-> 📐 **The consolidated retro-fit checklist is now `DESIGN-ALIGNMENT.md`** (5 deep-dive audits of the live code vs the
-> whole design system, prioritized + file:line-backed) — **use it as the master to-do for design alignment.** Newly
-> confirmed SHIPPED since this list was written: **M-#2 action-rail FIXED**, **`flyReward` coin-fly BUILT**, **treasure
-> chests BUILT**, **mastery contract fully honored**. Remaining engagement build-out (store / Hero Room / finer Rank
-> meter) + the quick wins (one-`!` sweep, 3.2MB orphan PNG, btnSkip 64px, SFX variation) live in that doc.
+> 🔴 **TOP PRIORITY (parent escalation 2026-06-15) — the PREMIUM UI OVERHAUL** at the top of `DESIGN-ALIGNMENT.md`: the
+> UI shipped amateurish + emoji-heavy. New hard rules now have teeth → STYLE.md non-negotiables **#6 (emoji BANNED in
+> child UI)** + **#7 (UI-in-the-world + render gate)**, new **§18 icon system**, **§19 premium diegetic Hero Room**,
+> **§20 render-review gate**. Neo: **(1) SVG icon registry + kill all UI emoji** (shop first) + `tests/ui-emoji.test.js`;
+> **(2) rebuild the Hero Room as a diegetic painted room** (layout FIRST, not last); **(3) screenshot-and-look before
+> "done".** ⚠️ `bg-base-room.png` is the **staged room background — keep & wire, do NOT delete.**
+>
+> 📐 **The consolidated retro-fit checklist is `DESIGN-ALIGNMENT.md`** (5 deep-dive audits, prioritized + file:line). Newly
+> confirmed SHIPPED: **M-#2 action-rail FIXED**, **`flyReward` BUILT**, **treasure chests BUILT**, **mastery contract
+> honored**. The old "store de-emoji" + "Hero Room" items are **superseded by the Premium UI Overhaul above.**
 
 Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under **🔧 OPEN WORK — BY TOPIC**.
 

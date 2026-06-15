@@ -469,6 +469,12 @@ every commit to `main` goes live on the child's iPad within minutes. Never push 
 - Small, reviewable commits with plain-English messages the parent can read.
 - After changes, sanity-check: fresh-save playthrough boot → intro → scan → mission 1, plus
   a loaded-save boot. Verify no console errors and that audio flows can't hang.
+- **NO EMOJI in the child-facing UI** (STYLE.md non-negotiable #6) — every child-visible glyph is a crafted SVG
+  (`icon()`/`PICONS`, art.js). Emoji only in parent-only Grown-Up Corner text + dev docs. CI guard: `tests/ui-emoji.test.js`.
+- **RENDER-REVIEW GATE (STYLE.md §20):** any VISUAL change is not "done" until it's been screenshotted with
+  `node tools/shot.mjs <scenes>` (Act 1 + Act 2, 1024×768 + portrait) AND eyeballed against the §20 **Premium Bar**
+  rubric (zero emoji · UI lives in the painting, not list-cards over it · reads like a shipped game, not a web form ·
+  consistent crafted icons · clear focal point · inviting zero-state). Code-vs-doc review cannot catch "looks cheap."
 - REGRESSION TESTS (no deps; exit 0 = pass) — run before shipping:
   • `node tests/save.test.js` — migrate() on old/partial/corrupt saves, primary+backup recovery,
     no-clobber rule, snapshot ring, save→load round-trip, profile isolation. Run after any save-layer

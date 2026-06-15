@@ -84,11 +84,17 @@ Today the Base is a row of shelves. Make it a **diorama room that visibly fills 
   · **Gem Vault** (the lettered gem collection, twinkling; mastered = gold ✦, already built) · **Chest corner**
   (unopened chests pulse, tap to open) · **Companion spot** (pet follows/idles). · **League shelf** + **Villain
   cages** stay (already built).
-- **Premium-state proof:** the *populated* Base already looks great (see QA.md render round 2) — the problem is the
-  **empty zero-state** (U7). Seed a couple of free starter decorations so a new room is never bare, and let the room
-  *grow* visibly with each item. Each new item placed = a small "place + sparkle" animation so a kid sees the room
-  change *this session*.
-- **Hooks:** extend `paintBase` (game.js ~1252); reuse `S.owned`, `WEAPONS[]`, `ownedWeapons()`, `heroSVG`.
+- **PREMIUM BAR + DIEGETIC MANDATE (parent-escalated 2026-06-15, supersedes the old "already looks great" note).** The
+  Base must look like **a high-end gaming studio shipped it.** The current build — translucent list-cards stacked over the
+  lair painting — reads like a *settings dashboard* and is the thing the parent flagged. **The painted room IS the
+  interface** (STYLE.md non-negotiable #7 + §19): `art/bg-base-room.png` is the stage (locked — *wire it, don't delete*),
+  the hero stands **in** it on a pedestal, and each collection is a **physical object on a painted hotspot** (`BASESPOTS`
+  coords, calibrated like the map's `ZONESPOTS`), **not a list row**. Tap an object → the existing `heroCard` flip card.
+- **It fills as he grows + never bare:** seed 1–2 free starter decorations (closes the U7 zero-state); empty slots read as
+  faint "to-earn" sockets *in the fixture* (not "0/6" rows); each newly-earned item does a **"place + sparkle"** on entry
+  so the room changes *this session*. Premium polish: scene lighting/parallax depth + Act-2 medieval parity.
+- **Hooks:** extend `paintBase` (game.js ~1252); reuse `S.owned`, `WEAPONS[]`, `ownedWeapons()`, `heroSVG`, the `heroCard`
+  flip component; icons come from the §18 registry (**zero emoji**). **Render-review each slice (§20) before the next.**
 
 ### 4.3 WEAPONS ECOSYSTEM — make the Word Forge mean something
 Today weapons unlock off gear milestones (cosmetic, good). Deepen it **on-theme** (words forge power) while staying
@@ -118,9 +124,12 @@ Today's shop = 10 emoji items, one flat grid. Upgrade:
 - **More items (original archetypes, per §2):** Star Shield, Arc Gauntlets, Thunder Cape, Comet Boots, Sentinel Drone,
   baby-dragon companion, rune-stone trophy set, wizard-tower theme, a treasure-map wall piece, gold-dragon statue.
 - **"Featured today"** slot (one rotating highlighted item) = curiosity without any loss mechanic.
-- **De-emoji the icons** (ties to audit U5): the shop is where emoji-vs-premium stings most — give items real SVG/raster
-  art. Reuse `paintShop` (game.js ~1487); grow `BASE_ITEMS`; keep prices tuned to ~15/15 daily coin earn so goals feel
-  reachable in a session or two (quick) up to a week (long).
+- **EMOJI BANNED → crafted SVG items (now a hard rule, STYLE.md §6/§18; was "de-emoji, audit U5, Low–Med").** The shop is
+  the worst offender — 10 raw OS emoji (🚩🪴🖼️🐉🚀) read like a sticker tray. Every `BASE_ITEMS.ic` becomes a crafted SVG
+  cosmetic from the §18 registry, AND the archetypes level up to hero-desirable objects (Star Shield, Arc Gauntlets,
+  Sentinel Drone, baby-dragon companion, gold-dragon statue — not "Power Plant"). This is the **first conversion target**
+  for the icon system. Reuse `paintShop` (game.js ~1487); grow `BASE_ITEMS`; keep prices tuned to the ~15/15 daily coin
+  earn (reachable in a session up to a week). **Render-review (§20) before shipping.**
 
 ### 4.6 PETS / COMPANIONS — collection bait that follows him
 A small companion that idles in the room and trails the hero on the map is catnip for a collector kid (his documented
@@ -335,8 +344,10 @@ wiring. `transform`/`opacity`/`box-shadow` only; reduced-motion aware; `.setcard
 1. **Color-code each card by function** (recognition over recall, §7 rule #3): Players = `--blue`, Progress = `--green`,
    Settings = `--gold`, Voice Studio = `--purp`. Tint the border + a soft matching idle glow per card.
 2. **Premium chrome** (reuse the §3 `.btn` craft): add a glossy top **sheen** pseudo-element + a gentle `box-shadow`
-   glow; keep the press-compress. Put the emoji on a **circular "chip" disc** (`.hc-ic` in a 56px radial-gradient
-   coin) so it reads crafted, not bare-emoji.
+   glow; keep the press-compress. ⚠️ **CORRECTED (was: "put the emoji on a chip disc"):** dressing an emoji up on a
+   disc is the *exact* lipstick-on-emoji anti-pattern STYLE.md §6/§18 now bans. Use a **crafted SVG icon** from the §18
+   registry. (This is the parent-only Grown-Up Corner, where emoji are technically *allowed* per non-negotiable #6 — but
+   prefer the §18 icons here too for one cohesive look; **never** use the emoji-on-disc trick in the child UI.)
 3. **Add a one-line subtitle** under each `.hc-t` ("Switch who's playing" / "See what he's learned" / "Sound, display &
    sync" / "Record the voices") — markup-only, a `.hc-sub` span; turns four labels into self-explaining cards.
 4. **Dashboard overview** (`.hubover`, `styles.css:282`): present the existing stat rows as a game-style **profile
@@ -415,26 +426,25 @@ never empty, never a loss, never a gamble; "variable" = *which* good thing, not 
 **always yields coins ≥ tier.coinMin** (never-empty invariant); never grants an already-owned cosmetic (duplicate
 guard). Keep `curriculum.test` untouched (no curriculum impact).
 
-## 11. HERO ROOM — build plan (expands §4.2)
+## 11. HERO ROOM — build plan (expands §4.2; **REORDERED 2026-06-15 — premium first, not last**)
 The Base (`paintBase()`, game.js:1229) already has the right *contents* (hero showcase + Loadout, Gem Vault, Trophy
-shelf, League shelf, Villain cages) — the revamp is **layout + growth feel**, not new data. No new deps (HTML/SVG/CSS).
-**Do it in slices, smallest first:**
-1. **Action-rail fix FIRST (the real bug, Morpheus M-#2 / §7 rule #4).** Make `.baseactions` a dedicated bottom rail
-   with reserved space; give `.basecol-hero`/Loadout a scroll path (`max-height:100%; overflow-y:auto`) so the loadout
-   can't hide under the buttons at 1024×768. (Specced in §9 item #1 — this is the prerequisite that makes the room
-   safe to grow.)
-2. **Chest corner** (from §10.4) — the first new "zone"; small, high delight.
-3. **Weapon Rack** (§4.3): render `ownedWeapons()` as a rack; tap a weapon → a flip **inspect card** (front: held-weapon
-   art from `heroSVG`/art.js + name; back: a one-line bio + which milestone unlocked it). **Mirror the existing ally
-   flip-card** component (CLAUDE.md "HERO CARDS = DONE") — reuse, don't reinvent.
-4. **Growth feel:** a **"place + sparkle"** WAAPI pop on any item that's newly-owned since last visit (diff `S.owned`/
-   chests/weapons against a small `S.seen*` set); seed **1–2 free starter decorations** so a fresh room is never bare
-   (closes audit **U7** zero-state). Gate motion on Calm/Lite.
-5. **Diorama polish (last, biggest):** arrange the zones as a lived-in room (Trophy Wall / Weapon Rack / Gem Vault /
-   Chest corner / Companion spot / League shelf / Villain cages) with the hero on a center plinth in his current
-   outfit + equipped weapon. Keep one screen, ≥96px child targets, Act-2 skin parity.
-- **Verify each slice:** `shot.mjs base basefull` (Act 1 + Act 2, 1024×768 + portrait), `save`/`curriculum` green, no
-  audio flow can hang.
+shelf, League shelf, Villain cages) — the revamp is **layout + growth feel + premium look**, not new data. No new deps
+(HTML/SVG/CSS). ⚠️ **The old order deferred "diorama polish" to LAST — so it never shipped and Slice 1 was just
+rearranged flat cards (the parent's complaint).** The diegetic premium look is the POINT; build it FIRST:
+1. **Action-rail fix (prerequisite, already DONE — M-#2 fixed, `styles.css:912`).** Kept as the structural base.
+2. **The diegetic painted room — Slice 1, FIRST (was last).** Lay `art/bg-base-room.png` as the stage; place the hero
+   on a center pedestal; convert the list-cards into **object hotspots** (`BASESPOTS` per-fixture coords, calibrated like
+   the map's `ZONESPOTS`): Trophy Wall / Weapon Rack / Gem shelf / Chest corner / Companion spot / League portraits /
+   Villain cages — **no floating translucent cards.** One screen, ≥96px targets, Act-2 medieval parity. **Render-review
+   (§20) before moving on — this slice either clears the Premium Bar or it isn't done.**
+3. **Crafted SVG icons everywhere (§18) — zero emoji** on the room, action rail, and the items mounted on the fixtures.
+4. **Tap-to-inspect:** each object opens the existing `heroCard` flip card (weapon bio / gem mastery / trophy / villain
+   quip) — **mirror the built ally flip-card**, don't reinvent. Folds in the Chest corner (§10.4) + Weapon Rack (§4.3).
+5. **Growth feel + zero-state:** **"place + sparkle"** WAAPI pop on any item newly-owned since last visit (diff `S.owned`/
+   chests/weapons vs a small `S.seen*` set); seed **1–2 free starter decorations**; empty slots = faint "to-earn" sockets
+   in the fixtures (closes **U7**). Gate motion on Calm/Lite.
+- **Verify each slice:** `node tools/shot.mjs base basefull` (Act 1 + Act 2, 1024×768 + portrait) **+ eyeball vs the §20
+  Premium Bar rubric**, `save`/`curriculum`/`ui-emoji` green, no audio flow can hang. Attach before/after shots.
 
 ## 12. Sources
 **Game feel / juice canon + web-anim perf:** [GameAnalytics — squeezing more juice](https://www.gameanalytics.com/blog/squeezing-more-juice-out-of-your-game-design) ·

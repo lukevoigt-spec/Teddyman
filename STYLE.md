@@ -21,6 +21,21 @@ These come from CLAUDE.md and **override** any visual rule below:
    don't add decorative letterforms to prompt panels.
 5. Visual energy (flashes/bursts/shake) is **encouraged** (no photosensitivity). Respect
    `prefers-reduced-motion` as a courtesy toggle only.
+6. **NO EMOJI in the child-facing UI. Ever.** This is the #1 amateur tell and it is now a hard
+   rule, not a preference. Every glyph a child sees — nav, action buttons, shop/collection items,
+   badges, counters, bullets — is a **crafted inline SVG** in the house art style (§13, §18), never
+   an OS emoji and never "an emoji dressed up on a chip/disc." Emoji are someone else's clip-art:
+   they render differently on every device, read like a text message, and have zero relationship to
+   our painted world. Emoji are permitted in EXACTLY two places: (a) **parent-only** Grown-Up Corner
+   *text* and (b) **dev docs/commit messages**. Enforced by a CI guard (`tests/ui-emoji.test.js`, §18)
+   so a regression goes red before it reaches the iPad. *(Word-picture tiles already have the right
+   pattern: `picIcon()`/`PICONS` in art.js — extend it to a UI icon registry, §18.)*
+7. **The UI lives IN the world, not on top of it — and "premium" is the bar.** We ship painted
+   backgrounds; do not bury them under stacks of translucent list-cards that read like a settings
+   dashboard. Chrome should feel like part of the scene (objects in the room, frames on the wall),
+   high-end-game polish, not a web form. **No visual change is "done" until it has been rendered with
+   the shot harness and eyeballed against the Premium Bar rubric (§20).** Code-vs-doc review cannot
+   catch "this looks cheap" — only looking can.
 
 ---
 
@@ -31,6 +46,9 @@ DOMAINS — what has a standard, what's partial, what's still missing — so cov
 | Domain | Status | Where / next |
 |---|---|---|
 | Visual system (color, type, buttons, panels, components) | ✅ | STYLE.md §1–5 |
+| **Iconography / icon system** | 🔴 **standard §18** — EMOJI BANNED (impl pending, **TOP PRIORITY**) | crafted SVG icon registry replaces ALL UI emoji + CI guard; parent-escalated 2026-06-15 |
+| **Premium diegetic Hero Room** | 🔴 **standard §19** (impl pending, **TOP PRIORITY**) | the painted lair IS the UI (hero + object hotspots), not floating list-cards; full spec DESIGN-ENGAGEMENT §4.2/§11 |
+| **Render-review gate / Premium Bar** | ✅ **process §20** | screenshot-and-look mandatory before "done"; pass/fail rubric in §20 |
 | Motion / visual juice + easing tokens + reward-viz | ✅ | STYLE.md §6 · DESIGN-ENGAGEMENT §8 |
 | Sound design (SFX) | ✅ | STYLE.md §6.5 |
 | Layout & navigation | ✅ | STYLE.md §7 |
@@ -50,10 +68,13 @@ DOMAINS — what has a standard, what's partial, what's still missing — so cov
 | **Difficulty / flow & pacing** | ✅ **standard §17** (impl pending) | flow channel, mastery-gated difficulty, variety/novelty cadence, no spikes/grind; in §17 |
 | Localization | n/a | single child, English |
 
-**Status: all 18 design domains now have a written standard (§1–§17 + DESIGN-ENGAGEMENT + the contracts).** The design
-*system* is complete; what remains is **retro-code ALIGNMENT** — auditing the existing app against every standard and
-consolidating the fixes into one recommendation doc for Neo (`DESIGN-ALIGNMENT.md`). After that, new work builds
-**to-standard** by default — no further standardization passes on existing code.
+**Status: every design domain has a written standard (§1–§20 + DESIGN-ENGAGEMENT + the contracts).** ⚠️ **2026-06-15
+PARENT ESCALATION — the system shipped amateurish, emoji-heavy UI despite the standards.** Root cause: (1) emoji were the
+de-facto icon system and **no standard forbade them** (a spec even said to dress emoji up on a disc — now reversed); (2)
+there was **no iconography standard**; (3) reviews were code-vs-doc — **nobody rendered the screens**. Fixes are now in the
+non-negotiables (#6 emoji ban, #7 UI-in-the-world + render gate) + the three new standards (§18 icon system, §19 premium
+diegetic Hero Room, §20 render-review gate). **TOP-PRIORITY retro-fit for Neo** is the "Premium UI overhaul" brief at the
+top of `DESIGN-ALIGNMENT.md`. New work builds to-standard + passes the §20 Premium Bar by default.
 
 ---
 
@@ -568,4 +589,74 @@ Keep Teddy in the **flow channel** (Csikszentmihalyi, *Flow*): challenge matched
 - **Actions (Neo):** audit the mission ladder for spikes; confirm every point has a winnable next step; check the variety/
   novelty cadence; the parent-observable check = engaged vs frustrated/bored.
 *(Source: Mihály Csikszentmihalyi, *Flow* (1990) — the challenge↔skill flow channel; applied to game pacing.)*
+
+## 18. Iconography & the SVG icon system (standard — Trinity, 2026-06-15; parent-escalated)
+The missing standard that let emoji metastasize. **Every child-facing glyph is a crafted inline SVG** (non-negotiable
+#6). This section says exactly how to build them so Neo has a recipe, not a vibe.
+
+**The registry + resolver (reuse the pattern that already exists).** `picIcon(word, fallback)` + `PICONS{}` (art.js:719)
+already resolve word-picture tiles to crafted SVGs. Generalise it to a **UI icon registry** in art.js:
+```
+const ICON = { map, base, home, train, shop, recharge, gifts, skip, menu, gear,
+               stars, coins, weapon, gem, league, trophy, villain, ear, back, check, lock, … };
+function icon(name, size=40){ return ICON[name] ? ICON[name](size) : ""; }  // returns inline <svg>, never an emoji
+```
+Replace every emoji glyph site (`index.html` nav, the Base action rail, `BASE_ITEMS.ic`, collection bullets, `hudStars`,
+the chest/gifts button, `btnSkip`) with `icon(...)`. **There is no emoji fallback** — a missing icon renders nothing and
+fails the CI guard, which is correct (it forces the icon to exist).
+
+**House style (binds to the §13 art bible — same language as the characters):**
+- **`--ink` outline**, weight per the §13 constant; shapes filled from the **§1 palette tokens** (never raw hex).
+- **2 states minimum:** `idle` and `active`/`owned` (active = brighter fill + a soft glow; mirrors `.cta`). Touch target
+  the icon sits in stays **≥96px** (#2) even if the glyph art is ~40–56px.
+- **Optional depth:** a light radial highlight / 1px inner bevel so it reads crafted (NOT the banned "emoji on a disc").
+- **Per-act skin:** an Act-2 medieval variant where it matters (e.g. the menu/gear/recharge icons) via `body[data-act="2"]`
+  or an act arg — mirrors the existing chrome reskin (§0.5). Learning tiles stay Andika, untouched.
+
+**Shop items are art, not pictograms (closes audit U5 / DESIGN-ENGAGEMENT §4.5).** `BASE_ITEMS` becomes crafted SVG
+cosmetics AND the **archetypes level up** to hero-desirable objects (Star Shield, Arc Gauntlets, Thunder Cape, Sentinel
+Drone, baby-dragon companion, rune-stone trophy, gold-dragon statue — not "Power Plant" 🪴). The shop is where emoji-vs-
+premium stings most; it is the first conversion target.
+
+**Inventory to build (the concrete to-do):** the ~10 `BASE_ITEMS` + the nav set (menu/map/base/home/gear) + the action
+rail (train/shop/recharge/gifts) + HUD (stars/coins) + controls (skip/back/check/ear/lock) + collection bullets (league/
+gem/villain/trophy). Build in batches, **screenshot each batch (§20) before the next.**
+
+**Enforcement — `tests/ui-emoji.test.js` (Neo adds it in the de-emoji PR):** scan `index.html` + the child-facing string
+literals in `game.js` (button labels, `BASE_ITEMS`, nav, HUD) for emoji codepoints (ranges `\u{1F000}-\u{1FAFF}`,
+`\u{2600}-\u{27BF}`, `\u{2190}-\u{21FF}` arrows used as glyphs, variation-selector `️`, `\u{1F3FB}-\u{1F3FF}`). **Fail
+(exit 1) on any hit outside an allow-list** (parent-only Grown-Up Corner blocks). Add to `.github/workflows/tests.yml`.
+The rule has teeth only with this guard — it is part of the same PR as the removal, so CI is never left red on `main`.
+
+## 19. Premium diegetic Hero Room (standard — Trinity, 2026-06-15; parent-escalated, premium bar)
+The Base must look like **a high-end studio shipped it** (parent's explicit bar). Today it's translucent list-cards over a
+wasted painting (violates #7). The full spec lives in **DESIGN-ENGAGEMENT §4.2 + §11 (upgraded)**; the non-negotiable
+rules here:
+- **The painted lair IS the interface.** `art/bg-base-room.png` is the stage (it's locked, commit `a47c54c` — *wire it,
+  don't delete*). The hero stands **in** the room on a pedestal as the focal point. **No floating list-cards.**
+- **Collections are physical objects placed onto painted hotspots**, calibrated like the map (`BASESPOTS` = per-fixture
+  [x,y] in the room's coordinate space, the way `ZONESPOTS` calibrates the map): **weapon rack**, **gem shelf**, **trophy
+  wall**, **chest corner**, **captured-villain cages**, **league portraits on the wall**, **companion spot**. Tap an
+  object → the existing **flip inspect card** (`heroCard`), themed per object. Show-only-earned still holds (#empty slots
+  read as faint "to-earn" sockets in the fixture, not list rows).
+- **It fills as he grows** — each newly-earned item does a **"place + sparkle"** when he enters, so the room visibly
+  changes *this session* (the avatar-as-progress literature). Premium polish: scene lighting/parallax depth, the diegetic
+  frame (§8-style), Act-2 medieval parity (reskin the reward modals too — heroCard/bossCage/unlockCard).
+- **BUILD-ORDER FIX (why it failed before):** the diorama/premium look was filed as the "last, biggest" slice and never
+  shipped — Slice 1 just rearranged the flat cards. **Reverse it: the diegetic painted-room layout is the FIRST slice, not
+  the last.** Premium is the point, not a polish afterthought.
+
+## 20. Render-review gate & the Premium Bar (process standard — Trinity, 2026-06-15)
+Every standard above failed once because **nobody looked at the render** — review was code-vs-doc. New rule:
+- **No visual change is "done" until rendered + eyeballed.** Use the existing harness: `node tools/shot.mjs <scenes>`
+  (Act 1 + Act 2, 1024×768 + portrait). The harness exists and was sitting **unused** — that is the whole bug.
+- **Premium Bar rubric — a render fails if ANY is true:**
+  1. **Any emoji** in the child UI (auto-caught by §18's guard, but eyeball it too).
+  2. UI **covers/wastes the painted art** instead of living in it (stacks of translucent list-cards = fail).
+  3. It reads like a **web form / settings dashboard**, not a shipped game screen.
+  4. Icons/items are **inconsistent** in style (mixed sources, mixed weights) or look **bare/flat**.
+  5. The **focal point is unclear** (no single hero/CTA the eye lands on) — §7.4.
+  6. Empty **zero-state looks broken** (bare slots, "0/6" rows) rather than inviting.
+- **Attach the before/after shots** to the change (drop in `tools/shots/`); the parent reviews pixels, not prose.
+*(This is the antidote to "we had 17 standards and it still looked cheap": standards describe, renders prove.)*
 

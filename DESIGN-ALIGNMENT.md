@@ -11,6 +11,36 @@ audit of live code; Neo should re-confirm at the line before editing (status-dis
 
 ---
 
+## 🔴 TOP PRIORITY — PREMIUM UI OVERHAUL (parent escalation, 2026-06-15)
+The parent flagged that **the shipped UI looks amateurish — emoji-heavy buttons, and a Hero Room redo that disappointed**
+— despite the standards. Diagnosis (grounded in actual renders, `tools/shots/cloud-base.png` + `cloud-shop.png`, not code
+reading): (1) **emoji are our de-facto icon system** (the shop is a grid of raw OS emoji 🚩🪴🖼️🐉🚀; nav + action buttons
+are emoji + text) — no standard forbade it, and one spec even said to dress emoji up on a disc; (2) **the UI hides the
+painted art** under translucent list-cards, so the Base reads like a settings dashboard; (3) the Hero Room "redo" only
+re-stacked those cards because the diorama was filed as the *last, biggest* slice; (4) **nobody ever rendered the
+screens** — all review was code-vs-doc. The standards are now fixed (STYLE.md non-negotiables **#6 emoji ban** + **#7
+UI-in-the-world/render-gate**, new **§18** icon system, **§19** premium diegetic Hero Room, **§20** render-review gate).
+**Neo's build order (do this BEFORE the §-numbered backlog below):**
+
+1. **SVG ICON SYSTEM + KILL EMOJI (§18).** Build the `icon()` registry in art.js (extend the existing `picIcon`/`PICONS`
+   pattern); convert the **shop items first** (`BASE_ITEMS`, `game.js:1448` — crafted SVG + upgraded archetypes, not
+   "Power Plant" 🪴), then nav (`index.html:57-63`), the Base action rail, HUD (`hudStars`), and controls (`btnSkip`).
+   Add **`tests/ui-emoji.test.js`** (spec in §18) to `.github/workflows/tests.yml` **in the same PR** so CI stays green
+   and regressions go red. Render-review (§20) each batch.
+2. **PREMIUM DIEGETIC HERO ROOM (§19 + DESIGN-ENGAGEMENT §4.2/§11, REORDERED).** The painted lair (`art/bg-base-room.png`
+   — **keep + wire, do NOT delete**) becomes the interface: hero on a pedestal, collections as **object hotspots**
+   (`BASESPOTS`, calibrated like `ZONESPOTS`), no floating list-cards, tap-to-inspect via the existing `heroCard`, "place
+   + sparkle" growth, Act-2 medieval parity. **Build the diegetic layout FIRST** (it was deferred to last — that's why it
+   never shipped). It either clears the §20 Premium Bar or it isn't done.
+3. **Bake in the gate (§20).** Screenshot-and-look is now mandatory before "done"; attach before/after shots from
+   `tools/shot.mjs`. The parent reviews pixels, not prose.
+
+⚠️ **CORRECTION to quick-win #2 below:** `bg-base-room.png` is **NOT** a deletable orphan — it's the staged Hero Room
+background. The grep-for-references audit couldn't tell a staged asset from a dead one (exactly why §20's render-gate
+exists). The store-de-emoji item (#13) is **superseded by #1 here** (system-wide ban, not a Low–Med store polish).
+
+---
+
 ## ✅ ALREADY ALIGNED — do NOT re-chase (Neo shipped these in parallel)
 The headline: alignment is **strong**. These are confirmed built + aligned in code:
 - **Palette refresh landed** (`styles.css:2-4`) + **easing tokens defined** (`--ease-overshoot/-accelerate/-soft`, `styles.css:6`).
