@@ -19,9 +19,10 @@ On top of #1, this app must be:
 4. **BEAUTIFUL** — professional-studio, "a real game a kid *chooses* to play" polish (the `STYLE.md` Design Charter),
    in service of #1.
 
-**Tie-breaker when they seem to trade off: optimize for reading reps per minute, then delight.** Fun / addicting /
-beautiful are the **amplifiers** that make the learning happen — they get him to do *more* reps, more *gladly*. They are
-never an excuse to dilute the pedagogy or break a learning/accessibility constraint.
+**Tie-breaker when they seem to trade off, in order: (1) MASTERY over participation** (§6.0 — reward getting *better* at
+reading, loudest on mastery; never mere activity), **(2) reading reps per minute, (3) delight.** Fun / addicting /
+beautiful are the **amplifiers** that make the learning happen — they get him to do *more* reps, more *gladly*, that build
+*real mastery*. They are never an excuse to dilute the pedagogy or break a learning/accessibility constraint.
 
 ## Repo layout
 - `index.html` — the entire game (currently single-file; refactor into modules is welcome,

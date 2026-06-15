@@ -166,6 +166,16 @@ Distilled from the game-UI/usability canon (full version + sources in `STYLE.md 
 
 — Trinity, 2026-06-14
 
+## Working-tree isolation (prerequisite for branch-per-agent — flagged by Neo 2026-06-15; GREENLIT)
+The branch-per-agent + PR model **requires each code-writing agent to have its own isolated git working tree.** Neo found
+Neo + The Oracle sharing ONE working directory — which silently breaks the model: a git working tree has a single
+HEAD/branch/index, so two agents in one dir fight over the checked-out branch + staging area (a commit can land on the
+*wrong* branch; one agent's `checkout` clobbers the other's uncommitted edits; concurrent writes corrupt the index).
+**Required setup (DECIDED):** isolate the trees — **preferred = `git worktree`** (same machine, shares the object store,
+lightest): `git worktree add ../teddyman-neo <branch>` and run that agent's session there; **alternative = a separate
+clone per agent.** Acceptance criterion: **Neo and The Oracle never operate in the same working tree.** Until isolated,
+**only ONE agent writes at a time** (the on-demand cadence makes this tolerable — stopgap, not the fix).
+
 ## Branch protection
 **Leave it OFF for now.** GitHub branch protection is all-or-nothing per branch, so "require a PR"
 would also block Trinity's (and Neo's) direct commits. The guest-PR → squash-merge flow is enforced
