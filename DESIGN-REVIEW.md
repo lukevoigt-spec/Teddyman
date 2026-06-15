@@ -72,3 +72,38 @@ shared tree means either agent's branch-switch/`git add` can clobber the other's
 **Recommendation:** make per-agent worktrees the standing setup for the two local sessions (Neo keeps
 the main checkout; Oracle uses its own). This is the missing piece of the branch-per-agent model in
 `AGENTS.md` — the doc assumed separate contexts but the environment had one.
+
+---
+
+## 2026-06-15 · ART-DIRECTION PROPOSAL → parent picked **ARENA** (the §★ charter "first move")
+Per the refreshed charter (STYLE §★: research → benchmarked proposal → parent picks → drive it), I rendered
+**3 art directions on the REAL title screen** (same painted bg + hero, restyled chrome) and put them to the parent:
+- **A — ARENA** (Supercell glossy-arcade): 3D gold title, glow podium, yellow candy CTA. `dir-A-ARENA.png`
+- **B — COMIC LEGEND** (superhero comic-pop): ink outline + red offset, ben-day, comic CTA. `dir-B-COMIC.png`
+- **C — ENCHANTED PREMIUM** (painterly + gold/jewel, ornate frames). `dir-C-ENCHANTED.png`
+
+Benchmarked against Clash Royale / Brawl Stars (interfaceingame, Game UI Database, Behance/Gonzalo Vazquez) +
+kids'-craft from Khan Academy Kids / Duolingo ABC / Toca Boca. **Parent: "I like A and C"** → rendered the fusion
+**D — ROYAL ARENA** (`dir-D-ROYAL-ARENA.png`). **Parent: "lean more A, keep B's black shadow; the A button fill
+bleeds past the border"** → rendered **E — ARENA v2** (`dir-E-ARENA-v2.png`): more arcade, B's hard black offset on
+title+button, and the bleed fixed (`background-clip:padding-box`). **Parent LOCKED it.** Codified as STYLE §21.
+
+## 2026-06-15 · ARENA rollout ① — foundation: global button + title  ·  PASS
+**Branch:** `oracle/arena-foundation` → PR for Neo. **Files:** `styles.css` (appended ARENA layer), `STYLE.md` (§21).
+**Change:** the elevated button material (gold gloss, ink rim, **hard black offset shadow**, padding-box bleed-guard,
+tactile press) + the `.cta` size bump + the title's black-offset/glow treatment. Appended last so it wins by source
+order; **Act-2 stone skin (`body[data-act="2"]`, 0,2,1) still overrides** — medieval world untouched.
+
+**Render-gate (Chromium @2x, served from the Oracle worktree):**
+| Scene | Result |
+|---|---|
+| `arena-title` | gold black-edged title + glow, glossy candy PLAY w/ hard black shadow, crisp rim, tagline clear. |
+| `arena-win` | CITY MAP (blue) + NEXT MISSION (gold) both gain the offset shadow — read as real game buttons. |
+| `arena-shop` | DONE button picks up the blue ARENA look; `.buy` price pills (other class) unchanged — no regression. Batch-1 crafted item icons confirmed live. |
+| `arena-base` | hub buttons consistent. |
+
+**Premium Bar:** reads like a shipped game ✓ · consistent crafted chrome ✓ · clear CTA focal point ✓. `save` 94/94,
+`curriculum` 57/57. **PASS.** *(The proposal renders showed the hero overlapping the tagline — that was a render-time
+scale injection only; the real title spaces correctly. Hero up-scale + per-screen layout polish = a later batch.)*
+
+**Next:** rollout ② — shop cards / collection tiles + de-emoji the price/coins/DONE glyphs (STYLE §21 rollout list).

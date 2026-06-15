@@ -1024,3 +1024,38 @@ body.calm .btn.vaultdue{animation:none;}
 body.calm .mnode .mbeacon{animation:none;}
 body.lite .obloom,body.lite .pbloom{display:none;}   /* old iPads: flatten the GPU-blurred map glows */
 
+/* ============================================================
+   ARENA — the house look (Oracle, 2026-06-15; parent-LOCKED art direction).
+   Supercell-tier glossy candy buttons + a bold BLACK offset shadow (the comic
+   "real mobile game" punch) on the primary controls + the title. This is the
+   ELEVATED standard (STYLE §★ charter + §21 ARENA); the Premium Bar is the
+   floor, this pushes past it. Appended LAST so it wins by source order over the
+   earlier chrome-polish layer. Act-1 only — Act-2's body[data-act="2"] stone
+   skin is more specific (0,2,1 > 0,2,0) and still wins, so the medieval world
+   is untouched. Keeps the base .btn background-clip:padding-box (no fill bleed
+   past the ink border — the bug the parent flagged). transform/opacity press
+   only (60fps); offset shadow is static so it's reduced-motion/Calm/Lite-safe. */
+.btn:not(.ghost){
+  box-shadow:6px 8px 0 var(--ink), 0 16px 22px rgba(0,0,0,.42),
+             inset 0 3px 0 rgba(255,255,255,.9), inset 0 -7px 11px rgba(170,84,8,.45);
+}
+.btn:not(.ghost):active{
+  transform:translate(2px,3px);
+  box-shadow:3px 4px 0 var(--ink), 0 8px 12px rgba(0,0,0,.4), inset 0 3px 0 rgba(255,255,255,.82);
+}
+.btn.blue{
+  box-shadow:6px 8px 0 var(--ink), 0 16px 22px rgba(0,0,0,.42),
+             inset 0 3px 0 rgba(255,255,255,.55), inset 0 -7px 11px rgba(20,50,130,.5);
+}
+.btn.blue:active{ box-shadow:3px 4px 0 var(--ink), 0 8px 12px rgba(0,0,0,.4), inset 0 3px 0 rgba(255,255,255,.5); }
+/* the PLAY / primary CTA — the biggest, juiciest button on any screen */
+.btn.cta{ font-size:clamp(30px,5.2vw,48px); padding:18px 48px; border-radius:28px; }
+/* the title logo — gold, bold black offset + warm glow so it pops off the painting */
+.title-logo{
+  -webkit-text-stroke:5px var(--ink);
+  text-shadow:0 3px 0 #b25a12, 0 6px 0 #7a3c0c, 6px 10px 0 var(--ink),
+              0 16px 20px rgba(0,0,0,.5), 0 0 30px rgba(255,205,110,.55);
+}
+/* tagline picks up a small ink offset to sit in the same family */
+.sub{ text-shadow:2px 4px 0 var(--ink), 0 0 14px rgba(120,200,255,.45); }
+

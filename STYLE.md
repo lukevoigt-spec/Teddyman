@@ -695,3 +695,37 @@ Every standard above failed once because **nobody looked at the render** — rev
 - **Attach the before/after shots** to the change (drop in `tools/shots/`); the parent reviews pixels, not prose.
 *(This is the antidote to "we had 17 standards and it still looked cheap": standards describe, renders prove.)*
 
+## 21. ARENA — the locked house art direction (standard — The Oracle, 2026-06-15; parent-picked)
+The whole UI drives toward **ARENA**: **Supercell-tier glossy, juicy, candy-bright chrome** (Clash Royale /
+Brawl Stars feel — *"a legit game a kid would choose to play, not a learning-app look"*, the §★ parent anchor)
+**plus a bold comic BLACK offset shadow** on the primary controls + title for punch. Picked by the parent from a
+3-direction benchmarked proposal (A = ARENA / B = COMIC / C = ENCHANTED), then dialed *"more A + keep B's black
+shadow"* (renders: `tools/shots/dir-A…E*.png`; decision logged in `DESIGN-REVIEW.md`, 2026-06-15). This is the
+**elevated** standard — the Premium Bar (§20) is the floor; ARENA pushes past it. Bounded, always, by §0.
+
+**References (the bar to match, captured/benchmarked):** Clash Royale & Brawl Stars home/shop UI
+([interfaceingame.com](https://interfaceingame.com/games/clash-royale/), [Brawl Stars](https://interfaceingame.com/games/brawl-stars/),
+[Game UI Database](https://www.gameuidatabase.com/)); Brawl Stars UI by Gonzalo Vazquez (Behance). Kids'-app
+craft from Khan Academy Kids / Duolingo ABC / Toca Boca (large targets, ≤5 choices/screen, character + reward led).
+
+**The tokens / rules (live in `styles.css`, appended ARENA layer):**
+- **Colour signal (Supercell convention):** **gold/yellow = the primary CTA** (the one big PLAY / NEXT), **blue =
+  standard action**, **green = secondary/affirm** (buy/confirm), **red = alert/notify only**. One primary per screen (§7.1).
+- **Button material:** gold gradient `#ffe98a→#ffce3d→#f3a013`, **5px `--ink` border**, `background-clip:padding-box`
+  (no fill bleed past the rim — a real bug we hit), a top **gloss** (`::after` sheen + inner `rgba(255,255,255,.9)`
+  bevel), and the signature **hard black offset shadow** `6px 8px 0 var(--ink)` over a soft ambient. Press =
+  `translate(2px,3px)` + shrunk shadow (tactile, 60fps transform-only).
+- **`.cta`** is the biggest, juiciest button on any screen (larger font/pad/radius + the existing gentle float).
+- **Title logo:** gold + `5px` ink stroke + a **layered 3D extrude ending in a black offset** + warm glow, so it
+  pops off the painting. `.sub` tagline carries a small matching ink offset.
+- **Scope:** Act-1 chrome. Act-2's `body[data-act="2"]` stone/bronze skin is more specific and intentionally
+  overrides — ARENA does not touch the medieval world (a future pass gives Act 2 its own elevated treatment).
+- **Detail tiers:** offset shadows are static (cheap) → safe in Calm/Lite/reduced-motion; only the `.cta` float is
+  motion-gated (already handled).
+
+**Rollout (each its own render-gated PR, §20):** ①✅ foundation = global button + title (this PR). ② shop cards +
+collection tiles + the price/coins/DONE glyphs (also de-emoji). ③ Hero Base hub (action rail, rank/power, cards).
+④ HUD + nav (menu/map/home + the `☰ ⚡` glyphs → SVG, §18). ⑤ in-mission chrome (bubble, ear, skip). Each batch:
+build → render Act 1 (and Act 2 where touched) → log here + `DESIGN-REVIEW.md` → PR → Neo merges. Icons all become
+crafted SVG per §18 (no emoji, #6) as each batch lands; the `tests/ui-emoji.test.js` guard lands with the final removal.
+
