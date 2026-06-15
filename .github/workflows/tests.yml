@@ -22,3 +22,5 @@ jobs:
         run: node tests/curriculum.test.js
       - name: Save-layer tests
         run: node tests/save.test.js
+      - name: UI no-emoji guard (child-facing surfaces)
+        run: node tests/ui-emoji.test.js
