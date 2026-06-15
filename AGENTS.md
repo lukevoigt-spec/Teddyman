@@ -79,6 +79,30 @@ one tap) commits a **timestamped** entry to the repo and (optionally) opens a tr
    **NO-EMOJI** rule (`CLAUDE.md` non-negotiable #6, enforced by `tests/ui-emoji.test.js`) is part of the gate. Reviews
    are advisory in TONE (no scolding the coder) but **blocking in EFFECT** for the Premium Bar items.
 
+## Communication model — how agents coordinate (hub-and-spoke, NOT a mesh)
+A free-form agent group-chat dilutes context and produces incompatible decisions — we don't do that. Three channels, by purpose:
+1. **Coordination + handoffs → through Trinity (the hub) + durable artifacts.** No relaying through the parent for
+   mechanical work. Findings/handoffs live in `QA.md` / `DESIGN-REVIEW.md` / `PLAYTEST.md`; standing context in
+   `CLAUDE.md` / `AGENTS.md` / `STYLE.md`. Trinity triages + routes (code → Neo, visual → The Oracle).
+2. **Agent-to-agent technical back-and-forth → PR review comments.** Neo ↔ The Oracle resolve visual/impl questions on
+   the PR itself. Each **subscribes to its PRs** (`subscribe_pr_activity`) so a comment or CI result **wakes** the other
+   automatically — no parent relay, no live chat, naturally bounded (a PR ends; open-ended pinging doesn't run away).
+   *(NATIVE capability — nothing to build; the agent just subscribes when it opens/reviews a PR.)*
+3. **Decisions / taste / intent → escalate DIRECTLY to the parent.** When ANY agent hits a design choice or decision
+   point not settled by the docs + code — aesthetic taste, ambiguous intent, competing priorities, scope, or a
+   cross-agent disagreement — it **poses the question straight to the parent.** Do **not** guess, do **not** negotiate it
+   away, do **not** launder it through Trinity. The parent is the product owner + the kid's proxy; these are his calls.
+   - **Interactive session:** use the **ask/question action** (Claude agents → the `AskUserQuestion` tool) so it surfaces
+     in-session and pauses for the answer.
+   - **Async / background agent:** open a GitHub **Issue labelled `needs-parent`** (title = the question; body = the
+     options + a recommendation), then continue other work or stop. The parent monitors the **`needs-parent` label as a
+     single queue** across all agents, and answers there. Resume the moment it's answered.
+- **Resolve-it-yourself vs. escalate:** resolve from docs/code — doc-answerable questions, mechanical handoffs, "how to
+  implement" given a clear spec, routing a verified finding. Escalate to the parent — ambiguous intent, taste, competing
+  priorities, scope changes, Neo-vs-Oracle approach disagreements. **When in doubt, ASK the parent — never guess on his behalf.**
+
+— Trinity, 2026-06-15
+
 ## Status discipline — keeping `QA.md` honest (added after a real stale-status miss, 2026-06-14)
 `QA.md`'s open/shipped status drifts because **Neo changes the code in his session while only Trinity edits `QA.md`** —
 so the doc lags reality. Reality lives in **git + the code**, never in prose. Five rules to stop it recurring:
