@@ -151,3 +151,17 @@ Codex flagged: the 1536×1024 map at `xMidYMid slice` crops in **portrait** (768
 **orientation-aware** — `slice` (full-bleed) in landscape, `meet` (whole map, no crop) in portrait; `toMap` re-renders
 via the new `mapRepaint()` on a debounced `resize` so rotation stays correct. Render-gated landscape + portrait
 (`arena-map-a1-day.png` / `arena-map-a1-portrait.png`): all 9 nodes visible + tappable both ways. `curriculum` 79/79.
+
+## 2026-06-15 · ARENA ★ — Act 2 MEDIEVAL world map (same Braveland system)  ·  PASS
+**Branch:** `oracle/arena-map-a2` → PR for Neo. Parent-approved after iterating the art (abandoned an over-aerial
+"windmill" take → flat near-top-down to match Act 1's uniform scale). Same V2 system now drives BOTH acts.
+- **New art:** `art/bg-map-a2-day.jpeg` + `bg-map-a2-twilight.jpeg` (path-free medieval landscape — village = start,
+  dragon keep = end, river+stone bridge, enchanted forest, standing stones; twilight = geometry-matched edit, late dusk).
+- **`map.js`:** `MAPSPOTS_V2[2]` = 6 zones calibrated to ONE continuous route **village → bottom meadow → stone bridge
+  (single river crossing, ON the deck) → up the open right meadow → the dragon keep**, staying on grass (NO forest
+  detour — parent constraint). `mapBgFor()` extended to Act 2 day/twilight by device clock. `mapPaintSVG()` dispatcher
+  now uses V2 for any act with `MAPSPOTS_V2` (Act 1 + 2); legacy kept as fallback. Miss Kendall renders captive at the
+  keep via the existing LEAGUE-derived `mapAlliesV2` (gone once freed).
+- **Render-gate (Chromium @2x):** `arena-map-a2-day/twi/portrait.png` — continuous path crossing on the bridge,
+  banners, knight Teddy at CASTLETON, captive Kendall at the keep, readable late-dusk, all 6 nodes on-screen in
+  portrait (meet). `curriculum` 79/79. **PASS.**

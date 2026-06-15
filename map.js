@@ -24,12 +24,17 @@ const ZONESPOTS={
    native 1536x1024 space (viewBox+slice fills the 4:3 stage). Node spots calibrated by eye
    onto the open corridor: house -> meadow -> bridge -> canyon -> fortress, 9 zones in order. */
 const MAPSPOTS_V2={
-  1:[[235,872],[300,712],[252,556],[404,470],[565,540],[690,650],[902,600],[1062,468],[1208,322]]
+  1:[[235,872],[300,712],[252,556],[404,470],[565,540],[690,650],[902,600],[1062,468],[1208,322]],
+  /* Act 2 (6 zones): one continuous route village -> bottom meadow -> stone bridge (single river
+     crossing) -> up the open right meadow -> the dragon keep. Stays on grass, avoids the forest. */
+  2:[[200,800],[370,792],[540,802],[700,790],[855,505],[1050,252]]
 };
 /* day/twilight by the DEVICE clock (the iPad is in the family's timezone): 6am-6pm day, else dusk. */
 function mapBgFor(a){
-  if(a===1){ let h=12; try{ h=new Date().getHours(); }catch(e){}
-    return (h>=6 && h<18) ? "art/bg-map-a1-day.jpeg" : "art/bg-map-a1-twilight.jpeg"; }
+  let h=12; try{ h=new Date().getHours(); }catch(e){}
+  const day = h>=6 && h<18;
+  if(a===1) return day ? "art/bg-map-a1-day.jpeg" : "art/bg-map-a1-twilight.jpeg";
+  if(a===2) return day ? "art/bg-map-a2-day.jpeg" : "art/bg-map-a2-twilight.jpeg";
   return MAPIMG[a]||MAPIMG[1];
 }
 function zMissions(z){ return MISSIONS.filter(m=>m.z===z.id).sort((a,b)=>a.id-b.id); }
@@ -224,7 +229,8 @@ function mapPaintV2(a){
     ${quest}
   </svg>`;
 }
-function mapPaintSVG(){ return currentAct()===1 ? mapPaintV2(1) : mapPaintLegacy(); }
+/* use the ARENA V2 design for any act that has new spots (Act 1 + 2); legacy for the rest. */
+function mapPaintSVG(){ const a=currentAct(); return MAPSPOTS_V2[a] ? mapPaintV2(a) : mapPaintLegacy(); }
 /* render the map SVG + (re)bind node/portal taps. Split out so an orientation change can re-render. */
 function mapRepaint(){
   $("mapSVGwrap").innerHTML=mapPaintSVG();
