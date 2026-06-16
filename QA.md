@@ -22,8 +22,8 @@ Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under *
 
 > ✅ **RECONCILE 2026-06-16 (Trinity) — SHIPPED since these tickets were written** (verified vs commits + tests 104/106/6 green):
 > **Beat-7 homecoming ending** (`de83d9a` — `startHomecoming` + Mom/Dad verbatim) · **Training Room: coin→gold→diamond
-> "Treasure Vault" climax + HUD de-emoji** (`b58a98f`) · **daily-practice bar + daily target 30→15** (`5e9c028`,
-> `dailyGoalSecs`=15) · **ally interrupts wired** (`0d2edcd`) · **squire-not-knight** (`b7f0e3e`) · **all-screen +
+> "Treasure Vault" climax + HUD de-emoji** (`b58a98f`) · **daily-practice bar** (`5e9c028`) ⚠ *daily target 30→15 INCOMPLETE — `state-save` still defaults
+> `goalMin=30` (DAILY-1, Neo fix)* · **ally interrupts wired** (`0d2edcd`, copy revised — TRAIN-INT-1) · **squire-not-knight** (`b7f0e3e`) · **all-screen +
 > Hero-Base background restyle** (`620e682`/PR#16/#17 — the UI-coherence pass has STARTED). **Still open:** Training Room
 > full *redesign*, mouth-move upgrade, intro-hook build (script drafted `STORY.md §G`), cinematic SVG pass + portal spike,
 > map-figure ally swap (showcases wired `b7f0e3e`; verify the map figures), the §20 calm-prompt check, UI-coherence audit

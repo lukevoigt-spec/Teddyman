@@ -12,7 +12,11 @@
 > (pumped) + Nora (sweet/clever); *jokes* from William, JJ, and Cal (mischievous) — so the rotation varies by type, not just
 > by voice.
 >
-> Status: **DRAFT — pending parent approval / swaps**, then → `data-lines.js`. — Trinity, 2026-06-15
+> Status: **✅ APPROVED (parent) + wired to `data-lines.js`** (commit `0d2edcd`). **REVISED 2026-06-16 (Morpheus TRAIN-INT-1):**
+> 4 lines fixed for no-streak / process-praise — **Neo: sync these to `data-lines.js`:** `train_arch17` (no "streak"),
+> `train_arch20` (no "smart" → "never give up"), `train_nora5` ("getting better", not "smarter"), `train_nora18` (effort,
+> not "smart"). Also **Neo: gate JJ/Nora/Cal until rescued** (`TRAIN_TELLERS` currently `S.act2intro||currentAct()>=2` — they
+> appear while still *kidnapped*; gate on their freed flag, or frame as captive radio messages). — Trinity, 2026-06-15 / rev 2026-06-16
 
 ## Trigger (for Neo)
 Every **N correct reps** (tunable, e.g. ~8–12, with jitter so it's not clockwork), if an ally is unlocked, pop one in via
@@ -38,10 +42,10 @@ Mix tellers (Archie cheer ↔ William/JJ joke). Pauses the rep flow for the line
 14. You make it look easy, hero. One more rep!
 15. That was a big one — and you powered right through it!
 16. Reading like a champion. I'm so proud of you.
-17. Keep that streak alive, Teddy. You're unstoppable!
+17. Look at you keep trying the hard ones — that's how heroes train!
 18. Pow! Another word down. You're a machine!
 19. Your power bar is climbing. Don't stop now!
-20. That's my hero — strong, brave, and SMART.
+20. That's my hero — strong, brave, and you never give up.
 
 ## WILLIAM — silly jokes (role **W**)  `train_will1…20`
 1. What do you call a sleeping dinosaur? A dino-SNORE!
@@ -92,7 +96,7 @@ Mix tellers (Archie cheer ↔ William/JJ joke). Pauses the rep flow for the line
 2. Look how much you've learned. That's amazing!
 3. Take a breath — you've got this. I believe in you!
 4. Wow, you read that beautifully! Keep going!
-5. You're getting smarter every single minute!
+5. You're getting better every single minute — keep practicing!
 6. I love watching you read, Teddy. You're a star!
 7. One word at a time — you're doing great!
 8. Your brain is a superpower. Go use it!
@@ -105,7 +109,7 @@ Mix tellers (Archie cheer ↔ William/JJ joke). Pauses the rep flow for the line
 15. So close to your goal. You can do it!
 16. Reading is your superpower, and it's getting STRONG!
 17. You're shining today, Teddy. Keep going!
-18. I always knew you were smart. Look at you now!
+18. I knew you could do it if you kept trying. Look at you now!
 19. Little by little, you're becoming a super-reader!
 20. You should be so proud of yourself — because I am!
 
