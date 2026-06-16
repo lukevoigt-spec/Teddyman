@@ -22,6 +22,12 @@ generate images/video via the **Grok**/**ChatGPT** advanced APIs (tokens local) 
 numeric art bible — the Oracle's); raster drop-in is flagged in `art.js`'s `RASTER` manifest. (Cloud agents — Trinity +
 guests — can neither generate nor render; they spec only.)
 
+> **fal.ai API key (added 2026-06-16) — for The Oracle + Neo's media generation.** A fal.ai key lives in the **local
+> agents' environment** (env var **`FAL_KEY`** — fal's SDK convention; *parent: confirm the exact name if you used a
+> different one*). It unlocks fal-hosted models: **Flux** (images) and **Kling / Veo 3.1 / Hailuo** (short video — e.g. the
+> `STORY.md` portal AI-spike). **NEVER commit the key value** (env-only, same rule as the GitHub/cloud secrets); it is NOT
+> in the cloud (Trinity) session's env, which is correct — only the local generating agents need it.
+
 ## The playtest loop — the HIGHEST-value signal (above all agent QA)
 The ground truth for this app is **Teddy actually using it** — that outranks every agent audit, render-gate, and guest
 finding. The parent captures it **frictionlessly**: an in-app **Grown-Up Corner ▸ "Playtest notes"** box (free text →

@@ -57,9 +57,9 @@ statement, not a budget compromise.
   `URL.createObjectURL`, sidestepping the SW Range gotcha entirely. Test on a real iPad.
 - **Tooling, IF we do a spike:** the hero is a *drawn* character, so **Sora 2 Character Cameos** (built for fictional/
   drawn designs, *not* real people) or **Veo 3.1 Ingredients / Kling / Luma** (start-frame keyframe from our rendered
-  art) are the candidates — `Grok Imagine` is cheapest (xAI API the team already has). Budget for a **3–4×+ reroll
-  multiplier** and realism-flattening of our loud style. **Never** the real-family-likeness beats. The team already has
-  Grok + ChatGPT APIs.
+  art) are the candidates — `Grok Imagine` is cheapest (xAI API the team already has). **fal.ai (`FAL_KEY`, added
+  2026-06-16) is the access path** for Flux/Kling/Veo/Hailuo from the local agents — see `AGENTS.md` tooling note. Budget
+  for a **3–4×+ reroll multiplier** and realism-flattening of our loud style. **Never** the real-family-likeness beats.
 - **Playback:** `<video muted playsinline>`, call `play()`, **`.catch()` the autoplay rejection** → tap-to-play fallback
   (Low Power Mode blocks autoplay). Wrap in the `flow()`/watchdog + ⏭ so it can never hang.
 - **Audio:** bake only ambience/music into the mp4; **keep spoken narration on the existing `Aud`/`flow()` pipeline** so
