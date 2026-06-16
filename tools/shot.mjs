@@ -16,6 +16,12 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+// SHOT-1 FIX: Playwright's screenshot races document.fonts.ready (evaluated in a UTILITY context, so a
+// page-side stub can't reach it) against the 30s screenshot timeout. WebKit headless never settles that
+// promise -> every WebKit shot timed out. This official escape hatch skips Playwright's blocking
+// font-wait; we do our own capped wait after load instead (real fonts on Chromium, no hang on WebKit).
+process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY = "1";
+
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "tools", "shots");
 fs.mkdirSync(OUT, { recursive: true });
@@ -93,15 +99,23 @@ await new Promise(r => server.listen(0, r));
 const port = server.address().port;
 const base = `http://localhost:${port}/index.html`;
 
-const page = await browser.newPage({ viewport: { width: 1024, height: 768}, deviceScaleFactor: 2 });
-// WebKit headless hangs the screenshot's font-wait on the Google-Fonts CDN; abort it
-// (parity shots fall back to system fonts — fine for layout/art checks). Chromium keeps real fonts.
-if (engine === "webkit") await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
+// Block the service worker: the game's network-first SW intercepts fetches (incl. the Google-Fonts
+// request), which bypasses page.route() — so font interception never applied and fonts.ready hung.
+// A render harness wants the raw site anyway (no SW caching/staleness). (SHOT-1)
+// Block the service worker: the game's network-first SW intercepts fetches (incl. Google-Fonts), which
+// bypasses page.route() AND was the real source of the WebKit font-wait hang (the SW stalled the font
+// fetch). A render harness wants the raw site anyway. With the SW gone, WebKit loads the fonts directly
+// and document.fonts.ready settles, so the screenshot no longer times out. (SHOT-1)
+const context = await browser.newContext({ viewport: { width: 1024, height: 768 }, deviceScaleFactor: 2, serviceWorkers: "block" });
+const page = await context.newPage();
 page.on("pageerror", e => console.log("  page error:", e.message));
 // domcontentloaded, NOT load/networkidle: the PWA never goes idle and `load`
 // can stall on the Google-Fonts CDN (esp. WebKit) past the timeout.
 await page.goto(base, { waitUntil: "domcontentloaded" });
 await page.waitForTimeout(2000); // let boot, fonts + first paint settle
+// our OWN capped font-ready wait (replaces Playwright's uncapped one): Chromium resolves fast and keeps
+// real fonts; WebKit's never-resolving fonts.ready hits the cap and proceeds (system-font fallback).
+await page.evaluate(() => Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 3000))])).catch(() => {});
 
 for (const s of scenes) {
   const setup = SCENES[s];

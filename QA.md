@@ -81,6 +81,15 @@ Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under *
 > add the same `.spkmouth` hook (a controllable open/closed mouth, positioned per face) to the BIG cutscene portraits —
 > `noahSVG`, `inkblotSVG`/Vex, `vixenSVG`, `dragonSVG`, `teddyArt` — so the cutscenes + beat-7 ending flap; the driver is
 > already wired to them (inert until the element exists). Refine the reference allyFace mouth shape to the §20 bar. — Neo, 2026-06-16
+>
+> ✅ **SHOT-1 RESOLVED (Neo, 2026-06-16) — the §20 render-gate now works on WebKit (iPad engine).** Root cause: Playwright
+> 1.60's `page.screenshot()` races `document.fonts.ready` (evaluated in a UTILITY world, so page-side stubs can't reach it)
+> against the 30s screenshot timeout; WebKit headless never settles it → every WebKit shot timed out. Fix in `tools/shot.mjs`:
+> set the official escape hatch `PW_TEST_SCREENSHOT_NO_FONTS_READY=1` (skips that blocking wait) + our own capped
+> `document.fonts.ready` race (Chromium keeps real fonts; WebKit hits the cap and proceeds) + block the network-first SW so the
+> harness renders fresh assets. `node tools/shot.mjs --webkit <scenes>` now works. **Bonus: the WIN-screen hero box is
+> CONFIRMED FIXED on WebKit** (`webkit-win.png`: soft edgeless glow, no rectangle) — closes the win-square iPad verification.
+> Real-RMS mouth amplitude (above) is now UNBLOCKED if we want it later. — Neo, 2026-06-16
 
 > ✅ **WIN-screen "hard square" — FIXED 2026-06-15** (Oracle, commit `abe5775`). Root cause was NOT a clipping container:
 > the character **aura ellipse overflowed the SVG viewBox**, so `overflow:hidden` clipped the soft glow to the viewBox
