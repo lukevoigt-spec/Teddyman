@@ -159,6 +159,7 @@ const LINES={
      superpower (panel4 = reading the gem brings the city back), mom-&-dad-chose-you, end on "you're ready". */
   panel1:{t:"Look up there — Star Force City, the brightest city in the whole galaxy, powered by glowing Letter Gems."},
   panel2:{t:"Then the lights went out. Lord Vex and his Vexbots stole the gems and smashed every word to pieces — now no one can read. Not a single sign. Not one bedtime story."},
+  intro_vex_taunt:{t:"Ha-ha-ha. Without words, this city is MINE... and it will stay dark forever.", r:.82, v:"C"},
   panel3:{t:"The city needs a hero to bring the words back. Your mom and dad searched everywhere — and they chose YOU."},
   panel4:{t:"Put on your Gem Lenses. When you READ a gem, it lights up — and the city comes back to life, word by word."},
   panel5:{t:"You're Super Teddy now. Rescue the gems, rebuild the words, save the city. Ready, hero?"},

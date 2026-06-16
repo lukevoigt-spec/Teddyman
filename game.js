@@ -605,7 +605,7 @@ function cutsceneFX(artEl, fx){
 /* ---------------- INTRO ---------------- */
 const INTRO=[
  {art:citySVG(), id:"panel1"},
- {art:inkblotSVG(300), id:"panel2", fx:"villain"},
+ {art:inkblotSVG(300), id:"panel2", fx:"villain", taunt:"intro_vex_taunt"},   /* Vex gloats after the threat lands (role C) */
  {art:`<div style="display:flex;justify-content:center;padding:24px;">${mentorChips(280)}</div>`, id:"panel3"},
  {art:`<div style="display:flex;justify-content:center;padding:20px;"><svg viewBox="0 0 200 90" width="300"><g stroke="#1d4fb8" stroke-width="9" fill="#cfe6ff" fill-opacity=".4" stroke-linejoin="round"><rect x="20" y="20" width="62" height="50" rx="12"/><rect x="116" y="20" width="62" height="50" rx="12"/><line x1="82" y1="42" x2="116" y2="42"/></g></svg></div>`, id:"panel4"},
  {art:`<div style="display:flex;justify-content:center;">${teddyArt(220,1)}</div>`, id:"panel5", fx:"heroic"}  /* the Act-1 ORIGIN superhero (painted) — never the knight, even if he's reached Act 2 */
@@ -613,7 +613,8 @@ const INTRO=[
 let introIx=0;
 function startIntro(){ introIx=0; show("scrIntro"); paintIntro(); }
 function paintIntro(){ const p=INTRO[introIx]; $("introArt").innerHTML=p.art;
-  faceSpeak($("introArt"),"intro",$("introText"),[p.id]); cutsceneFX($("introArt"),p.fx);
+  const ids = p.taunt ? [p.id, p.taunt] : [p.id];   /* optional villain taunt after the panel's narration */
+  faceSpeak($("introArt"),"intro",$("introText"),ids); cutsceneFX($("introArt"),p.fx);
   $("btnIntroNext").textContent = introIx<INTRO.length-1?"NEXT ➜":"I'M READY!"; }
 $("btnIntroNext").onclick=()=>{ introIx++;
   if(introIx<INTRO.length)paintIntro();
