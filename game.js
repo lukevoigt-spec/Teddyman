@@ -1101,7 +1101,7 @@ function nextRead(){
   const opts=[w,...foils].sort(()=>Math.random()-.5);
   const cr=$("readChoices"); cr.innerHTML="";
   opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.innerHTML=picIcon(o, POOL[o]); b.dataset.w=o;
-    b.onclick=()=>{ if(o===w){ record("w_"+w,true); b.classList.add("win"); burstAt(b); Aud.ding();
+    b.onclick=()=>{ if(o===w){ lockRow(cr); record("w_"+w,true); b.classList.add("win"); burstAt(b); Aud.ding();   /* #82: lock so a fast double-tap can't re-fire record() during the async flow */
         if(magicE(w))record(magicE(w).unit,true);   /* credit the long-vowel rule */
         readIx++; flow(Aud.play(["read_yes",...graphemeSounds(w),"word_"+w]),()=>setTimeout(nextRead,200)); }
       else { record("w_"+w,false); readMiss++; b.classList.add("dim");
@@ -1154,7 +1154,7 @@ function practiceSpell(){
     b.onclick=()=>{ const want=w[spellSlot];
       if(c===want){ const slot=sw.children[spellSlot]; slot.textContent=c; slot.classList.add("filled");
         const heart=isHeart(w,spellSlot); Aud.ding(); spellSlot++;
-        if(spellSlot>=w.length){ record("sw_"+w,true); spellIx++; burstAt(b);
+        if(spellSlot>=w.length){ lockRow(cr); record("sw_"+w,true); spellIx++; burstAt(b);   /* #82: lock at word-completion so a double-tap can't re-fire the completion record */
           flow(Aud.play(["spell_yes","sw_"+w]),()=>setTimeout(practiceSpell,220)); }
         else Aud.play(heart?["spell_heart"]:["snd_"+c]); }
       else { record("sw_"+w,false); spellMiss++; b.classList.add("dim");
@@ -1186,7 +1186,7 @@ function nextSentence(){
   const opts=[{e:s.pic,ok:true},{e:s.foil,ok:false}].sort(()=>Math.random()-.5);
   const cr=$("sentChoices"); cr.innerHTML="";
   opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.textContent=o.e;
-    b.onclick=()=>{ if(o.ok){ record("sent_"+sentIx,true); b.classList.add("win"); burstAt(b); Aud.ding(); sentIx++;
+    b.onclick=()=>{ if(o.ok){ lockRow(cr); record("sent_"+sentIx,true); b.classList.add("win"); burstAt(b); Aud.ding(); sentIx++;   /* #82: lock so a double-tap can't re-fire record() during the async flow */
         flow(Aud.play([...sentenceAudio(s),"sent_yes"]),()=>setTimeout(nextSentence,200)); }
       else { record("sent_"+sentIx,false); sentMiss++; b.classList.add("dim");
         if(sentMiss>=2)cr.querySelectorAll(".picktile").forEach(x=>{ if(x.textContent===s.pic)x.classList.add("hint"); });
@@ -1209,7 +1209,7 @@ function nextCloze(){ if(clozeIx>=clozeGoal){ flow(Aud.play(["dojo_yes"]),missio
   const done=c.t.map(w=>w==="_"?c.ans:w);
   const cr=$("clozeChoices"); cr.innerHTML="";
   [c.ans,...c.foils].sort(()=>Math.random()-.5).forEach(o=>{ const b=document.createElement("button"); b.className="tile wordtile read"; b.dataset.w=o; b.innerHTML=o;
-    b.onclick=()=>{ if(o===c.ans){ record("cz",true); const bl=$("clozeBlank"); if(bl){bl.textContent=o;bl.classList.add("filled");} b.classList.add("win"); burstAt(b); Aud.ding(); clozeIx++;
+    b.onclick=()=>{ if(o===c.ans){ lockRow(cr); record("cz",true); const bl=$("clozeBlank"); if(bl){bl.textContent=o;bl.classList.add("filled");} b.classList.add("win"); burstAt(b); Aud.ding(); clozeIx++;   /* #82: lock so a double-tap can't re-fire record() during the async flow */
         flow(Aud.play([...done.flatMap(wordAudio),"dojo_yes"]),()=>setTimeout(nextCloze,250)); }
       else { record("cz",false); clozeMiss++; b.classList.add("dim");
         if(clozeMiss>=2)cr.querySelectorAll(".wordtile").forEach(x=>{if(x.dataset.w===c.ans)x.classList.add("hint");}); Aud.play(["almost",...done.flatMap(wordAudio)]); } };
@@ -1412,6 +1412,7 @@ function forgeWord(){
         const slot=slots.children[forgeSlotIx]; slot.textContent=c; slot.classList.add("filled");
         const justIx=forgeSlotIx; Aud.ding(); forgeSlotIx=_fsNext(forgeSlotIx+1);
         if(forgeSlotIx>=gs.length){
+          lockRow(row);   /* #82: word done → lock so a double-tap can't re-fire during the async forge flow */
           if(me)record(me.unit,true);   /* credit the long-vowel rule */
           forgeHP--; paintPips("forgePips",forgeHP,forgeWords.length);
           const fs=$("forgeSprite"); fs.classList.add("hitfx"); setTimeout(()=>fs.classList.remove("hitfx"),380);
