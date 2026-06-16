@@ -20,7 +20,17 @@
 
 Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under **🔧 OPEN WORK — BY TOPIC**.
 
-> 🎨 **UI THEME COHERENCE PASS — end-to-end (Oracle, parent-directed 2026-06-16).** Now that the **painted backgrounds** are
+> ✅ **RECONCILE 2026-06-16 (Trinity) — SHIPPED since these tickets were written** (verified vs commits + tests 104/106/6 green):
+> **Beat-7 homecoming ending** (`de83d9a` — `startHomecoming` + Mom/Dad verbatim) · **Training Room: coin→gold→diamond
+> "Treasure Vault" climax + HUD de-emoji** (`b58a98f`) · **daily-practice bar + daily target 30→15** (`5e9c028`,
+> `dailyGoalSecs`=15) · **ally interrupts wired** (`0d2edcd`) · **squire-not-knight** (`b7f0e3e`) · **all-screen +
+> Hero-Base background restyle** (`620e682`/PR#16/#17 — the UI-coherence pass has STARTED). **Still open:** Training Room
+> full *redesign*, mouth-move upgrade, intro-hook build (script drafted `STORY.md §G`), cinematic SVG pass + portal spike,
+> map-figure ally swap (showcases wired `b7f0e3e`; verify the map figures), the §20 calm-prompt check, UI-coherence audit
+> completion. Individual tickets below annotated accordingly.
+
+> 🎨 **UI THEME COHERENCE PASS — end-to-end (Oracle, parent-directed 2026-06-16) — ⏳ IN PROGRESS** (bg restyle `620e682` +
+> Hero-Base `0d60d9d`/PR#17 are the start; audit completion + per-screen standardization continues). Now that the **painted backgrounds** are
 > the house look, **audit EVERY screen end-to-end and standardize all UI themes to match the paintings.** The chrome
 > (buttons, panels/cards, HUD chips, icons, text treatments, frame corners, scene-grade) must read as ONE coherent system
 > that belongs to the painted world it sits on — not leftover/old or per-screen-inconsistent styling. **Method:** render
@@ -41,22 +51,14 @@ Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under *
 > now closed). Also: **SHOT-1** — Oracle reports `tools/shot.mjs --webkit` hangs on Playwright's font-wait, so the
 > §20 render-gate can't catch iPad-only (WebKit) bugs; on my backlog to fix the WebKit render path.
 
-> 🏋️ **TRAINING ROOM — engagement + REDESIGN cluster (parent playtest 2026-06-15, watching Teddy).** Core problem: the loop
-> has **no climax / monotony → chore.** This is the §6.0 + seductive-details sweet spot — add **PEAKS + variety that buy MORE
-> reps without diluting them** (all juice/jokes fire BETWEEN reps, NEVER on the active decoding prompt). Items:
-> - **Coin STACK → gold bars → diamonds (Neo + Oracle).** Coins (earned per correct rep) accumulate into a visible stack; at
->   thresholds they **convert up a tier** (e.g. 10 coins → 1 gold bar, 10 bars → 1 diamond — tunable) with a satisfying
->   milestone burst = the missing "climax." Bind §6.0 (a "which-good-thing" reward off *correct* reps; never a loss/gamble).
->   Crafted SVG coin/bar/diamond (**no emoji**, §18). Persist in `S` (migrate + `save.test`).
-> - **Daily-practice PROGRESS indicator (Neo + Oracle).** A **non-timed** "how much is left today" bar (reps toward the
->   ~15-min daily-split goal — ties to the 30→15 change). Fills as he practices; gentle, **never a countdown/quota** (#1).
-> - **Ally INTERRUPTS during training (Neo + Oracle + Trinity).** Every N reps an **UNLOCKED** ally pops in (uses `allyPop` +
->   the NEW ally art): **Archie encourages; William & JJ tell silly jokes** — short, audio-first, skippable, `flow()`-safe,
->   BETWEEN reps only. **Content DRAFTED → `TRAINING-INTERRUPTS.md`** (~20 lines each for Archie/William/JJ, pending parent
->   approval, then `data-lines.js`). **New voice roles assigned: JJ=J, Nora=R, Cal=X** (CLAUDE.md canon updated; add to the
->   Studio role pickers; best in the real kids' voices). Trigger: every ~8–12 reps (jittered), unlocked allies only, rotate lines.
-> - **DE-EMOJI the Training Room (Oracle) + tighten `ui-emoji.test`** — emoji still present here (the guard's coverage gap, cf SCROLL-2).
-> - **Full Training Room REDESIGN (Oracle — "not great") to the §20 Premium Bar**, render-gated. — Trinity, 2026-06-15
+> 🏋️ **TRAINING ROOM — engagement cluster (parent playtest 2026-06-15) — MOSTLY SHIPPED.** Peaks/variety that buy MORE reps
+> without diluting them (juice/jokes BETWEEN reps, never on the prompt — §6.0 + seductive-details):
+> - ✅ **Coin STACK → gold bars → diamonds** "Treasure Vault" climax, crafted SVG (no emoji) — SHIPPED `b58a98f`.
+> - ✅ **Daily-practice PROGRESS bar** (non-timed, gentle) — SHIPPED `5e9c028`.
+> - ✅ **Ally INTERRUPTS** (unlocked allies pop in between reps; cheers + jokes, banks `TRAINING-INTERRUPTS.md`, roles J/R/X) — SHIPPED `0d2edcd`.
+> - ⏳ **DE-EMOJI:** HUD done (`b58a98f`); verify the rest of the room + **tighten `ui-emoji.test`** (coverage gap, cf SCROLL-2).
+> - ⬜ **Full Training Room REDESIGN (Oracle — "not great") to the §20 Premium Bar** — still open, render-gated.
+> — Trinity, 2026-06-15 (reconciled 2026-06-16)
 >
 > 🗣️ **MOUTH-MOVE / talking upgrade (Oracle + Neo, parent-asked 2026-06-15) — vector makes this EASIER, not harder.** We
 > already bob the speaking portrait (`faceSpeak`); the upgrade = **amplitude-driven mouth open/close**: a Web-Audio
@@ -87,29 +89,24 @@ Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under *
 > on Chromium only — the WebKit gate is blocked by SHOT-1, so PARENT please confirm on the iPad** that the square is gone.
 > — Trinity, 2026-06-15
 >
-> ⏱️ **DAILY TARGET 30 → 15 min/day (Neo, parent 2026-06-15).** Change the daily goal from **30 min** (old 15 missions + 15
-> training) to **~15 min/day TOTAL, split between daily practice (Training Room) + missions** (~7–8 each — a split, not two
-> separate 15s). Update the Progress-tab daily-split meter/target + labels. Keep it a **gentle meter, never a quota/
-> countdown** (constraint #1). Files: daily-stats / Progress display (`game.js` + `state-save` `S.daily`). CLAUDE.md canon updated.
+> ✅ **DAILY TARGET 30 → 15 min/day — SHIPPED** (`5e9c028`; `dailyGoalSecs`=15, daily-split bar + labels updated; gentle meter, no quota). — Trinity, 2026-06-15 (reconciled 2026-06-16)
 >
-> 🗺️🎨 **MAP ALLY ART STALE (Oracle, parent 2026-06-15).** The character figures on the world map are still the **OLD SVG** —
-> swap to the **NEW ally art** (the updated `allyBody`/`allyFace` likenesses). Files: `map.js` (`mapFriends`) + `allies.js` /
-> `art.js` (`allyMapFig`, `allyBody`, `allyFace`). Render-gate per §20.
+> 🗺️🎨 **MAP ALLY ART (Oracle, parent 2026-06-15) — ⏳ PARTIAL:** raster allies wired into the showcases/cards
+> (`b7f0e3e`/`7f040bf`); **verify the MAP figures (`mapFriends`/`allyMapFig`) specifically** still need the swap to the
+> NEW ally art (`allyBody`/`allyFace`). Files: `map.js` + `allies.js`/`art.js`. Render-gate per §20.
 
 > 🎬 **STORYLINE / CUTSCENES (parent-directed 2026-06-15; full plan + research in `STORY.md`). Decision: SVG motion-comic
 > spine + ONE render-gated AI-video portal spike.** Core principle: cutscenes stay SHORT + SKIPPABLE and **fuse the reward
 > to the reading act**; invest in the hook + the ending. Build order:
-> - **① BEAT-7 HOMECOMING ENDING — HIGH (the missing emotional payoff).** Act-2 win currently just returns to the medieval
->   map (`showWin`/finale). Build a new cutscene after `kendall1-3`: portal **home** → present-day Star Force City → the
->   **whole cast** celebrates → affirmation that is **earned + specific + PROCESS-praise** ("you *sounded out every word*,
->   you never quit — you're a **reader** now, ready for school"), NOT trait praise. *Neo* wires it into the finale flow +
->   `data-lines.js`; *Oracle* the cinematic art; **script ✅ APPROVED — `STORY.md §F`** (8 lines `home1-8`; Mom/Dad
->   verbatim, both under the single existing role **P** (no split — parent's call); school = second grade; "proof" beat = his mastered words glow).
-> - **② INTRO HOOK — elevate `startIntro`** to a cold-open: threat/wonder by sec 5, hero's desire by 20, "your job" by 45.
+> - ✅ **① BEAT-7 HOMECOMING ENDING — SHIPPED `de83d9a`** (`startHomecoming` wired after the finale; `home1-8` in
+>   `data-lines.js`, Mom/Dad words verbatim under role P, mastered-words "proof" beat). Script was `STORY.md §F`. *Oracle*
+>   may still polish the cinematic art.
+> - ⏳ **② INTRO HOOK — script DRAFTED `STORY.md §G`** (cold-open rewrite of the 5 `panel1-5` texts, drop-in/no art change;
+>   fuses reading=the superpower). **Pending parent approval**, then Neo updates the texts in `data-lines.js`.
 > - **③ CINEMATIC SVG PASS over beats 2–6** (Ken Burns `scale3d/translate3d` + 2.5D parallax layers over existing painted
 >   art + `cutsceneFX`/`faceSpeak`; optional vendored `gsap.min.js` for timeline sequencing; **skip Lottie/SMIL**; keep
->   `transform`/`opacity` + Lite/reduced-motion gating). **Squire fix:** `interlude_knight` says "Super Teddy the KNIGHT" —
->   change the reveal to **SQUIRE** (matches the SQUIRE→SOLDIER→KNIGHT ladder + the power-reset). All render-gated (§20).
+>   `transform`/`opacity` + Lite/reduced-motion gating). ✅ **Squire fix SHIPPED `b7f0e3e`** (reveal is now SQUIRE); the
+>   cinematic Ken-Burns/parallax SVG pass over beats 2–6 remains **open**, render-gated (§20).
 > - **④ PORTAL AI-SPIKE (Oracle, optional, render-gated).** ONE short clip for the time-travel portal, keyframed from our
 >   rendered art (Sora-2 cameo / Veo 3.1 / Kling / Grok). Ship ONLY if it clears the Premium Bar; **keep the SVG portal as
 >   fallback**. Serving: H.264 mp4 ~3–5 MB, `<video playsinline>` gesture-launched, **store as IndexedDB Blob** (mirrors
