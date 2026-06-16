@@ -314,7 +314,10 @@ function heroOpts(){ /* muscle + gear come from THIS act's progress, so a new ac
            cape: S.equip.cape||"red",
            theme: actInfo(a).theme||"hero",
            belt2:gear.includes("Power Belt"), boots2:gear.includes("Rocket Boots") }; }
-function heroNow(w){ return heroSVG(w,heroOpts()); }
+/* heroNow = the hero anywhere he's shown (cutscenes/interludes/homecoming). Parent (2026-06-16):
+   characters must use the PAINTED RASTER, never the parametric SVG (only Kendall/JJ lack a raster).
+   So route through heroMarquee (raster teddyArt for hero/knight; SVG only as a never-hit fallback). */
+function heroNow(w){ return heroMarquee(w); }
 /* HERO POWER METER (comprehensible, pre-reader): which rank tier + how FULL the bar is toward the next.
    Bands match heroOpts's muscle thresholds (28%/60% of the act's missions) so the bar literally explains
    the hero's growth the child already watches. Rank = ADVENTURE progress (the reward layer is what's
@@ -329,8 +332,8 @@ function heroProgress(){ const a=currentAct(), am=actMissions(a), total=am.lengt
 /* PAINTED marquee hero: the generated per-muscle Teddy art on the title / win /
    rest / origin screens. theme "hero" -> Act-1 superhero, "knight" -> Act-2 knight
    (both have a painted m0/m1/m2 set). Any other theme falls back to parametric SVG.
-   heroOpts() supplies the muscle tier + theme. Hero Base keeps heroNow() so the
-   Loadout still shows the equipped weapon/cape in the parametric pose. */
+   heroOpts() supplies the muscle tier + theme. heroNow() now delegates here too, so
+   EVERY hero render is the painted raster (parent directive 2026-06-16). */
 function heroMarquee(w){ const o=heroOpts(); return (o.theme==="hero"||o.theme==="knight") ? teddyArt(w,o.muscle,o.theme) : heroSVG(w,o); }
 /* ---------------- SCREEN MGMT ---------------- */
 const $=id=>document.getElementById(id);
@@ -530,12 +533,12 @@ document.body.classList.add("scene-ambient");     /* the boot title screen is am
    Must stay the FIRST user gesture so Aud.pick() unlocks iOS audio. */
 $("btnPlay").onclick=()=>{ Aud.pick(); if(!S.intro)startIntro(); else {Aud.play("welcome"); toMap();} };
 /* ---- player picker (select an existing player; add/remove is parent-only) ---- */
-const PC_CAPES=["red","gold","purple"];
 function openPicker(){ paintPicker(); $("playerPicker").classList.add("on"); }
 function closePicker(){ $("playerPicker").classList.remove("on"); }
 function paintPicker(){ const wrap=$("playerCards"); if(!wrap)return; wrap.innerHTML="";
-  profiles().forEach((p,i)=>{ const b=document.createElement("button"); b.className="playercard"+(p.id===ACTIVE?" cur":"");
-    const hero=heroSVG(96,{muscle:1,cape:PC_CAPES[i%PC_CAPES.length],theme:p.id===ACTIVE&&currentAct()===2?"knight":"hero"});
+  profiles().forEach((p)=>{ const b=document.createElement("button"); b.className="playercard"+(p.id===ACTIVE?" cur":"");
+    /* painted raster hero (parent: no parametric SVG characters); cards distinguished by name, not cape */
+    const hero=teddyArt(96,1,(p.id===ACTIVE&&currentAct()===2)?"knight":"hero");
     b.innerHTML=`<div class="pchero">${hero}</div><div class="pcname read"></div>`;
     b.querySelector(".pcname").textContent=p.name;
     b.onclick=()=>switchProfile(p.id); wrap.appendChild(b); }); }
