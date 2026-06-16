@@ -16,7 +16,7 @@ try {
   const top = sh("git rev-parse --show-toplevel");
   if (!top) process.exit(0);
   const branch = sh("git rev-parse --abbrev-ref HEAD") || "(detached)";
-  const filesOf = s => new Set(s.split("\n").filter(Boolean).map(l => l.slice(3).replace(/^.*\s->\s/, "")));   // porcelain "XY name" (rename → after arrow)
+  const filesOf = s => new Set(s.split("\n").filter(Boolean).map(l => l.slice(3).replace(/^.*\s->\s/, "").trim()).filter(Boolean));   // porcelain "XY name" (rename → after arrow); drop empties so a blank never false-matches
   const mine = filesOf(sh("git status --porcelain", top));
   warn(`${C.cyan}[isolation] committing to branch '${branch}' · ${mine.size} file(s) changed in this worktree${C.reset}`);
   const others = sh("git worktree list --porcelain").split("\n").filter(l => l.startsWith("worktree ")).map(l => l.slice(9).trim());
