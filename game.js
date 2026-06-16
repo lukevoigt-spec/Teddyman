@@ -413,7 +413,7 @@ function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.r
   document.body.classList.toggle("cinematic", cine);
   if(!cine)document.body.classList.remove("cine-villain");
   if(typeof Music!=="undefined" && Music.setAct) Music.setAct(currentAct());   /* swap the act's theme */
-  $("hud").style.display=(id==="scrTitle"||FRAME_SLOTS.has(BG_MAP[id]))?"none":""; refreshHUD();
+  $("hud").style.display=(id==="scrTitle")?"none":""; refreshHUD();   /* nav corners stay on learning screens; body.learning hides the HUD + makes them recessive (CSS) */
   const dm=$("dailyMeter"); if(dm){ dm.style.display=(id==="scrMap")?"block":"none"; if(id==="scrMap")updateDailyMeter(); } }
 function refreshHUD(){ $("hudStars").textContent="⚡ "+S.stars; }
 /* ---------------- JUICE / FX ----------------

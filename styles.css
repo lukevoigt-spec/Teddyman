@@ -208,7 +208,15 @@ button.navcorner::after{content:"";position:absolute;inset:-10px;}   /* expands 
 button.navcorner:active{transform:translateY(2px);}
 button.navcorner svg{width:60%;height:60%;display:block;}
 body[data-act="2"] button.navcorner{background:rgba(30,24,14,.62);border-color:#9a7a48;color:#f0e2c4;box-shadow:0 4px 14px rgba(0,0,0,.4),0 0 14px rgba(200,160,80,.28);}
-body.learning #hud{display:none;}   /* parent: hide ALL nav chrome during a learning run */
+/* On a learning run (NAV-PLAN G1, parent+Trinity final): HIDE the dynamic HUD/status (it reward-signals →
+   pulls focus from the prompt), but KEEP the nav corners — rendered RECESSIVE (smaller + dimmer) so Replay
+   stays the focal control + the prompt keeps the eye. Home stays as the #8 escape; Replay/.ear + Skip are
+   outside #hud and stay full-strength. */
+body.learning #hudStars{display:none;}
+body.learning button.navcorner{opacity:.4;transform:scale(.8);transition:opacity .2s,transform .2s;}
+body.learning button.navcorner:active{opacity:.9;}   /* still clearly tappable */
+/* Settings gear = lower visual weight than the two kid buttons (NAV-PLAN G3 — parent area stays low-prominence) */
+#navSettings{opacity:.8;transform:scale(.86);}
 /* Daily Training meter — encouragement only, fills as he plays, never drains/penalizes */
 /* compact daily-training meter, centered in the top HUD row between the Menu chip and coins;
    short bar with the label tucked UNDERNEATH (parent placement, 2026-06-15). */
