@@ -42,6 +42,11 @@ const ZONES = [
   { name: "Nav corner buttons (Settings/Base/Map) — icon-only crafted uiIcon SVG, no emoji",
     file: "index.html",
     extract: src => between(src, /id="navSettings"/, "</div>") },
+  { name: "Hero Base layered-hub markup (#scrBase) — de-emoji'd by PR #52 (GEMS/GEAR/VILLAINS/FRIENDS text + SVG coin, no emoji)",
+    file: "index.html",
+    /* strip HTML comments first — the layout-description comment legitimately uses →/↙ arrows for prose,
+       which aren't child-facing UI. Only the rendered markup must be emoji-free. */
+    extract: src => (between(src, /id="scrBase"/, "<!-- MEMORY VAULT") || "").replace(/<!--[\s\S]*?-->/g, "") },
 ];
 
 const RESULT = { pass: 0, fail: 0, lines: [] };
