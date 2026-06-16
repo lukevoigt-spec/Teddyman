@@ -1659,18 +1659,44 @@ $("bossCage").onclick=e=>{ if(e.target.id==="bossCage")closeBossCage(); };
 /* Cosmetic collection for the Hero Base. Icons are crafted SVG (art.js ITEMART /
    itemArt(), keyed by id) — NOT emoji (Premium UI Overhaul / closes audit U5).
    ids + costs are SAVE KEYS (S.owned[id]) — never renumber or rename an id (#7). */
+/* SQUISHIES — collectible kawaii fidget toys bought with coins (parent 2026-06-16). ids + costs
+   UNCHANGED (save keys, CLAUDE.md #7) — only nm + the painted-raster art (art/squish-<id>.png). */
 const BASE_ITEMS=[
-  {id:"banner",   nm:"Hero Banner", cost:10},
-  {id:"plant",    nm:"Gem Cluster", cost:12},
-  {id:"poster",   nm:"Hero Poster", cost:15},
-  {id:"trophy",   nm:"Gold Trophy", cost:20},
-  {id:"medal",    nm:"Gold Medal",  cost:25},
-  {id:"lamp",     nm:"Star Lamp",   cost:30},
-  {id:"vexbot",   nm:"Vexbot Toy",  cost:40},
-  {id:"dragon",   nm:"Dragon Toy",  cost:55},
-  {id:"crown",    nm:"Crown Stand", cost:70},
-  {id:"rocket",   nm:"Mini Rocket", cost:90}
+  {id:"banner",   nm:"Mochi Cat",      cost:10},
+  {id:"plant",    nm:"Avocado Squish", cost:12},
+  {id:"poster",   nm:"Peach Squish",   cost:15},
+  {id:"trophy",   nm:"Dino Squish",    cost:20},
+  {id:"medal",    nm:"Axolotl Squish", cost:25},
+  {id:"lamp",     nm:"Narwhal Squish", cost:30},
+  {id:"vexbot",   nm:"Dumpling Cat",   cost:40},
+  {id:"dragon",   nm:"Baby Dragon",    cost:55},
+  {id:"crown",    nm:"Capybara",       cost:70},
+  {id:"rocket",   nm:"Galaxy Unicorn", cost:90},
+  /* Nee-Doh-style stress squishies — the premium / high-demand tier (parent 2026-06-16) */
+  {id:"ndglob",   nm:"Groovy Glob",    cost:110},
+  {id:"ndcube",   nm:"Squish Cube",    cost:135},
+  {id:"ndring",   nm:"Doh Ring",       cost:160},
+  {id:"ndgalaxy", nm:"Galaxy Glob",    cost:190},
+  {id:"ndglow",   nm:"Glow Glob",      cost:230}
 ];
+/* a fun one-liner per squishy for the detail card */
+const SQUISH_BLURB={
+  banner:"A round little mochi cat. Squish his cheeks!",
+  plant:"A happy avocado — squeeze the pit!",
+  poster:"A blushing peach, soft and sweet.",
+  trophy:"A chubby baby dino with tiny arms. Rawr!",
+  medal:"A pink axolotl with wavy gills.",
+  lamp:"A pastel narwhal with a little gold horn.",
+  vexbot:"A sleepy kitten in a dumpling. So squishy!",
+  dragon:"A roly-poly baby dragon. Tiny wings!",
+  crown:"A cozy capybara with an orange-slice hat.",
+  rocket:"A sparkly galaxy unicorn with a rainbow mane.",
+  ndglob:"The classic squish ball — squeeze the smile!",
+  ndcube:"A squishy cube. The corners go SQUASH.",
+  ndring:"A squishy donut with rainbow sprinkles.",
+  ndgalaxy:"A galaxy in your hand — full of stars.",
+  ndglow:"A glow-in-the-dark squish. So satisfying!"
+};
 /* ---------------- TREASURE CHESTS (engagement §10, bound by §6.0) ----------------
    A chest ALWAYS pays out (coins, often + a cosmetic) — never empty, never a loss, never a gamble:
    "variable" = WHICH good thing, never WHETHER (constraints #1/#2). Earned by LEARNING (mission
@@ -2018,18 +2044,28 @@ $("btnVaultBack").onclick=()=>{ Aud.stop(); showBase(); };
 function openShop(){ paintShop(); $("shopPanel").classList.add("on"); }
 function paintShop(){ $("shopCoins").textContent=S.coins||0;
   const g=$("shopGrid"); g.innerHTML="";
-  BASE_ITEMS.forEach(it=>{ const owned=!!S.owned[it.id], can=(S.coins||0)>=it.cost;
-    const d=document.createElement("div"); d.className="shopitem"+(owned?" owned":"");
-    d.innerHTML=`<div class="ic">${itemArt(it,68)}</div><div class="nm">${it.nm}</div>`;
-    if(owned){ const t=document.createElement("div"); t.className="owned-tag"; t.textContent="OWNED ✓"; d.appendChild(t); }
-    else { const buy=document.createElement("button"); buy.className="buy"+(can?"":" cant"); buy.textContent="💰 "+it.cost;
-      buy.onclick=()=>{ if((S.coins||0)>=it.cost){ S.coins-=it.cost; S.owned[it.id]=true; save(); Aud.ding(); burstAt(d); paintShop();
-          showUnlock(`<div style="line-height:1;">${itemArt(it,124)}</div>`, it.nm.toUpperCase(), "NEW ITEM!"); }
-        else Aud.play("shop_need"); };
-      d.appendChild(buy); }
+  BASE_ITEMS.forEach(it=>{ const owned=!!S.owned[it.id];
+    const d=document.createElement("button"); d.className="shopitem"+(owned?" owned":"");
+    d.innerHTML=`<div class="ic">${itemArt(it,72)}</div><div class="nm">${it.nm}</div>`
+      +(owned?`<div class="owned-tag">OWNED</div>`:`<div class="price">${coinIcon(16)}<span>${it.cost}</span></div>`);
+    d.onclick=()=>openSquishCard(it);
     g.appendChild(d); }); }
+/* tap a squishy → a collectible CARD: full image + name + blurb + buy/owned (parent 2026-06-16) */
+function openSquishCard(it){ const owned=!!S.owned[it.id], can=(S.coins||0)>=it.cost;
+  $("sqArt").innerHTML=itemArt(it,210); $("sqName").textContent=it.nm;
+  $("sqDesc").textContent=(typeof SQUISH_BLURB!=="undefined"&&SQUISH_BLURB[it.id])||"A super-squishy collectible!";
+  const btn=$("sqBtn");
+  if(owned){ btn.className="btn ghost"; btn.disabled=true; btn.textContent="IN YOUR COLLECTION"; btn.onclick=null; }
+  else { btn.disabled=false; btn.className="btn"+(can?"":" cant"); btn.innerHTML=coinIcon(22)+" <span>"+it.cost+"</span>";
+    btn.onclick=()=>{ if((S.coins||0)>=it.cost){ S.coins-=it.cost; S.owned[it.id]=true; save(); Aud.ding();
+        $("squishCard").classList.remove("on");
+        showUnlock(`<div style="line-height:1;">${itemArt(it,170)}</div>`, it.nm.toUpperCase(), "NEW SQUISHY!");
+        paintShop(); }
+      else Aud.play("shop_need"); }; }
+  $("squishCard").classList.add("on"); }
 $("btnShop").onclick=()=>openShop();
 $("btnShopClose").onclick=()=>{ $("shopPanel").classList.remove("on"); paintBase(); };
+{ const x=$("sqClose"); if(x)x.onclick=()=>$("squishCard").classList.remove("on"); }
 
 /* ---------------- SETTINGS ---------------- */
 /* Parent-facing progress snapshot (read-only) — what Teddy can actually read. */

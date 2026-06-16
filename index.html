@@ -203,11 +203,22 @@
 
   <!-- SHOP (spend coins on cosmetic Hero-Base items) -->
   <div id="shopPanel">
-    <div class="comic" style="font-size:34px;color:var(--gold);">HERO SHOP</div>
-    <div class="baselbl" style="font-size:20px;">💰 <span id="shopCoins" style="color:var(--gold);">0</span> coins</div>
-    <div class="read" style="font-size:14px;max-width:560px;text-align:center;color:#cfc6f2;">Earn coins in the Training Room, then collect items for your Hero Base!</div>
+    <div class="comic" style="font-size:34px;color:var(--gold);">SQUISHY SHOP</div>
+    <div class="baselbl" style="font-size:20px;"><span id="shopCoins" style="color:var(--gold);">0</span> coins</div>
+    <div class="read" style="font-size:14px;max-width:560px;text-align:center;color:#cfc6f2;">Earn coins by reading, then collect squishies! Tap one to see it big.</div>
     <div id="shopGrid"></div>
-    <button class="btn blue" id="btnShopClose">✅ DONE</button>
+    <button class="btn blue" id="btnShopClose">DONE</button>
+  </div>
+
+  <!-- SQUISHY detail card (tap a squishy → full image + name + buy) -->
+  <div id="squishCard">
+    <div class="sq-card">
+      <button class="sq-x" id="sqClose" aria-label="Close">×</button>
+      <div class="sq-art" id="sqArt"></div>
+      <div class="sq-name comic" id="sqName"></div>
+      <div class="sq-desc" id="sqDesc"></div>
+      <button class="btn" id="sqBtn"></button>
+    </div>
   </div>
 
   <!-- LEARN -->

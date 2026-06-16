@@ -729,7 +729,11 @@ const ITEMART={
   /* Mini Rocket — a sleek hero rocket with flame */
   rocket:(s=64)=>`<svg class="shopart" viewBox="0 0 100 100" width="${s}" aria-hidden="true">${SHADOW}<path d="M50 8 Q67 32 64 66 L36 66 Q33 32 50 8 Z" fill="#eef2f7" stroke="${PI_INK}" stroke-width="4" stroke-linejoin="round"/><path d="M50 8 Q41 26 43 50 L43 66 L36 66 Q33 32 50 8 Z" fill="#fff" opacity=".5"/><path d="M36 54 L24 78 L40 68 Z" fill="#e6453c" stroke="${PI_INK}" stroke-width="3.5" stroke-linejoin="round"/><path d="M64 54 L76 78 L60 68 Z" fill="#e6453c" stroke="${PI_INK}" stroke-width="3.5" stroke-linejoin="round"/><circle cx="50" cy="38" r="9" fill="#7fd9ff" stroke="${PI_INK}" stroke-width="3.5"/><circle cx="47" cy="35" r="2.6" fill="#fff" opacity=".85"/><path d="M43 66 Q50 88 57 66 Z" fill="#ffae00" stroke="${PI_INK}" stroke-width="3" stroke-linejoin="round"/><path d="M47 66 Q50 79 53 66 Z" fill="#ffe07a"/></svg>`
 };
-function itemArt(it,size){ const id=(it&&it.id)||it; const f=ITEMART[id]; return f? f(size||64) : (it&&it.ic? it.ic : ""); }
+/* shop/collection items are now painted-raster SQUISHIES (art/squish-<id>.png) — collectible kawaii
+   fidget toys (parent 2026-06-16). id-keyed so saves (S.owned) are unaffected; the old ITEMART SVGs
+   are retained above but unused. */
+function itemArt(it,size){ const id=(it&&it.id)||it; const s=size||64;
+  return '<img class="squishimg" src="art/squish-'+id+'.png" width="'+s+'" height="'+s+'" alt="" draggable="false">'; }
 
 /* ---- U5 full rollout, batch 1: remaining Act-1 READWORDS ---- */
 Object.assign(PICONS,{
