@@ -8,6 +8,11 @@
 ## 📥 TRIAGE — candidates awaiting the parent's call
 *(empty — all caught up)*
 
+## 🏆 ELEVATION LOOP — "make it award-winning & beautiful" (`ELEVATION-LOOP.md`, active)
+Award Bar rubric **v1 synthesized** (14 criteria, 5-stream research review). Now running wave-by-wave:
+- **#54 [O]** Ratify the Award Bar into `STYLE.md §20` (Oracle adjusts + owns)
+- **#55 [O+N]** **Wave 1 eval** — score Title · World Map · a learning prompt · Win against the bar → gap lists in `DESIGN-REVIEW.md` → become per-fix slices *(Wave 2 = Base/Training/Shop · Wave 3 = cutscenes/settings/transitions)*
+
 ## ✅ APPROVED — build now
 **Nav overhaul (`NAV-PLAN.md`) — 4-corner buttons SHIPPED (PR #49); remaining slices (need Neo/Oracle tickets):**
 - **NAV-a [O]** Icon-only corner glyphs — house / folded-map / gear, one quiet style, no labels *(G4, parent-directed)*
