@@ -24,14 +24,12 @@ Award Bar rubric **v1 synthesized** (14 criteria, 5-stream research review). Now
 - **#33 [O+N]** Hero Room, plinth-first diegetic redesign — *layered-hub SHELL shipped (PR #52: painted lair + spotlit hero + sections + PLAY→next-level)*; remaining = tap→card overlays (gems/coins/weapons/customize), gem-dex %, room-grows-with-mastery.
 - **#34 [O+N]** Training Room visual redesign (engagement mechanics already shipped).
 - **#44 [O]** Title-screen hero box on iPad — nudge down + kill the clipped-glow rect *(build-now; WebKit-verify, don't restyle the title).*
-- **#62 [O]** Ally face-tokens → painted raster (cheer pops, league thumbs, win mini-face) — last SVG characters left after PR #59 *(consistency, Award Bar A5)*
+- **#60 [O]** Ally face-tokens → painted raster (cheer pops, league thumbs, win mini-face) — last SVG characters left after PR #59 *(consistency, Award Bar A5; my dup #62 closed)*
 
 ## 🔨 BUILDING — has an open PR
 *(none open — last batch merged)*
 
 ## 🅿️ DEFERRED — approved-someday, not active
-- **#28 [N]** Device-verify Base/Training/Shop/Vault overflow @1024×768 (WebKit) — apply sticky-footer/scroll where a sub-screen clips its primary action
-- **#40 [O]** Shop close/DONE button fit @1024×768 WebKit *(overlaps #28)*
 - **#35 [O]** Mouth art on the big cutscene portraits (driver already shipped)
 - **#36 [O]** Cinematic SVG cutscene pass (beats 2–6: Ken Burns + parallax)
 - **#37 [O]** Portal AI-video spike *(optional, render-gated, SVG fallback)*
@@ -47,4 +45,6 @@ data-loss fix (#30) · working-tree isolation guard (#25) · RENDER-1 harness fi
 (PRs #43/#45) · squire fix · win-screen square fix · ARENA look + world maps · mouth-move driver. **Latest:** Hero-Base
 layered-hub shell (PR #52) + bleed hotfix (#56) · hero/cutscenes routed to painted raster, no SVG characters (PR #59) ·
 painted nav-corner icons + back-to-base removal (PRs #52/#57) · Rest→map + Skip≥96px (#53) · dead dropdown-CSS removed
-(PR #61, Morpheus #58 resolved) · ui-emoji guard covers Hero Base (PR #63, advances #27). *(history in git + QA.md)*
+(PR #61, Morpheus #58 resolved) · ui-emoji guard covers Hero Base (PR #63, advances #27) · Shop DONE-button fit fixed
+(#64 closes #40; #28 overflow verified) · Memory Vault grapheme-surfacing feature (#65) · boot 404-noise chore (#66).
+*(history in git + QA.md)*
