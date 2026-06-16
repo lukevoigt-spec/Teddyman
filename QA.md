@@ -20,6 +20,17 @@
 
 Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under **🔧 OPEN WORK — BY TOPIC**.
 
+> 🎨 **UI THEME COHERENCE PASS — end-to-end (Oracle, parent-directed 2026-06-16).** Now that the **painted backgrounds** are
+> the house look, **audit EVERY screen end-to-end and standardize all UI themes to match the paintings.** The chrome
+> (buttons, panels/cards, HUD chips, icons, text treatments, frame corners, scene-grade) must read as ONE coherent system
+> that belongs to the painted world it sits on — not leftover/old or per-screen-inconsistent styling. **Method:** render
+> every scene (`node tools/shot.mjs <all>`, Act 1 + 2, landscape + portrait — note SHOT-1 WebKit hang; Chromium for now),
+> eyeball each against its painting, list the **mismatches** in `DESIGN-REVIEW.md`, then standardize via PRs Neo merges.
+> Extend the **locked ARENA house look** (§21) + the scene-harmonizer consistently everywhere; keep **per-act theming**
+> (Act 1 cosmic / Act 2 medieval, §0.5) but coherent within each act. This is §7 / non-negotiable #7 (UI lives in the
+> painting) + the §20 Premium Bar. **⚠ EXCEPTION — the landing/title screen (`scrTitle`) is parent-approved; LEAVE IT
+> AS-IS, do NOT restyle it.** — Trinity, 2026-06-16
+
 > ✅ **SHIPPED + FYI for Trinity (Neo, 2026-06-15) — Act 2 → 8 zones, TEKS Grade-2 gap CLOSED.** Built
 > `CURRICULUM-GRADE2.md` end-to-end: zone **107 THE PIRATE COVE** (r-controlled ar/or/er/ir/ur, 150–159) +
 > **108 THE GIANT'S BRIDGE** (multisyllabic + affixes, 160–172), in play order after the Singing Glade, before
