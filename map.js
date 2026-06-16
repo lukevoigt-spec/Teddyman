@@ -167,8 +167,8 @@ function mapBanner(x,y,st,zi){
 function mapAlliesV2(a, zs, spots){
   /* derive from the LEAGUE roster (by act) so the rescue-pacing re-map lives in ONE place (allies.js) */
   const rescues = LEAGUE.filter(t=>Math.floor(t.mid/100)===(a-1)).map(t=>({mid:t.mid,kind:t.kind}));
-  // group captives by the ZONE they're freed in, so several freed in one zone (e.g. Tank/Flip/Sunny
-   // all in zone 1) fan out beside that zone's banner instead of stacking.
+  // group captives by the ZONE they're freed in, so several freed in one zone (e.g. Archie/Ellie/William
+   // all in one zone) fan out beside that zone's banner instead of stacking.
   const byZi={};
   rescues.forEach(r=>{ if(allyFreed(r.kind)) return;            // freed → gone from the map
     const m=MISSIONS.find(x=>x.id===r.mid); if(!m)return;

@@ -1441,8 +1441,9 @@ function showWin(firstTime){ show("scrWin");
   else ids=[currentAct()===2?"win_grow2":"win_grow"];
   const FREE={8:"free_tank",26:"free_flip",30:"free_sunny"};   /* current CAGED rescue mids (was the stale legacy 3/6/8 → played the wrong friend's line) */
   if(firstTime&&FREE[CUR.id])ids.unshift(FREE[CUR.id]);
-  /* Heartguard, once rescued, is the league's cheerleader on every win */
-  if(S.done[17]&&!CUR.rescue)ids.push("heart_cheer"+(1+(S.stars%3)));
+  /* Amelia, once rescued, is the league's cheerleader on every win (re-pace-proof: gate on allyFreed,
+     not the stale old Heart-Tower mid 17 — Amelia is freed at m36 now) */
+  if(allyFreed("heart")&&!CUR.rescue)ids.push("heart_cheer"+(1+(S.stars%3)));
   /* RANK-UP fanfare — the comprehensible "you leveled up": mentor announces it + a badge + extra pop */
   if(__rankedUp){ ids.unshift("rankup"); setTimeout(()=>{ confetti(80); flashScreen("rgba(255,210,90,.4)"); if(typeof Sfx!=="undefined"&&Sfx.rankup)Sfx.rankup(); },340);
     $("winGear").innerHTML='<div class="gearbadge">⭐ RANK UP — '+heroProgress().name+'!</div>'+$("winGear").innerHTML; __rankedUp=false; }

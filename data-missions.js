@@ -14,7 +14,7 @@ const MISSIONS=[
   {id:6,type:"learn",letter:"i",lbl:"Rescue Gem I",z:1},
   {id:7,type:"learn",letter:"n",lbl:"Rescue Gem N",z:1},
   {id:8,type:"forge",words:["tap","pin","nap","sat"],lbl:"Forge Battle: Save the Block",finale:true,z:1},
-  /* --- ZONE 2 · HEART HEIGHTS (m d g o c k) — Heartguard rescue arc --- */
+  /* --- ZONE 2 · HEART HEIGHTS (m d g o c k) — Amelia rescue arc --- */
   {id:9, type:"learn",letter:"m",lbl:"Rescue Gem M",z:2},
   {id:10,type:"learn",letter:"d",lbl:"Rescue Gem D",z:2},
   {id:11,type:"patrol",set:["m","d","s","a"],lbl:"Skyway Patrol",z:2},

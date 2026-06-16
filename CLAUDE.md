@@ -403,8 +403,8 @@ beautiful are the **amplifiers** that make the learning happen — they get him 
 
 ## Curriculum state
 - Group 1 (live): s a t p i n — SATPIN synthetic phonics order. CVC blending live (at, sat, tap, pin, nap).
-- Group 2 (live, "Heart Heights" zone): m d g o c k — ends in the Heartguard/Amelia rescue at
-  Heart Tower (missions 9–17; CVC: dad, mad, dig, cat, dog, mom, kid). Foil pools only draw
+- Group 2 (live, "Heart Heights" zone): m d g o c k — the Amelia rescue arc (missions 9–17; CVC:
+  dad, mad, dig, cat, dog, mom, kid; the rescue itself is now paced to m36). Foil pools only draw
   from zones <= the mission's zone (lettersFor()).
 - Group 3 (live, "Thunder Ridge" zone): e u r h b f — missions 18–26, forge words red/run/rub,
   fun/hen/bed/bug; finale = Vex Captain (no ally rescue; the road to the Fortress). Earns Gem Gauntlet.
@@ -457,9 +457,9 @@ beautiful are the **amplifiers** that make the learning happen — they get him 
 ## Voice/audio system
 - Aud.play(ids) plays voicepack clips, falls back to per-line TTS (LINES manifest: {t, r, v}).
 - Voice roles (line `v` field → a voice the parent assigns per role in the Studio): A = Mentor/Narrator,
-  B = Amelia (Heartguard), C = Vexbots/Lord Vex (robotic), T = Archie (Tank), F = Ellie (Flip),
-  W = William (Sunny), V = THE VIXEN (Act-2 villain), N = NOAH THE RED (Act-2 wizard mentor),
-  P = MOM & DAD, L = LEIGHTON (Starlight Princess), K = MISS KENDALL (teacher), J = JJ, R = NORA, X = CAL
+  B = Amelia, C = Vexbots/Lord Vex (robotic), T = Archie, F = Ellie,
+  W = William, V = THE VIXEN (Act-2 villain), N = NOAH THE RED (Act-2 wizard mentor),
+  P = MOM & DAD, L = LEIGHTON, K = MISS KENDALL, J = JJ, R = NORA, X = CAL
   (the three Act-2 captured friends; their Training-Room jokes/cheers best recorded in the real kids' voices). NOTE: Vixen + Noah used
   to SHARE role "V" (a bug — Vixen spoke in Noah's voice); now split, and Noah's Act-2 lines (rune/blend/
   magic intros, noah1-3, act2_win, f2_intro) carry v:"N", the Mom&Dad message carries v:"P". The two

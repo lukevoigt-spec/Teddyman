@@ -13,11 +13,11 @@
 (function(){
   "use strict";
   const LS_KEY="stElKey", LS_VOICES="stElVoices", LS_GH="stGhToken";   /* remembered on THIS device only */
-  const ROLES=[["A","Mentor / Narrator"],["B","Amelia (Heartguard)"],["C","Vex / robots"],
-    ["T","Archie (Tank)"],["F","Ellie (Flip)"],["W","William (Sunny)"],
+  const ROLES=[["A","Mentor / Narrator"],["B","Amelia"],["C","Vex / robots"],
+    ["T","Archie"],["F","Ellie"],["W","William"],
     ["V","The Vixen (Act 2 villain)"],["N","Noah the Red (Act 2 wizard)"],["P","Mom & Dad"],
-    ["L","Leighton (Starlight Princess)"],["K","Miss Kendall (teacher)"],
-    ["J","JJ (friend)"],["R","Nora (friend)"],["X","Cal (friend)"]];
+    ["L","Leighton"],["K","Miss Kendall"],
+    ["J","JJ"],["R","Nora"],["X","Cal"]];
 
   /* ---- letter-sound order + research-based articulation coaching ----
      Coaching emphasises CLEAN phonemes: continuous sounds are held, STOP sounds
