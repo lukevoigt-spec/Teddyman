@@ -1147,3 +1147,49 @@ body.calm .scrollword{transition:none;} body.calm .scrollword.lit{transform:none
   min-width:48px;min-height:48px;padding:4px 12px;border-radius:12px;border:3px solid var(--ink);
   background:linear-gradient(180deg,#ffe07a,#f0a82b);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;}
 
+
+/* ============================================================
+   HERO BASE — LAYERED HUB (Oracle 2026-06-16): painted backdrop + spotlit hero +
+   clean UI sections over it. Replaces the old flat .basewrap list-cards.
+   ============================================================ */
+#scrBase{ display:block; padding:0; }   /* keep .screen position:absolute+inset:0 as the positioning context */
+/* top-centre status (rank + coins). The 4 nav corners own the screen corners. */
+.bstatus{ position:absolute; top:calc(env(safe-area-inset-top,8px) + 6px); left:50%; transform:translateX(-50%);
+  display:flex; gap:10px; align-items:center; z-index:6; }
+.bchip{ display:flex; align-items:center; gap:8px; background:rgba(16,10,38,.6); border:3px solid var(--gold);
+  border-radius:16px; padding:7px 15px; color:var(--gold); font-family:'Bangers',cursive; font-size:clamp(18px,2.6vw,24px);
+  letter-spacing:.04em; -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); box-shadow:0 5px 0 rgba(0,0,0,.3); }
+.bchip.rank{ color:#fff; border-color:#fff; }
+.bchip.rank .powerbar{ width:96px; height:11px; }
+.bchip.tap{ cursor:pointer; } .bchip.tap:active{ transform:translateY(2px); }
+/* hero on the painted pedestal */
+#scrBase .basehero{ position:absolute; left:50%; bottom:25%; transform:translateX(-50%); width:clamp(200px,30vw,300px);
+  z-index:4; filter:drop-shadow(0 12px 14px rgba(0,0,0,.45)); pointer-events:none; }
+/* side accomplishment panels */
+#scrBase .bpanel{ position:absolute; top:108px; width:clamp(168px,21vw,210px); z-index:5; text-align:left;
+  background:rgba(18,11,38,.42); border:3px solid #4a3a86; border-radius:20px; padding:11px 12px 13px;
+  -webkit-backdrop-filter:blur(9px); backdrop-filter:blur(9px); box-shadow:0 8px 0 rgba(0,0,0,.26); color:var(--txt); }
+#scrBase .bp-left{ left:16px; } #scrBase .bp-right{ right:16px; }
+#scrBase .bpanel.tap{ cursor:pointer; } #scrBase .bpanel.tap:active{ transform:translateY(2px); }
+.bp-h{ font-family:'Bangers',cursive; font-size:19px; color:var(--gold); letter-spacing:.04em; display:flex;
+  justify-content:space-between; align-items:center; margin-bottom:8px; }
+.bp-h.gearh{ margin-top:11px; }
+#scrBase .bpanel .gemshelf{ display:flex; flex-wrap:wrap; gap:7px; justify-content:flex-start; }
+#scrBase .bpanel .gembox svg,#scrBase .bpanel .bossfig svg{ width:38px; height:auto; }
+.gearbtns{ display:flex; gap:8px; margin-top:10px; }
+.btn.sm{ font-size:16px; padding:8px 14px; }
+/* friends row below the hero */
+#scrBase .bfriends{ position:absolute; left:50%; bottom:118px; transform:translateX(-50%); z-index:5;
+  display:flex; flex-direction:column; align-items:center; gap:4px; max-width:62vw; }
+#scrBase .friendrow{ display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; justify-content:center; }
+#scrBase .frlbl{ font-family:'Bangers',cursive; color:var(--gold); font-size:16px; letter-spacing:.05em; }
+/* PLAY corner (↙) — the loud primary; sits where the (hidden-on-Base) Hero-Base nav corner was */
+.basecta{ position:absolute; left:16px; bottom:16px; z-index:7; border:0; cursor:pointer;
+  font-family:'Bangers',cursive; letter-spacing:.05em; color:#3a2a00; font-size:clamp(26px,4.4vw,38px);
+  background:linear-gradient(180deg,#ffe27a,#f3a52a); border-radius:20px; padding:14px 28px;
+  display:flex; align-items:center; gap:10px; box-shadow:0 7px 0 #b06a12, 0 10px 14px rgba(0,0,0,.42); }
+.basecta:active{ transform:translateY(3px); box-shadow:0 4px 0 #b06a12,0 6px 10px rgba(0,0,0,.4); }
+.basecta .ptri{ width:0;height:0;border-left:20px solid #3a2a00;border-top:13px solid transparent;border-bottom:13px solid transparent; }
+/* Act-2 medieval skin parity */
+body[data-act="2"] #scrBase .bpanel{ border-color:#6a5436; background:rgba(40,30,16,.5); }
+body[data-act="2"] .bchip{ border-color:#caa15a; }
