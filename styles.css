@@ -327,6 +327,52 @@ body.calm .masterpop{animation-duration:.5s;}
 .panelart{position:relative;width:min(600px,90vw);border:5px solid var(--gold);border-radius:24px;overflow:hidden;background:rgba(20,12,44,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 14px 30px rgba(0,0,0,.5), 0 0 24px rgba(255,206,58,.22);}
 .panelart svg{display:block;width:100%;height:auto;}
 
+/* ============ STORYBOOK CUTSCENES — intro = COMIC page (Act 1); interlude/homecoming = illuminated
+   MEDIEVAL BOOK (Act 2, body[data-act="2"]). Left page/panel = illustration, right page/caption = the
+   narration prose + page-turn. Keeps #introArt/#introText/#btnIntroNext ids so paint/narrate/faceSpeak
+   are untouched. Audio-first: the .ear replay stays, tucked in the page corner. ============ */
+.cutbook{ position:relative; box-sizing:border-box; width:min(880px,92vw); height:min(540px,74vh);
+  display:flex; flex-direction:column; gap:12px; padding:15px; box-shadow:0 26px 56px rgba(0,0,0,.6);
+  background:#fdf6e3; border:8px solid #120e1f; border-radius:8px;
+  background-image:radial-gradient(#d8c99c 1.5px,transparent 1.7px); background-size:12px 12px; }
+.cutbook .cutspine{ display:none; }
+.cutpage{ position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.cutpage-l{ flex:1; min-height:0; border:6px solid #120e1f; border-radius:5px; transform:rotate(-1deg);
+  background:linear-gradient(180deg,#3a2c66,#7d52b8); box-shadow:5px 5px 0 rgba(18,14,31,.2); }
+.cutpage-r{ flex:0 0 auto; flex-direction:column; gap:9px; padding:14px 20px; transform:rotate(.5deg);
+  background:#ffe14d; border:5px solid #120e1f; border-radius:8px; box-shadow:5px 5px 0 #120e1f; }
+.cutbook .panelart{ width:auto; max-width:90%; max-height:92%; border:0; border-radius:0; background:none; box-shadow:none; backdrop-filter:none; -webkit-backdrop-filter:none; }
+.cutbook .panelart>div{ display:flex; align-items:center; justify-content:center; max-height:100%; }
+.cutbook .panelart svg,.cutbook .panelart img{ width:auto; height:auto; max-width:100%; max-height:min(40vh,310px); filter:drop-shadow(0 8px 10px rgba(0,0,0,.35)); }
+/* prose = page text, NOT a speech bubble — strip the bubble chrome (override the per-act .bubble skins) */
+.cutbook .cutprose,body[data-act="2"] .cutbook .cutprose{ position:relative; width:100%; padding:0; text-align:left;
+  background:none !important; border:0 !important; box-shadow:none !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
+  color:#120e1f; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:clamp(16px,2.3vw,22px); line-height:1.22; }
+.cutbook .cutprose>span{ display:block; }
+.cutbook .cutprose::before,.cutbook .cutprose::after{ display:none !important; }   /* kill the speech-bubble tail / signal-dot on the page */
+.cutbook .cutprose .ear{ position:absolute; top:-2px; right:-2px; }
+.cutturn{ align-self:flex-end; font-size:clamp(16px,2.2vw,20px); padding:9px 20px; }
+@media (prefers-reduced-motion:no-preference){ .cutbook.turning .panelart, .cutbook.turning .cutprose{ animation:cutslide .4s ease; } }
+@keyframes cutslide{ from{opacity:0; transform:translateX(16px);} to{opacity:1; transform:translateX(0);} }
+body.calm .cutbook.turning .panelart, body.calm .cutbook.turning .cutprose{ animation:none; }
+/* ---- ACT 2 = illuminated MEDIEVAL STORYBOOK: two parchment pages + a bound spine ---- */
+body[data-act="2"] .cutbook{ flex-direction:row; gap:0; padding:16px; background-image:none;
+  background:linear-gradient(180deg,#6e4b29,#3a2614); border:3px solid #221303; border-radius:18px; }
+body[data-act="2"] .cutbook .cutspine{ display:block; flex:0 0 auto; width:18px;
+  background:linear-gradient(90deg,rgba(0,0,0,.34),rgba(0,0,0,.04) 45%,rgba(0,0,0,.34)); }
+body[data-act="2"] .cutpage{ flex:1; margin:0 5px; border:2px solid #c8a868;
+  background:linear-gradient(180deg,#f7edd1,#e6d2a3); box-shadow:inset 0 0 34px rgba(120,88,38,.42); }
+body[data-act="2"] .cutpage-l{ border-radius:12px 3px 3px 12px; transform:none; }
+body[data-act="2"] .cutpage-r{ border-radius:3px 12px 12px 3px; transform:none; padding:34px 32px; }
+body[data-act="2"] .cutbook .panelart{ width:92%; }
+body[data-act="2"] .cutbook .cutprose{ font-family:Georgia,'Times New Roman',serif; font-weight:400; color:#3a2614;
+  font-size:clamp(17px,2.4vw,23px); line-height:1.5; }
+body[data-act="2"] .cutbook .cutprose>span::first-letter{ float:left; font-family:MedievalSharp,serif; font-size:3.1em;
+  line-height:.72; padding:6px 10px 0 0; color:#9a2a22; }
+/* replay tucked into the page's bottom-left corner (clear of the prose + the bottom-right page-turn) */
+body[data-act="2"] .cutbook .cutprose{ position:static; }
+body[data-act="2"] .cutbook .cutprose .ear{ top:auto; right:auto; left:16px; bottom:16px; }
+
 /* ally cheer pop — a friend's face + name bounces in during their mission type */
 .allypop{position:absolute;left:14px;bottom:96px;z-index:7;pointer-events:none;
   display:flex;flex-direction:column;align-items:center;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45));

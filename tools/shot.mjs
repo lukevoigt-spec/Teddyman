@@ -86,6 +86,7 @@ const SCENES = {
   picons:  `(function(){ var words=(arguments,Object.keys(PICONS)); show('scrRead'); document.getElementById('readWord').innerHTML=''; document.querySelector('.bubble#readText').style.display='none'; var cr=document.getElementById('readChoices'); cr.style.flexWrap='wrap'; cr.style.maxWidth='900px'; cr.innerHTML=''; words.forEach(function(o){ var wrap=document.createElement('div'); wrap.style.cssText='display:flex;flex-direction:column;align-items:center;'; var b=document.createElement('div'); b.className='tile picktile'; b.style.cssText='font-size:46px;width:78px;height:78px;'; b.innerHTML=picIcon(o,''); var l=document.createElement('div'); l.textContent=o; l.style.cssText='color:#fff;font-size:12px;font-family:sans-serif;'; wrap.appendChild(b); wrap.appendChild(l); cr.appendChild(wrap); }); return 1; })()`,
   scanintro: `(function(){ show('scrScan'); narrate('scan',document.getElementById('scanText'),['scan_intro']); clearFlow(); return 1; })()`,
   intro: `(function(){ startIntro(); clearFlow(); return 1; })()`,
+  cut_a2: `(function(){ S.act=2; startAct2Intro(); clearFlow(); return 1; })()`,   // Act-2 medieval storybook page
   intro4: `(function(){ startIntro(); introIx=3; paintIntro(); clearFlow(); return 1; })()`,
   intro2: `(function(){ startIntro(); introIx=1; paintIntro(); return 1; })()`,
   nav: `(function(){ toMap(); return 1; })()`,   // 4-corner nav visible on the map hub (HUD UL, Settings UR, Base LL, Map LR)
@@ -110,6 +111,34 @@ const SCENES = {
   kendall: `(function(){ document.body.innerHTML='<div id="cz" style="display:flex;align-items:flex-end;justify-content:center;background:#241a3e;padding:30px;height:100%;box-sizing:border-box;"></div>'; document.getElementById('cz').innerHTML='<div style="text-align:center;">'+allyBody('kendall',260)+'<div style="color:#fff;font-family:sans-serif;font-size:16px;margin-top:6px;">Miss Kendall</div></div>'; return 1; })()`,
   // Act-2 villains — premium Vixen + dragon rasters (in their aura'd SVG wrappers)
   villains: `(function(){ document.body.innerHTML='<div id="cz" style="display:flex;gap:40px;align-items:flex-end;justify-content:center;background:#241a3e;padding:40px;height:100%;box-sizing:border-box;"></div>'; document.getElementById('cz').innerHTML=vixenSVG(250)+dragonSVG(250); return 1; })()`,
+  // STORYBOOK CUTSCENE mockups (render-only — proving the look before wiring the cutscene system)
+  book2: `(function(){
+    var art = vixenSVG(240);
+    var text = '<span class="dc">A</span>nd so the cunning Vixen swept Miss Kendall and the children through a shimmering time-portal — back to the age of castles and dragons. Brave Sir Teddy followed close behind, his great powers left in his own time...';
+    document.body.innerHTML =
+      '<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 36%,#3b2a52,#130c1f);display:flex;align-items:center;justify-content:center;">'
+      + '<div style="position:relative;width:87%;max-width:910px;height:75%;display:flex;background:linear-gradient(180deg,#6e4b29,#3a2614);padding:16px;border-radius:18px;border:3px solid #221303;box-shadow:0 34px 72px rgba(0,0,0,.65);">'
+      + '<div style="flex:1;margin:0 5px;border-radius:12px 3px 3px 12px;background:linear-gradient(180deg,#f7edd1,#e6d2a3);border:2px solid #c8a868;box-shadow:inset 0 0 36px rgba(120,88,38,.45);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;">'
+      +   '<div style="position:absolute;inset:10px;border:2px solid #cdab6a;border-radius:8px;opacity:.6;"></div>' + art + '</div>'
+      + '<div style="width:18px;background:linear-gradient(90deg,rgba(0,0,0,.34),rgba(0,0,0,.04) 45%,rgba(0,0,0,.34));"></div>'
+      + '<div style="flex:1;margin:0 5px;border-radius:3px 12px 12px 3px;background:linear-gradient(180deg,#f7edd1,#e6d2a3);border:2px solid #c8a868;box-shadow:inset 0 0 36px rgba(120,88,38,.45);padding:38px 36px;display:flex;flex-direction:column;justify-content:center;">'
+      +   '<div style="font-family:MedievalSharp,Georgia,serif;color:#3a2614;font-size:25px;line-height:1.55;">' + text + '</div>'
+      +   '<div style="margin-top:24px;align-self:flex-end;display:flex;align-items:center;gap:9px;color:#7a3a20;font-family:MedievalSharp,serif;font-size:18px;">Turn the page' + uiIcon("chevron",22) + '</div>'
+      + '</div>'
+      + '<div style="position:absolute;right:-13px;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;background:radial-gradient(circle at 36% 32%,#ec5d4e,#921d15);border:3px solid #560d08;box-shadow:0 5px 9px rgba(0,0,0,.5);"></div>'
+      + '</div></div>'
+      + '<style>.dc{float:left;font-family:MedievalSharp,serif;font-size:66px;line-height:.72;padding:6px 11px 0 0;color:#9a2a22;}</style>';
+    return 1; })()`,
+  book1: `(function(){
+    var art = inkblotSVG(210);
+    var text = 'Lord Vex has STOLEN the Power Gems — and all of Star Force City has gone dark! Only one little hero can read the words to light it back up...';
+    document.body.innerHTML =
+      '<div style="position:absolute;inset:0;background:#16112b;display:flex;align-items:center;justify-content:center;padding:26px;">'
+      + '<div style="width:84%;max-width:860px;height:80%;background:#fdf6e3;border:8px solid #120e1f;border-radius:7px;box-shadow:0 26px 54px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:12px;padding:15px;background-image:radial-gradient(#d8c99c 1.5px,transparent 1.7px);background-size:12px 12px;">'
+      +   '<div style="flex:1;border:6px solid #120e1f;border-radius:4px;background:linear-gradient(180deg,#34276b,#7d52b8);display:flex;align-items:center;justify-content:center;overflow:hidden;transform:rotate(-1.1deg);box-shadow:5px 5px 0 rgba(18,14,31,.25);">' + art + '</div>'
+      +   '<div style="background:#ffe14d;border:5px solid #120e1f;border-radius:7px;padding:15px 20px;font-family:Bangers,cursive;color:#120e1f;font-size:27px;letter-spacing:.02em;line-height:1.18;transform:rotate(.5deg);box-shadow:5px 5px 0 #120e1f;">' + text + '</div>'
+      + '</div></div>';
+    return 1; })()`,
 };
 
 const args = process.argv.slice(2);

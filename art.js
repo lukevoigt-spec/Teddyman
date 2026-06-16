@@ -251,8 +251,8 @@ return `<svg viewBox="0 0 460 250" width="${w}" aria-hidden="true">
 </svg>`;}
 
 /* ---- intro cityscape — unchanged ---- */
-function citySVG(){
-return `<svg viewBox="0 0 600 300">
+function citySVG(w=560){
+return `<svg viewBox="0 0 600 300" width="${w}">
 <defs><linearGradient id="cs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#171236"/><stop offset="1" stop-color="#7a4fb6"/></linearGradient></defs>
 <rect width="600" height="300" fill="url(#cs)"/>
 <circle cx="500" cy="60" r="34" fill="#fff1cf" stroke="#150f2e" stroke-width="4"/>

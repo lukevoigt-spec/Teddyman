@@ -623,6 +623,10 @@ function cutsceneFX(artEl, fx){
   }
   else if(fx==="heroic"){ if(typeof Sfx!=="undefined"&&Sfx.win)Sfx.win(); }
 }
+/* page-turn flourish on a storybook cutscene (the new illustration + prose slide in). Reduced-motion/Calm
+   aware via CSS. Also de-emoji the NEXT label: a crafted chevron, not the ➜ glyph. */
+function flipBook(id){ const b=$(id); if(!b)return; b.classList.remove("turning"); void b.offsetWidth; b.classList.add("turning"); setTimeout(()=>{ if(b)b.classList.remove("turning"); },460); }
+function nextLabel(btnId, text, last){ const b=$(btnId); if(!b)return; b.innerHTML=text+(last?"":(typeof uiIcon==="function"?uiIcon("chevron",22):"")); }
 
 /* ---------------- INTRO ---------------- */
 const INTRO=[
@@ -636,8 +640,8 @@ let introIx=0;
 function startIntro(){ introIx=0; show("scrIntro"); paintIntro(); }
 function paintIntro(){ const p=INTRO[introIx]; $("introArt").innerHTML=p.art;
   const ids = p.taunt ? [p.id, p.taunt] : [p.id];   /* optional villain taunt after the panel's narration */
-  faceSpeak($("introArt"),"intro",$("introText"),ids); cutsceneFX($("introArt"),p.fx);
-  $("btnIntroNext").textContent = introIx<INTRO.length-1?"NEXT ➜":"I'M READY!"; }
+  faceSpeak($("introArt"),"intro",$("introText"),ids); cutsceneFX($("introArt"),p.fx); flipBook("introBook");
+  nextLabel("btnIntroNext", introIx<INTRO.length-1?"NEXT ":"I'M READY!", introIx>=INTRO.length-1); }
 $("btnIntroNext").onclick=()=>{ introIx++;
   if(introIx<INTRO.length)paintIntro();
   else { S.intro=true; save(); startScan(); } };
@@ -662,8 +666,8 @@ let interIx=0;
 function startInterlude(){ interIx=0; show("scrInter"); paintInter(); }
 function paintInter(){ const p=INTERLUDE[interIx];
   $("interArt").innerHTML=(typeof p.art==="function")?p.art():p.art;
-  faceSpeak($("interArt"),"inter",$("interText"),[p.id]); cutsceneFX($("interArt"),p.fx);
-  $("btnInterNext").textContent = interIx<INTERLUDE.length-1?"NEXT ➜":"INTO THE PORTAL! ➜";
+  faceSpeak($("interArt"),"inter",$("interText"),[p.id]); cutsceneFX($("interArt"),p.fx); flipBook("interBook");
+  nextLabel("btnInterNext", interIx<INTERLUDE.length-1?"NEXT ":"INTO THE PORTAL! ", false);
   $("btnInterNext").onclick=()=>{ interIx++;
     if(interIx<INTERLUDE.length)paintInter(); else finishInterlude(); }; }
 function finishInterlude(){ Aud.stop(); setAct(2); save();
@@ -679,15 +683,15 @@ let a2Ix=0;
 function startAct2Intro(){ a2Ix=0; show("scrInter"); paintA2(); }
 function paintA2(){ const p=ACT2_INTRO[a2Ix];
   $("interArt").innerHTML=(typeof p.art==="function")?p.art():p.art;
-  faceSpeak($("interArt"),"inter",$("interText"),[p.id]); cutsceneFX($("interArt"),p.fx);
-  $("btnInterNext").textContent = a2Ix<ACT2_INTRO.length-1?"NEXT ➜":"ENTER THE REALM! ➜";
+  faceSpeak($("interArt"),"inter",$("interText"),[p.id]); cutsceneFX($("interArt"),p.fx); flipBook("interBook");
+  nextLabel("btnInterNext", a2Ix<ACT2_INTRO.length-1?"NEXT ":"ENTER THE REALM! ", false);
   $("btnInterNext").onclick=()=>{ a2Ix++;
     if(a2Ix<ACT2_INTRO.length)paintA2(); else { S.act2intro=true; save(); Aud.stop(); toMap(); } }; }
 /* Shown when the current act has no missions yet (safe fallback). */
 function actComingSoon(){ show("scrInter");
   $("interArt").innerHTML=`<div style="display:flex;justify-content:center;">${heroNow(220)}</div>`;
-  faceSpeak($("interArt"),"inter",$("interText"),["interlude5"]);
-  $("btnInterNext").textContent="BACK TO TITLE";
+  faceSpeak($("interArt"),"inter",$("interText"),["interlude5"]); flipBook("interBook");
+  nextLabel("btnInterNext","BACK TO TITLE",true);
   $("btnInterNext").onclick=()=>{ Aud.stop(); show("scrTitle"); }; }
 
 /* ---------------- BEAT-7 HOMECOMING ENDING (the emotional climax — STORY.md §F, parent-approved) ----
@@ -720,9 +724,9 @@ let homeIx=0;
 function startHomecoming(){ homeIx=0; show("scrInter"); paintHome(); }
 function paintHome(){ const p=HOMECOMING[homeIx];
   $("interArt").innerHTML=(typeof p.art==="function")?p.art():p.art;
-  faceSpeak($("interArt"),"inter",$("interText"),[p.id]); cutsceneFX($("interArt"),p.fx);
+  faceSpeak($("interArt"),"inter",$("interText"),[p.id]); cutsceneFX($("interArt"),p.fx); flipBook("interBook");
   if(homeIx===6){ try{ confetti(72); }catch(e){} }   /* home7 — the cast lifts him up: big celebratory burst */
-  $("btnInterNext").textContent = homeIx<HOMECOMING.length-1?"NEXT ➜":"✅ THE END";
+  nextLabel("btnInterNext", homeIx<HOMECOMING.length-1?"NEXT ":"THE END", true);
   $("btnInterNext").onclick=()=>{ homeIx++;
     if(homeIx<HOMECOMING.length)paintHome(); else finishHomecoming(); }; }
 function finishHomecoming(){ Aud.stop(); paintTitle(); show("scrTitle"); }

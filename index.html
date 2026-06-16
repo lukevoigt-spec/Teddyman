@@ -98,16 +98,28 @@
 
   <!-- INTRO -->
   <div class="screen" id="scrIntro">
-    <div class="panelart" id="introArt"></div>
-    <div class="bubble" id="introText"><span></span><div class="ear" data-ear="intro"></div></div>
-    <button class="btn blue" id="btnIntroNext">NEXT ➜</button>
+    <!-- STORYBOOK cutscene: comic page (Act 1) / illuminated book (Act 2). Left page = illustration,
+         right page = narration prose + page-turn. Existing ids kept so paint/narrate/faceSpeak are unchanged. -->
+    <div class="cutbook" id="introBook">
+      <div class="cutpage cutpage-l"><div class="panelart" id="introArt"></div></div>
+      <div class="cutspine"></div>
+      <div class="cutpage cutpage-r">
+        <div class="bubble cutprose" id="introText"><span></span><div class="ear" data-ear="intro"></div></div>
+        <button class="btn cutturn" id="btnIntroNext">NEXT</button>
+      </div>
+    </div>
   </div>
 
   <!-- ACT-1 → ACT-2 INTERLUDE (handoff cutscene) -->
   <div class="screen" id="scrInter">
-    <div class="panelart" id="interArt"></div>
-    <div class="bubble" id="interText"><span></span><div class="ear" data-ear="inter"></div></div>
-    <button class="btn blue" id="btnInterNext">NEXT ➜</button>
+    <div class="cutbook" id="interBook">
+      <div class="cutpage cutpage-l"><div class="panelart" id="interArt"></div></div>
+      <div class="cutspine"></div>
+      <div class="cutpage cutpage-r">
+        <div class="bubble cutprose" id="interText"><span></span><div class="ear" data-ear="inter"></div></div>
+        <button class="btn cutturn" id="btnInterNext">NEXT</button>
+      </div>
+    </div>
   </div>
 
   <!-- SCAN -->
