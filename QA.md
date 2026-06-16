@@ -85,9 +85,9 @@ Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under *
 > ✅ **WIN-screen "hard square" — FIXED 2026-06-15** (Oracle, commit `abe5775`). Root cause was NOT a clipping container:
 > the character **aura ellipse overflowed the SVG viewBox**, so `overflow:hidden` clipped the soft glow to the viewBox
 > **rectangle** — invisible on Chromium, but on iPad/WebKit the `#winHero>svg` drop-shadow *outlined* that clipped rect →
-> the reported hard square. Fix: fit every character aura inside its viewBox (hero + allies + villains). **⚠ Render-gated
-> on Chromium only — the WebKit gate is blocked by SHOT-1, so PARENT please confirm on the iPad** that the square is gone.
-> — Trinity, 2026-06-15
+> the reported hard square. Fix: fit every character aura inside its viewBox (hero + allies + villains). **✅ CONFIRMED GONE
+> ON THE iPAD (parent, 2026-06-16) — RESOLVED.** *(Reminder: this was an iPad-only/WebKit bug the Chromium gate couldn't
+> catch — until **SHOT-1** is fixed, iPad-specific visuals still need the parent's eyes.)* — Trinity, 2026-06-16
 >
 > ✅ **DAILY TARGET 30 → 15 min/day — SHIPPED** (`5e9c028`; `dailyGoalSecs`=15, daily-split bar + labels updated; gentle meter, no quota). — Trinity, 2026-06-15 (reconciled 2026-06-16)
 >
@@ -101,8 +101,8 @@ Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under *
 > - ✅ **① BEAT-7 HOMECOMING ENDING — SHIPPED `de83d9a`** (`startHomecoming` wired after the finale; `home1-8` in
 >   `data-lines.js`, Mom/Dad words verbatim under role P, mastered-words "proof" beat). Script was `STORY.md §F`. *Oracle*
 >   may still polish the cinematic art.
-> - ⏳ **② INTRO HOOK — script DRAFTED `STORY.md §G`** (cold-open rewrite of the 5 `panel1-5` texts, drop-in/no art change;
->   fuses reading=the superpower). **Pending parent approval**, then Neo updates the texts in `data-lines.js`.
+> - ✅ **② INTRO HOOK — script APPROVED (parent 2026-06-16), `STORY.md §G`.** **NEO: update the 5 `panel1-5` texts in
+>   `data-lines.js`** to the §G after-column (drop-in, no art/flow change; fuses reading=the superpower).
 > - **③ CINEMATIC SVG PASS over beats 2–6** (Ken Burns `scale3d/translate3d` + 2.5D parallax layers over existing painted
 >   art + `cutsceneFX`/`faceSpeak`; optional vendored `gsap.min.js` for timeline sequencing; **skip Lottie/SMIL**; keep
 >   `transform`/`opacity` + Lite/reduced-motion gating). ✅ **Squire fix SHIPPED `b7f0e3e`** (reveal is now SQUIRE); the
