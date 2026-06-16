@@ -13,6 +13,11 @@ Award Bar rubric **v1 synthesized** (14 criteria, 5-stream research review). Now
 - **#54 [O]** Ratify the Award Bar into `STYLE.md §20` (Oracle adjusts + owns)
 - **#55 [O+N]** **Wave 1 eval** — score Title · World Map · a learning prompt · Win against the bar → gap lists in `DESIGN-REVIEW.md` → become per-fix slices *(Wave 2 = Base/Training/Shop · Wave 3 = cutscenes/settings/transitions)*
 
+## 🐞 RUNTIME / DEVICE BUGS — parent deep-dive 2026-06-16 (build-now; tests can't catch these)
+- **#71 [N]** Training interrupt stacks on Spell-Scroll / Warm-Up completion audio — `__trainNextAt` only bumped in `trainRound()` *(HIGH — ADHD flow-safety, #8)*
+- **#72 [N]** Cloud pull + daily rollover timing can let a stale local save outrank newer cloud *(HIGH impact — #7 data-loss; + save.test guard)*
+- **#73 [N+O]** Base earned items hide under the action rail @1024×768 once collection grows (squishies) — most concrete device bug *(fold into #33 layout)*
+
 ## ✅ APPROVED — build now
 **Nav overhaul (`NAV-PLAN.md`) — 4-corner buttons SHIPPED (PR #49); painted nav icons + back-to-base removal + HUD-hide-on-learning + Rest→map + Skip≥96px all landed (PRs #52/#57/#53). Remaining:**
 - ~~NAV-a icon-only corners~~ DONE — painted `nav-home/map/settings.png` (PR #52). ~~NAV-b HUD-hide-on-learning~~ DONE.
@@ -34,7 +39,9 @@ Award Bar rubric **v1 synthesized** (14 criteria, 5-stream research review). Now
 - **#36 [O]** Cinematic SVG cutscene pass (beats 2–6: Ken Burns + parallax)
 - **#37 [O]** Portal AI-video spike *(optional, render-gated, SVG fallback)*
 - **#38 [O]** Map allies — **ground them standing ON the path by their zone (parent-flagged: they float in mid-air)** + swap to new ally art
-- **#39 [O]** §20 render-gate catch-up on new Act-2 systems + the calm-prompt check
+- **#39 [O]** §20 render-gate catch-up on new Act-2 systems + the calm-prompt check *(also re-verify anti-gaming #4 in the new Vault/Warm-Up paths — parent deep-dive found them currently CLEAN)*
+- **#74 [N]** `rewardShower` not Lite-gated (full eruption on Calm) + reward-pool growth on long sessions *(perf/battery, P14)*
+- **#75 [N]** Hardening/polish trio: fortSentence phase-robustness · flyReward standardization (extends #24) · mouth-RAF active-speaker only
 
 ## ✓ DONE (recent — last sweep)
 **Reading (objective #1): full TEKS Grade-2 ladder complete, Act 1 + Act 2 content-complete.** Plus: beat-7 homecoming
