@@ -84,6 +84,15 @@ one tap) commits a **timestamped** entry to the repo and (optionally) opens a tr
    after shots in `DESIGN-REVIEW.md`, and posts **blocking nits as PR review comments** Neo resolves before merge. The
    **NO-EMOJI** rule (`CLAUDE.md` non-negotiable #6, enforced by `tests/ui-emoji.test.js`) is part of the gate. Reviews
    are advisory in TONE (no scolding the coder) but **blocking in EFFECT** for the Premium Bar items.
+8. **DESIGN DELEGATION — Oracle specs, Neo builds, Oracle gates, Neo merges (2026-06-16, to relieve the Oracle build
+   bottleneck).** The Oracle may hand the **implementation** of a visual task to **Neo** (who can render). Flow:
+   **Oracle writes the spec → Neo builds + self-renders → Oracle render-gates and posts an explicit `§20 PASS` on the PR
+   (before/after shots in `DESIGN-REVIEW.md`) → THEN Neo merges.** Split: the Oracle keeps **taste / composition / art**
+   (what it should look like + the SVG/icon art); Neo takes **execution** (CSS/markup, layout/hotspot wiring, icon swaps,
+   fixes) — *to the Oracle's spec, never his own design calls.* **The gate is never skipped: Neo does NOT merge a visual PR
+   without the Oracle's recorded `§20 PASS`** (the builder is not his own design reviewer). **Clear file ownership per
+   task** (Neo's slice owns its files; the Oracle's parallel work is in *different* files) — two agents now edit the visual
+   layer, so the working-tree-isolation guard (#25) is required, not optional.
 
 ## Communication model — how agents coordinate (hub-and-spoke, NOT a mesh)
 A free-form agent group-chat dilutes context and produces incompatible decisions — we don't do that. Three channels, by purpose:

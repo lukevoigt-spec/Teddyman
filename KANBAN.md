@@ -9,23 +9,23 @@
 *(empty — all caught up 2026-06-16)*
 
 ## ✅ APPROVED — build now (parent triage 2026-06-16)
-**Neo — quick fixes:**
+**Neo:**
 - **#21 [N]** DAILY-1: `goalMin` default 30 → 15 + save.test
 - **#22 [N]** Intro-hook: update the 5 panel texts to `STORY.md §G`
 - **#23 [N]** Training interrupts: sync the process-praise fixes + gate JJ/Nora/Cal until rescued
+- **#25 [N]** Working-tree isolation guard *(bumped from Deferred 2026-06-16 — two agents now edit the visual layer, so it's required)*
 
-**The Oracle — the 3 big redesigns (parent: build in parallel):**
-- **#31 [O]** UI theme coherence pass — standardize every screen to the painted backgrounds. **➕ Folded in per parent:
-  #32 de-emoji the Shop/base glyphs + #27 expand the emoji-guard — do these AS PART of this pass, not separately.**
-- **#33 [O]** Hero Room premium diegetic redesign (plinth-first)
-- **#34 [O]** Training Room full redesign to the Premium Bar
+**The 3 big redesigns — delegation model (AGENTS rule 8): `[O]` designs + makes art + gates · `[N]` implements to spec · `[O]` posts `§20 PASS` · `[N]` merges.**
+*Oracle keeps taste/composition; Neo takes execution. Proposed Neo slices below — the Oracle confirms/adjusts as she specs each task.*
+- **#31 [O+N]** UI theme coherence (folds in #32 + #27) — **O:** per-screen chrome standard + the de-emoji SVG icons (💰💎✓★). **N:** apply the CSS/markup across screens + swap in the icons + **#27** expand the emoji-guard (pure code).
+- **#33 [O+N]** Hero Room, plinth-first — **O:** plinth/avatar art + the diegetic composition (`BASESPOTS`, hotspot layout). **N:** wire `paintBase` layout/hotspots + tap-to-inspect to spec.
+- **#34 [O+N]** Training Room redesign — **O:** the visual design. **N:** implement the layout/CSS to spec.
 
 ## 🔨 BUILDING — has an open PR
 *(none open right now — #31 groundwork already merged; Trinity moves cards here when a PR opens)*
 
 ## 🅿️ DEFERRED — approved-someday, not active
 - **#24 [N]** Standardize `flyReward` for training/vault rewards
-- **#25 [N]** Working-tree isolation guard
 - **#26 [N]** Render-harness scene isolation (RENDER-1) — unblocks the §20 gate
 - **#28 [N]** Verify M-#2 Base overflow on Training/Shop/Vault @1024×768 (device)
 - **#29 [N]** Training interrupt timing buffer *(kept per parent)*
