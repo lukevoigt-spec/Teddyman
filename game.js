@@ -1522,9 +1522,7 @@ function paintBase(){
   const weapons=[["none","HANDS"],...ownedWeapons().map(w=>[w.k,w.lbl])];
   weapons.forEach(([k,lbl])=>{ const b=document.createElement("button");
     b.className="wtile"+(S.equip.weapon===k?" onsel":""); b.title=lbl;
-    b.innerHTML=(k!=="none" ? '<img src="art/wpn-'+k+'.png" alt="'+lbl+'" draggable="false">'
-                            : '<span class="wname only">HANDS</span>')
-              + (k!=="none" ? '<span class="wname">'+lbl+'</span>' : '');
+    b.innerHTML='<img src="art/'+(k!=="none"?"wpn-"+k:"fists")+'.png" alt="'+lbl+'" draggable="false"><span class="wname">'+lbl+'</span>';
     b.onclick=()=>{S.equip.weapon=k;save();Aud.ding();paintBase();};
     wrow.appendChild(b); });
   if(weapons.length===1){ const hint=document.createElement("div"); hint.className="baselbl";
@@ -1534,9 +1532,9 @@ function paintBase(){
   const capes=[["red","RED",0],["gold","GOLD",15],["purple","PURPLE",27]];
   capes.forEach(([k,lbl,need])=>{ const locked=S.stars<need;
     const b=document.createElement("button");
-    b.className="echip"+(S.equip.cape===k?" onsel":"")+(locked?" lockd":"");
-    b.textContent=locked?(lbl+" · "+need):lbl;
-    b.onclick=()=>{S.equip.cape=k;save();Aud.ding();paintBase();};
+    b.className="wtile"+(S.equip.cape===k?" onsel":"")+(locked?" lockd":""); b.title=lbl;
+    b.innerHTML='<img src="art/cape-'+k+'.png" alt="'+lbl+'" draggable="false"><span class="wname">'+(locked?(lbl+" · "+need):lbl)+'</span>';
+    b.onclick=()=>{ if(locked){Aud.play&&Aud.play("shop_need");return;} S.equip.cape=k;save();Aud.ding();paintBase(); };
     crow.appendChild(b); });
   /* gem shelf: earned letters only */
   const shelf=$("gemShelf"); shelf.innerHTML="";
