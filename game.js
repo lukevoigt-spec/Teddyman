@@ -172,7 +172,7 @@ const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#
 /* SAVE/PROFILES/CLOUD/daily-stats layer moved to state-save.js (loaded before game.js). */
 let __lastInteract=Date.now(), __dailyDirty=0, __inTraining=false, __lastTick=0;
 function noteInteract(){ __lastInteract=Date.now(); }
-function dailyGoalSecs(){ return (S.goalMin||30)*60; }
+function dailyGoalSecs(){ return (S.goalMin||15)*60; }
 function trainTick(){ ensureDaily();
   const now=Date.now(), gap=now-__lastTick; __lastTick=now;
   const hidden=(typeof document!=="undefined" && document.hidden);
@@ -190,7 +190,8 @@ function updateDailyMeter(){ const fill=$("dailyFill"); if(!fill)return;
   const pct=Math.min(100, 100*(S.daily.secs||0)/dailyGoalSecs());
   fill.style.width=pct+"%"; fill.classList.toggle("done", pct>=100);
   const t=$("dailyTime"); if(t){ const m=Math.floor((S.daily.secs||0)/60);
-    t.textContent = pct>=100 ? "— "+m+" min · GOAL!" : "— "+m+" / "+(S.goalMin||30)+" min"; }
+    t.textContent = pct>=100 ? "— "+m+" min · GOAL!" : "— "+m+" / "+(S.goalMin||15)+" min"; }
+  updateTrainDaily();   /* keep the Training-Room practice bar in sync each tick */
 }
 function dailyGoalReached(){ try{Aud.ding();}catch(e){} Aud.play("daily_goal"); }
 ensureDaily();
@@ -1660,9 +1661,15 @@ function vaultMilestone(kind){ const dia=(kind==="diamond");
   const d=document.createElement("div"); d.className="vaultpop"+(dia?" dia":"");
   d.innerHTML=`<div class="vaultpopart">${dia?diamondIcon(120):barIcon(120)}</div><div class="vaultpoplbl read">${dia?"A DIAMOND!":"A GOLD BAR!"}</div>`;
   host.appendChild(d); setTimeout(()=>d.remove(),1700); }
-function showTrain(){ clearFlow(); trainReps=0; __scrollServed=false; __warmDone=false; show("scrTrain"); updateTrainHUD();
+function showTrain(){ clearFlow(); trainReps=0; __scrollServed=false; __warmDone=false; show("scrTrain"); updateTrainHUD(); updateTrainDaily();
   flow(narrate("train",$("trainText"),["train_intro"]),()=>trainRound()); }
 function updateTrainHUD(){ const h=$("trainHoard"); if(h)h.innerHTML=trainHoardHTML(); const rp=$("trainReps"); if(rp)rp.textContent=trainReps; }
+/* gentle "today's practice" fill — grows as he practices toward the daily-split goal; NO countdown,
+   NO numbers/quota, never a penalty (#1). Just a warm bar that fills + celebrates when full. */
+function updateTrainDaily(){ const fill=$("trainDailyFill"); if(!fill)return;
+  const done=Math.min(100,100*((S.daily&&S.daily.secs)||0)/dailyGoalSecs());
+  fill.style.width=done+"%"; fill.classList.toggle("done",done>=100);
+  const l=$("trainDailyLbl"); if(l)l.textContent = done>=100 ? "GOAL — GREAT PRACTICE TODAY!" : "TODAY'S PRACTICE"; }
 function trainRound(){
   /* warm the ears first: a short oral-PA Sound Warm-Up once per training session (rec #3A) */
   if(!__warmDone && warmReady()){ __warmDone=true; startWarmup(true); return; }
@@ -1972,7 +1979,7 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
       <div style="margin-top:8px;"><b class="pnote">Safety snapshots</b> ${snapRows}</div></div>`;
   /* daily training: today + last-7-days history */
   ensureDaily();
-  const goal=S.goalMin||30, todayMin=Math.floor((S.daily.secs||0)/60);
+  const goal=S.goalMin||15, todayMin=Math.floor((S.daily.secs||0)/60);
   const hist=Object.assign({}, S.history||{}); hist[S.daily.day]=S.daily.secs||0;
   const days7=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i);
     const k=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); days7.push([k,hist[k]||0]); }
@@ -1991,8 +1998,8 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
         <div class="pcard"><div class="pnum">${daysHit}<span style="font-size:13px;">/7</span></div><div class="plbl">Days hit goal</div></div>
       </div>
       <div style="display:flex;gap:7px;justify-content:center;align-items:flex-end;margin-top:8px;">${bars}</div>
-      <div class="pnote" style="text-align:center;margin-top:7px;">Today's split — <b>${Math.max(0,todayMin-Math.floor((S.daily.trainSecs||0)/60))}m</b> missions · <b>${Math.floor((S.daily.trainSecs||0)/60)}m</b> training. A 15/15 balance (new missions + Training Room practice) is a great daily rhythm.</div>
-      <div class="pnote" style="text-align:center;margin-top:7px;">Daily goal: <button class="chipbtn" id="goalDown">−5</button> <b>${goal} min</b> <button class="chipbtn" id="goalUp">+5</button><br>~30 min/day across 3–4 short sessions is ideal — spaced practice beats one long sitting, and suits his focus.</div>
+      <div class="pnote" style="text-align:center;margin-top:7px;">Today's split — <b>${Math.max(0,todayMin-Math.floor((S.daily.trainSecs||0)/60))}m</b> missions · <b>${Math.floor((S.daily.trainSecs||0)/60)}m</b> training. About 7–8 minutes EACH (new missions + Training Room practice) — a ~15-min/day total is a great rhythm.</div>
+      <div class="pnote" style="text-align:center;margin-top:7px;">Daily goal: <button class="chipbtn" id="goalDown">−5</button> <b>${goal} min</b> <button class="chipbtn" id="goalUp">+5</button><br>~15 min/day across a couple of short sessions is ideal — spaced practice beats one long sitting, and suits his focus.</div>
     </div>
     <div class="pgrid">
       <div class="pcard"><div class="pnum">${doneN}/${totalN}</div><div class="plbl">Missions done</div></div>
@@ -2013,8 +2020,8 @@ window.renderProgress=function(){ const el=$("progBody"); if(!el)return;
     ${safetyHTML}
     <div class="psec pnote">Reading direction so far: letter→sound (decode) via Read-It &amp; Story Gate; sound→letter (spell) via Forge &amp; patrols. Both grow as he plays.</div>`;
   const gd=$("goalDown"), gu=$("goalUp");
-  if(gd)gd.onclick=()=>{ S.goalMin=Math.max(5,(S.goalMin||30)-5); save(); updateDailyMeter(); window.renderProgress(); };
-  if(gu)gu.onclick=()=>{ S.goalMin=Math.min(120,(S.goalMin||30)+5); save(); updateDailyMeter(); window.renderProgress(); };
+  if(gd)gd.onclick=()=>{ S.goalMin=Math.max(5,(S.goalMin||15)-5); save(); updateDailyMeter(); window.renderProgress(); };
+  if(gu)gu.onclick=()=>{ S.goalMin=Math.min(120,(S.goalMin||15)+5); save(); updateDailyMeter(); window.renderProgress(); };
   /* level-override slider wiring */
   const sl=$("lvlSlide"), apply=$("lvlApply");
   if(sl){ sl.oninput=()=>{ const v=+sl.value; $("lvlNow").textContent="Level "+v+" / "+pm.length;

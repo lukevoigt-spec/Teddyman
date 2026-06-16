@@ -149,6 +149,8 @@ body{
 .trscell b{ font-family:'Bangers',cursive; font-size:clamp(20px,4vw,30px); color:#ffe27a; min-width:.8em; text-align:center; }
 .trscell svg{ display:block; }
 .trsreps{ opacity:.85; margin-top:0; }
+.traindaily{ width:min(300px,62vw); margin:6px auto 0; }   /* in-flow practice bar (reuses .dailybar/.dailylabel) */
+.traindaily .dailylabel{ margin-top:4px; }
 .cfcoin{ display:inline-block; vertical-align:-4px; }
 .vaultpop{ position:absolute; left:50%; top:42%; transform:translate(-50%,-50%); z-index:40; pointer-events:none;
   display:flex; flex-direction:column; align-items:center; gap:6px; animation:vaultpop 1.7s cubic-bezier(.2,1.4,.4,1) both; }
