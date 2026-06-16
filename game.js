@@ -628,17 +628,37 @@ const INTERLUDE=[
  {art:`<div style="display:flex;justify-content:center;padding:20px;">${mentorChips(260)}</div>`, id:"interlude1"},
  {art:`<div style="display:flex;justify-content:center;">${captiveSVG(260)}</div>`, id:"interlude2"},
  {art:`<div style="display:flex;justify-content:center;">${vixenSVG(220)}</div>`, id:"interlude3", fx:"villain"},
- {art:`<div style="display:flex;justify-content:center;">${portalSVG(220)}</div>`, id:"interlude4", fx:"portal"},
- {art:`<div style="display:flex;justify-content:center;">${teddyArt(220,0,"knight")}</div>`, id:"interlude_knight", fx:"transform"}  /* painted squire — powerless knight reveal */
+ /* The portal crossing + knight transformation is now the LOCKED AI cutscene (art/cutscene-portal.mp4):
+    muscular Teddy into the portal -> squire arrival in the medieval realm + his spoken line. Replaces
+    the old portalSVG + knight-reveal beats. (Step 2 will convert the setup beats above to video too.) */
+ {video:"art/cutscene-portal.mp4"}
 ];
 let interIx=0;
 function startInterlude(){ interIx=0; show("scrInter"); paintInter(); }
 function paintInter(){ const p=INTERLUDE[interIx];
+  if(p.video){ playInterVideo(p.video); return; }
   $("interArt").innerHTML=(typeof p.art==="function")?p.art():p.art;
   faceSpeak($("interArt"),"inter",$("interText"),[p.id]); cutsceneFX($("interArt"),p.fx);
-  $("btnInterNext").textContent = interIx<INTERLUDE.length-1?"NEXT ➜":"INTO THE PORTAL! ➜";
+  const nextIsVideo = INTERLUDE[interIx+1] && INTERLUDE[interIx+1].video;
+  $("btnInterNext").textContent = (interIx>=INTERLUDE.length-1||nextIsVideo) ? "INTO THE PORTAL! ➜" : "NEXT ➜";
   $("btnInterNext").onclick=()=>{ interIx++;
     if(interIx<INTERLUDE.length)paintInter(); else finishInterlude(); }; }
+/* Play the locked cutscene video as an interlude beat. Audio-first safety (constraint #8): the SKIP
+   button is ALWAYS present (never hangs), it auto-advances on 'ended', and any load/decode error also
+   advances. play() is called synchronously inside the previous beat's click handler so iPad Safari
+   allows sound. Music ducks while it plays. */
+function playInterVideo(src){
+  Aud.stop(); if(typeof Music!=="undefined"&&Music.duck)Music.duck();
+  const it=$("interText"); if(it)it.style.display="none";
+  $("interArt").innerHTML=`<video id="interVid" playsinline autoplay preload="auto" `+
+    `style="width:100%;max-width:980px;max-height:64vh;border-radius:18px;display:block;margin:0 auto;background:#0a0818;" src="${src}"></video>`;
+  const v=$("interVid"); let done=false;
+  const finish=()=>{ if(done)return; done=true;
+    if(typeof Music!=="undefined"&&Music.unduck)Music.unduck();
+    if(it)it.style.display=""; finishInterlude(); };
+  const btn=$("btnInterNext"); if(btn){ btn.textContent="SKIP ➜"; btn.onclick=finish; }
+  if(v){ v.onended=finish; v.onerror=finish; const pr=v.play&&v.play(); if(pr&&pr.catch)pr.catch(()=>{}); }
+}
 function finishInterlude(){ Aud.stop(); setAct(2); save();
   actMissions(2).length ? startAct2Intro() : actComingSoon(); }
 /* Act-2 onboarding: NOAH THE RED greets Sir Teddy and explains RUNES (digraphs),
