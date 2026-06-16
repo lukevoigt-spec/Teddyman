@@ -14,20 +14,20 @@ Award Bar rubric **v1 synthesized** (14 criteria, 5-stream research review). Now
 - **#55 [O+N]** **Wave 1 eval** — score Title · World Map · a learning prompt · Win against the bar → gap lists in `DESIGN-REVIEW.md` → become per-fix slices *(Wave 2 = Base/Training/Shop · Wave 3 = cutscenes/settings/transitions)*
 
 ## ✅ APPROVED — build now
-**Nav overhaul (`NAV-PLAN.md`) — 4-corner buttons SHIPPED (PR #49); remaining slices (need Neo/Oracle tickets):**
-- **NAV-a [O]** Icon-only corner glyphs — house / folded-map / gear, one quiet style, no labels *(G4, parent-directed)*
-- **NAV-b [N]** `body.learning` → hide the HUD on learning screens; keep nav corners (recessive) + Replay/Skip *(G1)*
+**Nav overhaul (`NAV-PLAN.md`) — 4-corner buttons SHIPPED (PR #49); painted nav icons + back-to-base removal + HUD-hide-on-learning + Rest→map + Skip≥96px all landed (PRs #52/#57/#53). Remaining:**
+- ~~NAV-a icon-only corners~~ DONE — painted `nav-home/map/settings.png` (PR #52). ~~NAV-b HUD-hide-on-learning~~ DONE.
 - **NAV-c [N]** Title single-PLAY (first-run→intro / returning→map); drop START/CONTINUE ambiguity + under-PLAY shortcut
-- **NAV-d [O+N]** Map node states (done/current/locked) read visually + gentle on-tap locked feedback *(G5; pairs with map-premium)*
+- **NAV-d [O+N]** Map node states (done/current/locked) read visually + gentle on-tap locked feedback *(G5; pairs with #38 map-premium)*
 
 **The big redesigns — delegation (AGENTS rule 8): `[O]` designs+art+gates · `[N]` implements · `[O]` `§20 PASS` · `[N]` merges:**
 - **#31 [O+N]** UI theme coherence — standardize every screen to the painted backgrounds (folds in **#32** de-emoji shop glyphs 💰💎✓★ + **#27** emoji-guard expansion). *(title screen stays as-is.)*
-- **#33 [O+N]** Hero Room, plinth-first diegetic redesign — *build package landed (PR #50: spec + backdrops + mocks)*; the diegetic `paintBase` layout/hotspots build remains.
+- **#33 [O+N]** Hero Room, plinth-first diegetic redesign — *layered-hub SHELL shipped (PR #52: painted lair + spotlit hero + sections + PLAY→next-level)*; remaining = tap→card overlays (gems/coins/weapons/customize), gem-dex %, room-grows-with-mastery.
 - **#34 [O+N]** Training Room visual redesign (engagement mechanics already shipped).
-- **#44 [O]** Title-screen hero box on iPad — nudge down + kill the clipped-glow rect *(build-now; WebKit-verify, don't restyle the title).* 
+- **#44 [O]** Title-screen hero box on iPad — nudge down + kill the clipped-glow rect *(build-now; WebKit-verify, don't restyle the title).*
+- **#62 [O]** Ally face-tokens → painted raster (cheer pops, league thumbs, win mini-face) — last SVG characters left after PR #59 *(consistency, Award Bar A5)*
 
 ## 🔨 BUILDING — has an open PR
-*(none open right now — last batch all merged)*
+- **PR #61 [N]** Remove dead dropdown-nav CSS — resolves Morpheus QA #58 NAV drift (pure dead-code, suites pass) — Neo to merge.
 
 ## 🅿️ DEFERRED — approved-someday, not active
 - **#28 [N]** Device-verify Base/Training/Shop/Vault overflow @1024×768 (WebKit) — apply sticky-footer/scroll where a sub-screen clips its primary action
@@ -44,4 +44,6 @@ ending · intro-hook cold-open rewrite (#22) · Training Room engagement (coin�
 interrupts #23/#29) · daily target 15 (#21) · `flyReward` polish (#24) · **nav 4-corner buttons (PR #49)** · Sir-Teddy
 app icon (PR #51) · Hero-Base build package (PR #50) · Voice-Studio file-upload + Act-2 phonemes (#46) · CLOUD-2
 data-loss fix (#30) · working-tree isolation guard (#25) · RENDER-1 harness fix (#26) · de-emoji nav + in-game controls
-(PRs #43/#45) · squire fix · win-screen square fix · ARENA look + world maps · mouth-move driver. *(history in git + QA.md)*
+(PRs #43/#45) · squire fix · win-screen square fix · ARENA look + world maps · mouth-move driver. **Latest:** Hero-Base
+layered-hub shell (PR #52) + bleed hotfix (#56) · hero/cutscenes routed to painted raster, no SVG characters (PR #59) ·
+painted nav-corner icons + back-to-base removal (PRs #52/#57) · Rest→map + Skip≥96px (#53). *(history in git + QA.md)*
