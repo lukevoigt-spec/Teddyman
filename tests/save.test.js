@@ -146,6 +146,23 @@ S.daily.day="2000-01-01";                        // force another rollover
 ensureDaily();                                  // POST-pull path (no noSave) DOES persist → bumps ts
 ok("ensureDaily() (post-pull) DOES bump S.ts (the rollover is persisted after the winner is chosen)", S.ts>1000);
 
+grp("CLOUD-3: debounced cloudPush snapshots the payload at call time (#81 cross-profile clobber)");
+(function(){
+  applyProfile("teddy"); S=fresh(); S.stars=111;                 // profile A's save (marker)
+  cloudSecret="fam"; cloudURL="https://x.test/w";                 // activate cloud sync
+  var capCb=null, sentBody=null, sentUrl=null;
+  var realST=setTimeout, realFetch=fetch;
+  setTimeout=function(fn){ capCb=fn; return 1; };                 // capture the debounce cb (fire manually)
+  fetch=function(u,opts){ sentUrl=u; sentBody=opts&&opts.body; var P={then:function(){return P;},catch:function(){return P;}}; return P; };
+  try{
+    cloudPush();                                                  // arm push for A → body snapshot = stars 111
+    S=Object.assign({}, S, {stars:222});                          // switchProfile reassigns S to profile B
+    if(capCb)capCb();                                             // the debounce fires AFTER the reassign
+  } finally { setTimeout=realST; fetch=realFetch; cloudSecret=""; cloudURL=""; }
+  ok("the queued push sends the body captured at call time (A's stars=111), NOT the reassigned S (222)",
+     !!sentBody && JSON.parse(sentBody).stars===111, {sent: sentBody?JSON.parse(sentBody).stars:null});
+})();
+
 grp("security: profile names are escaped before any innerHTML use (QA #1)");
 ok("escHTML(profileName) neutralises an injected name", (function(){
   var bad=addProfile('<img src=x onerror=alert(1)>'); applyProfile("teddy");

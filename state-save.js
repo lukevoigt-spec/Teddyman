@@ -150,9 +150,15 @@ let __cloudT=null;
    "no newer data"/offline result (both of which also resolve false). cloudConnect reads it so a
    wrong code is reported + cleared instead of being cached behind a false "Connected ✓" (CLOUD-1). */
 let __lastAuthFail=false;
-function cloudPush(){ const u=cloudEndpoint(); if(!u)return; clearTimeout(__cloudT);
+function cloudPush(){ const u=cloudEndpoint(); if(!u)return;
+  /* #81: snapshot the slot URL **and** the payload NOW. S is a reassignable global — switchProfile/
+     removeProfile reassign it before this debounce fires; stringifying S inside the timer would PUT the
+     NEW profile's save into the OLD profile's cloud slot (cross-profile clobber, #7). Capturing both at
+     call time keeps slot+body consistent: the queued push always backs up the profile it was armed for. */
+  const body=JSON.stringify(S);
+  clearTimeout(__cloudT);
   __cloudT=setTimeout(()=>{ cloudStatus("Saving to cloud…");
-    fetch(u,{method:"PUT",headers:cloudAuth({"Content-Type":"application/json"}),body:JSON.stringify(S)})
+    fetch(u,{method:"PUT",headers:cloudAuth({"Content-Type":"application/json"}),body})
       .then(r=>cloudStatus(r.ok?"Synced to cloud ✓":(r.status===401?"Wrong family code — saved on device":"Cloud error — saved on device")))
       .catch(()=>cloudStatus("Offline — saved on device")); },2500); }
 async function cloudPull(){ const u=cloudEndpoint(); if(!u)return false; __lastAuthFail=false;
