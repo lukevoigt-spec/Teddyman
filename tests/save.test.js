@@ -262,6 +262,15 @@ ok("a gold chest (cosmeticChance 1) grants a NEW un-owned cosmetic", (function()
 ok("all-cosmetics-owned chest still pays coins (no dud)", (function(){ S=fresh(); BASE_ITEMS.forEach(function(it){S.owned[it.id]=true;}); S.chests.wood=1; S.coins=0; openChest("wood"); return S.coins>0; })());
 ok("opening with no pending chest is a safe no-op", (function(){ S=fresh(); var c=S.coins; openChest("gold"); return S.coins===c && S.chests.gold===0; })());
 
+grp("TREASURE VAULT (Training-Room climax): S.hoard is lifetime-earned, monotonic, tier-derived");
+ok("fresh save starts hoard=0", fresh().hoard===0);
+ok("migrate adds hoard, seeded from existing coins (lifetime baseline)", migrate({v:1,coins:25,done:{},mastery:{}}).hoard===25);
+ok("migrate repairs a negative/garbage hoard (seeds from coins, never negative)", (function(){ var g=migrate({v:1,coins:12,hoard:-9,done:{},mastery:{}}); return g.hoard===12; })());
+ok("migrate keeps a valid hoard >= seed (doesn't clobber a real lifetime total)", migrate({v:1,coins:3,hoard:140,done:{},mastery:{}}).hoard===140);
+ok("hoardTiers derives 10 coins=1 bar, 10 bars=1 diamond (149 -> 1 diamond,4 bars,9 coins)", (function(){ var t=hoardTiers(149); return t.diamonds===1 && t.bars===4 && t.coins===9; })());
+ok("hoardTiers(0) is all zero; negatives floor to zero", (function(){ var z=hoardTiers(0), n=hoardTiers(-5); return z.diamonds===0&&z.bars===0&&z.coins===0 && n.coins===0&&n.bars===0&&n.diamonds===0; })());
+ok("hoard is independent of spendable coins (spending never shrinks the vault — no loss, #1)", (function(){ S=fresh(); S.hoard=37; S.coins=20; S.coins-=15; return S.hoard===37; })());
+
 grp("CLOUD-1: a wrong family code is flagged + cleared, never cached behind a false 'Connected ✓'");
 // cloudPull's 401 path is async; run it in a promise the host awaits before reporting (ctx.setTimeout is a stub).
 __pending = (async function(){

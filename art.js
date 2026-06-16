@@ -650,6 +650,32 @@ const PICONS={
   pig:()=>`<svg class="picicon" viewBox="0 0 100 100"><path d="M30 28 L41 41 L26 45 Z" fill="#f4a0c0" stroke="${PI_INK}" stroke-width="4" stroke-linejoin="round"/><path d="M70 28 L59 41 L74 45 Z" fill="#f4a0c0" stroke="${PI_INK}" stroke-width="4" stroke-linejoin="round"/><circle cx="50" cy="56" r="30" fill="#f7b6d2" stroke="${PI_INK}" stroke-width="4"/><circle cx="40" cy="51" r="4" fill="${PI_INK}"/><circle cx="60" cy="51" r="4" fill="${PI_INK}"/><ellipse cx="50" cy="65" rx="14" ry="10" fill="#ef8fb8" stroke="${PI_INK}" stroke-width="3"/><circle cx="45" cy="65" r="2.6" fill="${PI_INK}"/><circle cx="55" cy="65" r="2.6" fill="${PI_INK}"/></svg>`
 };
 
+/* TREASURE ICONS (Training-Room Vault climax — coin -> gold bar -> diamond). House icon language
+   (PI_INK outline, flat gem-palette fills, a floor shadow + white specular so each reads as a
+   sculpted object, NOT an emoji — STYLE §6/§18). Parametric size; pure SVG, no game state.
+   PLACEHOLDER-grade: shippable + on-language, but flagged for The Oracle to elevate to the §20
+   Premium Bar (real metal sheen / faceting) when she does the full Training-Room redesign. */
+function coinIcon(s){ s=s||34; const u="ci"+(__huid++); return `<svg viewBox="0 0 100 100" width="${s}" height="${s}" aria-hidden="true">
+  <defs><radialGradient id="${u}" cx=".4" cy=".34" r=".75"><stop offset="0" stop-color="#fff3b0"/><stop offset=".5" stop-color="#ffd23a"/><stop offset="1" stop-color="#e08c10"/></radialGradient></defs>
+  <ellipse cx="50" cy="88" rx="30" ry="6" fill="#000" opacity=".28"/>
+  <circle cx="50" cy="50" r="38" fill="url(#${u})" stroke="${PI_INK}" stroke-width="5"/>
+  <circle cx="50" cy="50" r="27" fill="none" stroke="#e08c10" stroke-width="3" opacity=".7"/>
+  <path d="M44 34 L56 34 L52 50 L58 50 L46 70 L50 54 L44 54 Z" fill="#fff7d0" stroke="#b9740a" stroke-width="1.5"/>
+  <ellipse cx="40" cy="38" rx="9" ry="5" fill="#fff" opacity=".55" transform="rotate(-28 40 38)"/></svg>`; }
+function barIcon(s){ s=s||34; const u="bi"+(__huid++); return `<svg viewBox="0 0 100 100" width="${s}" height="${s}" aria-hidden="true">
+  <defs><linearGradient id="${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset=".5" stop-color="#ffce3a"/><stop offset="1" stop-color="#dd8a0c"/></linearGradient></defs>
+  <ellipse cx="50" cy="84" rx="36" ry="7" fill="#000" opacity=".28"/>
+  <path d="M22 50 L78 50 L90 78 L10 78 Z" fill="url(#${u})" stroke="${PI_INK}" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M32 36 L68 36 L78 50 L22 50 Z" fill="#ffe27a" stroke="${PI_INK}" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M36 40 L62 40" stroke="#fff" stroke-width="3" opacity=".5" stroke-linecap="round"/></svg>`; }
+function diamondIcon(s){ s=s||34; const u="di"+(__huid++); return `<svg viewBox="0 0 100 100" width="${s}" height="${s}" aria-hidden="true">
+  <defs><linearGradient id="${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eafcff"/><stop offset=".45" stop-color="#67d8ff"/><stop offset="1" stop-color="#1f8fd6"/></linearGradient></defs>
+  <ellipse cx="50" cy="90" rx="24" ry="5" fill="#000" opacity=".25"/>
+  <path d="M28 26 L72 26 L90 44 L50 92 L10 44 Z" fill="url(#${u})" stroke="${PI_INK}" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M28 26 L40 44 L10 44 Z M72 26 L60 44 L90 44 Z M40 44 L60 44 L50 92 Z" fill="#fff" opacity=".22"/>
+  <g stroke="${PI_INK}" stroke-width="2" opacity=".4" fill="none"><path d="M10 44 L90 44 M40 44 L50 92 L60 44 M28 26 L40 44 M72 26 L60 44"/></g>
+  <path d="M33 31 L45 31 L38 41 Z" fill="#fff" opacity=".7"/></svg>`; }
+
 /* ============================================================
    SHOP / COSMETIC ITEM ART (Premium UI Overhaul, Oracle — closes audit U5 /
    DESIGN-ENGAGEMENT §4.5 / STYLE §18 for the Hero Shop). Replaces the 10 flat OS

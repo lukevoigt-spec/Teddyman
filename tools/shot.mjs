@@ -56,7 +56,12 @@ const SCENES = {
   trace:   `(startTrace("s"), 1)`,
   gate:    `(showParentGate(), 1)`,
   juice:   `(function(){ CUR={id:1}; startFind("a",4); comboPop(8); masteryFlash(); return 1; })()`,
-  coinfly: `(function(){ S.coins=5; showTrain(); var c=document.getElementById('trainCoins'); c.textContent='5'; flyReward(document.getElementById('btnTrainBack'), c, 6); return 1; })()`,
+  coinfly: `(function(){ S.coins=5; S.hoard=37; showTrain(); return 1; })()`,
+  // Treasure Vault: a near-full coin row, mid-stack — shows the diamond/bar/coin HUD
+  vault_hud: `(function(){ S.hoard=149; showTrain(); return 1; })()`,
+  // the milestone climax burst (crossing a tier on a rep)
+  vault_bar: `(function(){ S.hoard=9; show('scrTrain'); updateTrainHUD(); vaultMilestone('bar'); return 1; })()`,
+  vault_dia: `(function(){ S.hoard=99; show('scrTrain'); updateTrainHUD(); vaultMilestone('diamond'); return 1; })()`,
   boss:    `(function(){ CUR={id:26,lbl:"Vex Captain"}; startBoss("s"); return 1; })()`,
   shop:    `(function(){ S.coins=120; openShop(); return 1; })()`,
   win:     `(function(){ CUR=(typeof MISSIONS!=="undefined"&&MISSIONS.find(function(x){return x.type==="learn";}))||{id:1,lbl:"Letter S"}; showWin(false); return 1; })()`,

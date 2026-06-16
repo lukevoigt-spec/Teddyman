@@ -1644,9 +1644,25 @@ function pickTrainWord(){ const pool=trainPool(); if(!pool.length)return null;
   let r=Math.random()*wt.reduce((a,b)=>a+b,0);
   for(let i=0;i<pool.length;i++){ r-=wt[i]; if(r<=0)return pool[i]; }
   return pool[0]; }
+/* TREASURE VAULT (Training-Room climax). S.hoard = lifetime coins EARNED (monotonic, never spent),
+   so it only ever grows — a pure collection/progress payoff, never loss-aversion (#1). Tiers DERIVED
+   from the one number: 10 coins = 1 gold bar, 10 bars = 1 diamond. Crossing a tier fires the milestone
+   burst (the missing "peak"). Bound to §6.0: it advances ONLY off a correct rep, never a gamble. */
+function hoardTiers(h){ h=Math.max(0,Math.floor(h||0)); return {diamonds:Math.floor(h/100), bars:Math.floor((h%100)/10), coins:h%10}; }
+function trainHoardHTML(){ const t=hoardTiers(S.hoard);
+  return `<span class="trscell">${diamondIcon(28)}<b>${t.diamonds}</b></span>`
+       + `<span class="trscell">${barIcon(28)}<b>${t.bars}</b></span>`
+       + `<span class="trscell">${coinIcon(28)}<b id="trainCoinN">${t.coins}</b></span>`; }
+function vaultMilestone(kind){ const dia=(kind==="diamond");
+  shakeStage(true); flashScreen(dia?"rgba(103,216,255,.5)":"rgba(255,210,58,.5)"); confetti(dia?72:48);
+  if(typeof Sfx!=="undefined"){ if(dia&&Sfx.gem)Sfx.gem(); else if(Sfx.unlock)Sfx.unlock(); else Aud.ding(); }
+  const host=$("stage"); if(!host)return;
+  const d=document.createElement("div"); d.className="vaultpop"+(dia?" dia":"");
+  d.innerHTML=`<div class="vaultpopart">${dia?diamondIcon(120):barIcon(120)}</div><div class="vaultpoplbl read">${dia?"A DIAMOND!":"A GOLD BAR!"}</div>`;
+  host.appendChild(d); setTimeout(()=>d.remove(),1700); }
 function showTrain(){ clearFlow(); trainReps=0; __scrollServed=false; __warmDone=false; show("scrTrain"); updateTrainHUD();
   flow(narrate("train",$("trainText"),["train_intro"]),()=>trainRound()); }
-function updateTrainHUD(){ $("trainCoins").textContent=S.coins||0; $("trainReps").textContent=trainReps; }
+function updateTrainHUD(){ const h=$("trainHoard"); if(h)h.innerHTML=trainHoardHTML(); const rp=$("trainReps"); if(rp)rp.textContent=trainReps; }
 function trainRound(){
   /* warm the ears first: a short oral-PA Sound Warm-Up once per training session (rec #3A) */
   if(!__warmDone && warmReady()){ __warmDone=true; startWarmup(true); return; }
@@ -1682,18 +1698,24 @@ function trainDecode(w){ trainCur=w; trainMiss=0;
       else { record("w_"+w,false); trainMiss++; b.classList.add("dim");
         if(trainMiss>=2)cr.querySelectorAll(".picktile").forEach(x=>{if(x.dataset.w===w)x.classList.add("hint");}); readSoundOut(w); } };
     cr.appendChild(b); }); }
-function trainWin(el,w){ const bonus=combo>=3?2:1; const before=S.coins||0; S.coins=before+bonus; trainReps++;
+function trainWin(el,w){ const bonus=combo>=3?2:1; trainReps++;
+  S.coins=(S.coins||0)+bonus;                                        /* spendable balance (Shop) — unchanged */
+  const before=S.hoard||0; S.hoard=before+bonus;                     /* lifetime treasure hoard (the Vault stack) */
+  const bt=hoardTiers(before), at=hoardTiers(S.hoard);
   /* every 10 correct training reps → a wood chest (currency from LEARNING; pickTrainWord already weights
      to weak/unmastered items, so the reps that earn it target need — §6.0 rule 3). */
   S.repTick=(S.repTick||0)+1; if(S.repTick%10===0){ S.chests=S.chests||{wood:0,silver:0,gold:0}; S.chests.wood++; }
   save();
   burstAt(el); coinFloat(el,bonus);                                  /* burst + the floating "+N" pop (§8 #7) */
-  $("trainReps").textContent=trainReps; $("trainCoins").textContent=before;   /* counter starts pre-reward… */
-  flyReward(el,$("trainCoins"),bonus);                               /* …then coins arc in + it counts up + bounces (plays Sfx.coin) */
+  if(typeof Sfx!=="undefined")Sfx.coin();
+  updateTrainHUD();                                                  /* snap the treasure stack to its new tiers */
+  const cc=$("trainCoinN"); if(cc){ cc.classList.add("ctrpop"); void cc.offsetWidth; cc.classList.remove("ctrpop"); }
+  if(at.diamonds>bt.diamonds) vaultMilestone("diamond");             /* the climax: a tier just converted up */
+  else if(at.bars>bt.bars) vaultMilestone("bar");
   flow(Aud.play(["train_yes"].concat(wordAudio(w))),()=>setTimeout(trainRound,260)); }
 function coinFloat(el,n){ const s=$("stage"); if(!s||!el)return; const r=el.getBoundingClientRect(),st=s.getBoundingClientRect();
   const c=document.createElement("div"); c.className="combochip"; c.style.color="#ffd75e";
-  c.style.top=(r.top-st.top-20)+"px"; c.textContent="+"+n+" 💰"; s.appendChild(c); setTimeout(()=>c.remove(),900); }
+  c.style.top=(r.top-st.top-20)+"px"; c.innerHTML="+"+n+" <span class='cfcoin'>"+coinIcon(20)+"</span>"; s.appendChild(c); setTimeout(()=>c.remove(),900); }
 $("btnTrain").onclick=()=>showTrain();
 $("btnTrainBack").onclick=()=>{ __inTraining=false; Aud.stop(); showBase(); };
 

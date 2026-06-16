@@ -180,11 +180,12 @@
   <!-- TRAINING ROOM (daily practice — earns coins, no story gating) -->
   <div class="screen" id="scrTrain">
     <div class="hudtitle" style="margin-top:46px;font-family:'Bangers',cursive;font-size:clamp(26px,5vw,40px);color:var(--gold);">TRAINING ROOM</div>
-    <div class="baselbl" style="font-size:18px;">💰 <span id="trainCoins" style="color:var(--gold);">0</span> &nbsp; ✅ <span id="trainReps">0</span></div>
+    <div id="trainHoard" class="trshud"></div>
+    <div class="baselbl trsreps" style="font-size:15px;">Words read today: <b id="trainReps" style="color:var(--gold);">0</b></div>
     <div class="bubble" id="trainText"><span></span><div class="ear" data-ear="train">🔊</div></div>
     <div id="trainWord" class="slotrow"></div>
     <div id="trainChoices" class="tilerow"></div>
-    <button class="btn blue" id="btnTrainBack">🏠 BACK TO BASE</button>
+    <button class="btn blue" id="btnTrainBack">BACK TO BASE</button>
   </div>
 
   <!-- SPELL SCROLL (repeated-reading fluency — listen, then read aloud + tap in order) -->

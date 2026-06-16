@@ -70,7 +70,7 @@ let S=load();
    saves start with them present so grandfather() (game.js) no-ops; OLD saves lack them, so grandfather
    seeds them ONCE from the current mission mapping. migrate() deliberately does NOT add them (the
    absence is the seed trigger). */
-function fresh(){return {v:1,act:1,ts:0,intro:false,scan:false,done:{},mastery:{},stars:0,coins:0,owned:{},gear:[],gearByAct:{},freed:{},equip:{weapon:"none",cape:"red"},session:{count:0,day:"",rest:false},chests:{wood:0,silver:0,gold:0},repTick:0,chestDay:"",scrolls:{}};}
+function fresh(){return {v:1,act:1,ts:0,intro:false,scan:false,done:{},mastery:{},stars:0,coins:0,owned:{},gear:[],gearByAct:{},freed:{},equip:{weapon:"none",cape:"red"},session:{count:0,day:"",rest:false},chests:{wood:0,silver:0,gold:0},repTick:0,chestDay:"",scrolls:{},hoard:0};}
 /* normalize ANY (old / partial / slightly broken) save object — never throws */
 function migrate(d){ if(!d||typeof d!=="object"||d.v!==1) return null;
   d.act=(typeof d.act==="number")?d.act:1; d.ts=d.ts||0;
@@ -89,6 +89,9 @@ function migrate(d){ if(!d||typeof d!=="object"||d.v!==1) return null;
   ["wood","silver","gold"].forEach(t=>{ if(typeof d.chests[t]!=="number"||d.chests[t]<0)d.chests[t]=0; });
   if(typeof d.repTick!=="number")d.repTick=0; if(typeof d.chestDay!=="string")d.chestDay="";
   if(!d.scrolls||typeof d.scrolls!=="object")d.scrolls={};   /* Spell Scroll spaced-review state (additive, save-safe) */
+  /* Treasure Vault: lifetime coins EARNED (monotonic, never spent → the Training-Room stack/tier climax).
+     Decoupled from spendable d.coins (Shop). Seed an existing save from its current coins as a baseline. */
+  if(typeof d.hoard!=="number"||d.hoard<0)d.hoard=Math.max(0,d.coins||0);
   /* #4 grandfather: an OLD save's already-PROFICIENT items have no okDayCount, so their Base ✦ gold
      would vanish the moment ✦ moved to "retained". Seed those to 2 correct-days. The per-item
      "okDayCount===undefined" guard makes this idempotent AND safe for NEW play: record() defines
