@@ -58,7 +58,10 @@
        Hidden entirely on learning screens (body.learning) so nothing competes with the decoding prompt;
        the Replay (.ear) + Skip (#btnSkip) live outside #hud and stay (audio-first / no-hang, #8). -->
   <div class="hud" id="hud" style="display:none;">
-    <div class="chip starsrow navcorner nc-ul" id="hudStars">⚡ 0</div>
+    <div class="navcorner nc-ul hudcluster" id="hudCluster">
+      <div class="hudpill" id="hudStars"></div>
+      <div class="hudpill" id="hudCoins"></div>
+    </div>
     <button class="navcorner nc-ur" id="navSettings" aria-label="Grown-ups"></button>
     <button class="navcorner nc-ll" id="navBaseBtn" aria-label="Hero Base"></button>
     <button class="navcorner nc-lr" id="navMapBtn" aria-label="World Map"></button>
@@ -126,7 +129,6 @@
     <!-- top-centre status -->
     <div class="bstatus">
       <div class="bchip rank"><span id="powerLbl"></span><div class="powerbar" title="Hero Power"><div class="powerfill" id="powerFill"></div></div></div>
-      <button class="bchip tap" id="coinChip" title="Earn coins in the Training Room"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#ffd75e" stroke="#9c6a12" stroke-width="2"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="#c98a1a" stroke-width="1.4"/><path d="M12 8l1.3 2.6 2.7.3-2 1.9.5 2.7-2.5-1.3-2.5 1.3.5-2.7-2-1.9 2.7-.3z" fill="#c98a1a"/></svg><span id="baseCoins">0</span></button>
     </div>
 
     <!-- hero on the painted pedestal -->

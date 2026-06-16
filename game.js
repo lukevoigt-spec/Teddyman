@@ -423,7 +423,13 @@ function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.r
   $("hud").style.display=(id==="scrTitle")?"none":""; refreshHUD();   /* nav corners stay on learning screens; body.learning hides the HUD + makes them recessive (CSS) */
   { const nb=$("navBaseBtn"); if(nb)nb.style.display=(id==="scrBase")?"none":""; }   /* on the Base, the ↙ corner is the PLAY→next-level CTA, not a redundant Home */
   const dm=$("dailyMeter"); if(dm){ dm.style.display=(id==="scrMap")?"block":"none"; if(id==="scrMap")updateDailyMeter(); } }
-function refreshHUD(){ $("hudStars").textContent="⚡ "+S.stars; }
+/* premium HUD status cluster: crafted bolt (power) + coin (squishy currency) pills, with a pulse on
+   increase (Clash-Royale-style glanceable juice; calm-mode skips the animation). */
+function hudPill(id,icon,val){ const el=$(id); if(!el)return; const prev=+el.dataset.v||0;
+  el.innerHTML=icon+'<span>'+val+'</span>';
+  if(val>prev){ el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
+  el.dataset.v=val; }
+function refreshHUD(){ hudPill("hudStars", uiIcon("bolt",22), S.stars||0); hudPill("hudCoins", (typeof coinIcon==="function"?coinIcon(22):""), S.coins||0); }
 /* ---------------- JUICE / FX ----------------
    Big, celebratory reward moments (no photosensitivity concern). All effects
    are fire-and-forget DOM bits that auto-remove, so they can never hang a flow.
@@ -1596,7 +1602,7 @@ function paintBase(){
 function playNextMission(){ const ms=playMissions(currentAct()); const m=ms.find(x=>!S.done[x.id])||ms[ms.length-1]; if(m)startMission(m); else toMap(); }
 { const pb=$("btnPlayNext"); if(pb)pb.onclick=()=>{ Aud.pick&&Aud.pick(); playNextMission(); }; }
 { const gp=$("gemsPanel");   if(gp)gp.onclick=()=>{ Aud.pick&&Aud.pick(); startVault(); }; }
-{ const cc=$("coinChip");    if(cc)cc.onclick=()=>{ Aud.pick&&Aud.pick(); showTrain(); }; }
+{ const cc=$("hudCoins"); if(cc){ cc.style.cursor="pointer"; cc.title="Earn coins in the Training Room"; cc.onclick=()=>{ Aud.pick&&Aud.pick(); showTrain(); }; } }
 { const bb=$("btnBaseBack"); if(bb)bb.onclick=()=>{Aud.stop();toMap();}; }   /* CITY MAP button removed from the Base (map-exit lives in ☰ MENU); guard kept for safety */
 
 /* ---------------- HERO CARD (Pokémon-style full-body popup) ----------------

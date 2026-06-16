@@ -1152,7 +1152,8 @@ body.calm .scrollword{transition:none;} body.calm .scrollword.lit{transform:none
    HERO BASE — LAYERED HUB (Oracle 2026-06-16): painted backdrop + spotlit hero +
    clean UI sections over it. Replaces the old flat .basewrap list-cards.
    ============================================================ */
-#scrBase{ display:block; padding:0; }   /* keep .screen position:absolute+inset:0 as the positioning context */
+#scrBase{ padding:0; }
+#scrBase.on{ display:block; }   /* block layout only when active (must NOT override .screen's display:none, or the panels leak onto every screen) */
 /* top-centre status (rank + coins). The 4 nav corners own the screen corners. */
 .bstatus{ position:absolute; top:calc(env(safe-area-inset-top,8px) + 6px); left:50%; transform:translateX(-50%);
   display:flex; gap:10px; align-items:center; z-index:6; }
@@ -1243,3 +1244,16 @@ body[data-act="2"] #scrBase .basehero{ bottom:21%; }
 #sqBtn svg{ width:22px; height:22px; }
 #sqBtn.cant{ filter:grayscale(.5) brightness(.85); }
 .sq-x{ position:absolute; top:-14px; right:-14px; width:46px; height:46px; border-radius:50%; background:#fff; border:4px solid var(--ink); font-size:26px; color:var(--ink); cursor:pointer; line-height:1; }
+
+/* PREMIUM HUD status cluster (de-emoji'd): bolt (power) + coin (currency) pills, glanceable, with a
+   pulse on increase. Positioned by .nc-ul (top-left corner). */
+.hudcluster{ display:flex; gap:8px; align-items:center; }
+.hudpill{ display:flex; align-items:center; gap:6px; background:linear-gradient(180deg,rgba(42,30,76,.92),rgba(20,12,44,.92));
+  border:3px solid var(--gold); border-radius:16px; padding:5px 13px 5px 8px;
+  -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); box-shadow:0 4px 0 rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.16); }
+.hudpill svg{ width:22px; height:22px; flex:0 0 auto; filter:drop-shadow(0 1px 1px rgba(0,0,0,.4)); }
+.hudpill span{ font-family:'Bangers',cursive; font-size:clamp(18px,2.6vw,24px); color:var(--gold); -webkit-text-stroke:2px var(--ink); paint-order:stroke; min-width:12px; text-align:left; }
+.hudpill.bump{ animation:hudbump .42s ease; }
+@keyframes hudbump{ 0%{transform:scale(1)} 35%{transform:scale(1.18)} 100%{transform:scale(1)} }
+body.calm .hudpill.bump,body.lite .hudpill.bump{ animation:none; }
+body[data-act="2"] .hudpill{ border-color:#caa15a; }
