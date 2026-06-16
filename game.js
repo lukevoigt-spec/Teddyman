@@ -761,9 +761,9 @@ function navGo(fn){ Aud.stop(); clearFlow(); fn(); }
   img("navBaseBtn","nav-home.png","Hero Base");   /* lower-left → Hero Base ("home") */
   img("navMapBtn","nav-map.png","World Map");      /* lower-right → world map */
   img("navSettings","nav-settings.png","Grown-ups");/* upper-right → gated Grown-Up Corner */
-  /* in-game "home" controls: the BACK TO BASE buttons (Recharge/Training/Scroll/Warm) — crafted shield glyph. */
-  if(typeof uiIcon==="function"){ const set=(id,key,sz)=>{ const el=$(id); if(el)el.innerHTML=uiIcon(key,sz||22)+el.textContent; };
-    ["btnVaultBack","btnTrainBack","btnScrollBack","btnWarmBack"].forEach(id=>set(id,"base",22)); } })();
+  /* NOTE: the in-game "BACK TO BASE" buttons (Recharge/Training/Scroll/Warm) were REMOVED (parent 2026-06-16):
+     the persistent lower-left HOME corner → Base and lower-right MAP corner replace them on every sub-screen. */
+})();
 { const m=$("navMapBtn");  if(m)m.onclick=()=>navGo(toMap); }                          /* lower-right → world map */
 { const b=$("navBaseBtn"); if(b)b.onclick=()=>navGo(showBase); }                       /* lower-left → Hero Base ("home") */
 { const s=$("navSettings");if(s)s.onclick=()=>{ Aud.pick&&Aud.pick(); parentGate(); }; }  /* upper-right → gated Grown-Up Corner */
@@ -1809,7 +1809,7 @@ function trainWin(el,w){ const bonus=combo>=3?2:1; trainReps++;
   updateTrainDaily();
   flow(Aud.play(["train_yes"].concat(wordAudio(w))),()=>setTimeout(()=>maybeTrainInterrupt(trainRound),260)); }
 { const bt=$("btnTrain"); if(bt)bt.onclick=()=>showTrain(); }   /* legacy btn (Base now launches Training by tapping the COINS chip) */
-$("btnTrainBack").onclick=()=>{ __inTraining=false; Aud.stop(); showBase(); };
+/* "BACK TO BASE" button removed — the HOME nav corner (→Base) replaces it. show() resets __inTraining on every screen change. */
 
 /* ---------------- SPELL SCROLL (rec #2 — repeated-reading fluency) ----------------
    A short DECODABLE passage. PHASE 1 listening preview: the mentor reads it, each word
@@ -1860,7 +1860,7 @@ function scrollFinish(){ const ms=Date.now()-scrollT0, best=scrollTouch(scrollCu
   $("scrollMeter").textContent = best ? "★ NEW BEST!" : "✓ Scroll read!";
   flow(Aud.play([best?"scroll_best":"scroll_done"]),()=>{ Aud.stop();
     if(scrollFromTrain){ scrollFromTrain=false; show("scrTrain"); updateTrainHUD(); trainRound(); } else showBase(); }); }
-$("btnScrollBack").onclick=()=>{ Aud.stop(); scrollFromTrain=false; showBase(); };
+/* "BACK TO BASE" button removed — the HOME nav corner (→Base) replaces it; natural completion still routes via scrollFromTrain. */
 
 /* ---------------- SOUND WARM-UP (rec #3A — oral phonemic-awareness drill) ----------------
    A short (<=5-item) ear warm-up: BLEND (hear the separated phonemes -> tap the picture, NO
@@ -1929,7 +1929,7 @@ function warmIsolate(w){ const first=toGraphemes(w)[0];
 function warmFinish(){ $("warmProg").textContent=""; $("warmReveal").innerHTML=""; warmChoices();
   S.coins=(S.coins||0)+1; save(); try{ confetti(24); }catch(e){}
   flow(Aud.play(["warmup_done"]),()=>{ Aud.stop(); if(warmFromTrain){ warmFromTrain=false; show("scrTrain"); updateTrainHUD(); trainRound(); } else showBase(); }); }
-$("btnWarmBack").onclick=()=>{ Aud.stop(); warmFromTrain=false; showBase(); };
+/* "BACK TO BASE" button removed — the HOME nav corner (→Base) replaces it; natural completion still routes via warmFromTrain. */
 
 /* ---------------- MEMORY VAULT — the dedicated recharge activity (rec #1, deterministic) ----------------
    The scheduler (vaultDue/vaultTouch, near line 200) decides WHAT is due; this is the gentle, capped
@@ -2002,7 +2002,7 @@ function vaultBuild(it){ const w=it.w, sight=!!it.sight, units=vaultUnits(w,sigh
         if(!sight)Aud.play(["snd_"+want]); setTimeout(()=>b.classList.remove("dim"),900); } };
     cr.appendChild(b); }); }
 { const bv=$("btnVault"); if(bv)bv.onclick=()=>{ Aud.pick(); startVault(); }; }   /* legacy btn (Base now recharges by tapping the GEMS panel) */
-$("btnVaultBack").onclick=()=>{ Aud.stop(); showBase(); };
+/* "BACK TO BASE" button removed — the HOME nav corner (→Base) replaces it. */
 /* open the next pending chest (gold → silver → wood) on tap */
 { const gb=$("btnGifts"); if(gb)gb.onclick=()=>{ const t=nextChestTier(); if(!t)return; Aud.pick&&Aud.pick(); openChest(t); }; }
 /* ---- shop ---- */
