@@ -545,7 +545,7 @@ const SHOWER_COLORS=["#3b82f0","#ff8a3d","#3ec97e","#a06ae8","#7fd9ff","#ffc93c"
 function rewardShower(n, opts){ opts=opts||{}; const s=stageEl(); if(!s)return;
   if(REDUCE || (document.body&&document.body.classList.contains("lite")))return;   /* keep cheap confetti only on Lite/reduced-motion */
   const calm=document.body&&document.body.classList.contains("calm");
-  if(typeof document.body.animate!=="function" && typeof Element.prototype.animate!=="function")return;
+  if(!document.body || typeof document.body.animate!=="function")return;   /* WAAPI absent (or non-DOM env) → no-op; body.animate implies Element.prototype.animate */
   n=Math.max(1,Math.min(n||12, calm?8:18));
   n=Math.min(n, SHOWER_LIVE_CAP-__showerLive); if(n<=0)return;   /* P14 (#74): don't pile up concurrent sprites on stacked reward events */
   const sr=s.getBoundingClientRect();
@@ -1808,22 +1808,29 @@ function chestSVG(tier,size){ size=size||90; const c=(CHESTS[tier]||CHESTS.wood)
     <circle cx="50" cy="65" r="2.6" fill="${PI_INK}"/></svg>`; }
 function pendingChests(){ const c=S.chests||{}; return (c.wood||0)+(c.silver||0)+(c.gold||0); }
 function nextChestTier(){ const c=S.chests||{}; return c.gold>0?"gold":c.silver>0?"silver":c.wood>0?"wood":null; }
-/* open ONE chest: roll coins (always) + maybe an un-owned cosmetic (all owned → bonus coins, never a dud);
-   pour coins into the Base counter (flyReward), reveal a cosmetic via showUnlock, decrement + repaint. */
+/* open ONE earned chest (parent 2026-06-16: a painted treasure box you TAP). Roll coins (always) + maybe
+   an un-owned squishy (all owned → bonus coins, never a dud); the painted box opens (closed→open image),
+   the loot bursts out (rewardShower), then a CARD reveals what was earned. Decrement + done→repaint. */
 function openChest(tier,done){ const cfg=CHESTS[tier]; if(!cfg||!(S.chests&&S.chests[tier]>0)){ if(done)done(); return; }
   const coins=cfg.coinMin+Math.floor(Math.random()*(cfg.coinMax-cfg.coinMin+1));
   let item=null;
   if(Math.random()<cfg.cosmeticChance){ const un=BASE_ITEMS.filter(it=>!(S.owned&&S.owned[it.id]));
     if(un.length)item=un[Math.floor(Math.random()*un.length)]; }
-  const bonus=item?0:Math.round(cfg.coinMin*0.5);   /* all cosmetics owned → small bonus coins so it's never a dud */
-  const gain=coins+bonus, before=S.coins||0; S.coins=before+gain;
+  const bonus=item?0:Math.round(cfg.coinMin*0.5);   /* all squishies owned → small bonus coins so it's never a dud */
+  const gain=coins+bonus; S.coins=(S.coins||0)+gain;
   if(item){ S.owned=S.owned||{}; S.owned[item.id]=true; }
   S.chests[tier]=Math.max(0,(S.chests[tier]||0)-1); save();
-  try{ flashScreen("rgba(255,210,90,.42)"); confetti(tier==="gold"?64:40); rewardShower(tier==="gold"?14:10,{fromEl:$("btnGifts")||$("stage")}); if(typeof Sfx!=="undefined")Sfx.unlock(); }catch(e){}
-  const ctr=$("baseCoins"); if(ctr){ ctr.textContent=before; flyReward($("btnGifts")||$("stage"), ctr, gain); }
-  const finish=()=>{ paintBase(); if(done)done(); };
-  if(item)setTimeout(()=>showUnlock('<div style="line-height:1;">'+itemArt(item,120)+'</div>', item.nm, "NEW!", finish), 650);
-  else setTimeout(finish, 700); }
+  /* the box pops OPEN + treasure bursts out of it */
+  const img=$("chestImg"); if(img)img.src="art/chest-open.png";
+  try{ flashScreen("rgba(255,210,90,.42)"); if(typeof Sfx!=="undefined")Sfx.unlock(); }catch(e){}
+  rewardShower(tier==="gold"?16:11, {fromEl:$("chestBtn")||$("stage")});
+  /* …then a reward CARD shows what he earned (coins + any squishy) */
+  setTimeout(()=>{
+    const art = item ? itemArt(item,124) : gicon("coin",120);
+    const name = item ? item.nm.toUpperCase() : ("+"+gain+" COINS");
+    const sub  = item ? ("YOURS! +"+gain+" COINS") : "TREASURE!";
+    showUnlock('<div style="line-height:1;">'+art+'</div>', name, sub, ()=>{ if(img)img.src="art/chest-closed.png"; if(done)done(); });
+  }, 560); }
 let trainReps=0,trainSlot=0,trainCur,trainMiss=0;
 function trainPool(){ const t=taughtLetters(); return Object.keys(READWORDS).filter(w=>w.split("").every(c=>t.includes(c))); }
 function pickTrainWord(){ const pool=trainPool(); if(!pool.length)return null;
@@ -2150,9 +2157,9 @@ function vaultBuild(it){ const w=it.w, sight=!!it.sight, units=vaultUnits(w,sigh
 /* ---- shop ---- */
 function openShop(){ paintShop(); $("shopPanel").classList.add("on"); }
 function paintShop(){ $("shopCoins").textContent=S.coins||0;
-  /* presents (treasure chests) open here → coins to spend on squishies (parent: gifts ARE squishies) */
-  { const n=pendingChests(), pb=$("btnPresents");
-    if(pb){ pb.style.display=n>0?"":"none"; pb.textContent="OPEN A PRESENT ("+n+")"; pb.classList.toggle("vaultdue",n>0); } }
+  /* earned treasure chest (training reps / finishing missions; NO daily gift) → tap the painted box to
+     open it (parent 2026-06-16). Shown only when one is waiting; reset to the closed image. */
+  { const cb=$("chestBtn"), ci=$("chestImg"); if(cb)cb.style.display=pendingChests()>0?"flex":"none"; if(ci)ci.src="art/chest-closed.png"; }
   const g=$("shopGrid"); g.innerHTML="";
   /* OWNED first = his collection (inventory), then the rest = the shop to get more */
   const items=BASE_ITEMS.slice().sort((a,b)=> (S.owned[b.id]?1:0)-(S.owned[a.id]?1:0));
@@ -2176,7 +2183,10 @@ function openSquishCard(it){ const owned=!!S.owned[it.id], can=(S.coins||0)>=it.
       else Aud.play("shop_need"); }; }
   $("squishCard").classList.add("on"); }
 { const b=$("btnShop"); if(b)b.onclick=()=>openShop(); }   /* legacy right-panel SHOP button (removed from the Base; guard kept) */
-{ const pb=$("btnPresents"); if(pb)pb.onclick=()=>{ const t=(typeof nextChestTier==="function")&&nextChestTier(); if(!t)return; Aud.pick&&Aud.pick(); openChest(t,()=>paintShop()); }; }
+/* tap the painted treasure box (shop) → open the next earned chest (parent 2026-06-16; replaces the old
+   "OPEN A PRESENT" text button). Locked out during the open so a double-tap can't burn a 2nd chest. */
+{ const cb=$("chestBtn"); if(cb)cb.onclick=()=>{ if(cb.disabled)return; const t=(typeof nextChestTier==="function")&&nextChestTier(); if(!t)return;
+    cb.disabled=true; Aud.pick&&Aud.pick(); openChest(t, ()=>{ cb.disabled=false; paintShop(); }); }; }
 $("btnShopClose").onclick=()=>{ $("shopPanel").classList.remove("on"); paintBase(); };
 { const x=$("sqClose"); if(x)x.onclick=()=>$("squishCard").classList.remove("on"); }
 

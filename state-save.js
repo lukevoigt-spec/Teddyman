@@ -203,9 +203,8 @@ function ensureDaily(noSave){ const d=dayKey();
       const ks=Object.keys(S.history).sort(); while(ks.length>60)delete S.history[ks.shift()]; }
     S.daily={day:d, secs:0, trainSecs:0, missions:0, goalHit:false};
     if(!S.goalMin)S.goalMin=15;   /* daily target ~15 min/day TOTAL (parent 2026-06-15; was 30) */
-    /* daily SURPRISE = a wood gift, once/day (§6.0: daily reward is the smallest tier, a "hello" — never
-       a streak/"you missed a day" penalty, §6.1/#2). Gated on chestDay so it grants at most once per day. */
-    if(S.chestDay!==d){ S.chests=S.chests||{wood:0,silver:0,gold:0}; S.chests.wood=(S.chests.wood||0)+1; S.chestDay=d; }
+    /* NO daily free gift (parent 2026-06-16): squishies are EARNED — coins from exercises (buy in the
+       shop) + chests earned from training reps / finishing missions. The daily auto-chest was removed. */
     if(!noSave)save();
   } else { if(!S.goalMin)S.goalMin=15; if(S.daily.trainSecs===undefined)S.daily.trainSecs=0; }
 }

@@ -491,6 +491,14 @@ body.calm .gembox>svg,body.calm .trophy,body.calm .gembox.mastered::after{animat
 #shopGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;width:min(680px,94vw);
   flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;align-content:start;padding:2px;}
 #btnShopClose{flex:none;}
+/* earned treasure chest in the shop — a big tappable painted box (closed → open on tap) */
+#chestBtn{flex:none;border:none;background:none;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;
+  filter:drop-shadow(0 6px 10px rgba(0,0,0,.45));-webkit-tap-highlight-color:transparent;transition:transform .14s;}
+#chestBtn img{width:clamp(120px,18vw,150px);height:auto;display:block;pointer-events:none;-webkit-user-drag:none;}
+@media (prefers-reduced-motion:no-preference){ body:not(.calm) #chestBtn img{animation:chestbob 1.6s ease-in-out infinite;transform-origin:50% 100%;} }
+@keyframes chestbob{0%,100%{transform:translateY(0) rotate(-1.5deg);}50%{transform:translateY(-5px) rotate(1.5deg);}}
+#chestBtn:active{transform:scale(.95);}
+.chesthint{font-family:'Bangers',cursive;color:var(--gold);font-size:18px;letter-spacing:.04em;-webkit-text-stroke:2px var(--ink);paint-order:stroke;}
 .shopitem{background:rgba(21,15,46,.7);border:3px solid #3a2d72;border-radius:16px;padding:12px 8px;
   display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;}
 .shopitem .ic{display:flex;align-items:center;justify-content:center;height:72px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.45));}

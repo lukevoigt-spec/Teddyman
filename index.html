@@ -219,8 +219,9 @@
   <div id="shopPanel">
     <div class="comic" style="font-size:34px;color:var(--gold);">MY SQUISHIES</div>
     <div class="baselbl" style="font-size:20px;"><span id="shopCoins" style="color:var(--gold);">0</span> coins</div>
-    <button class="btn" id="btnPresents" style="display:none;"></button>
     <div class="read" style="font-size:14px;max-width:560px;text-align:center;color:#cfc6f2;">Your squishy collection! Earn coins by reading, then tap a squishy in the shop to collect it.</div>
+    <!-- earned treasure chest (from training reps / finishing missions) — tap the painted box to open it -->
+    <button id="chestBtn" style="display:none;" aria-label="Open your treasure chest"><img id="chestImg" src="art/chest-closed.png" alt="" draggable="false"><span class="chesthint">Tap to open!</span></button>
     <div id="shopGrid"></div>
     <button class="btn blue" id="btnShopClose">DONE</button>
   </div>
