@@ -208,3 +208,17 @@ fades to transparent before the edge — no rect to clip/outline. Covers hero + 
 **WebKit gate BLOCKED** — `tools/shot.mjs --webkit` (and a custom harness) hang on Playwright's font-wait (the
 SHOT-1 issue), so I could not capture the actual iPad before/after. The fix removes the root cause; **parent to
 confirm on the iPad.** Flagging SHOT-1 (WebKit render path) to Neo — without it the §20 gate can't catch iPad-only bugs.
+
+## 2026-06-16 · Background restyle — match all screens to the new MAP look (parent)  ·  PASS
+The map redesign shifted the world to a warm painterly storybook look, leaving the old screen backgrounds
+(glossy neon gem-temples for Act 1) mismatched. Regenerated **all 16 scene backgrounds** to the unified map
+style — *Candy-Crush/Braveland painterly, warm soft light, lush natural colour, gems as accents not theme,
+calm open centers for the learning tiles.* **Title excluded** (parent's instruction).
+- **Slots (Act 1 + Act 2):** intro, lab (scan), learn, city (find), battle (boss/forge/fortress), base, victory
+  (win), rest. New `bg-lab-a2` added. Act 1 = warm fantasy-adventure; Act 2 = medieval (matches the dragon-keep map).
+  All gpt-image-1 `--bg`, converted to ~200 KB JPEGs.
+- **Render-gate (Chromium @2x, worktree):** learn, victory, battle, city, lab, rest (Act 1) + learn-a2, battle-a2 —
+  backgrounds load via `BG_MAP`/`setBG`, UI + learning tiles stay legible (dark battle scene reads fine via the
+  bubble/tile panels), content is the focal point. `curriculum`/`save` green (art-only).
+- **Not touched (flagged):** the Hero-Room hub backdrop (`bg-base-room.png`, a parent-iterated interior) — offer to
+  restyle to match as a follow-up. Legacy `bg-map(.jpeg)` is now dead (V2 maps render both acts) — Neo cleanup later.
