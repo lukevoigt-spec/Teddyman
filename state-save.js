@@ -92,6 +92,10 @@ function migrate(d){ if(!d||typeof d!=="object"||d.v!==1) return null;
   /* Treasure Vault: lifetime coins EARNED (monotonic, never spent → the Training-Room stack/tier climax).
      Decoupled from spendable d.coins (Shop). Seed an existing save from its current coins as a baseline. */
   if(typeof d.hoard!=="number"||d.hoard<0)d.hoard=Math.max(0,d.coins||0);
+  /* DAILY-1: the daily target moved 30 -> 15 (parent 2026-06-15). Existing saves persisted the OLD
+     default 30 (set by ensureDaily on a prior boot); reconcile that one value to the new default so
+     everyone gets ~15 min/day. A parent who wants more can still nudge it up with +5 in Settings. */
+  if(d.goalMin===30)d.goalMin=15;
   /* #4 grandfather: an OLD save's already-PROFICIENT items have no okDayCount, so their Base ✦ gold
      would vanish the moment ✦ moved to "retained". Seed those to 2 correct-days. The per-item
      "okDayCount===undefined" guard makes this idempotent AND safe for NEW play: record() defines
@@ -193,10 +197,10 @@ function ensureDaily(){ const d=dayKey();
     if(S.daily && S.daily.secs){ S.history=S.history||{}; S.history[S.daily.day]=S.daily.secs;
       const ks=Object.keys(S.history).sort(); while(ks.length>60)delete S.history[ks.shift()]; }
     S.daily={day:d, secs:0, trainSecs:0, missions:0, goalHit:false};
-    if(!S.goalMin)S.goalMin=30;
+    if(!S.goalMin)S.goalMin=15;   /* daily target ~15 min/day TOTAL (parent 2026-06-15; was 30) */
     /* daily SURPRISE = a wood gift, once/day (§6.0: daily reward is the smallest tier, a "hello" — never
        a streak/"you missed a day" penalty, §6.1/#2). Gated on chestDay so it grants at most once per day. */
     if(S.chestDay!==d){ S.chests=S.chests||{wood:0,silver:0,gold:0}; S.chests.wood=(S.chests.wood||0)+1; S.chestDay=d; }
     save();
-  } else { if(!S.goalMin)S.goalMin=30; if(S.daily.trainSecs===undefined)S.daily.trainSecs=0; }
+  } else { if(!S.goalMin)S.goalMin=15; if(S.daily.trainSecs===undefined)S.daily.trainSecs=0; }
 }

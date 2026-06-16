@@ -271,6 +271,11 @@ ok("hoardTiers derives 10 coins=1 bar, 10 bars=1 diamond (149 -> 1 diamond,4 bar
 ok("hoardTiers(0) is all zero; negatives floor to zero", (function(){ var z=hoardTiers(0), n=hoardTiers(-5); return z.diamonds===0&&z.bars===0&&z.coins===0 && n.coins===0&&n.bars===0&&n.diamonds===0; })());
 ok("hoard is independent of spendable coins (spending never shrinks the vault — no loss, #1)", (function(){ S=fresh(); S.hoard=37; S.coins=20; S.coins-=15; return S.hoard===37; })());
 
+grp("DAILY-1: daily target 30 -> 15 (parent 2026-06-15) — migrate reconciles the old default");
+ok("migrate converts the OLD default goalMin=30 to the new default 15", migrate({v:1,goalMin:30,done:{},mastery:{}}).goalMin===15);
+ok("migrate PRESERVES a custom goal the parent set (not the old default)", migrate({v:1,goalMin:45,done:{},mastery:{}}).goalMin===45 && migrate({v:1,goalMin:20,done:{},mastery:{}}).goalMin===20);
+ok("a save with no goalMin is left for ensureDaily to default (migrate doesn't force it)", migrate({v:1,done:{},mastery:{}}).goalMin===undefined);
+
 grp("CLOUD-1: a wrong family code is flagged + cleared, never cached behind a false 'Connected ✓'");
 // cloudPull's 401 path is async; run it in a promise the host awaits before reporting (ctx.setTimeout is a stub).
 __pending = (async function(){

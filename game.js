@@ -1725,9 +1725,10 @@ function updateTrainDaily(){ const fill=$("trainDailyFill"); if(!fill)return;
   const l=$("trainDailyLbl"); if(l)l.textContent = done>=100 ? "GOAL — GREAT PRACTICE TODAY!" : "TODAY'S PRACTICE"; }
 function trainRound(){
   /* warm the ears first: a short oral-PA Sound Warm-Up once per training session (rec #3A) */
-  if(!__warmDone && warmReady()){ __warmDone=true; startWarmup(true); return; }
-  /* once per training session, if a Spell Scroll is due, read it first (fluency, Vault-scheduled) */
-  if(!__scrollServed && scrollDue().length){ __scrollServed=true; startScroll(scrollDue()[0],true); return; }
+  if(!__warmDone && warmReady()){ __warmDone=true; __trainNextAt=Math.max(__trainNextAt,trainReps+5); startWarmup(true); return; }
+  /* once per training session, if a Spell Scroll is due, read it first (fluency, Vault-scheduled).
+     push the next ally interrupt out a few reps so it never stacks straight onto the scroll's audio (TRAIN-INT/Cypher). */
+  if(!__scrollServed && scrollDue().length){ __scrollServed=true; __trainNextAt=Math.max(__trainNextAt,trainReps+5); startScroll(scrollDue()[0],true); return; }
   const w=pickTrainWord();
   if(!w){ flow(narrate("train",$("trainText"),["train_none"]),()=>{ __inTraining=false; showBase(); }); return; }
   (trainReps%2===0) ? trainBuild(w) : trainDecode(w); }
@@ -1766,16 +1767,14 @@ function trainWin(el,w){ const bonus=combo>=3?2:1; trainReps++;
      to weak/unmastered items, so the reps that earn it target need — §6.0 rule 3). */
   S.repTick=(S.repTick||0)+1; if(S.repTick%10===0){ S.chests=S.chests||{wood:0,silver:0,gold:0}; S.chests.wood++; }
   save();
-  burstAt(el); coinFloat(el,bonus);                                  /* burst + the floating "+N" pop (§8 #7) */
-  if(typeof Sfx!=="undefined")Sfx.coin();
-  updateTrainHUD();                                                  /* snap the treasure stack to its new tiers */
-  const cc=$("trainCoinN"); if(cc){ cc.classList.add("ctrpop"); void cc.offsetWidth; cc.classList.remove("ctrpop"); }
-  if(at.diamonds>bt.diamonds) vaultMilestone("diamond");             /* the climax: a tier just converted up */
-  else if(at.bars>bt.bars) vaultMilestone("bar");
+  burstAt(el); $("trainReps").textContent=trainReps;
+  /* standardize the coin reward on flyReward (TRAIN-INT/Cypher): the coins ARC from the answered tile
+     into the treasure stack + count up + bounce + Sfx.coin (same juicy payoff as base/chest). */
+  flyReward(el, $("trainCoinN"), bonus);
+  if(at.diamonds>bt.diamonds || at.bars>bt.bars){                    /* a tier converted up → the climax */
+    setTimeout(()=>{ updateTrainHUD(); vaultMilestone(at.diamonds>bt.diamonds?"diamond":"bar"); }, 460); }
+  updateTrainDaily();
   flow(Aud.play(["train_yes"].concat(wordAudio(w))),()=>setTimeout(()=>maybeTrainInterrupt(trainRound),260)); }
-function coinFloat(el,n){ const s=$("stage"); if(!s||!el)return; const r=el.getBoundingClientRect(),st=s.getBoundingClientRect();
-  const c=document.createElement("div"); c.className="combochip"; c.style.color="#ffd75e";
-  c.style.top=(r.top-st.top-20)+"px"; c.innerHTML="+"+n+" <span class='cfcoin'>"+coinIcon(20)+"</span>"; s.appendChild(c); setTimeout(()=>c.remove(),900); }
 $("btnTrain").onclick=()=>showTrain();
 $("btnTrainBack").onclick=()=>{ __inTraining=false; Aud.stop(); showBase(); };
 
