@@ -511,6 +511,38 @@ function flyReward(fromEl,toEl,n,opts){ opts=opts||{}; if(!toEl||!n)return;
     ],{duration:520+Math.random()*120,delay:i*45,easing:"cubic-bezier(.45,0,.75,1)",fill:"forwards"})
       .finished.then(()=>{ sp.remove(); if(__flyPool.length<16)__flyPool.push(sp); }).catch(()=>{ try{sp.remove();}catch(e){} });
   } }
+/* REWARD SHOWER (parent 2026-06-16 — "more juice, animations flying around, addicting"): a celebratory
+   ERUPTION of faceted Letter Gems that arc up+out, spin, and fall. Fires on REWARD moments only
+   (win / unlock / milestone) — NEVER during a learning run (C13: nothing competes with the active prompt).
+   Pure WAAPI (transform/opacity → GPU, P14), pooled, detail-tier aware: Lite/reduced-motion skip it,
+   Calm uses fewer + slower + no spin. Quieter than the reading/mastery cue by design (§6.0). */
+let __showerPool=[];
+const SHOWER_COLORS=["#3b82f0","#ff8a3d","#3ec97e","#a06ae8","#7fd9ff","#ffc93c","#ff5e8a"];
+function rewardShower(n, opts){ opts=opts||{}; const s=stageEl(); if(!s)return;
+  if(REDUCE || (document.body&&document.body.classList.contains("lite")))return;   /* keep cheap confetti only on Lite/reduced-motion */
+  const calm=document.body&&document.body.classList.contains("calm");
+  if(typeof document.body.animate!=="function" && typeof Element.prototype.animate!=="function")return;
+  n=Math.max(1,Math.min(n||12, calm?8:18));
+  const sr=s.getBoundingClientRect();
+  let cx=sr.left+sr.width/2, cy=sr.top+sr.height*0.46;
+  if(opts.fromEl){ try{ const fr=opts.fromEl.getBoundingClientRect(); cx=fr.left+fr.width/2; cy=fr.top+fr.height*0.55; }catch(e){} }
+  if(opts.x!=null)cx=opts.x; if(opts.y!=null)cy=opts.y;
+  for(let i=0;i<n;i++){ const sp=__showerPool.pop()||document.createElement("div");
+    const col=SHOWER_COLORS[Math.floor(Math.random()*SHOWER_COLORS.length)];
+    sp.style.cssText="position:fixed;left:0;top:0;z-index:75;pointer-events:none;width:34px;height:34px;will-change:transform,opacity;";   /* >70 so it also shows over the unlock-card modal */
+    sp.innerHTML=gemSVG("",col,34); document.body.appendChild(sp);
+    const ang=-Math.PI/2+(Math.random()-0.5)*1.7, speed=130+Math.random()*150;   /* mostly up, ~±49° spread */
+    const vx=Math.cos(ang)*speed, vy=Math.sin(ang)*speed;
+    const peakX=cx+vx*0.55, peakY=cy+vy*0.62;                                     /* arc peak (vy<0 = up) */
+    const endX=cx+vx*1.1,  endY=cy+Math.abs(vy)*0.45+sr.height*0.55;              /* gravity fall below */
+    const spin=calm?0:(Math.random()<.5?1:-1)*(160+Math.random()*250);
+    sp.animate([
+      {transform:`translate(${cx-17}px,${cy-17}px) scale(.4) rotate(0deg)`,opacity:0},
+      {transform:`translate(${peakX-17}px,${peakY-17}px) scale(1) rotate(${spin*0.5}deg)`,opacity:1,offset:.4},
+      {transform:`translate(${endX-17}px,${endY-17}px) scale(.82) rotate(${spin}deg)`,opacity:0}
+    ],{duration:(calm?1100:900)+Math.random()*500,delay:i*(calm?64:34),easing:"cubic-bezier(.25,.7,.4,1)",fill:"forwards"})
+      .finished.then(()=>{ sp.remove(); if(__showerPool.length<24)__showerPool.push(sp); }).catch(()=>{ try{sp.remove();}catch(e){} });
+  } }
 
 /* ---------------- TITLE ---------------- */
 $("titleHero").innerHTML=heroMarquee(210);
@@ -1437,7 +1469,7 @@ function showUnlock(artHTML, name, sub, done){
   const o=$("unlockCard"); if(!o){ if(done)done(); return; }
   $("ucArt").innerHTML=artHTML; $("ucName").textContent=name; $("ucSub").textContent=sub||"NEW!";
   o.classList.add("on");
-  try{ flashScreen("rgba(255,210,90,.42)"); confetti(48); if(typeof Sfx!=="undefined")Sfx.unlock(); else Aud.ding(); }catch(e){}
+  try{ flashScreen("rgba(255,210,90,.42)"); confetti(48); rewardShower(12,{fromEl:$("ucArt")}); if(typeof Sfx!=="undefined")Sfx.unlock(); else Aud.ding(); }catch(e){}
   const close=()=>{ o.classList.remove("on"); o.onclick=null; $("ucBtn").onclick=null; if(done)done(); };
   $("ucBtn").onclick=e=>{ if(e)e.stopPropagation(); close(); };
   o.onclick=close;
@@ -1446,8 +1478,11 @@ function showUnlock(artHTML, name, sub, done){
 /* ---------------- WIN / REST ---------------- */
 function showWin(firstTime){ show("scrWin");
   if(typeof Sfx!=="undefined")Sfx.win();
-  flashScreen("rgba(255,255,255,.5)"); confetti(CUR.finale||CUR.rescue||CUR.type==="fortress"?110:64);
-  if(CUR.finale||CUR.rescue||CUR.type==="fortress")setTimeout(()=>confetti(90),520);  /* extra pop on big milestones */
+  const big=CUR.finale||CUR.rescue||CUR.type==="fortress";
+  flashScreen("rgba(255,255,255,.5)"); confetti(big?110:64);
+  /* a fountain of Letter Gems erupts around the hero — the "collection" reward spectacle (parent: flying juice) */
+  setTimeout(()=>rewardShower(big?16:11,{fromEl:$("winHero")}), 200);
+  if(big){ setTimeout(()=>confetti(90),520); setTimeout(()=>rewardShower(14,{fromEl:$("winHero")}),640); }  /* extra pop on big milestones */
   /* who got freed this win — derive the rescued ally from the LEAGUE roster by mission id (generalized
      beyond the old hardcoded Amelia, so JJ/Cal/Nora rescues show the RIGHT face + name). */
   const rescuedKind = CUR.rescue ? (LEAGUE.find(t=>t.mid===CUR.id)||{}).kind : null;
