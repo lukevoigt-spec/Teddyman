@@ -15,6 +15,26 @@ resolves before merge; this file keeps the durable before/after record. Shots li
 
 ---
 
+## 2026-06-16 · Nav overhaul Slice 1 — persistent HOME button (kill the hamburger)  ·  PASS
+**Branch:** `oracle/nav-home-button` → PR for Neo. First build slice of NAV-PLAN.md (Map=Home model).
+**Change:** removed the hidden hamburger dropdown (`#hudTitle` + `#navMenu` + the 4 `.navitem`s) and
+replaced it with ONE persistent **HOME button** (top-left, every screen, house icon) → the World Map.
+The Hero **Base is now reachable from the map** via `#mapBaseBtn` (the CSS existed but the element/wiring
+was MISSING — Base had been reachable ONLY through the dropdown, so killing it without this would have
+ORPHANED the Base). Grown-ups moved to a small low-prominence gated **gear** (top-right). `show()` hides
+HOME on the map itself (you're already home).
+**Files:** index.html (HUD markup + `#mapBaseBtn` on scrMap), game.js (`navChrome()` replaces the menu
+handlers; `show()` HOME toggle), styles.css (`.homebtn`/`.gearbtn`), tests/ui-emoji (re-pointed the nav
+assertions from the old dropdown to the new HOME button + `navChrome`).
+**Shots:** `map` (HOME hidden, HERO BASE button bottom-left, gear top-right), `find` (HOME persistent,
+prompt stays focal — calm), `base` (HOME + status + gear). Title HUD still hidden (unchanged).
+`node --check` clean · ui-emoji 11/11 · curriculum 110 · save 112. **PASS.**
+**Next slices (NAV-PLAN):** 2 status-cluster unify (incl. `⚡`/coin de-emoji), 3 Title PLAY fix,
+4 back-label + Skip≥96px + Rest→map, 5 map node states, 6 cutscene button. The Base *interior* stays
+out of scope (parent).
+
+---
+
 ## 2026-06-16 · Premium UI — in-game controls (home button de-emoji)  ·  PASS
 **Branch:** `oracle/premium-controls` → PR for Neo. Premium UI Overhaul, batch: **in-game controls**.
 **Finding:** of the three in-game controls, **replay** (`.ear`) and **skip** (`#btnSkip`) were ALREADY

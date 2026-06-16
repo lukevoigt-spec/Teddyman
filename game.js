@@ -413,6 +413,8 @@ function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.r
   if(!cine)document.body.classList.remove("cine-villain");
   if(typeof Music!=="undefined" && Music.setAct) Music.setAct(currentAct());   /* swap the act's theme */
   $("hud").style.display=(id==="scrTitle")?"none":"flex"; refreshHUD();
+  /* HOME button (-> map) shows everywhere EXCEPT the map itself (you're already home there) */
+  { const hb=$("hudHome"); if(hb)hb.style.visibility=(id==="scrMap")?"hidden":"visible"; }
   const dm=$("dailyMeter"); if(dm){ dm.style.display=(id==="scrMap")?"block":"none"; if(id==="scrMap")updateDailyMeter(); } }
 function refreshHUD(){ $("hudStars").textContent="⚡ "+S.stars; }
 /* ---------------- JUICE / FX ----------------
@@ -745,27 +747,23 @@ function nextScan(){ if(scanIx>=SCAN_SET.length){ S.scan=true; save();
 $("btnSkip").onclick=()=>{ Aud.stop(); const f=__cont; clearFlow(); if(f)f(); };
 /* (U4 tap-to-start orb removed — scan/forge AUTOPLAY: mentor narrates → round appears; ⏭ skip covers
    "jump ahead". A tap-to-start CTA implied a false gate + extra decision that broke the audio-first flow.) */
-/* CITY-NAME NAV MENU — tap the city chip (on any screen) to jump anywhere, so the
-   map view stays uncluttered (no more controls layered over the painting). */
-function closeNav(){ const m=$("navMenu"); if(m)m.classList.remove("on"); }
-function navGo(fn){ closeNav(); Aud.stop(); clearFlow(); fn(); }
-/* Premium UI: prepend crafted SVG icons (house icon language) to the nav chip + items, replacing the
-   old child-facing OS emoji (STYLE §6/§18). Label text stays in index.html; the icon is added here so
-   a missing uiIcon degrades to plain text. */
-(function navIcons(){ if(typeof uiIcon!=="function")return;
-  const set=(id,key,sz)=>{ const el=$(id); if(el)el.innerHTML=uiIcon(key,sz||20)+el.textContent; };
-  set("hudTitle","menu",18); set("navMap","map"); set("navBase","base"); set("navHome","home"); set("navGrown","grown");
-  /* in-game "home" controls: the BACK TO BASE buttons (Recharge/Training/Scroll/Warm) — crafted shield
-     icon in place of the old 🏠 emoji. (replay 🔊 + skip ⏭ are already crafted SVG via CSS/markup.) */
-  ["btnVaultBack","btnTrainBack","btnScrollBack","btnWarmBack"].forEach(id=>set(id,"base",22)); })();
-$("hudTitle").onclick=e=>{ e.stopPropagation(); const m=$("navMenu"); if(m)m.classList.toggle("on"); };
-$("navMap").onclick=()=>navGo(toMap);
-$("navBase").onclick=()=>navGo(showBase);
-$("navHome").onclick=()=>navGo(()=>{ paintTitle(); show("scrTitle"); });
-/* Settings now lives IN the menu as a gated item (the cognitive math-gate replaces the old hidden
-   3s-hold gear) — one nav surface, declutters the HUD. The gate stops a kid who taps it. */
-{ const ng=$("navGrown"); if(ng)ng.onclick=()=>{ closeNav(); Aud.pick&&Aud.pick(); parentGate(); }; }
-document.addEventListener("click",closeNav);   /* tap anywhere else closes the menu */
+/* NAVIGATION — "Map = Home" model (NAV-PLAN.md, parent 2026-06-16). The old hidden hamburger dropdown
+   is replaced by ONE persistent HOME button (top-left, every screen) that always returns to the World
+   Map (the single hub). The Hero Base is reached from the map (#mapBaseBtn). Grown-ups = a small gated
+   gear (top-right). Kids 5-8 do best with persistent, visible, literal nav + one obvious "home". */
+function navGo(fn){ Aud.stop(); clearFlow(); fn(); }
+(function navChrome(){
+  if(typeof uiIcon==="function"){
+    const set=(id,key,sz)=>{ const el=$(id); if(el)el.innerHTML=uiIcon(key,sz||20)+(el.textContent||""); };
+    set("hudHome","home",20); set("mapBaseBtn","base",22);
+    const g=$("hudGear"); if(g)g.innerHTML=uiIcon("grown",22);
+    /* in-game one-level "back" controls -> shield icon (was the 🏠 emoji) */
+    ["btnVaultBack","btnTrainBack","btnScrollBack","btnWarmBack"].forEach(id=>set(id,"base",22));
+  }
+  const hb=$("hudHome");   if(hb)hb.onclick=()=>navGo(toMap);
+  const mb=$("mapBaseBtn");if(mb)mb.onclick=()=>navGo(showBase);
+  const gg=$("hudGear");   if(gg)gg.onclick=()=>{ Aud.pick&&Aud.pick(); parentGate(); };  /* parent area, math-gated */
+})();
 
 /* ---------------- MISSION FLOW ---------------- */
 let CUR=null;

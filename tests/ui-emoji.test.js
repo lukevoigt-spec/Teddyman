@@ -39,9 +39,9 @@ const ZONES = [
   { name: "Hero Shop catalog (BASE_ITEMS) — crafted SVG via itemArt(), no emoji",
     file: "game.js",
     extract: src => between(src, /const\s+BASE_ITEMS\s*=\s*\[/, "];") },
-  { name: "Nav menu (MENU chip + World Map/Hero Base/Home/Grown-Ups) — plain text + crafted uiIcon SVG, no emoji",
+  { name: "Nav HOME button (Map=Home model) — plain text + crafted uiIcon SVG, no emoji",
     file: "index.html",
-    extract: src => between(src, /id="hudTitle"/, 'id="navGrown">Grown-Ups</button>') },
+    extract: src => between(src, /id="hudHome"/, '</button>') },
 ];
 
 const RESULT = { pass: 0, fail: 0, lines: [] };
@@ -69,7 +69,7 @@ ok("shop render path uses itemArt() (shop grid / trophy shelf / chest + buy unlo
 ok("no shop/trophy/chest render site still injects an emoji `.ic` field", !/\$\{?\s*it\.ic\s*\}?/.test(game) && !/\+\s*item\.ic\b/.test(game));
 /* nav menu de-emoji (PR #43): icons come from the crafted UICONS registry via uiIcon(), not OS emoji */
 ok("art.js defines the uiIcon() resolver + UICONS registry (crafted nav glyphs)", /function\s+uiIcon\s*\(/.test(art) && /\bUICONS\s*=/.test(art));
-ok("game.js navIcons() builds the nav chip/items from uiIcon (not emoji)", /function\s+navIcons\s*\(/.test(game) && /uiIcon\s*\(/.test(game));
+ok("game.js navChrome() builds the HOME button / Base / gear from uiIcon (not emoji)", /function\s+navChrome\s*\(/.test(game) && /uiIcon\s*\(/.test(game));
 /* in-game controls de-emoji (PR #45): home 🏠 replaced by the crafted shield; .ear replay buttons draw the speaker in CSS */
 const indexHtml = read("index.html");
 ok("home glyph 🏠 fully eliminated from index.html (crafted shield via uiIcon on BACK-TO-BASE)", !/\u{1F3E0}/u.test(indexHtml));

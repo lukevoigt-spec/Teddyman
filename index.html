@@ -53,17 +53,10 @@
   </div>
 
   <div class="hud" id="hud" style="display:none;">
-    <div class="navwrap">
-      <div class="chip navchip" id="hudTitle">MENU</div>
-      <div class="navmenu" id="navMenu">
-        <button class="navitem" id="navMap">World Map</button>
-        <button class="navitem" id="navBase">Hero Base</button>
-        <button class="navitem" id="navHome">Home</button>
-        <button class="navitem" id="navGrown">Grown-Ups</button>
-      </div>
-    </div>
+    <button class="chip homebtn" id="hudHome">HOME</button>
     <div style="display:flex;gap:10px;align-items:center;">
       <div class="chip starsrow" id="hudStars">⚡ 0</div>
+      <button class="chip gearbtn" id="hudGear" aria-label="Grown-ups"></button>
     </div>
   </div>
 
@@ -120,6 +113,7 @@
   <!-- MAP -->
   <div class="screen" id="scrMap" style="padding:0;">
     <div id="mapScroll"><div id="mapSVGwrap"></div></div>
+    <button id="mapBaseBtn">Hero Base</button>
   </div>
 
   <!-- HERO BASE -->
