@@ -1207,8 +1207,10 @@ body.calm .srow.charge.due .bmbar{ animation:none; }
 #scrBase .bp-sec:active{ transform:translateY(2px); }
 #scrBase .squishbox{ display:inline-flex; align-items:center; justify-content:center; }
 #scrBase .squishbox img{ width:36px; height:36px; display:block; }
-/* cap each shelf so a long GEMS list scrolls inside its own box and SQUISHIES always stays visible below */
-#scrBase .bp-sec .gemshelf{ max-height:180px; overflow-y:auto; }
+/* #73: cap EVERY in-panel collection shelf (gems, squishies, AND villains) so each scrolls inside its
+   own box — a grown collection can never push the GEAR (weapon/cape) below the panel fold / under the
+   bottom rail. Consistent across both panels; the panel's own overflow-y:auto is the backstop. */
+#scrBase .bpanel .gemshelf{ max-height:138px; overflow-y:auto; }
 .bp-h{ font-family:'Bangers',cursive; font-size:18px; color:var(--gold); letter-spacing:.04em; display:flex;
   justify-content:space-between; align-items:center; margin-bottom:8px; }
 .bp-h.gearh{ margin-top:12px; }
