@@ -338,7 +338,7 @@ const $=id=>document.getElementById(id);
    if the file is missing the layer stays transparent and the original look shows.
    Several screens intentionally share one scene (e.g. learn/trace, boss/forge). */
 const BG_MAP={ scrTitle:"title", scrIntro:"intro", scrInter:"intro", scrScan:"lab", scrRead:"learn", scrSpell:"learn", scrMagic:"learn", scrSyllable:"learn", scrSent:"learn", scrCloze:"learn", scrScramble:"learn", scrFortress:"battle",
-  scrBase:"base", scrTrain:"base", scrVault:"base", scrScroll:"base", scrWarmup:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
+  scrBase:"base-room", scrTrain:"base", scrVault:"base", scrScroll:"base", scrWarmup:"base", scrLetter:"learn", scrTrace:"learn", scrFind:"city",
   scrBoss:"battle", scrForge:"battle", scrWin:"victory", scrRest:"rest" };
 /* SCENE HARMONIZER tones: each scene's dominant ambient KEY light + an accent
    RIM, picked to match its painted background. show() pushes these to body as
@@ -414,6 +414,7 @@ function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.r
   if(!cine)document.body.classList.remove("cine-villain");
   if(typeof Music!=="undefined" && Music.setAct) Music.setAct(currentAct());   /* swap the act's theme */
   $("hud").style.display=(id==="scrTitle")?"none":""; refreshHUD();   /* nav corners stay on learning screens; body.learning hides the HUD + makes them recessive (CSS) */
+  { const nb=$("navBaseBtn"); if(nb)nb.style.display=(id==="scrBase")?"none":""; }   /* on the Base, the ↙ corner is the PLAY→next-level CTA, not a redundant Home */
   const dm=$("dailyMeter"); if(dm){ dm.style.display=(id==="scrMap")?"block":"none"; if(id==="scrMap")updateDailyMeter(); } }
 function refreshHUD(){ $("hudStars").textContent="⚡ "+S.stars; }
 /* ---------------- JUICE / FX ----------------
@@ -1500,9 +1501,9 @@ function showBase(){ clearFlow(); show("scrBase");
   else Aud.play("base1");
 }
 function paintBase(){
-  $("baseHero").innerHTML=heroNow(Math.min(260,window.innerWidth*0.34));
+  $("baseHero").innerHTML=heroMarquee(Math.min(280,window.innerWidth*0.4));   /* painted raster hero (teddyArt), not the parametric SVG */
   const o=heroOpts();
-  { const hp=heroProgress(); $("powerLbl").textContent="⚡ "+hp.name;
+  { const hp=heroProgress(); $("powerLbl").textContent=hp.name;
     const pf=$("powerFill"); if(pf){ pf.style.width=hp.pct+"%"; pf.classList.toggle("maxed",hp.max&&hp.pct>=100); } }
   /* weapons — HANDS + every weapon skin unlocked in THIS act */
   const wrow=$("weaponRow"); wrow.innerHTML="";
@@ -1563,14 +1564,17 @@ function paintBase(){
   /* U7 zero-state: hide an EMPTY collection card so a fresh save isn't four "0 / N · go earn it" rows
      at once. Gems stays as the single "first goal" when nothing's earned yet; league/villains/trophies
      appear only once they have something (strictly honours "show only EARNED items" — CLAUDE.md). */
-  { const anyBoss=BOSSES.some(b=>S.done[b.mid]), anyTro=BASE_ITEMS.some(it=>S.owned&&S.owned[it.id]);
-    const anyColl=any||anyL||anyBoss||anyTro;
-    const setCard=(id,on)=>{ const sh=$(id), c=sh&&sh.closest(".basecard"); if(c)c.style.display=on?"":"none"; };
-    setCard("gemShelf",  any || !anyColl);   /* fresh save → gems is the lone first goal */
-    setCard("leagueShelf", anyL);
-    setCard("bossShelf",   anyBoss);
-    setCard("trophyShelf", anyTro); }
+  /* layered-hub zero-state: hide the VILLAINS + FRIENDS blocks until earned (show only earned).
+     The GEMS panel + GEAR stay (gems = the first goal; weapons always has HANDS). */
+  { const anyBoss=BOSSES.some(b=>S.done[b.mid]);
+    const vb=$("villainsBlock"); if(vb)vb.style.display=anyBoss?"":"none";
+    const fb=$("friendsBlock");  if(fb)fb.style.display=anyL?"":"none"; }
 }
+/* Base layered-hub actions (tap-the-thing): PLAY → next uncompleted level; GEMS → recharge; COINS → train. */
+function playNextMission(){ const ms=playMissions(currentAct()); const m=ms.find(x=>!S.done[x.id])||ms[ms.length-1]; if(m)startMission(m); else toMap(); }
+{ const pb=$("btnPlayNext"); if(pb)pb.onclick=()=>{ Aud.pick&&Aud.pick(); playNextMission(); }; }
+{ const gp=$("gemsPanel");   if(gp)gp.onclick=()=>{ Aud.pick&&Aud.pick(); startVault(); }; }
+{ const cc=$("coinChip");    if(cc)cc.onclick=()=>{ Aud.pick&&Aud.pick(); showTrain(); }; }
 { const bb=$("btnBaseBack"); if(bb)bb.onclick=()=>{Aud.stop();toMap();}; }   /* CITY MAP button removed from the Base (map-exit lives in ☰ MENU); guard kept for safety */
 
 /* ---------------- HERO CARD (Pokémon-style full-body popup) ----------------
@@ -1804,7 +1808,7 @@ function trainWin(el,w){ const bonus=combo>=3?2:1; trainReps++;
     setTimeout(()=>{ updateTrainHUD(); vaultMilestone(at.diamonds>bt.diamonds?"diamond":"bar"); }, 460); }
   updateTrainDaily();
   flow(Aud.play(["train_yes"].concat(wordAudio(w))),()=>setTimeout(()=>maybeTrainInterrupt(trainRound),260)); }
-$("btnTrain").onclick=()=>showTrain();
+{ const bt=$("btnTrain"); if(bt)bt.onclick=()=>showTrain(); }   /* legacy btn (Base now launches Training by tapping the COINS chip) */
 $("btnTrainBack").onclick=()=>{ __inTraining=false; Aud.stop(); showBase(); };
 
 /* ---------------- SPELL SCROLL (rec #2 — repeated-reading fluency) ----------------
@@ -1997,7 +2001,7 @@ function vaultBuild(it){ const w=it.w, sight=!!it.sight, units=vaultUnits(w,sigh
         if(vaultMiss>=2)cr.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===want)x.classList.add("hint");});
         if(!sight)Aud.play(["snd_"+want]); setTimeout(()=>b.classList.remove("dim"),900); } };
     cr.appendChild(b); }); }
-$("btnVault").onclick=()=>{ Aud.pick(); startVault(); };
+{ const bv=$("btnVault"); if(bv)bv.onclick=()=>{ Aud.pick(); startVault(); }; }   /* legacy btn (Base now recharges by tapping the GEMS panel) */
 $("btnVaultBack").onclick=()=>{ Aud.stop(); showBase(); };
 /* open the next pending chest (gold → silver → wood) on tap */
 { const gb=$("btnGifts"); if(gb)gb.onclick=()=>{ const t=nextChestTier(); if(!t)return; Aud.pick&&Aud.pick(); openChest(t); }; }

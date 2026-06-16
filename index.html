@@ -119,49 +119,45 @@
     <div id="mapScroll"><div id="mapSVGwrap"></div></div>
   </div>
 
-  <!-- HERO BASE -->
+  <!-- HERO BASE — layered hub: painted backdrop + spotlit hero + clean sections on top.
+       Tap-the-thing for actions (gems→recharge, coins→train, weapon→equip, friend/villain→card);
+       PLAY (↙ corner) → next level; the 4-corner nav supplies MAP (↘) + Settings (↗) + status (↖). -->
   <div class="screen" id="scrBase">
-    <div class="basetop">
-      <div class="comic basetitle">HERO BASE</div>
-      <div class="basecoins"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#ffd75e" stroke="#9c6a12" stroke-width="2"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="#c98a1a" stroke-width="1.4"/><path d="M12 8l1.3 2.6 2.7.3-2 1.9.5 2.7-2.5-1.3-2.5 1.3.5-2.7-2-1.9 2.7-.3z" fill="#c98a1a"/></svg><span id="baseCoins">0</span></div>
+    <!-- top-centre status -->
+    <div class="bstatus">
+      <div class="bchip rank"><span id="powerLbl"></span><div class="powerbar" title="Hero Power"><div class="powerfill" id="powerFill"></div></div></div>
+      <button class="bchip tap" id="coinChip" title="Earn coins in the Training Room"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#ffd75e" stroke="#9c6a12" stroke-width="2"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="#c98a1a" stroke-width="1.4"/><path d="M12 8l1.3 2.6 2.7.3-2 1.9.5 2.7-2.5-1.3-2.5 1.3.5-2.7-2-1.9 2.7-.3z" fill="#c98a1a"/></svg><span id="baseCoins">0</span></button>
     </div>
-    <div class="basewrap">
-      <div class="basecol-hero">
-        <div class="herostage">
-          <div id="baseHero"></div>
-          <div class="baserank"><span id="powerLbl"></span><div class="powerbar" title="Hero Power"><div class="powerfill" id="powerFill"></div></div></div>
-        </div>
-        <div class="basecard loadout">
-          <div class="basecard-h">⚔️ Loadout</div>
-          <div class="loadout-row"><span class="loadout-lbl">Weapon</span><div class="equiprow" id="weaponRow"></div></div>
-          <div class="loadout-row"><span class="loadout-lbl">Cape</span><div class="equiprow" id="capeRow"></div></div>
-        </div>
+
+    <!-- hero on the painted pedestal -->
+    <div id="baseHero" class="basehero"></div>
+
+    <!-- LEFT: gems (tap → recharge) -->
+    <button class="bpanel bp-left tap" id="gemsPanel" title="My gems — tap to recharge">
+      <div class="bp-h">GEMS <span class="ccount" id="gemCount"></span></div>
+      <div class="gemshelf" id="gemShelf"></div>
+    </button>
+
+    <!-- RIGHT: villains + gear -->
+    <div class="bpanel bp-right">
+      <div id="villainsBlock">
+        <div class="bp-h">VILLAINS <span class="ccount" id="bossCount"></span></div>
+        <div class="gemshelf" id="bossShelf"></div>
       </div>
-      <div class="basecol-coll">
-        <div class="basecard">
-          <div class="basecard-h">🦸 Hero League <span class="ccount" id="leagueCount"></span></div>
-          <div class="gemshelf" id="leagueShelf"></div>
-        </div>
-        <div class="basecard">
-          <div class="basecard-h">💎 Gem Collection <span class="ccount" id="gemCount"></span></div>
-          <div class="gemshelf" id="gemShelf"></div>
-        </div>
-        <div class="basecard">
-          <div class="basecard-h">🦹 Captured Villains <span class="ccount" id="bossCount"></span></div>
-          <div class="gemshelf" id="bossShelf"></div>
-        </div>
-        <div class="basecard">
-          <div class="basecard-h">🏆 Trophies <span class="ccount" id="trophyCount"></span></div>
-          <div class="gemshelf" id="trophyShelf"></div>
-        </div>
-      </div>
+      <div class="bp-h gearh">GEAR</div>
+      <div class="loadout-row"><span class="loadout-lbl">Weapon</span><div class="equiprow" id="weaponRow"></div></div>
+      <div class="loadout-row"><span class="loadout-lbl">Cape</span><div class="equiprow" id="capeRow"></div></div>
+      <div class="gearbtns"><button class="btn sm" id="btnShop">SHOP</button><button class="btn sm" id="btnGifts" style="display:none;">GIFTS</button></div>
     </div>
-    <div class="baseactions">
-      <button class="btn" id="btnTrain">🏋️ TRAINING ROOM</button>
-      <button class="btn" id="btnShop">🛒 SHOP</button>
-      <button class="btn" id="btnVault">🔋 RECHARGE</button>
-      <button class="btn" id="btnGifts" style="display:none;">🎁 GIFTS</button>
+
+    <!-- BELOW hero: friends -->
+    <div class="bfriends" id="friendsBlock">
+      <div class="friendrow" id="leagueShelf"></div>
+      <div class="frlbl">MY FRIENDS <span class="ccount" id="leagueCount"></span></div>
     </div>
+
+    <!-- PLAY (↙ corner) → next uncompleted level -->
+    <button class="basecta" id="btnPlayNext"><span class="ptri"></span>PLAY</button>
   </div>
 
   <!-- MEMORY VAULT (spaced review — recharge mastered gems on their due day; no story gating) -->
