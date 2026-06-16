@@ -435,13 +435,17 @@ function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.r
   $("hud").style.display=(id==="scrTitle")?"none":""; refreshHUD();   /* nav corners stay on learning screens; body.learning hides the HUD + makes them recessive (CSS) */
   { const nb=$("navBaseBtn"); if(nb)nb.style.display=(id==="scrBase")?"none":""; }   /* on the Base, the ↙ corner is the PLAY→next-level CTA, not a redundant Home */
   const dm=$("dailyMeter"); if(dm){ dm.style.display=(id==="scrMap")?"block":"none"; if(id==="scrMap")updateDailyMeter(); } }
+/* RASTER GLYPH resolver (#32, parent 2026-06-16: painted images for the child-facing coin/gem/check/
+   star, replacing OS emoji). Painted PNGs in art/ui-<key>.png (transparent cutouts). Inline-sized so it
+   sits in buttons/labels like a glyph. ALT empty (decorative); the adjacent text carries meaning. */
+function gicon(key,sz){ sz=sz||24; return '<img class="gicon" src="art/ui-'+key+'.png" width="'+sz+'" height="'+sz+'" alt="" aria-hidden="true" draggable="false">'; }
 /* premium HUD status cluster: crafted bolt (power) + coin (squishy currency) pills, with a pulse on
    increase (Clash-Royale-style glanceable juice; calm-mode skips the animation). */
 function hudPill(id,icon,val){ const el=$(id); if(!el)return; const prev=+el.dataset.v||0;
   el.innerHTML=icon+'<span>'+val+'</span>';
   if(val>prev){ el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
   el.dataset.v=val; }
-function refreshHUD(){ hudPill("hudStars", uiIcon("bolt",22), S.stars||0); hudPill("hudCoins", (typeof coinIcon==="function"?coinIcon(22):""), S.coins||0); }
+function refreshHUD(){ hudPill("hudStars", uiIcon("bolt",22), S.stars||0); hudPill("hudCoins", gicon("coin",24), S.coins||0); }
 /* ---------------- JUICE / FX ----------------
    Big, celebratory reward moments (no photosensitivity concern). All effects
    are fire-and-forget DOM bits that auto-remove, so they can never hang a flow.
@@ -755,7 +759,7 @@ function hCast(){ return `<div style="display:flex;justify-content:center;gap:4p
 function hProof(){ const earned=ORDER.filter(g=>S.done[LETTER_MISSION[g]]);
   return earned.length
     ? `<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:520px;">`+earned.map(g=>`<span class="gembox mastered">${gemSVG(g,GEMCOLOR[g],36)}</span>`).join("")+`</div>`
-    : `<div style="font-family:Bangers,cursive;color:#ffd75e;font-size:26px;">★ A HERO READER ★</div>`; }
+    : `<div style="font-family:Bangers,cursive;color:#ffd75e;font-size:26px;">${gicon("star",24)} A HERO READER ${gicon("star",24)}</div>`; }
 const HOMECOMING=[
  {art:()=>`<div style="display:flex;justify-content:center;gap:8px;align-items:center;">${noahSVG(150)}${portalSVG(150)}</div>`, id:"home1", fx:"portal"},
  {art:()=>`<div style="display:flex;justify-content:center;">${typeof citySVG==="function"?citySVG(300):heroNow(220)}</div>`, id:"home2", fx:"heroic"},
@@ -1448,7 +1452,7 @@ function castMagicE(sh,lo){ const wr=$("magicWord");
   record(magicM.unit,true);
   flow(Aud.play(["magic_cast","snd_"+magicM.vowel+"_long","word_"+lo]),()=>{
     $("magicNext").style.display="inline-block";
-    $("magicNext").textContent=(magicIx>=magicPairs.length-1)?"DONE ✓":"NEXT ➜";
+    $("magicNext").innerHTML=(magicIx>=magicPairs.length-1)?'DONE '+gicon("check",20):"NEXT ➜";
     $("magicNext").onclick=()=>{ magicIx++; magicStep(); }; });
 }
 
@@ -1481,7 +1485,7 @@ function chopWord(w){ const parts=sylM._parts||[w]; $("sylChop").style.display="
                 : [...graphemeSounds(w),"word_"+w];
   flow(Aud.play(seq),()=>{ wr.classList.add("sylpush"); confetti(22); burstAt(wr,w.toUpperCase()+"!"); if(typeof Sfx!=="undefined")Sfx.combo&&Sfx.combo();
     $("sylNext").style.display="inline-block";
-    $("sylNext").textContent=(sylIx>=sylWords.length-1)?"DONE ✓":"NEXT ➜";
+    $("sylNext").innerHTML=(sylIx>=sylWords.length-1)?'DONE '+gicon("check",20):"NEXT ➜";
     $("sylNext").onclick=()=>{ sylIx++; sylStep(); }; }); }
 
 /* ---------------- UNLOCK CARD (reward reveal) ---------------- */
@@ -1839,7 +1843,7 @@ function hoardTiers(h){ h=Math.max(0,Math.floor(h||0)); return {diamonds:Math.fl
 function trainHoardHTML(){ const t=hoardTiers(S.hoard);
   return `<span class="trscell">${diamondIcon(28)}<b>${t.diamonds}</b></span>`
        + `<span class="trscell">${barIcon(28)}<b>${t.bars}</b></span>`
-       + `<span class="trscell">${coinIcon(28)}<b id="trainCoinN">${t.coins}</b></span>`; }
+       + `<span class="trscell">${gicon("coin",28)}<b id="trainCoinN">${t.coins}</b></span>`; }
 function vaultMilestone(kind){ const dia=(kind==="diamond");
   shakeStage(true); flashScreen(dia?"rgba(103,216,255,.5)":"rgba(255,210,58,.5)"); confetti(dia?72:48);
   if(typeof Sfx!=="undefined"){ if(dia&&Sfx.gem)Sfx.gem(); else if(Sfx.unlock)Sfx.unlock(); else Aud.ding(); }
@@ -1981,7 +1985,7 @@ function scrollTap(i){ const wr=$("scrollWords");
 function scrollFinish(){ const ms=Date.now()-scrollT0, best=scrollTouch(scrollCur.id,ms);
   try{ confetti(36); if(typeof Sfx!=="undefined"&&Sfx.win)Sfx.win(); }catch(e){}
   S.coins=(S.coins||0)+2; save();                                     /* coins from LEARNING (§6.0) */
-  $("scrollMeter").textContent = best ? "★ NEW BEST!" : "✓ Scroll read!";
+  $("scrollMeter").innerHTML = best ? gicon("star",22)+" NEW BEST!" : gicon("check",22)+" Scroll read!";
   flow(Aud.play([best?"scroll_best":"scroll_done"]),()=>{ Aud.stop();
     if(scrollFromTrain){ scrollFromTrain=false; __trainNextAt=Math.max(__trainNextAt,trainReps+5); show("scrTrain"); updateTrainHUD(); trainRound(); } else showBase(); }); }
     /* #71: buffer the next ally interrupt on the RETURN to training too (not just at serve), so a pop-in can't stack on the scroll's closure audio */
@@ -2155,7 +2159,7 @@ function paintShop(){ $("shopCoins").textContent=S.coins||0;
   items.forEach(it=>{ const owned=!!S.owned[it.id];
     const d=document.createElement("button"); d.className="shopitem"+(owned?" owned":"");
     d.innerHTML=`<div class="ic">${itemArt(it,72)}</div><div class="nm">${it.nm}</div>`
-      +(owned?`<div class="owned-tag">OWNED</div>`:`<div class="price">${coinIcon(16)}<span>${it.cost}</span></div>`);
+      +(owned?`<div class="owned-tag">OWNED ${gicon("check",16)}</div>`:`<div class="price">${gicon("coin",18)}<span>${it.cost}</span></div>`);
     d.onclick=()=>openSquishCard(it);
     g.appendChild(d); }); }
 /* tap a squishy → a collectible CARD: full image + name + blurb + buy/owned (parent 2026-06-16) */
@@ -2164,7 +2168,7 @@ function openSquishCard(it){ const owned=!!S.owned[it.id], can=(S.coins||0)>=it.
   $("sqDesc").textContent=(typeof SQUISH_BLURB!=="undefined"&&SQUISH_BLURB[it.id])||"A super-squishy collectible!";
   const btn=$("sqBtn");
   if(owned){ btn.className="btn ghost"; btn.disabled=true; btn.textContent="IN YOUR COLLECTION"; btn.onclick=null; }
-  else { btn.disabled=false; btn.className="btn"+(can?"":" cant"); btn.innerHTML=coinIcon(22)+" <span>"+it.cost+"</span>";
+  else { btn.disabled=false; btn.className="btn"+(can?"":" cant"); btn.innerHTML=gicon("coin",24)+" <span>"+it.cost+"</span>";
     btn.onclick=()=>{ if((S.coins||0)>=it.cost){ S.coins-=it.cost; S.owned[it.id]=true; save(); Aud.ding();
         $("squishCard").classList.remove("on");
         showUnlock(`<div style="line-height:1;">${itemArt(it,170)}</div>`, it.nm.toUpperCase(), "NEW SQUISHY!");
