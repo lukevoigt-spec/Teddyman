@@ -52,19 +52,15 @@
     <div class="dailylabel">TODAY'S TRAINING <span id="dailyTime"></span></div>
   </div>
 
+  <!-- 4-corner navigation (NAV-PLAN parent revision 2026-06-16): HUD/status upper-left, Settings (gated)
+       upper-right, HOME→Hero Base lower-left, MAP→world map lower-right. Fixed + identical every screen.
+       Hidden entirely on learning screens (body.learning) so nothing competes with the decoding prompt;
+       the Replay (.ear) + Skip (#btnSkip) live outside #hud and stay (audio-first / no-hang, #8). -->
   <div class="hud" id="hud" style="display:none;">
-    <div class="navwrap">
-      <div class="chip navchip" id="hudTitle">MENU</div>
-      <div class="navmenu" id="navMenu">
-        <button class="navitem" id="navMap">World Map</button>
-        <button class="navitem" id="navBase">Hero Base</button>
-        <button class="navitem" id="navHome">Home</button>
-        <button class="navitem" id="navGrown">Grown-Ups</button>
-      </div>
-    </div>
-    <div style="display:flex;gap:10px;align-items:center;">
-      <div class="chip starsrow" id="hudStars">⚡ 0</div>
-    </div>
+    <div class="chip starsrow navcorner nc-ul" id="hudStars">⚡ 0</div>
+    <button class="navcorner nc-ur" id="navSettings" aria-label="Grown-ups"></button>
+    <button class="navcorner nc-ll" id="navBaseBtn" aria-label="Hero Base"></button>
+    <button class="navcorner nc-lr" id="navMapBtn" aria-label="World Map"></button>
   </div>
 
   <div class="roundbtn" id="btnSkip" title="Skip" style="position:absolute;right:16px;bottom:16px;display:none;z-index:8;width:64px;height:64px;"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M5 5l9 7-9 7V5zm11 0h3v14h-3V5z"/></svg></div>
