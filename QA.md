@@ -57,7 +57,8 @@ Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under *
 > the house look, **audit EVERY screen end-to-end and standardize all UI themes to match the paintings.** The chrome
 > (buttons, panels/cards, HUD chips, icons, text treatments, frame corners, scene-grade) must read as ONE coherent system
 > that belongs to the painted world it sits on — not leftover/old or per-screen-inconsistent styling. **Method:** render
-> every scene (`node tools/shot.mjs <all>`, Act 1 + 2, landscape + portrait — note SHOT-1 WebKit hang; Chromium for now),
+> every scene (`node tools/shot.mjs <all>`, Act 1 + 2, landscape + portrait — **WebKit now renders (SHOT-1 hang resolved,
+> per Morpheus); ⚠ but the all-scene harness still leaks modals between scenes (RENDER-1) — run high-risk scenes isolated until fixed**),
 > eyeball each against its painting, list the **mismatches** in `DESIGN-REVIEW.md`, then standardize via PRs Neo merges.
 > Extend the **locked ARENA house look** (§21) + the scene-harmonizer consistently everywhere; keep **per-act theming**
 > (Act 1 cosmic / Act 2 medieval, §0.5) but coherent within each act. This is §7 / non-negotiable #7 (UI lives in the
@@ -121,7 +122,9 @@ Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under *
 > ON THE iPAD (parent, 2026-06-16) — RESOLVED.** *(Reminder: this was an iPad-only/WebKit bug the Chromium gate couldn't
 > catch — until **SHOT-1** is fixed, iPad-specific visuals still need the parent's eyes.)* — Trinity, 2026-06-16
 >
-> ✅ **DAILY TARGET 30 → 15 min/day — SHIPPED** (`5e9c028`; `dailyGoalSecs`=15, daily-split bar + labels updated; gentle meter, no quota). — Trinity, 2026-06-15 (reconciled 2026-06-16)
+> ⏳ **DAILY TARGET 30 → 15 min/day — INCOMPLETE / DAILY-1 STILL LIVE** (corrected per Morpheus STATUS-1): the daily-split
+> *bar* shipped (`5e9c028`), **but `state-save.js:196,201` still default `goalMin=30`**, so the target boots at 30
+> (confirmed in WebKit renders). **NEO: change the fresh + migration default to 15 + add a `save.test` guard.** — Trinity, 2026-06-16
 >
 > 🗺️🎨 **MAP ALLY ART (Oracle, parent 2026-06-15) — ⏳ PARTIAL:** raster allies wired into the showcases/cards
 > (`b7f0e3e`/`7f040bf`); **verify the MAP figures (`mapFriends`/`allyMapFig`) specifically** still need the swap to the
