@@ -126,21 +126,36 @@
        Tap-the-thing for actions (gems→recharge, coins→train, weapon→equip, friend/villain→card);
        PLAY (↙ corner) → next level; the 4-corner nav supplies MAP (↘) + Settings (↗) + status (↖). -->
   <div class="screen" id="scrBase">
-    <!-- top-centre status -->
+    <!-- top-centre status: ONE bar holding the rank title + two meters (Gem Charge = spaced-review
+         readiness; Today = the gentle 15-min practice meter) -->
     <div class="bstatus">
-      <div class="bchip rank"><span id="powerLbl"></span><div class="powerbar" title="Hero Power"><div class="powerfill" id="powerFill"></div></div></div>
+      <div class="bchip statusbar">
+        <span class="rankname" id="powerLbl"></span>
+        <button class="bmeter charge tap" id="chargeMeter" title="Gem Charge — tap to recharge your gems">
+          <span class="bmlbl">CHARGE</span><span class="bmbar"><span class="bmfill" id="chargeFill"></span></span>
+        </button>
+        <button class="bmeter daily tap" id="dailyMeter" title="Today's practice — tap to train">
+          <span class="bmlbl">TODAY</span><span class="bmbar"><span class="bmfill" id="dailyFill"></span></span>
+        </button>
+      </div>
     </div>
 
     <!-- hero on the painted pedestal -->
     <div id="baseHero" class="basehero"></div>
 
-    <!-- LEFT: gems (tap → recharge) -->
-    <button class="bpanel bp-left tap" id="gemsPanel" title="My gems — tap to recharge">
-      <div class="bp-h">GEMS <span class="ccount" id="gemCount"></span></div>
-      <div class="gemshelf" id="gemShelf"></div>
-    </button>
+    <!-- LEFT: collection — gems (tap → recharge) + squishies/gifts (tap → inventory + shop) -->
+    <div class="bpanel bp-left">
+      <button class="bp-sec tap" id="gemsPanel" title="My gems — tap to recharge">
+        <div class="bp-h">GEMS <span class="ccount" id="gemCount"></span></div>
+        <div class="gemshelf" id="gemShelf"></div>
+      </button>
+      <button class="bp-sec tap" id="squishPanel" title="My squishies — tap to open">
+        <div class="bp-h">SQUISHIES <span class="ccount" id="squishCount"></span></div>
+        <div class="gemshelf" id="squishShelf"></div>
+      </button>
+    </div>
 
-    <!-- RIGHT: villains + gear -->
+    <!-- RIGHT: power — villains + gear -->
     <div class="bpanel bp-right">
       <div id="villainsBlock">
         <div class="bp-h">VILLAINS <span class="ccount" id="bossCount"></span></div>
@@ -149,7 +164,6 @@
       <div class="bp-h gearh">GEAR</div>
       <div class="loadout-row"><span class="loadout-lbl">Weapon</span><div class="equiprow" id="weaponRow"></div></div>
       <div class="loadout-row" id="capeLoadout"><span class="loadout-lbl">Cape</span><div class="equiprow" id="capeRow"></div></div>
-      <div class="gearbtns"><button class="btn sm" id="btnShop">SHOP</button><button class="btn sm" id="btnGifts" style="display:none;">GIFTS</button></div>
     </div>
 
     <!-- BELOW hero: friends -->
@@ -203,11 +217,12 @@
     <button class="btn blue" id="btnWarmBack">BACK TO BASE</button>
   </div>
 
-  <!-- SHOP (spend coins on cosmetic Hero-Base items) -->
+  <!-- MY SQUISHIES — inventory (owned first) + shop to get more, with coins + presents -->
   <div id="shopPanel">
-    <div class="comic" style="font-size:34px;color:var(--gold);">SQUISHY SHOP</div>
+    <div class="comic" style="font-size:34px;color:var(--gold);">MY SQUISHIES</div>
     <div class="baselbl" style="font-size:20px;"><span id="shopCoins" style="color:var(--gold);">0</span> coins</div>
-    <div class="read" style="font-size:14px;max-width:560px;text-align:center;color:#cfc6f2;">Earn coins by reading, then collect squishies! Tap one to see it big.</div>
+    <button class="btn" id="btnPresents" style="display:none;"></button>
+    <div class="read" style="font-size:14px;max-width:560px;text-align:center;color:#cfc6f2;">Your squishy collection! Earn coins by reading, then tap a squishy in the shop to collect it.</div>
     <div id="shopGrid"></div>
     <button class="btn blue" id="btnShopClose">DONE</button>
   </div>

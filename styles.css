@@ -1163,6 +1163,24 @@ body.calm .scrollword{transition:none;} body.calm .scrollword.lit{transform:none
 .bchip.rank{ color:#fff; border-color:#fff; }
 .bchip.rank .powerbar{ width:96px; height:11px; }
 .bchip.tap{ cursor:pointer; } .bchip.tap:active{ transform:translateY(2px); }
+/* ONE status bar: rank title + two inline meters (Gem Charge = spaced-review readiness; Today = practice) */
+.bchip.statusbar{ gap:13px; padding:7px 17px; }
+.statusbar .rankname{ font-family:'Bangers',cursive; font-size:clamp(15px,2.3vw,21px); color:#fff; letter-spacing:.04em; white-space:nowrap; }
+.bmeter{ display:flex; align-items:center; gap:6px; background:none; border:0; box-shadow:none; padding:0; margin:0; cursor:pointer; font:inherit; }
+.bmeter::before{ content:""; width:2px; height:20px; background:rgba(255,255,255,.18); border-radius:2px; margin-right:3px; }
+.bmeter:active{ transform:translateY(1px); }
+.bmlbl{ font-family:'Bangers',cursive; font-size:11px; letter-spacing:.05em; line-height:1; }
+.bmeter.charge .bmlbl{ color:#aef0ff; } .bmeter.daily .bmlbl{ color:#b8f0c8; }
+.bmbar{ display:inline-block; width:72px; max-width:20vw; height:9px; border-radius:6px; background:rgba(10,5,24,.7);
+  overflow:hidden; border:1.5px solid rgba(0,0,0,.45); vertical-align:middle; }
+.bmfill{ display:block; height:100%; width:0; border-radius:6px; transition:width .5s ease; }
+.bmeter.charge .bmfill{ background:linear-gradient(90deg,#7fe3ff,#5f8bff); }
+.bmeter.charge .bmfill.low{ background:linear-gradient(90deg,#ffd23a,#ff9e1f); }
+.bmeter.daily .bmfill{ background:linear-gradient(90deg,#9be8b0,#3ec97e); }
+.bmeter.daily.hit .bmbar{ box-shadow:0 0 0 2px #fff; }
+.bmeter.charge.due .bmbar{ animation:bmpulse 1.9s ease-in-out infinite; }
+@keyframes bmpulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(127,227,255,0); } 50%{ box-shadow:0 0 10px 2px rgba(127,227,255,.7); } }
+body.calm .bmeter.charge.due .bmbar{ animation:none; }
 /* hero on the painted pedestal */
 /* hero: a CLEAN painted-raster cutout seated on the painted pedestal (no aura/halo) */
 #scrBase .basehero{ position:absolute; left:50%; bottom:34%; transform:translateX(-50%); width:clamp(180px,28vw,260px);
@@ -1174,6 +1192,14 @@ body.calm .scrollword{transition:none;} body.calm .scrollword.lit{transform:none
   -webkit-backdrop-filter:blur(9px); backdrop-filter:blur(9px); box-shadow:0 8px 0 rgba(0,0,0,.26); color:var(--txt); overflow-y:auto; }
 #scrBase .bp-left{ left:14px; } #scrBase .bp-right{ right:14px; }
 #scrBase .bpanel.tap{ cursor:pointer; } #scrBase .bpanel.tap:active{ transform:translateY(2px); }
+/* left-panel collection SECTIONS (gems + squishies) — each its own tappable card inside the panel */
+#scrBase .bp-sec{ display:block; width:100%; text-align:left; background:transparent; border:0; padding:0; margin:0; color:inherit; cursor:pointer; font:inherit; }
+#scrBase .bp-sec + .bp-sec{ margin-top:11px; padding-top:10px; border-top:2px solid rgba(255,255,255,.13); }
+#scrBase .bp-sec:active{ transform:translateY(2px); }
+#scrBase .squishbox{ display:inline-flex; align-items:center; justify-content:center; }
+#scrBase .squishbox img{ width:36px; height:36px; display:block; }
+/* cap each shelf so a long GEMS list scrolls inside its own box and SQUISHIES always stays visible below */
+#scrBase .bp-sec .gemshelf{ max-height:180px; overflow-y:auto; }
 .bp-h{ font-family:'Bangers',cursive; font-size:18px; color:var(--gold); letter-spacing:.04em; display:flex;
   justify-content:space-between; align-items:center; margin-bottom:8px; }
 .bp-h.gearh{ margin-top:12px; }

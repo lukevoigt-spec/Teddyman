@@ -1527,8 +1527,18 @@ function paintBase(){
     $("baseHero").innerHTML='<img class="baseheroimg" src="art/'+file+'.png" alt="" draggable="false"'
       +(armed?' onerror="this.onerror=null;this.src=\'art/'+base+'.png\'"':'')+'>'; }
   const o=heroOpts();
-  { const hp=heroProgress(); $("powerLbl").textContent=hp.name;
-    const pf=$("powerFill"); if(pf){ pf.style.width=hp.pct+"%"; pf.classList.toggle("maxed",hp.max&&hp.pct>=100); } }
+  { const hp=heroProgress(); const pl=$("powerLbl"); if(pl)pl.textContent=hp.name; }
+  /* GEM CHARGE meter — spaced-review readiness (full when nothing's due; recharged by the Recharge
+     activity). Framed as "power UP," NEVER a punishing drain (North Star: no loss-aversion). Mastery
+     itself never drops — this only reflects which mastered gems are due for a review today. */
+  { const enrolled=vaultCount(), due=Math.min(vaultDueRoutable().length, enrolled);
+    const pct = enrolled>0 ? Math.round(100*(enrolled-due)/enrolled) : 100;
+    const cf=$("chargeFill"); if(cf){ cf.style.width=pct+"%"; cf.classList.toggle("low", enrolled>0&&pct<60); }
+    const cm=$("chargeMeter"); if(cm)cm.classList.toggle("due", due>0); }
+  /* TODAY meter — gentle 15-min practice target (a meter, never a countdown/penalty — constraint #1). */
+  { ensureDaily(true); const pct=Math.min(100, Math.round(100*((S.daily&&S.daily.secs)||0)/dailyGoalSecs()));
+    const df=$("dailyFill"); if(df){ df.style.width=pct+"%"; }
+    const dm=$("dailyMeter"); if(dm)dm.classList.toggle("hit", pct>=100); }
   /* weapons — HANDS + every weapon skin unlocked in THIS act */
   const wrow=$("weaponRow"); wrow.innerHTML="";
   const weapons=[["none","HANDS"],...ownedWeapons().map(w=>[w.k,w.lbl])];
@@ -1574,21 +1584,13 @@ function paintBase(){
   if(!anyL)lg.innerHTML='<div class="baselbl" style="font-size:15px;">Smash Vex\u2019s cages to free your friends!</div>';
   { const freed=LEAGUE.filter(t=>allyFreed(t.kind)).length, lc=$("leagueCount"); if(lc)lc.textContent=freed+" / "+LEAGUE.length; }
   paintBossShelf();   /* captured-villain cages */
-  /* coins + trophy shelf (Training Room collection) */
-  const cn=$("baseCoins"); if(cn)cn.textContent=S.coins||0;
-  const tro=$("trophyShelf");
-  if(tro){ const owned=BASE_ITEMS.filter(it=>S.owned&&S.owned[it.id]);
-    tro.innerHTML = owned.length
-      ? owned.map(it=>`<span class="trophy" title="${it.nm}">${itemArt(it,44)}</span>`).join("")
-      : '<div class="baselbl" style="font-size:15px;">Train to earn coins, then shop for trophies!</div>';
-    const tc=$("trophyCount"); if(tc)tc.textContent=owned.length+" / "+BASE_ITEMS.length; }
-  /* Memory Vault: label the Recharge button with today's due count + glow it gently when gems are due */
-  { const due=vaultDueRoutable().length, vb=$("btnVault");
-    if(vb){ vb.textContent = due ? ("🔋 RECHARGE ("+due+")") : "🔋 RECHARGE";
-      vb.classList.toggle("vaultdue", due>0); } }
-  /* Treasure chests: show the GIFTS button only when a present is waiting (pulses to invite, never nags) */
-  { const n=pendingChests(), gb=$("btnGifts");
-    if(gb){ gb.style.display=n>0?"":"none"; gb.textContent="🎁 GIFTS ("+n+")"; gb.classList.toggle("vaultdue", n>0); } }
+  /* SQUISHIES shelf — OWNED collectibles only (show only EARNED — CLAUDE.md). Tap → inventory + shop. */
+  { const sh=$("squishShelf");
+    if(sh){ const owned=BASE_ITEMS.filter(it=>S.owned&&S.owned[it.id]);
+      sh.innerHTML = owned.length
+        ? owned.map(it=>`<span class="squishbox" title="${it.nm}">${itemArt(it,40)}</span>`).join("")
+        : '<div class="baselbl" style="font-size:13px;">Tap to get squishies in the shop!</div>';
+      const sc=$("squishCount"); if(sc)sc.textContent=owned.length+" / "+BASE_ITEMS.length; } }
   /* U7 zero-state: hide an EMPTY collection card so a fresh save isn't four "0 / N · go earn it" rows
      at once. Gems stays as the single "first goal" when nothing's earned yet; league/villains/trophies
      appear only once they have something (strictly honours "show only EARNED items" — CLAUDE.md). */
@@ -1601,7 +1603,10 @@ function paintBase(){
 /* Base layered-hub actions (tap-the-thing): PLAY → next uncompleted level; GEMS → recharge; COINS → train. */
 function playNextMission(){ const ms=playMissions(currentAct()); const m=ms.find(x=>!S.done[x.id])||ms[ms.length-1]; if(m)startMission(m); else toMap(); }
 { const pb=$("btnPlayNext"); if(pb)pb.onclick=()=>{ Aud.pick&&Aud.pick(); playNextMission(); }; }
-{ const gp=$("gemsPanel");   if(gp)gp.onclick=()=>{ Aud.pick&&Aud.pick(); startVault(); }; }
+{ const gp=$("gemsPanel");   if(gp)gp.onclick=()=>{ Aud.pick&&Aud.pick(); startVault(); }; }      /* GEMS → recharge */
+{ const cm=$("chargeMeter"); if(cm)cm.onclick=()=>{ Aud.pick&&Aud.pick(); startVault(); }; }      /* Gem Charge meter → recharge */
+{ const sp=$("squishPanel"); if(sp)sp.onclick=()=>{ Aud.pick&&Aud.pick(); openShop(); }; }        /* SQUISHIES → inventory + shop */
+{ const dm=$("dailyMeter");  if(dm)dm.onclick=()=>{ Aud.pick&&Aud.pick(); showTrain(); }; }       /* Today meter → train */
 { const cc=$("hudCoins"); if(cc){ cc.style.cursor="pointer"; cc.title="Earn coins in the Training Room"; cc.onclick=()=>{ Aud.pick&&Aud.pick(); showTrain(); }; } }
 { const bb=$("btnBaseBack"); if(bb)bb.onclick=()=>{Aud.stop();toMap();}; }   /* CITY MAP button removed from the Base (map-exit lives in ☰ MENU); guard kept for safety */
 
@@ -2067,8 +2072,13 @@ $("btnVaultBack").onclick=()=>{ Aud.stop(); showBase(); };
 /* ---- shop ---- */
 function openShop(){ paintShop(); $("shopPanel").classList.add("on"); }
 function paintShop(){ $("shopCoins").textContent=S.coins||0;
+  /* presents (treasure chests) open here → coins to spend on squishies (parent: gifts ARE squishies) */
+  { const n=pendingChests(), pb=$("btnPresents");
+    if(pb){ pb.style.display=n>0?"":"none"; pb.textContent="OPEN A PRESENT ("+n+")"; pb.classList.toggle("vaultdue",n>0); } }
   const g=$("shopGrid"); g.innerHTML="";
-  BASE_ITEMS.forEach(it=>{ const owned=!!S.owned[it.id];
+  /* OWNED first = his collection (inventory), then the rest = the shop to get more */
+  const items=BASE_ITEMS.slice().sort((a,b)=> (S.owned[b.id]?1:0)-(S.owned[a.id]?1:0));
+  items.forEach(it=>{ const owned=!!S.owned[it.id];
     const d=document.createElement("button"); d.className="shopitem"+(owned?" owned":"");
     d.innerHTML=`<div class="ic">${itemArt(it,72)}</div><div class="nm">${it.nm}</div>`
       +(owned?`<div class="owned-tag">OWNED</div>`:`<div class="price">${coinIcon(16)}<span>${it.cost}</span></div>`);
@@ -2087,7 +2097,8 @@ function openSquishCard(it){ const owned=!!S.owned[it.id], can=(S.coins||0)>=it.
         paintShop(); }
       else Aud.play("shop_need"); }; }
   $("squishCard").classList.add("on"); }
-$("btnShop").onclick=()=>openShop();
+{ const b=$("btnShop"); if(b)b.onclick=()=>openShop(); }   /* legacy right-panel SHOP button (removed from the Base; guard kept) */
+{ const pb=$("btnPresents"); if(pb)pb.onclick=()=>{ const t=(typeof nextChestTier==="function")&&nextChestTier(); if(!t)return; Aud.pick&&Aud.pick(); openChest(t,()=>paintShop()); }; }
 $("btnShopClose").onclick=()=>{ $("shopPanel").classList.remove("on"); paintBase(); };
 { const x=$("sqClose"); if(x)x.onclick=()=>$("squishCard").classList.remove("on"); }
 
