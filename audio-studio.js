@@ -91,6 +91,39 @@
   function clipState(id){ return CUSTOM[id] ? "mine" : ((typeof VOICEPACK!=="undefined" && VOICEPACK[id]) ? "ship" : "tts"); }
   function blobToDataURI(b){ return new Promise((res,rej)=>{ const fr=new FileReader();
     fr.onload=()=>res(fr.result); fr.onerror=()=>rej(new Error("read failed")); fr.readAsDataURL(b); }); }
+  /* CRISP CLIPS (parent 2026-06-16): trim dead air off BOTH ends + normalize loudness, so a letter sound
+     plays the instant it's tapped (no leading/trailing delay — jarring for ADHD) and at a full, even level.
+     Decodes the recording → mono → trims below a peak-relative threshold (+15ms pad + 8ms fades so no click)
+     → normalizes peak to ~0.95 → re-encodes to WAV. Any failure falls back to the untrimmed original. */
+  function encodeWavDataURI(samples, rate){
+    const n=samples.length, buf=new ArrayBuffer(44+n*2), dv=new DataView(buf);
+    const ws=(o,s)=>{ for(let i=0;i<s.length;i++)dv.setUint8(o+i,s.charCodeAt(i)); };
+    ws(0,"RIFF"); dv.setUint32(4,36+n*2,true); ws(8,"WAVE"); ws(12,"fmt "); dv.setUint32(16,16,true);
+    dv.setUint16(20,1,true); dv.setUint16(22,1,true); dv.setUint32(24,rate,true); dv.setUint32(28,rate*2,true);
+    dv.setUint16(32,2,true); dv.setUint16(34,16,true); ws(36,"data"); dv.setUint32(40,n*2,true);
+    let o=44; for(let i=0;i<n;i++){ let s=Math.max(-1,Math.min(1,samples[i])); dv.setInt16(o,s<0?s*0x8000:s*0x7FFF,true); o+=2; }
+    let bin=""; const u8=new Uint8Array(buf); for(let i=0;i<u8.length;i++)bin+=String.fromCharCode(u8[i]);
+    return "data:audio/wav;base64,"+btoa(bin);
+  }
+  async function processClip(blob){
+    try{
+      const AC=window.AudioContext||window.webkitAudioContext; if(!AC)return await blobToDataURI(blob);
+      const ctx=new AC(); const audio=await ctx.decodeAudioData(await blob.arrayBuffer()); try{ctx.close();}catch(e){}
+      const n=audio.length, chs=audio.numberOfChannels, rate=audio.sampleRate;
+      const d=new Float32Array(n);
+      for(let c=0;c<chs;c++){ const cd=audio.getChannelData(c); for(let i=0;i<n;i++)d[i]+=cd[i]/chs; }
+      let peak=0; for(let i=0;i<n;i++){ const a=Math.abs(d[i]); if(a>peak)peak=a; }
+      if(peak<0.002)return await blobToDataURI(blob);                      /* essentially silent → leave as-is */
+      const thr=Math.max(0.015, peak*0.06);                                /* silence floor, relative to the loudest part */
+      let s=0,e=n-1; while(s<n&&Math.abs(d[s])<thr)s++; while(e>s&&Math.abs(d[e])<thr)e--;
+      const pad=Math.round(rate*0.015); s=Math.max(0,s-pad); e=Math.min(n-1,e+pad);
+      const len=e-s+1; if(len<rate*0.04)return await blobToDataURI(blob);  /* too short to be real → keep original */
+      const g=0.95/peak, fade=Math.min(Math.round(rate*0.008), (len>>2));
+      const out=new Float32Array(len);
+      for(let i=0;i<len;i++){ let v=d[s+i]*g; if(i<fade)v*=i/fade; else if(i>=len-fade)v*=(len-i)/fade; out[i]=v; }
+      return encodeWavDataURI(out, rate);
+    }catch(e){ return await blobToDataURI(blob); }
+  }
   async function saveClip(id,uri){ CUSTOM[id]=uri; const ok=await VStore.put(id,uri);
     if(!ok)setMsg("Heads up: couldn't save to this iPad's storage — the clip works now but may not persist. Try Download backup.",1);
     return ok; }
@@ -160,7 +193,7 @@
       mediaRec.onstop=async()=>{ try{ recStream.getTracks().forEach(t=>t.stop()); }catch(e){} recStream=null;
         const blob=new Blob(recChunks,{type:mediaRec.mimeType||mime||"audio/mp4"}); mediaRec=null; setRecBtn(false);
         if(!blob.size){ setMsg("Hmm, nothing recorded — try again, a bit louder.",1); return; }
-        try{ lastTake=await blobToDataURI(blob); }catch(e){ setMsg("Couldn't read that recording — try again.",1); return; }
+        try{ lastTake=await processClip(blob); }catch(e){ setMsg("Couldn't read that recording — try again.",1); return; }   /* trim dead air + normalize so it's crisp + instant */
         // auto-play the take so the parent hears it immediately
         try{ const a=new Audio(lastTake); a.play().catch(()=>{}); }catch(e){}
         $("recState").innerHTML='<span class="ok">Here\'s your take — Keep it, or Record again.</span>';
@@ -204,7 +237,7 @@
     if(!fileInp){ fileInp=document.createElement("input"); fileInp.type="file"; fileInp.accept="audio/*";
       fileInp.style.display="none"; document.body.appendChild(fileInp);
       fileInp.onchange=async()=>{ if(!fileTarget||!fileInp.files[0])return;
-        try{ await saveClip(fileTarget, await blobToDataURI(fileInp.files[0]));
+        try{ await saveClip(fileTarget, await processClip(fileInp.files[0]));   /* same trim+normalize for uploaded audio */
           setMsg("Saved your audio for "+fileTarget+" to this iPad."); refreshAll();
           if($("recOverlay")&&$("recOverlay").classList.contains("on"))renderRec(); }   /* #46: live-refresh the guided recorder if it's open */
         catch(e){ setMsg("Couldn't read that file.",1); } fileInp.value=""; }; }
@@ -344,6 +377,7 @@
   function refreshAll(){ buildDash(); buildPhonGrid(); buildTalkGrid();
     const m=$("audStatus"); if(m&&!m.textContent)m.textContent=(typeof vpMsg==="function")?vpMsg():""; }
   window.refreshAudioStudio=refreshAll;   /* called from game.js once IndexedDB clips load */
+  window.__clipProcess=processClip;       /* test seam (harmless): lets the render harness verify the trim/normalize pipeline */
 
   function wire(){
     document.querySelectorAll(".tabbtn").forEach(b=>b.onclick=()=>{
