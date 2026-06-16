@@ -20,9 +20,10 @@
 - **#31 [O+N]** UI theme coherence (folds in #32 + #27) — **O:** per-screen chrome standard + the de-emoji SVG icons (💰💎✓★). **N:** apply the CSS/markup across screens + swap in the icons + **#27** expand the emoji-guard (pure code).
 - **#33 [O+N]** Hero Room, plinth-first — **O:** plinth/avatar art + the diegetic composition (`BASESPOTS`, hotspot layout). **N:** wire `paintBase` layout/hotspots + tap-to-inspect to spec.
 - **#34 [O+N]** Training Room redesign — **O:** the visual design. **N:** implement the layout/CSS to spec.
+- **#44 [O]** Title-screen hero box on iPad — nudge down + kill the clipped-glow rectangle *(parent-directed build-now; WebKit-verify, don't restyle the title otherwise)*
 
 ## 🔨 BUILDING — has an open PR
-*(none open right now — #31 groundwork already merged; Trinity moves cards here when a PR opens)*
+- **PR #43** [O] De-emoji the **nav-menu icons** (batch 1 of #31/#32; crafted `UICONS` SVG, Oracle §20-PASS in the PR, tests green) — **awaiting Neo merge.** Next batches sequenced: action rail · HUD · in-game controls.
 
 ## 🅿️ DEFERRED — approved-someday, not active
 - **#24 [N]** Standardize `flyReward` for training/vault rewards
