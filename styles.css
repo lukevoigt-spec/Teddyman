@@ -525,12 +525,16 @@ body.calm .gembox>svg,body.calm .trophy,body.calm .gembox.mastered::after{animat
 #bgLayer.on{box-shadow:inset 0 0 150px 36px rgba(6,3,18,.5), inset 0 -120px 130px rgba(6,3,18,.55);}
 
 /* characters & art "sit" in the scene: soft grounding shadow (+ faint hero glow) */
-#titleHero,#baseHero,#restHero,#winHero,
+#titleHero,#restHero,#winHero,
 .boss,#bossArt,#forgeBoss,#fortVexSprite,.playercard .pchero,.allypop{
   filter:drop-shadow(0 16px 16px rgba(0,0,0,.5));}
 /* art inside the see-through panel casts its own shadow → pops in 3D */
 .panelart svg{filter:drop-shadow(0 12px 12px rgba(0,0,0,.55));}
-#titleHero,#baseHero{filter:drop-shadow(0 16px 16px rgba(0,0,0,.5)) drop-shadow(0 0 30px rgba(120,180,255,.32));}
+/* NOTE: #baseHero is DELIBERATELY excluded here — it now wraps an <img class="baseheroimg"> that carries
+   its OWN filter. A filter on the div PLUS a filter on the child img nests two filter regions, which
+   WebKit/iPad renders as a faint rectangular "box" around the hero. The img-level filter (below) is the
+   single source of the hero's shadow + scene glow. */
+#titleHero{filter:drop-shadow(0 16px 16px rgba(0,0,0,.5)) drop-shadow(0 0 30px rgba(120,180,255,.32));}
 
 /* premium buttons: glossy top sheen + outer glow + crisp press */
 .btn{position:relative;overflow:visible;border-width:6px;
@@ -1157,7 +1161,8 @@ body.calm .scrollword{transition:none;} body.calm .scrollword.lit{transform:none
    HERO BASE — LAYERED HUB (Oracle 2026-06-16): painted backdrop + spotlit hero +
    clean UI sections over it. Replaces the old flat .basewrap list-cards.
    ============================================================ */
-#scrBase.on{ display:block; padding:0; }   /* layered-hub uses absolute children, not flex — but ONLY when active (.on); gating on .on keeps ID specificity above .screen.on while still letting .screen{display:none} hide it on every OTHER screen (else the edge panels bleed through everywhere) */
+#scrBase{ padding:0; }
+#scrBase.on{ display:block; }   /* block layout only when active (must NOT override .screen's display:none, or the panels leak onto every screen) */
 /* top-centre status (rank + coins). The 4 nav corners own the screen corners. */
 .bstatus{ position:absolute; top:calc(env(safe-area-inset-top,8px) + 6px); left:50%; transform:translateX(-50%);
   display:flex; gap:10px; align-items:center; z-index:6; }
@@ -1167,34 +1172,125 @@ body.calm .scrollword{transition:none;} body.calm .scrollword.lit{transform:none
 .bchip.rank{ color:#fff; border-color:#fff; }
 .bchip.rank .powerbar{ width:96px; height:11px; }
 .bchip.tap{ cursor:pointer; } .bchip.tap:active{ transform:translateY(2px); }
+/* status bar: TWO STACKED meter rows, each [icon][bar] — clock=today (yellow), bolt=Gem Charge (blue).
+   Fixed chip width so the bars always sit INSIDE the rounded box (no overrun). */
+#scrBase .bstatus .bchip.statusbar{ display:block; padding:9px 14px; width:clamp(168px,23vw,208px); box-sizing:border-box; }
+.srow{ display:flex; align-items:center; gap:9px; width:100%; min-height:22px; background:none; border:0; box-shadow:none; padding:0; margin:0; cursor:pointer; font:inherit; }
+.srow + .srow{ margin-top:8px; }
+.srow:active{ transform:translateY(1px); }
+.sicon{ display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; flex:0 0 auto; }
+.sicon svg{ display:block; }
+.srow .bmbar{ display:block; flex:1 1 0; min-width:0; height:12px; border-radius:6px;
+  background:rgba(10,5,24,.7); overflow:hidden; border:1.5px solid rgba(0,0,0,.45); box-sizing:border-box; }
+.bmfill{ display:block; height:100%; width:0; border-radius:6px; transition:width .5s ease; }
+.srow.charge .bmfill{ background:linear-gradient(90deg,#7fe3ff,#5f8bff); }   /* Gem Charge = blue */
+.srow.charge .bmfill.low{ background:linear-gradient(90deg,#9bd0ff,#5f8bff); }
+.srow.daily .bmfill{ background:linear-gradient(90deg,#ffe07a,#f0a81e); }    /* Today / time = yellow-gold */
+.srow.daily.hit .bmbar{ box-shadow:0 0 0 2px #fff; }
+.srow.charge.due .bmbar{ animation:bmpulse 1.9s ease-in-out infinite; }
+@keyframes bmpulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(127,227,255,0); } 50%{ box-shadow:0 0 10px 2px rgba(127,227,255,.7); } }
+body.calm .srow.charge.due .bmbar{ animation:none; }
 /* hero on the painted pedestal */
-#scrBase .basehero{ position:absolute; left:50%; bottom:25%; transform:translateX(-50%); width:clamp(200px,30vw,300px);
-  z-index:4; filter:drop-shadow(0 12px 14px rgba(0,0,0,.45)); pointer-events:none; }
-/* side accomplishment panels */
-#scrBase .bpanel{ position:absolute; top:108px; width:clamp(168px,21vw,210px); z-index:5; text-align:left;
-  background:rgba(18,11,38,.42); border:3px solid #4a3a86; border-radius:20px; padding:11px 12px 13px;
-  -webkit-backdrop-filter:blur(9px); backdrop-filter:blur(9px); box-shadow:0 8px 0 rgba(0,0,0,.26); color:var(--txt); }
-#scrBase .bp-left{ left:16px; } #scrBase .bp-right{ right:16px; }
+/* hero: a CLEAN painted-raster cutout seated on the painted pedestal (no aura/halo) */
+#scrBase .basehero{ position:absolute; left:50%; bottom:34%; transform:translateX(-50%); width:clamp(180px,28vw,260px);
+  z-index:4; pointer-events:none; text-align:center; }
+#scrBase .baseheroimg{ width:100%; height:auto; display:block; filter:drop-shadow(0 10px 7px rgba(0,0,0,.5)) drop-shadow(0 0 16px var(--scene-rim,#6db5ff)); }
+/* side accomplishment panels — content-sized, capped so they NEVER overrun the ↙ PLAY / ↘ MAP corner tiles */
+#scrBase .bpanel{ position:absolute; top:96px; width:clamp(156px,20vw,194px); max-height:calc(100% - 244px); z-index:5;
+  text-align:left; background:rgba(18,11,38,.46); border:3px solid #4a3a86; border-radius:20px; padding:11px 12px 13px;
+  -webkit-backdrop-filter:blur(9px); backdrop-filter:blur(9px); box-shadow:0 8px 0 rgba(0,0,0,.26); color:var(--txt); overflow-y:auto; }
+#scrBase .bp-left{ left:14px; } #scrBase .bp-right{ right:14px; }
 #scrBase .bpanel.tap{ cursor:pointer; } #scrBase .bpanel.tap:active{ transform:translateY(2px); }
-.bp-h{ font-family:'Bangers',cursive; font-size:19px; color:var(--gold); letter-spacing:.04em; display:flex;
+/* left-panel collection SECTIONS (gems + squishies) — each its own tappable card inside the panel */
+#scrBase .bp-sec{ display:block; width:100%; text-align:left; background:transparent; border:0; padding:0; margin:0; color:inherit; cursor:pointer; font:inherit; }
+#scrBase .bp-sec + .bp-sec{ margin-top:11px; padding-top:10px; border-top:2px solid rgba(255,255,255,.13); }
+#scrBase .bp-sec:active{ transform:translateY(2px); }
+#scrBase .squishbox{ display:inline-flex; align-items:center; justify-content:center; }
+#scrBase .squishbox img{ width:36px; height:36px; display:block; }
+/* cap each shelf so a long GEMS list scrolls inside its own box and SQUISHIES always stays visible below */
+#scrBase .bp-sec .gemshelf{ max-height:180px; overflow-y:auto; }
+.bp-h{ font-family:'Bangers',cursive; font-size:18px; color:var(--gold); letter-spacing:.04em; display:flex;
   justify-content:space-between; align-items:center; margin-bottom:8px; }
-.bp-h.gearh{ margin-top:11px; }
+.bp-h.gearh{ margin-top:12px; }
 #scrBase .bpanel .gemshelf{ display:flex; flex-wrap:wrap; gap:7px; justify-content:flex-start; }
-#scrBase .bpanel .gembox svg,#scrBase .bpanel .bossfig svg{ width:38px; height:auto; }
-.gearbtns{ display:flex; gap:8px; margin-top:10px; }
-.btn.sm{ font-size:16px; padding:8px 14px; }
-/* friends row below the hero */
-#scrBase .bfriends{ position:absolute; left:50%; bottom:118px; transform:translateX(-50%); z-index:5;
-  display:flex; flex-direction:column; align-items:center; gap:4px; max-width:62vw; }
-#scrBase .friendrow{ display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; justify-content:center; }
-#scrBase .frlbl{ font-family:'Bangers',cursive; color:var(--gold); font-size:16px; letter-spacing:.05em; }
-/* PLAY corner (↙) — the loud primary; sits where the (hidden-on-Base) Hero-Base nav corner was */
-.basecta{ position:absolute; left:16px; bottom:16px; z-index:7; border:0; cursor:pointer;
-  font-family:'Bangers',cursive; letter-spacing:.05em; color:#3a2a00; font-size:clamp(26px,4.4vw,38px);
-  background:linear-gradient(180deg,#ffe27a,#f3a52a); border-radius:20px; padding:14px 28px;
-  display:flex; align-items:center; gap:10px; box-shadow:0 7px 0 #b06a12, 0 10px 14px rgba(0,0,0,.42); }
-.basecta:active{ transform:translateY(3px); box-shadow:0 4px 0 #b06a12,0 6px 10px rgba(0,0,0,.4); }
-.basecta .ptri{ width:0;height:0;border-left:20px solid #3a2a00;border-top:13px solid transparent;border-bottom:13px solid transparent; }
+#scrBase .bpanel .gembox svg,#scrBase .bpanel .bossfig svg{ width:36px; height:auto; }
+/* GEAR chips — premium pills (best-standard, no SVG): clear selected + locked states */
+#scrBase .loadout-row{ display:flex; flex-direction:column; gap:4px; margin-top:7px; }
+#scrBase .loadout-lbl{ font-size:11px; letter-spacing:.09em; color:#b9aee6; text-transform:uppercase; }
+#scrBase .equiprow{ display:flex; flex-wrap:wrap; gap:6px; }
+#scrBase .echip{ font-family:'Baloo 2',sans-serif; font-weight:800; font-size:13.5px; color:#2a1c08; cursor:pointer;
+  background:linear-gradient(180deg,#ffe488,#f0ad33); border:2px solid #7a4a10; border-radius:11px; padding:6px 11px; box-shadow:0 3px 0 #7a4a10; }
+#scrBase .echip:active{ transform:translateY(2px); box-shadow:0 1px 0 #7a4a10; }
+#scrBase .echip.onsel{ box-shadow:0 3px 0 #7a4a10, 0 0 0 3px #fff; }
+#scrBase .echip.lockd{ filter:grayscale(.55) brightness(.82); cursor:default; }
+.gearbtns{ display:flex; gap:8px; margin-top:11px; }
+.btn.sm{ font-size:15px; padding:7px 12px; }
+/* friends row below the hero — PAINTED RASTER portraits in round gold frames.
+   SINGLE row, centred, growing OUTWARD from the middle as friends are freed; spans between the
+   ↙ PLAY and ↘ MAP corner tiles (max-width clears them). Sizes clamp down so all 11 fit on one line. */
+#scrBase .bfriends{ position:absolute; left:50%; bottom:18px; transform:translateX(-50%); z-index:5;
+  display:flex; flex-direction:column; align-items:center; gap:3px; width:max-content; max-width:calc(100% - 230px); }
+#scrBase .friendrow{ display:flex; gap:clamp(4px,1.1vw,10px); align-items:flex-end; flex-wrap:nowrap; justify-content:center; }
+#scrBase .friendrow .frbtn{ flex:0 0 auto; width:clamp(42px,5.6vw,60px); height:clamp(42px,5.6vw,60px); border-radius:50%; overflow:hidden; border:3px solid var(--gold);
+  background:rgba(16,10,38,.55); padding:0; cursor:pointer; box-shadow:0 4px 0 rgba(0,0,0,.3); }
+#scrBase .friendrow .frbtn img{ width:100%; height:130%; object-fit:cover; object-position:top center; display:block; }
+#scrBase .friendrow .frbtn svg{ width:100%; height:100%; }
+#scrBase .frlbl{ font-family:'Bangers',cursive; color:var(--gold); font-size:15px; letter-spacing:.05em; }
 /* Act-2 medieval skin parity */
 body[data-act="2"] #scrBase .bpanel{ border-color:#6a5436; background:rgba(40,30,16,.5); }
 body[data-act="2"] .bchip{ border-color:#caa15a; }
+/* Act-2 keep has a LOWER pedestal than the Act-1 lair → seat the knight lower so he stands on it */
+body[data-act="2"] #scrBase .basehero{ bottom:21%; }
+
+/* painted LETTER GEMS (gemSVG): crystal raster tinted to the grapheme colour (multiply, masked to the
+   gem shape) + the Andika letter overlaid crisply on top. */
+.gemwrap{ position:relative; display:inline-block; vertical-align:middle; }
+.gemwrap .gembase{ width:100%; height:100%; display:block; filter:drop-shadow(0 2px 2px rgba(0,0,0,.35)); }
+.gemwrap .gemtint{ position:absolute; inset:0; mix-blend-mode:multiply;
+  -webkit-mask:url("art/gem-base.png") center/contain no-repeat; mask:url("art/gem-base.png") center/contain no-repeat; }
+.gemwrap .gemlet{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-family:'Andika',sans-serif; font-weight:700; color:#fff; paint-order:stroke; line-height:1; }
+/* WEAPON loadout tiles (painted framed icons) */
+#scrBase .wtile{ width:56px; padding:0; border:0; background:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:2px; }
+#scrBase .wtile img{ width:54px; height:54px; object-fit:contain; border-radius:12px; display:block; }
+#scrBase .wtile .wname{ font-family:'Baloo 2',sans-serif; font-weight:800; font-size:9px; color:#cfc6f2; text-align:center; line-height:1.05; max-width:56px; }
+#scrBase .wtile .wname.only{ width:54px; height:54px; display:flex; align-items:center; justify-content:center; background:linear-gradient(180deg,#3a2f5e,#241a44); border:2px solid #4a3a86; border-radius:12px; font-size:11px; color:#cfc6f2; }
+#scrBase .wtile.onsel img,#scrBase .wtile.onsel .wname.only{ outline:3px solid #fff; box-shadow:0 0 10px #ffd75e; }
+#scrBase .wtile.onsel .wname{ color:#ffd75e; }
+#scrBase .wtile.lockd{ cursor:default; } #scrBase .wtile.lockd img{ filter:grayscale(.6) brightness(.78); } #scrBase .wtile.lockd .wname{ color:#8a82ad; }
+
+/* SQUISHY SHOP — collectible tiles + detail card (parent 2026-06-16) */
+#shopGrid{ display:flex; flex-wrap:wrap; gap:13px; justify-content:center; max-width:780px; max-height:62vh; overflow-y:auto; padding:6px; }
+.shopitem{ width:118px; border:3px solid #4a3a86; border-radius:18px; background:rgba(18,11,38,.5); padding:10px 8px 8px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; box-shadow:0 5px 0 rgba(0,0,0,.28); }
+.shopitem:active{ transform:translateY(2px); }
+.shopitem.owned{ border-color:var(--gold); }
+.shopitem .ic{ width:72px; height:72px; display:flex; align-items:center; justify-content:center; }
+.shopitem .ic img{ width:72px; height:72px; object-fit:contain; }
+.shopitem .nm{ font-family:'Baloo 2',sans-serif; font-weight:800; font-size:12.5px; color:#efe9ff; text-align:center; line-height:1.05; }
+.shopitem .price{ display:flex; align-items:center; gap:4px; font-family:'Bangers',cursive; font-size:18px; color:var(--gold); }
+.shopitem .price svg{ width:16px; height:16px; }
+.shopitem .owned-tag{ font-family:'Bangers',cursive; font-size:14px; color:var(--gold); letter-spacing:.04em; }
+#squishCard{ position:fixed; inset:0; z-index:72; display:none; align-items:center; justify-content:center; background:rgba(8,5,20,.62); }
+#squishCard.on{ display:flex; }
+.sq-card{ position:relative; width:min(86vw,400px); background:linear-gradient(180deg,#241a44,#160e30); border:4px solid var(--gold); border-radius:26px; padding:24px 26px 26px; text-align:center; box-shadow:0 16px 0 rgba(0,0,0,.4),0 22px 40px rgba(0,0,0,.5); }
+.sq-art{ width:210px; height:210px; margin:0 auto 6px; display:flex; align-items:center; justify-content:center; filter:drop-shadow(0 8px 8px rgba(0,0,0,.4)); }
+.sq-art img{ width:210px; height:210px; object-fit:contain; }
+.sq-name{ font-size:30px; color:var(--gold); -webkit-text-stroke:3px var(--ink); paint-order:stroke; }
+.sq-desc{ color:#cfc6f2; font-weight:700; font-size:15px; margin:4px 0 14px; }
+#sqBtn{ display:inline-flex; align-items:center; gap:8px; }
+#sqBtn svg{ width:22px; height:22px; }
+#sqBtn.cant{ filter:grayscale(.5) brightness(.85); }
+.sq-x{ position:absolute; top:-14px; right:-14px; width:46px; height:46px; border-radius:50%; background:#fff; border:4px solid var(--ink); font-size:26px; color:var(--ink); cursor:pointer; line-height:1; }
+
+/* PREMIUM HUD status cluster (de-emoji'd): bolt (power) + coin (currency) pills, glanceable, with a
+   pulse on increase. Positioned by .nc-ul (top-left corner). */
+.hudcluster{ display:flex; gap:8px; align-items:center; }
+.hudpill{ display:flex; align-items:center; gap:6px; background:linear-gradient(180deg,rgba(42,30,76,.92),rgba(20,12,44,.92));
+  border:3px solid var(--gold); border-radius:16px; padding:5px 13px 5px 8px;
+  -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); box-shadow:0 4px 0 rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.16); }
+.hudpill svg{ width:22px; height:22px; flex:0 0 auto; filter:drop-shadow(0 1px 1px rgba(0,0,0,.4)); }
+.hudpill span{ font-family:'Bangers',cursive; font-size:clamp(18px,2.6vw,24px); color:var(--gold); -webkit-text-stroke:2px var(--ink); paint-order:stroke; min-width:12px; text-align:left; }
+.hudpill.bump{ animation:hudbump .42s ease; }
+@keyframes hudbump{ 0%{transform:scale(1)} 35%{transform:scale(1.18)} 100%{transform:scale(1)} }
+body.calm .hudpill.bump,body.lite .hudpill.bump{ animation:none; }
+body[data-act="2"] .hudpill{ border-color:#caa15a; }

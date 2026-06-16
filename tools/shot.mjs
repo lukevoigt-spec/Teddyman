@@ -73,7 +73,8 @@ const SCENES = {
   vault_bar: `(function(){ S.hoard=9; show('scrTrain'); updateTrainHUD(); vaultMilestone('bar'); return 1; })()`,
   vault_dia: `(function(){ S.hoard=99; show('scrTrain'); updateTrainHUD(); vaultMilestone('diamond'); return 1; })()`,
   boss:    `(function(){ CUR={id:26,lbl:"Vex Captain"}; startBoss("s"); return 1; })()`,
-  shop:    `(function(){ S.coins=120; openShop(); return 1; })()`,
+  shop:    `(function(){ S.coins=300; S.owned={banner:true,medai:true,crown:true}; openShop(); return 1; })()`,
+  shopcard:`(function(){ S.coins=300; openShop(); openSquishCard(BASE_ITEMS.find(function(x){return x.id==='ndglob';})); return 1; })()`,
   win:     `(function(){ CUR=(typeof MISSIONS!=="undefined"&&MISSIONS.find(function(x){return x.type==="learn";}))||{id:1,lbl:"Letter S"}; showWin(false); return 1; })()`,
   read:    `(function(){ CUR={id:5}; readWords=["cat"]; readIx=0; readGoal=1; readMiss=0; show('scrRead'); nextRead(); return 1; })()`,
   // Act-2 r-controlled + Big Words (new code paths) — drive the handlers directly to surface any error
@@ -92,8 +93,21 @@ const SCENES = {
   rankbar: `(function(){ show('scrBase'); paintBase(); var pf=document.getElementById('powerFill'); if(pf)pf.style.width='62%'; document.getElementById('powerLbl').textContent='SUPER HERO'; return 1; })()`,
   basefull:`(function(){ [1,3,4,6,8].forEach(function(i){S.done[i]=true;}); S.coins=40; S.owned={banner:1}; paintBase(); show('scrBase'); return 1; })()`,
   base2:`(function(){ S.act=2; [100,101,118].forEach(function(i){S.done[i]=true;}); S.coins=30; paintBase(); show('scrBase'); return 1; })()`,
+  basedaily:`(function(){ for(var i=1;i<=20;i++)S.done[i]=true; ensureDaily(true); S.daily.secs=Math.round(0.6*dailyGoalSecs()); S.equip={weapon:"sword",cape:"red"}; paintBase(); show('scrBase'); return 1; })()`,
+  basearmed:`(function(){ for(var i=1;i<=30;i++)S.done[i]=true; S.coins=40; S.equip={weapon:"sword",cape:"red"}; paintBase(); show('scrBase'); return 1; })()`,
+  basearmed2:`(function(){ S.act=2; for(var i=100;i<=127;i++)S.done[i]=true; S.equip={weapon:"mace",cape:"red"}; paintBase(); show('scrBase'); return 1; })()`,
+  baseblue:`(function(){ S.act=1; S.stars=40; for(var i=1;i<=30;i++)S.done[i]=true; S.equip={weapon:"sword",cape:"blue"}; paintBase(); show('scrBase'); return 1; })()`,
+  basegold:`(function(){ S.act=1; S.stars=40; for(var i=1;i<=45;i++)S.done[i]=true; S.equip={weapon:"hammer",cape:"gold"}; paintBase(); show('scrBase'); return 1; })()`,
   // cast cohesion check: full-body rasters of existing allies next to the cousins (Cal/Nora)
   cast: `(function(){ document.body.innerHTML='<div id="cz" style="display:flex;gap:18px;align-items:flex-end;justify-content:center;background:#241a3e;padding:48px 24px;height:100%;box-sizing:border-box;"></div>'; var k=[['tank','Archie'],['flip','Ellie'],['cal','Cal'],['nora','Nora']]; document.getElementById('cz').innerHTML=k.map(function(p){return '<div style="text-align:center;">'+allyBody(p[0],210)+'<div style="color:#fff;font-family:sans-serif;font-size:15px;margin-top:6px;">'+p[1]+'</div></div>';}).join(''); return 1; })()`,
+  // NEW friends (Brody/Daisy/Bryce) full-body next to the cousins (Cal/Nora) — cohesion check
+  friends3: `(function(){ document.body.innerHTML='<div id="cz" style="display:flex;gap:14px;align-items:flex-end;justify-content:center;background:#241a3e;padding:40px 18px;height:100%;box-sizing:border-box;"></div>'; var k=[['brody','Brody'],['daisy','Daisy'],['bryce','Bryce'],['cal','Cal'],['nora','Nora']]; document.getElementById('cz').innerHTML=k.map(function(p){return '<div style="text-align:center;">'+allyBody(p[0],190)+'<div style="color:#fff;font-family:sans-serif;font-size:15px;margin-top:6px;">'+p[1]+'</div></div>';}).join(''); return 1; })()`,
+  // Act-2 Base with Brody/Daisy/Cal/Bryce/Nora freed — friends row uses the new rasters
+  a2freed: `(function(){ S.act=2; [118,127,137,159,172].forEach(function(i){S.done[i]=true;}); S.freed={brody:1,daisy:1,cal:1,bryce:1,nora:1}; S.coins=30; paintBase(); show('scrBase'); return 1; })()`,
+  // Brody's rescue win screen (new freed line + raster)
+  brody_win: `(function(){ S.act=2; CUR={id:118,rescue:true,finale:true,lbl:"Iron Wyrm: Free Brody!"}; showWin(true); return 1; })()`,
+  // Miss Kendall full-body raster (replaces the old placeholder SVG)
+  kendall: `(function(){ document.body.innerHTML='<div id="cz" style="display:flex;align-items:flex-end;justify-content:center;background:#241a3e;padding:30px;height:100%;box-sizing:border-box;"></div>'; document.getElementById('cz').innerHTML='<div style="text-align:center;">'+allyBody('kendall',260)+'<div style="color:#fff;font-family:sans-serif;font-size:16px;margin-top:6px;">Miss Kendall</div></div>'; return 1; })()`,
 };
 
 const args = process.argv.slice(2);

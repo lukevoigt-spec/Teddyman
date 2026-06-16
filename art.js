@@ -199,6 +199,8 @@ const RASTER={ "teddy-m0":true,"teddy-m1":true,"teddy-m2":true,
   "teddy-knight-m0":true,"teddy-knight-m1":true,"teddy-knight-m2":true,
   "ally-tank":true, "ally-sunny":true, "ally-heart":true, "ally-flip":true, "ally-leighton":true,
   "ally-cal":true, "ally-nora":true,      /* cousins Cal + Nora — flat-2D house-style rasters (Oracle 2026-06-15) */
+  "ally-brody":true, "ally-daisy":true, "ally-bryce":true,   /* friends Brody, Daisy, Bryce — flat-2D house-style rasters from their photos (Oracle 2026-06-16) */
+  "ally-kendall":true,                    /* Miss Kendall — warm teacher, flat-2D raster from her photo (Oracle 2026-06-16) */
   "mom":true, "dad":true,                 /* parents have raster art (mom.png/dad.png) */
   "vex":true, "vixen":true, "dragon":true, "noah":true };   /* villains + mentor (already used directly by their SVG fns; flagged here for the resolver) */
 function rasterArt(file,w=210,a0="#ffce3a",a1="#3a7bff"){
@@ -361,6 +363,9 @@ const BODY_CFG={
   jj:      {col:"#ff8a3a", pose:"flex",  init:"J"},
   cal:     {col:"#2bb5a6", pose:"hips",  init:"C"},
   nora:    {col:"#b79be0", pose:"stand", init:"N"},
+  brody:   {col:"#4f9e4f", pose:"stand", init:"B"},
+  daisy:   {col:"#f2b6c6", pose:"stand", init:"D"},
+  bryce:   {col:"#3a7bd6", pose:"stand", init:"B"},
   mom:     {col:"#ff7a6b", pose:"stand", init:"M"},
   dad:     {col:"#2c5fb0", pose:"flex",  init:"D"}
 };
@@ -601,21 +606,16 @@ function dragonSVG(w=240){ return rasterArt("dragon", w, "#ff6a2a", "#c0301a"); 
    outlined letter, used for the Base gem shelf / collectibles. Keeps the
    "letter gems power the hero" motif premium without hurting readability.
 ========================================================= */
-function gemSVG(g, color, w){
-  const u="g"+(__huid++);
-  return `<svg viewBox="-26 -28 52 56" width="${w||46}" aria-hidden="true">
-<defs>
-<radialGradient id="${u}b" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="${color}" stop-opacity=".7"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient>
-<radialGradient id="${u}f" cx=".4" cy=".28" r=".85"><stop offset="0" stop-color="#ffffff"/><stop offset=".28" stop-color="${color}"/><stop offset="1" stop-color="#0a0414" stop-opacity=".55"/></radialGradient>
-</defs>
-<ellipse cx="0" cy="20" rx="15" ry="4" fill="#000" opacity=".35"/>
-<circle cx="0" cy="-1" r="25" fill="url(#${u}b)"/>
-<polygon points="0,-19 17,-8 17,9 0,20 -17,9 -17,-8" fill="url(#${u}f)" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>
-<polygon points="0,-19 17,-8 0,3 -17,-8" fill="#fff" opacity=".26"/>
-<g stroke="#150f2e" stroke-width="1" opacity=".35" fill="none"><path d="M-17,-8 L0,3 L17,-8 M0,3 L0,20"/></g>
-<path d="M-9,-12 L-3,-14 L-5,-7 L-11,-6Z" fill="#fff" opacity=".9"/>
-<text y="10" text-anchor="middle" font-family="Andika,sans-serif" font-weight="700" font-size="17" fill="#fff" stroke="#150f2e" stroke-width="3.4" paint-order="stroke" style="paint-order:stroke">${g}</text>
-</svg>`;
+/* PAINTED letter gem (parent 2026-06-16): the premium painted crystal (art/gem-base.png) tinted to the
+   grapheme's signature colour (multiply, masked to the gem shape so facets + highlights survive), with
+   the Andika letter crisply overlaid on top (learning content stays scalable text). One painted asset
+   serves all graphemes. CSS in styles.css (.gemwrap). */
+function gemSVG(g, color, w){ const s=w||46; const two=(""+g).length>1;
+  return `<span class="gemwrap" style="width:${s}px;height:${s}px">`+
+    `<img class="gembase" src="art/gem-base.png" alt="" draggable="false">`+
+    `<span class="gemtint" style="background:${color}"></span>`+
+    `<span class="gemlet" style="font-size:${Math.round(s*(two?0.32:0.46))}px;-webkit-text-stroke:${Math.max(2,Math.round(s*0.06))}px #150f2e">${g}</span>`+
+    `</span>`;
 }
 
 /* MOUTH CUE (research rec #3): a small, friendly articulatory-cue mouth for the Learn screen — a
@@ -670,7 +670,11 @@ const UICONS={
   /* Home → Hero Base — premium chunky house (gold walls + warm roof + door), glossy game style */
   home:(s=20)=>{const u="ui"+(__huid++);return `<svg viewBox="0 0 100 100" width="${s}" height="${s}" aria-hidden="true"><defs><linearGradient id="${u}w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe79a"/><stop offset="1" stop-color="#dd9a1c"/></linearGradient><linearGradient id="${u}r" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9e60"/><stop offset="1" stop-color="#cf4a22"/></linearGradient></defs><ellipse cx="50" cy="93" rx="32" ry="5" fill="#000" opacity=".28"/><rect x="27" y="48" width="46" height="40" rx="6" fill="url(#${u}w)" stroke="${PI_INK}" stroke-width="5.5" stroke-linejoin="round"/><path d="M50 13 L91 51 Q93 57 85 57 L15 57 Q7 57 9 51 Z" fill="url(#${u}r)" stroke="${PI_INK}" stroke-width="5.5" stroke-linejoin="round"/><rect x="42" y="63" width="16" height="25" rx="3" fill="#6f3514" stroke="${PI_INK}" stroke-width="4"/><circle cx="54.5" cy="76" r="2" fill="#ffe79a"/><path d="M50 19 L80 47 L64 47 Z" fill="#fff" opacity=".28"/></svg>`},
   /* Grown-Ups — premium 8-tooth cog (computed teeth), glossy game style */
-  grown:(s=20)=>{const u="ui"+(__huid++);let p="",N=8,ro=42,ri=31;for(let i=0;i<N*2;i++){const r=(i%2)?ri:ro,a=i/(N*2)*6.2832-1.5708,x=50+r*Math.cos(a),y=50+r*Math.sin(a);p+=(i?"L":"M")+x.toFixed(1)+" "+y.toFixed(1)+" ";}p+="Z";return `<svg viewBox="0 0 100 100" width="${s}" height="${s}" aria-hidden="true"><defs><radialGradient id="${u}g" cx=".42" cy=".34" r=".72"><stop offset="0" stop-color="#ffe79a"/><stop offset="1" stop-color="#d4901c"/></radialGradient></defs><ellipse cx="50" cy="92" rx="30" ry="5" fill="#000" opacity=".25"/><path d="${p}" fill="url(#${u}g)" stroke="${PI_INK}" stroke-width="5" stroke-linejoin="round"/><circle cx="50" cy="50" r="14" fill="#2a1d08" stroke="${PI_INK}" stroke-width="4"/><path d="M34 30 A24 24 0 0 1 66 30" stroke="#fff" stroke-width="5" opacity=".3" fill="none" stroke-linecap="round"/></svg>`}
+  grown:(s=20)=>{const u="ui"+(__huid++);let p="",N=8,ro=42,ri=31;for(let i=0;i<N*2;i++){const r=(i%2)?ri:ro,a=i/(N*2)*6.2832-1.5708,x=50+r*Math.cos(a),y=50+r*Math.sin(a);p+=(i?"L":"M")+x.toFixed(1)+" "+y.toFixed(1)+" ";}p+="Z";return `<svg viewBox="0 0 100 100" width="${s}" height="${s}" aria-hidden="true"><defs><radialGradient id="${u}g" cx=".42" cy=".34" r=".72"><stop offset="0" stop-color="#ffe79a"/><stop offset="1" stop-color="#d4901c"/></radialGradient></defs><ellipse cx="50" cy="92" rx="30" ry="5" fill="#000" opacity=".25"/><path d="${p}" fill="url(#${u}g)" stroke="${PI_INK}" stroke-width="5" stroke-linejoin="round"/><circle cx="50" cy="50" r="14" fill="#2a1d08" stroke="${PI_INK}" stroke-width="4"/><path d="M34 30 A24 24 0 0 1 66 30" stroke="#fff" stroke-width="5" opacity=".3" fill="none" stroke-linecap="round"/></svg>`},
+  /* power BOLT — the HUD power/stars counter glyph (replaces the ⚡ emoji) */
+  bolt:(s=22)=>{const u="ui"+(__huid++);return `<svg viewBox="0 0 100 100" width="${s}" height="${s}" aria-hidden="true"><defs><linearGradient id="${u}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset=".5" stop-color="#ffd23a"/><stop offset="1" stop-color="#f0a81e"/></linearGradient></defs><path d="M58 6 L24 54 H46 L40 94 L78 40 H54 Z" fill="url(#${u}b)" stroke="${PI_INK}" stroke-width="5" stroke-linejoin="round"/><path d="M54 14 L34 50 H50" stroke="#fff" stroke-width="4" opacity=".5" fill="none" stroke-linecap="round"/></svg>`},
+  /* CLOCK — daily-practice meter glyph (replaces any ⏰ emoji); friendly round face + hands */
+  clock:(s=22)=>{const u="ui"+(__huid++);return `<svg viewBox="0 0 100 100" width="${s}" height="${s}" aria-hidden="true"><defs><radialGradient id="${u}c" cx=".42" cy=".34" r=".7"><stop offset="0" stop-color="#eaf7ff"/><stop offset="1" stop-color="#9fd6f5"/></radialGradient></defs><rect x="43" y="5" width="14" height="10" rx="3" fill="${PI_INK}"/><circle cx="50" cy="55" r="40" fill="url(#${u}c)" stroke="${PI_INK}" stroke-width="6"/><circle cx="50" cy="55" r="40" fill="none" stroke="#fff" stroke-width="2.5" opacity=".5"/><path d="M50 55 V31" stroke="${PI_INK}" stroke-width="6.5" stroke-linecap="round"/><path d="M50 55 L69 62" stroke="${PI_INK}" stroke-width="6.5" stroke-linecap="round"/><circle cx="50" cy="55" r="5" fill="${PI_INK}"/></svg>`}
 };
 function uiIcon(k,s){ return (UICONS[k]?UICONS[k](s):""); }
 
@@ -734,7 +738,11 @@ const ITEMART={
   /* Mini Rocket — a sleek hero rocket with flame */
   rocket:(s=64)=>`<svg class="shopart" viewBox="0 0 100 100" width="${s}" aria-hidden="true">${SHADOW}<path d="M50 8 Q67 32 64 66 L36 66 Q33 32 50 8 Z" fill="#eef2f7" stroke="${PI_INK}" stroke-width="4" stroke-linejoin="round"/><path d="M50 8 Q41 26 43 50 L43 66 L36 66 Q33 32 50 8 Z" fill="#fff" opacity=".5"/><path d="M36 54 L24 78 L40 68 Z" fill="#e6453c" stroke="${PI_INK}" stroke-width="3.5" stroke-linejoin="round"/><path d="M64 54 L76 78 L60 68 Z" fill="#e6453c" stroke="${PI_INK}" stroke-width="3.5" stroke-linejoin="round"/><circle cx="50" cy="38" r="9" fill="#7fd9ff" stroke="${PI_INK}" stroke-width="3.5"/><circle cx="47" cy="35" r="2.6" fill="#fff" opacity=".85"/><path d="M43 66 Q50 88 57 66 Z" fill="#ffae00" stroke="${PI_INK}" stroke-width="3" stroke-linejoin="round"/><path d="M47 66 Q50 79 53 66 Z" fill="#ffe07a"/></svg>`
 };
-function itemArt(it,size){ const id=(it&&it.id)||it; const f=ITEMART[id]; return f? f(size||64) : (it&&it.ic? it.ic : ""); }
+/* shop/collection items are now painted-raster SQUISHIES (art/squish-<id>.png) — collectible kawaii
+   fidget toys (parent 2026-06-16). id-keyed so saves (S.owned) are unaffected; the old ITEMART SVGs
+   are retained above but unused. */
+function itemArt(it,size){ const id=(it&&it.id)||it; const s=size||64;
+  return '<img class="squishimg" src="art/squish-'+id+'.png" width="'+s+'" height="'+s+'" alt="" draggable="false">'; }
 
 /* ---- U5 full rollout, batch 1: remaining Act-1 READWORDS ---- */
 Object.assign(PICONS,{

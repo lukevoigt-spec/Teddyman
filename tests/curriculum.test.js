@@ -348,14 +348,14 @@ grp("Act-2 friend rescues (JJ/Cal/Nora spread across zones + Miss Kendall at the
   ok("every Act-2 ally rescue mid points at a real mission", a2.every(function(t){return MISSIONS.find(function(m){return m.id===t.mid;});}), a2.map(function(t){return t.kind+":"+t.mid;}));
   var zones=a2.map(function(t){var m=MISSIONS.find(function(x){return x.id===t.mid;});return m&&m.z;});
   ok("at most ONE Act-2 friend freed per zone (spread, no clustering)", new Set(zones).size===zones.length, zones);
-  ok("Act-2 rescues span >=4 distinct zones (JJ/Cal/Nora + Kendall)", new Set(zones).size>=4, zones);
+  ok("Act-2 rescues span >=4 distinct zones (Brody/Daisy/Cal/Bryce/Nora + Kendall)", new Set(zones).size>=4, zones);
   ok("each Act-2 rescue mission is flagged rescue:true (mastery-gated free-the-friend)",
     a2.every(function(t){var m=MISSIONS.find(function(x){return x.id===t.mid;});return m && (m.rescue===true || m.type==="fortress");}),
     a2.filter(function(t){var m=MISSIONS.find(function(x){return x.id===t.mid;});return !(m&&(m.rescue===true||m.type==="fortress"));}).map(function(t){return t.kind;}));
-  ok("JJ/Cal/Nora have allyFace art + a signature colour (renderable on the map + win)",
-    ["jj","cal","nora"].every(function(k){ return typeof allyFace==="function" && allyFace(k) && ALLY_COL[k]; }));
-  ok("each Act-2 freed friend has a rescue voice line in its own role (JJ=J, Cal=X, Nora=R)",
-    (LINES.jj_freed||{}).v==="J" && (LINES.cal_freed||{}).v==="X" && (LINES.nora_freed||{}).v==="R");
+  ok("each Act-2 friend has a signature colour + renderable face (map + win)",
+    ["brody","daisy","bryce","cal","nora"].every(function(k){ return typeof allyFace==="function" && allyFace(k) && ALLY_COL[k]; }));
+  ok("each Act-2 freed friend has a rescue voice line in its own role (Brody=D, Daisy=E, Bryce=G, Cal=X, Nora=R)",
+    (LINES.brody_freed||{}).v==="D" && (LINES.daisy_freed||{}).v==="E" && (LINES.bryce_freed||{}).v==="G" && (LINES.cal_freed||{}).v==="X" && (LINES.nora_freed||{}).v==="R");
 })();
 
 grp("Gear PACING (P2-A) — power gear spread across zones, not front-loaded in zone 1");

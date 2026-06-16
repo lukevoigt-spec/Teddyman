@@ -58,7 +58,10 @@
        Hidden entirely on learning screens (body.learning) so nothing competes with the decoding prompt;
        the Replay (.ear) + Skip (#btnSkip) live outside #hud and stay (audio-first / no-hang, #8). -->
   <div class="hud" id="hud" style="display:none;">
-    <div class="chip starsrow navcorner nc-ul" id="hudStars">⚡ 0</div>
+    <div class="navcorner nc-ul hudcluster" id="hudCluster">
+      <div class="hudpill" id="hudStars"></div>
+      <div class="hudpill" id="hudCoins"></div>
+    </div>
     <button class="navcorner nc-ur" id="navSettings" aria-label="Grown-ups"></button>
     <button class="navcorner nc-ll" id="navBaseBtn" aria-label="Hero Base"></button>
     <button class="navcorner nc-lr" id="navMapBtn" aria-label="World Map"></button>
@@ -123,22 +126,35 @@
        Tap-the-thing for actions (gems→recharge, coins→train, weapon→equip, friend/villain→card);
        PLAY (↙ corner) → next level; the 4-corner nav supplies MAP (↘) + Settings (↗) + status (↖). -->
   <div class="screen" id="scrBase">
-    <!-- top-centre status -->
+    <!-- top-centre status: TWO STACKED meters, each with a small icon — clock = today's practice time
+         (yellow), lightning = Gem Charge / spaced-review readiness (blue). No rank text: the hero IS the rank. -->
     <div class="bstatus">
-      <div class="bchip rank"><span id="powerLbl"></span><div class="powerbar" title="Hero Power"><div class="powerfill" id="powerFill"></div></div></div>
-      <button class="bchip tap" id="coinChip" title="Earn coins in the Training Room"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#ffd75e" stroke="#9c6a12" stroke-width="2"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="#c98a1a" stroke-width="1.4"/><path d="M12 8l1.3 2.6 2.7.3-2 1.9.5 2.7-2.5-1.3-2.5 1.3.5-2.7-2-1.9 2.7-.3z" fill="#c98a1a"/></svg><span id="baseCoins">0</span></button>
+      <div class="bchip statusbar">
+        <button class="srow daily tap" id="baseDailyMeter" title="Today's practice — tap to train">
+          <span class="sicon" id="dailyIcon"></span><span class="bmbar"><span class="bmfill" id="baseDailyFill"></span></span>
+        </button>
+        <button class="srow charge tap" id="chargeMeter" title="Gem Charge — tap to recharge your gems">
+          <span class="sicon" id="chargeIcon"></span><span class="bmbar"><span class="bmfill" id="chargeFill"></span></span>
+        </button>
+      </div>
     </div>
 
     <!-- hero on the painted pedestal -->
     <div id="baseHero" class="basehero"></div>
 
-    <!-- LEFT: gems (tap → recharge) -->
-    <button class="bpanel bp-left tap" id="gemsPanel" title="My gems — tap to recharge">
-      <div class="bp-h">GEMS <span class="ccount" id="gemCount"></span></div>
-      <div class="gemshelf" id="gemShelf"></div>
-    </button>
+    <!-- LEFT: collection — gems (tap → recharge) + squishies/gifts (tap → inventory + shop) -->
+    <div class="bpanel bp-left">
+      <button class="bp-sec tap" id="gemsPanel" title="My gems — tap to recharge">
+        <div class="bp-h">GEMS <span class="ccount" id="gemCount"></span></div>
+        <div class="gemshelf" id="gemShelf"></div>
+      </button>
+      <button class="bp-sec tap" id="squishPanel" title="My squishies — tap to open">
+        <div class="bp-h">SQUISHIES <span class="ccount" id="squishCount"></span></div>
+        <div class="gemshelf" id="squishShelf"></div>
+      </button>
+    </div>
 
-    <!-- RIGHT: villains + gear -->
+    <!-- RIGHT: power — villains + gear -->
     <div class="bpanel bp-right">
       <div id="villainsBlock">
         <div class="bp-h">VILLAINS <span class="ccount" id="bossCount"></span></div>
@@ -146,8 +162,7 @@
       </div>
       <div class="bp-h gearh">GEAR</div>
       <div class="loadout-row"><span class="loadout-lbl">Weapon</span><div class="equiprow" id="weaponRow"></div></div>
-      <div class="loadout-row"><span class="loadout-lbl">Cape</span><div class="equiprow" id="capeRow"></div></div>
-      <div class="gearbtns"><button class="btn sm" id="btnShop">SHOP</button><button class="btn sm" id="btnGifts" style="display:none;">GIFTS</button></div>
+      <div class="loadout-row" id="capeLoadout"><span class="loadout-lbl">Cape</span><div class="equiprow" id="capeRow"></div></div>
     </div>
 
     <!-- BELOW hero: friends -->
@@ -156,8 +171,8 @@
       <div class="frlbl">MY FRIENDS <span class="ccount" id="leagueCount"></span></div>
     </div>
 
-    <!-- PLAY (↙ corner) → next uncompleted level -->
-    <button class="basecta" id="btnPlayNext"><span class="ptri"></span>PLAY</button>
+    <!-- PLAY (↙ corner) → next uncompleted level — framed tile, matches the nav corners -->
+    <button class="navcorner nc-ll" id="btnPlayNext" aria-label="Play next level"></button>
   </div>
 
   <!-- MEMORY VAULT (spaced review — recharge mastered gems on their due day; no story gating) -->
@@ -200,13 +215,25 @@
     <div id="warmChoices" class="tilerow"></div>
   </div>
 
-  <!-- SHOP (spend coins on cosmetic Hero-Base items) -->
+  <!-- MY SQUISHIES — inventory (owned first) + shop to get more, with coins + presents -->
   <div id="shopPanel">
-    <div class="comic" style="font-size:34px;color:var(--gold);">HERO SHOP</div>
-    <div class="baselbl" style="font-size:20px;">💰 <span id="shopCoins" style="color:var(--gold);">0</span> coins</div>
-    <div class="read" style="font-size:14px;max-width:560px;text-align:center;color:#cfc6f2;">Earn coins in the Training Room, then collect items for your Hero Base!</div>
+    <div class="comic" style="font-size:34px;color:var(--gold);">MY SQUISHIES</div>
+    <div class="baselbl" style="font-size:20px;"><span id="shopCoins" style="color:var(--gold);">0</span> coins</div>
+    <button class="btn" id="btnPresents" style="display:none;"></button>
+    <div class="read" style="font-size:14px;max-width:560px;text-align:center;color:#cfc6f2;">Your squishy collection! Earn coins by reading, then tap a squishy in the shop to collect it.</div>
     <div id="shopGrid"></div>
-    <button class="btn blue" id="btnShopClose">✅ DONE</button>
+    <button class="btn blue" id="btnShopClose">DONE</button>
+  </div>
+
+  <!-- SQUISHY detail card (tap a squishy → full image + name + buy) -->
+  <div id="squishCard">
+    <div class="sq-card">
+      <button class="sq-x" id="sqClose" aria-label="Close">×</button>
+      <div class="sq-art" id="sqArt"></div>
+      <div class="sq-name comic" id="sqName"></div>
+      <div class="sq-desc" id="sqDesc"></div>
+      <button class="btn" id="sqBtn"></button>
+    </div>
   </div>
 
   <!-- LEARN -->

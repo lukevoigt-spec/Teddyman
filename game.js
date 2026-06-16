@@ -295,12 +295,12 @@ function vaultCount(){ return Object.keys(S.mastery).filter(k=>{ const m=S.maste
    per world. hammer/sword stay; lasso/bow are Act-1 flavour (he loves cowboy +
    archery); mace/lance re-arm the Act-2 knight. */
 const WEAPONS=[
-  {k:"hammer",lbl:"WORD HAMMER 🔨",gear:"Word Hammer"},
-  {k:"sword", lbl:"GEM SWORD ⚔️",  gear:"Gem Sword"},
-  {k:"lasso", lbl:"LASSO 🤠",       gear:"Gem Gauntlet", act:1},
-  {k:"bow",   lbl:"GEM BOW 🏹",     gear:"Reading Crown", act:1},
-  {k:"mace",  lbl:"WAR MACE 🔨",    gear:"Power Belt",    act:2},
-  {k:"lance", lbl:"JOUST LANCE 🛡️", gear:"Rocket Boots",  act:2}
+  {k:"hammer",lbl:"WORD HAMMER",gear:"Word Hammer"},
+  {k:"sword", lbl:"GEM SWORD",  gear:"Gem Sword"},
+  {k:"lasso", lbl:"LASSO",      gear:"Gem Gauntlet", act:1},
+  {k:"bow",   lbl:"GEM BOW",    gear:"Reading Crown", act:1},
+  {k:"mace",  lbl:"WAR MACE",   gear:"Power Belt",    act:2},
+  {k:"lance", lbl:"JOUST LANCE",gear:"Rocket Boots",  act:2}
 ];
 function ownedWeapons(){ const a=currentAct(), g=actGearList(a);
   return WEAPONS.filter(w=>(!w.act||w.act===a)&&g.includes(w.gear)); }
@@ -332,9 +332,16 @@ function heroProgress(){ const a=currentAct(), am=actMissions(a), total=am.lengt
 /* PAINTED marquee hero: the generated per-muscle Teddy art on the title / win /
    rest / origin screens. theme "hero" -> Act-1 superhero, "knight" -> Act-2 knight
    (both have a painted m0/m1/m2 set). Any other theme falls back to parametric SVG.
-   heroOpts() supplies the muscle tier + theme. heroNow() now delegates here too, so
-   EVERY hero render is the painted raster (parent directive 2026-06-16). */
-function heroMarquee(w){ const o=heroOpts(); return (o.theme==="hero"||o.theme==="knight") ? teddyArt(w,o.muscle,o.theme) : heroSVG(w,o); }
+   heroOpts() supplies the muscle tier + theme. heroNow() delegates here too, so EVERY hero render
+   is the painted raster (parent #59) — including the equipped weapon/cape via armed/outfit variants. */
+function heroMarquee(w){ const o=heroOpts();
+  if(o.theme!=="hero"&&o.theme!=="knight") return heroSVG(w,o);
+  const m=Math.max(0,Math.min(2,o.muscle|0));
+  const cape=S.equip.cape, outfit=(o.theme!=="knight"&&(cape==="blue"||cape==="gold"))?cape+"-":"";
+  const base=(o.theme==="knight"?"teddy-knight-m":"teddy-"+outfit+"m")+m;
+  /* armed variant (he holds the equipped weapon) when one is loaded out, else the plain tier */
+  const file=(o.weapon&&o.weapon!=="none")?base+"-"+o.weapon:base;
+  return rasterArt(file, w, o.theme==="knight"?"#ffba4a":"#ffce3a", o.theme==="knight"?"#c77a2a":"#3a7bff"); }
 /* ---------------- SCREEN MGMT ---------------- */
 const $=id=>document.getElementById(id);
 /* Painted-scene slots: screen -> art/bg-<name>.* . Add an image to swap a scene;
@@ -422,7 +429,13 @@ function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.r
   $("hud").style.display=(id==="scrTitle")?"none":""; refreshHUD();   /* nav corners stay on learning screens; body.learning hides the HUD + makes them recessive (CSS) */
   { const nb=$("navBaseBtn"); if(nb)nb.style.display=(id==="scrBase")?"none":""; }   /* on the Base, the ↙ corner is the PLAY→next-level CTA, not a redundant Home */
   const dm=$("dailyMeter"); if(dm){ dm.style.display=(id==="scrMap")?"block":"none"; if(id==="scrMap")updateDailyMeter(); } }
-function refreshHUD(){ $("hudStars").textContent="⚡ "+S.stars; }
+/* premium HUD status cluster: crafted bolt (power) + coin (squishy currency) pills, with a pulse on
+   increase (Clash-Royale-style glanceable juice; calm-mode skips the animation). */
+function hudPill(id,icon,val){ const el=$(id); if(!el)return; const prev=+el.dataset.v||0;
+  el.innerHTML=icon+'<span>'+val+'</span>';
+  if(val>prev){ el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
+  el.dataset.v=val; }
+function refreshHUD(){ hudPill("hudStars", uiIcon("bolt",22), S.stars||0); hudPill("hudCoins", (typeof coinIcon==="function"?coinIcon(22):""), S.coins||0); }
 /* ---------------- JUICE / FX ----------------
    Big, celebratory reward moments (no photosensitivity concern). All effects
    are fire-and-forget DOM bits that auto-remove, so they can never hang a flow.
@@ -799,8 +812,8 @@ function navGo(fn){ Aud.stop(); clearFlow(); fn(); }
   img("navBaseBtn","nav-home.png","Hero Base");   /* lower-left → Hero Base ("home") */
   img("navMapBtn","nav-map.png","World Map");      /* lower-right → world map */
   img("navSettings","nav-settings.png","Grown-ups");/* upper-right → gated Grown-Up Corner */
-  /* NOTE: the in-game "BACK TO BASE" buttons (Recharge/Training/Scroll/Warm) were REMOVED (parent 2026-06-16):
-     the persistent lower-left HOME corner → Base and lower-right MAP corner replace them on every sub-screen. */
+  img("btnPlayNext","nav-play.png","Play");        /* Base ↙ → next uncompleted level (framed-tile, matches the nav corners) */
+  /* the in-game "BACK TO BASE" buttons were REMOVED (#57) — the persistent HOME/MAP corners replace them on every sub-screen. */
 })();
 { const m=$("navMapBtn");  if(m)m.onclick=()=>navGo(toMap); }                          /* lower-right → world map */
 { const b=$("navBaseBtn"); if(b)b.onclick=()=>navGo(showBase); }                       /* lower-left → Hero Base ("home") */
@@ -1497,7 +1510,7 @@ function showWin(firstTime){ show("scrWin");
   if(firstTime&&gear)setTimeout(()=>showUnlock(rewardGemArt(), gear.toUpperCase(), "NEW GEAR!"), 420);
   let ids;
   if(CUR.type==="fortress") ids=currentAct()===2?["kendall1","kendall2","kendall3"]:["leighton1","leighton2","leighton3"];
-  else if(CUR.rescue) ids=({heart:["free_heart1","free_heart2","m2_done"],jj:["jj_freed"],cal:["cal_freed"],nora:["nora_freed"]}[rescuedKind])||["free_heart1","free_heart2","m2_done"];
+  else if(CUR.rescue) ids=({heart:["free_heart1","free_heart2","m2_done"],jj:["jj_freed"],cal:["cal_freed"],nora:["nora_freed"],brody:["brody_freed"],daisy:["daisy_freed"],bryce:["bryce_freed"]}[rescuedKind])||["free_heart1","free_heart2","m2_done"];
   else if(CUR.finale) ids = currentAct()===2 ? ["act2_win"] : (CUR.z===4 ? ["m4_letters"] : (CUR.z===3 ? ["m3_done"] : ["finale1","finale2","finale3"]));
   else if(firstTime&&gear) ids=[currentAct()===2?"win_grow2":"win_grow","win_gear",GEARLINE[gear]];
   else ids=[currentAct()===2?"win_grow2":"win_grow"];
@@ -1542,27 +1555,54 @@ function showBase(){ clearFlow(); show("scrBase");
   else Aud.play("base1");
 }
 function paintBase(){
-  $("baseHero").innerHTML=heroMarquee(Math.min(280,window.innerWidth*0.4));   /* painted raster hero (teddyArt), not the parametric SVG */
+  /* painted raster hero as a CLEAN cutout (no aura/halo), seated on the pedestal. Per stage (m0-m2 ×
+     hero/knight) and, when a weapon is equipped, the ARMED variant teddy[-knight]-m<tier>-<weapon>
+     (he holds it). onerror falls back to the unarmed tier image so it can never break. */
+  { const o=heroOpts(), m=Math.max(0,Math.min(2,o.muscle|0));
+    /* Act-1 capes also swap the OUTFIT (base=blue suit/red cape, blue=red suit/blue cape, gold=black/gold);
+       Act-2 knight has no cape/outfit variants. */
+    const cape=S.equip.cape, outfit=(o.theme!=="knight"&&(cape==="blue"||cape==="gold"))?cape+"-":"";
+    const base=(o.theme==="knight"?"teddy-knight-m":"teddy-"+outfit+"m")+m;
+    const armed=!!(o.weapon&&o.weapon!=="none"), file=armed?base+"-"+o.weapon:base;
+    $("baseHero").innerHTML='<img class="baseheroimg" src="art/'+file+'.png" alt="" draggable="false"'
+      +(armed?' onerror="this.onerror=null;this.src=\'art/'+base+'.png\'"':'')+'>'; }
   const o=heroOpts();
-  { const hp=heroProgress(); $("powerLbl").textContent=hp.name;
-    const pf=$("powerFill"); if(pf){ pf.style.width=hp.pct+"%"; pf.classList.toggle("maxed",hp.max&&hp.pct>=100); } }
+  { const hp=heroProgress(); const pl=$("powerLbl"); if(pl)pl.textContent=hp.name; }
+  /* status-meter icons: clock = today's practice, lightning = Gem Charge (crafted SVG, no emoji) */
+  { const di=$("dailyIcon"); if(di&&!di.firstChild) di.innerHTML=uiIcon("clock",22);
+    const ci=$("chargeIcon"); if(ci&&!ci.firstChild) ci.innerHTML=uiIcon("bolt",22); }
+  /* GEM CHARGE meter — spaced-review readiness (full when nothing's due; recharged by the Recharge
+     activity). Framed as "power UP," NEVER a punishing drain (North Star: no loss-aversion). Mastery
+     itself never drops — this only reflects which mastered gems are due for a review today. */
+  { const enrolled=vaultCount(), due=Math.min(vaultDueRoutable().length, enrolled);
+    const pct = enrolled>0 ? Math.round(100*(enrolled-due)/enrolled) : 100;
+    const cf=$("chargeFill"); if(cf){ cf.style.width=pct+"%"; cf.classList.toggle("low", enrolled>0&&pct<60); }
+    const cm=$("chargeMeter"); if(cm)cm.classList.toggle("due", due>0); }
+  /* TODAY meter — gentle 15-min practice target (a meter, never a countdown/penalty — constraint #1). */
+  { ensureDaily(true); const pct=Math.min(100, Math.round(100*((S.daily&&S.daily.secs)||0)/dailyGoalSecs()));
+    const df=$("baseDailyFill"); if(df){ df.style.width=pct+"%"; }
+    const dm=$("baseDailyMeter"); if(dm)dm.classList.toggle("hit", pct>=100); }
   /* weapons — HANDS + every weapon skin unlocked in THIS act */
   const wrow=$("weaponRow"); wrow.innerHTML="";
   const weapons=[["none","HANDS"],...ownedWeapons().map(w=>[w.k,w.lbl])];
   weapons.forEach(([k,lbl])=>{ const b=document.createElement("button");
-    b.className="echip"+(S.equip.weapon===k?" onsel":""); b.textContent=lbl;
+    b.className="wtile"+(S.equip.weapon===k?" onsel":""); b.title=lbl;
+    b.innerHTML='<img src="art/'+(k!=="none"?"wpn-"+k:"fists")+'.png" alt="'+lbl+'" draggable="false"><span class="wname">'+lbl+'</span>';
     b.onclick=()=>{S.equip.weapon=k;save();Aud.ding();paintBase();};
     wrow.appendChild(b); });
   if(weapons.length===1){ const hint=document.createElement("div"); hint.className="baselbl";
-    hint.style.fontSize="15px"; hint.textContent="Forge words to earn weapons!"; wrow.appendChild(hint); }
-  /* capes */
+    hint.style.fontSize="13px"; hint.textContent="Forge words to earn weapons!"; wrow.appendChild(hint); }
+  /* CAPES = full OUTFIT looks (Act-1 only): base (blue suit/red cape) · premium (red suit/blue cape) ·
+     bougie (black suit/gold cape). Legacy red/purple migrate to base. */
+  if(S.equip.cape!=="blue"&&S.equip.cape!=="gold"&&S.equip.cape!=="base"){ S.equip.cape="base"; }
+  { const cl=$("capeLoadout"); if(cl)cl.style.display=(currentAct()===1)?"":"none"; }
   const crow=$("capeRow"); crow.innerHTML="";
-  const capes=[["red","RED",0],["gold","GOLD",15],["purple","PURPLE",27]];
-  capes.forEach(([k,lbl,need])=>{ const locked=S.stars<need;
+  const capes=[["base","BASE","red",0],["blue","PREMIUM","blue",15],["gold","BOUGIE","gold",30]];
+  capes.forEach(([k,lbl,img,need])=>{ const locked=S.stars<need;
     const b=document.createElement("button");
-    b.className="echip"+(S.equip.cape===k?" onsel":"")+(locked?" lockd":"");
-    b.textContent=locked?(lbl+" · ⚡"+need):lbl;
-    b.onclick=()=>{S.equip.cape=k;save();Aud.ding();paintBase();};
+    b.className="wtile"+(S.equip.cape===k?" onsel":"")+(locked?" lockd":""); b.title=lbl;
+    b.innerHTML='<img src="art/cape-'+img+'.png" alt="'+lbl+'" draggable="false"><span class="wname">'+(locked?(lbl+" · "+need):lbl)+'</span>';
+    b.onclick=()=>{ if(locked){Aud.play&&Aud.play("shop_need");return;} S.equip.cape=k;save();Aud.ding();paintBase(); };
     crow.appendChild(b); });
   /* gem shelf: earned letters only */
   const shelf=$("gemShelf"); shelf.innerHTML="";
@@ -1577,31 +1617,23 @@ function paintBase(){
   const lg=$("leagueShelf"); lg.innerHTML="";
   let anyL=false;
   LEAGUE.forEach(t=>{ if(allyFreed(t.kind)){ anyL=true;   /* durable freed-state (grandfathered) */
-    const b=document.createElement("button"); b.className="leaguebtn"; b.title="See "+t.real+"\u2019s hero card";
-    /* U13: squish only LONG names to the 60-wide band (textLength) so e.g. "MISS KENDALL" fits
-       instead of clipping to "SS KENDA"; short names render naturally. Distortion is fine here
-       (a name label), never on learning letters. */
-    const fit=s=>s.length>7?' textLength="60" lengthAdjust="spacingAndGlyphs"':'';
-    b.innerHTML=`<svg viewBox="-32 -36 64 86" width="54"><g>${allyFace(t.kind)}</g><text y="42" text-anchor="middle" font-family="Bangers" font-size="13" fill="#ffc93c"${fit(t.real)}>${t.real}</text><text y="55" text-anchor="middle" font-family="Bangers" font-size="9.5" fill="#9b94c9" letter-spacing=".5"${fit('"'+t.name+'"')}>"${t.name}"</text></svg>`;
+    const b=document.createElement("button"); b.className="frbtn"; b.title="See "+t.real+"\u2019s hero card";
+    /* PAINTED RASTER portrait (ally-<kind>.png) where it exists; SVG likeness only as a fallback
+       for kinds without a raster yet (JJ / Miss Kendall). Names live on the flip card (tap). */
+    const hasR=(typeof RASTER!=="undefined")&&RASTER["ally-"+t.kind];
+    b.innerHTML = hasR ? '<img src="art/ally-'+t.kind+'.png" alt="'+t.real+'" draggable="false">'
+                       : '<svg viewBox="-34 -38 68 84" aria-hidden="true">'+allyFace(t.kind)+'</svg>';
     b.onclick=()=>openHeroCard(t.kind); lg.appendChild(b); } });
   if(!anyL)lg.innerHTML='<div class="baselbl" style="font-size:15px;">Smash Vex\u2019s cages to free your friends!</div>';
   { const freed=LEAGUE.filter(t=>allyFreed(t.kind)).length, lc=$("leagueCount"); if(lc)lc.textContent=freed+" / "+LEAGUE.length; }
   paintBossShelf();   /* captured-villain cages */
-  /* coins + trophy shelf (Training Room collection) */
-  const cn=$("baseCoins"); if(cn)cn.textContent=S.coins||0;
-  const tro=$("trophyShelf");
-  if(tro){ const owned=BASE_ITEMS.filter(it=>S.owned&&S.owned[it.id]);
-    tro.innerHTML = owned.length
-      ? owned.map(it=>`<span class="trophy" title="${it.nm}">${itemArt(it,44)}</span>`).join("")
-      : '<div class="baselbl" style="font-size:15px;">Train to earn coins, then shop for trophies!</div>';
-    const tc=$("trophyCount"); if(tc)tc.textContent=owned.length+" / "+BASE_ITEMS.length; }
-  /* Memory Vault: label the Recharge button with today's due count + glow it gently when gems are due */
-  { const due=vaultDueRoutable().length, vb=$("btnVault");
-    if(vb){ vb.textContent = due ? ("🔋 RECHARGE ("+due+")") : "🔋 RECHARGE";
-      vb.classList.toggle("vaultdue", due>0); } }
-  /* Treasure chests: show the GIFTS button only when a present is waiting (pulses to invite, never nags) */
-  { const n=pendingChests(), gb=$("btnGifts");
-    if(gb){ gb.style.display=n>0?"":"none"; gb.textContent="🎁 GIFTS ("+n+")"; gb.classList.toggle("vaultdue", n>0); } }
+  /* SQUISHIES shelf — OWNED collectibles only (show only EARNED — CLAUDE.md). Tap → inventory + shop. */
+  { const sh=$("squishShelf");
+    if(sh){ const owned=BASE_ITEMS.filter(it=>S.owned&&S.owned[it.id]);
+      sh.innerHTML = owned.length
+        ? owned.map(it=>`<span class="squishbox" title="${it.nm}">${itemArt(it,40)}</span>`).join("")
+        : '<div class="baselbl" style="font-size:13px;">Tap to get squishies in the shop!</div>';
+      const sc=$("squishCount"); if(sc)sc.textContent=owned.length+" / "+BASE_ITEMS.length; } }
   /* U7 zero-state: hide an EMPTY collection card so a fresh save isn't four "0 / N · go earn it" rows
      at once. Gems stays as the single "first goal" when nothing's earned yet; league/villains/trophies
      appear only once they have something (strictly honours "show only EARNED items" — CLAUDE.md). */
@@ -1614,8 +1646,11 @@ function paintBase(){
 /* Base layered-hub actions (tap-the-thing): PLAY → next uncompleted level; GEMS → recharge; COINS → train. */
 function playNextMission(){ const ms=playMissions(currentAct()); const m=ms.find(x=>!S.done[x.id])||ms[ms.length-1]; if(m)startMission(m); else toMap(); }
 { const pb=$("btnPlayNext"); if(pb)pb.onclick=()=>{ Aud.pick&&Aud.pick(); playNextMission(); }; }
-{ const gp=$("gemsPanel");   if(gp)gp.onclick=()=>{ Aud.pick&&Aud.pick(); startVault(); }; }
-{ const cc=$("coinChip");    if(cc)cc.onclick=()=>{ Aud.pick&&Aud.pick(); showTrain(); }; }
+{ const gp=$("gemsPanel");   if(gp)gp.onclick=()=>{ Aud.pick&&Aud.pick(); startVault(); }; }      /* GEMS → recharge */
+{ const cm=$("chargeMeter"); if(cm)cm.onclick=()=>{ Aud.pick&&Aud.pick(); startVault(); }; }      /* Gem Charge meter → recharge */
+{ const sp=$("squishPanel"); if(sp)sp.onclick=()=>{ Aud.pick&&Aud.pick(); openShop(); }; }        /* SQUISHIES → inventory + shop */
+{ const dm=$("baseDailyMeter");  if(dm)dm.onclick=()=>{ Aud.pick&&Aud.pick(); showTrain(); }; }   /* Today meter → train */
+{ const cc=$("hudCoins"); if(cc){ cc.style.cursor="pointer"; cc.title="Earn coins in the Training Room"; cc.onclick=()=>{ Aud.pick&&Aud.pick(); showTrain(); }; } }
 { const bb=$("btnBaseBack"); if(bb)bb.onclick=()=>{Aud.stop();toMap();}; }   /* CITY MAP button removed from the Base (map-exit lives in ☰ MENU); guard kept for safety */
 
 /* ---------------- HERO CARD (Pokémon-style full-body popup) ----------------
@@ -1631,6 +1666,9 @@ const HERO_BIO={
   jj:"JJ — small, wild, and bursting with energy.",
   cal:"Cal — a mischievous grin and always scheming something fun.",
   nora:"Nora — tiny but mighty, with a heart of gold.",
+  brody:"Brody — Teddy’s buddy with a big smile and an even bigger high-five.",
+  daisy:"Daisy — sweet, sunny, and brave — freed from the Enchanter’s Tower.",
+  bryce:"Bryce — cool, calm, and always up for an adventure.",
   mom:"Mom — Teddy’s real-life hero, cheering from the sidelines.",
   dad:"Dad — strong, steady, and always ready to defend the family."
 };
@@ -1659,14 +1697,16 @@ $("heroCard").onclick=e=>{ if(e.target.id==="heroCard")closeHeroCard(); };
    Every defeated, NAMED villain lives shrunken in a cage on a Base shelf
    (Bowser-in-the-Mario-movie). Tap one for a villain quip (in its own voice).
    Keyed by the finale/boss mission that beat it. */
+/* Each zone's villain is a DISTINCT painted raster (parent 2026-06-16 — no redundancy). rasterArt
+   wraps art/<file>.png with the cast's aura + contact shadow, tinted to the villain's signature colour. */
 const BOSSES=[
-  {mid:26, name:"VEX CAPTAIN", quip:"cage_captain", art:w=>inkblotSVG(w)},
-  {mid:48, name:"LORD VEX",    quip:"cage_vex",     art:w=>inkblotSVG(w)},
-  {mid:110,name:"THE DRAGON",  quip:"cage_dragon",  art:w=>dragonSVG(w)},
-  {mid:118,name:"IRON WYRM",   quip:"cage_dragon",  art:w=>dragonSVG(w)},
-  {mid:127,name:"VOWEL WYRM",  quip:"cage_dragon",  art:w=>dragonSVG(w)},
-  {mid:137,name:"VOWEL CHOIR", quip:"cage_dragon",  art:w=>dragonSVG(w)},
-  {mid:128,name:"THE VIXEN",   quip:"cage_vixen",   art:w=>vixenSVG(w)}
+  {mid:26, name:"VEX CAPTAIN", quip:"cage_captain", art:w=>rasterArt("boss-captain",w,"#9fb4d6","#3a5a9a")},
+  {mid:48, name:"LORD VEX",    quip:"cage_vex",     art:w=>rasterArt("vex",w,"#ff5a5a","#c01020")},
+  {mid:110,name:"THE DRAGON",  quip:"cage_dragon",  art:w=>rasterArt("dragon",w,"#ff6a2a","#c0301a")},
+  {mid:118,name:"IRON WYRM",   quip:"cage_dragon",  art:w=>rasterArt("boss-ironwyrm",w,"#9aa0aa","#3a3f4a")},
+  {mid:127,name:"VOWEL WYRM",  quip:"cage_dragon",  art:w=>rasterArt("boss-vowelwyrm",w,"#c08aff","#6a2a9a")},
+  {mid:137,name:"VOWEL CHOIR", quip:"cage_dragon",  art:w=>rasterArt("boss-vowelchoir",w,"#4ad6c0","#1a8a7a")},
+  {mid:128,name:"THE VIXEN",   quip:"cage_vixen",   art:w=>rasterArt("vixen",w,"#ff4f8a","#c0206a")}
 ];
 function paintBossShelf(){ const sh=$("bossShelf"); if(!sh)return; sh.innerHTML=""; let any=false;
   BOSSES.forEach(b=>{ if(S.done[b.mid]){ any=true;
@@ -1691,18 +1731,44 @@ $("bossCage").onclick=e=>{ if(e.target.id==="bossCage")closeBossCage(); };
 /* Cosmetic collection for the Hero Base. Icons are crafted SVG (art.js ITEMART /
    itemArt(), keyed by id) — NOT emoji (Premium UI Overhaul / closes audit U5).
    ids + costs are SAVE KEYS (S.owned[id]) — never renumber or rename an id (#7). */
+/* SQUISHIES — collectible kawaii fidget toys bought with coins (parent 2026-06-16). ids + costs
+   UNCHANGED (save keys, CLAUDE.md #7) — only nm + the painted-raster art (art/squish-<id>.png). */
 const BASE_ITEMS=[
-  {id:"banner",   nm:"Hero Banner", cost:10},
-  {id:"plant",    nm:"Gem Cluster", cost:12},
-  {id:"poster",   nm:"Hero Poster", cost:15},
-  {id:"trophy",   nm:"Gold Trophy", cost:20},
-  {id:"medal",    nm:"Gold Medal",  cost:25},
-  {id:"lamp",     nm:"Star Lamp",   cost:30},
-  {id:"vexbot",   nm:"Vexbot Toy",  cost:40},
-  {id:"dragon",   nm:"Dragon Toy",  cost:55},
-  {id:"crown",    nm:"Crown Stand", cost:70},
-  {id:"rocket",   nm:"Mini Rocket", cost:90}
+  {id:"banner",   nm:"Mochi Cat",      cost:10},
+  {id:"plant",    nm:"Avocado Squish", cost:12},
+  {id:"poster",   nm:"Peach Squish",   cost:15},
+  {id:"trophy",   nm:"Dino Squish",    cost:20},
+  {id:"medal",    nm:"Axolotl Squish", cost:25},
+  {id:"lamp",     nm:"Narwhal Squish", cost:30},
+  {id:"vexbot",   nm:"Dumpling Cat",   cost:40},
+  {id:"dragon",   nm:"Baby Dragon",    cost:55},
+  {id:"crown",    nm:"Capybara",       cost:70},
+  {id:"rocket",   nm:"Galaxy Unicorn", cost:90},
+  /* Nee-Doh-style stress squishies — the premium / high-demand tier (parent 2026-06-16) */
+  {id:"ndglob",   nm:"Groovy Glob",    cost:110},
+  {id:"ndcube",   nm:"Squish Cube",    cost:135},
+  {id:"ndring",   nm:"Doh Ring",       cost:160},
+  {id:"ndgalaxy", nm:"Galaxy Glob",    cost:190},
+  {id:"ndglow",   nm:"Glow Glob",      cost:230}
 ];
+/* a fun one-liner per squishy for the detail card */
+const SQUISH_BLURB={
+  banner:"A round little mochi cat. Squish his cheeks!",
+  plant:"A happy avocado — squeeze the pit!",
+  poster:"A blushing peach, soft and sweet.",
+  trophy:"A chubby baby dino with tiny arms. Rawr!",
+  medal:"A pink axolotl with wavy gills.",
+  lamp:"A pastel narwhal with a little gold horn.",
+  vexbot:"A sleepy kitten in a dumpling. So squishy!",
+  dragon:"A roly-poly baby dragon. Tiny wings!",
+  crown:"A cozy capybara with an orange-slice hat.",
+  rocket:"A sparkly galaxy unicorn with a rainbow mane.",
+  ndglob:"The classic squish ball — squeeze the smile!",
+  ndcube:"A squishy cube. The corners go SQUASH.",
+  ndring:"A squishy donut with rainbow sprinkles.",
+  ndgalaxy:"A galaxy in your hand — full of stars.",
+  ndglow:"A glow-in-the-dark squish. So satisfying!"
+};
 /* ---------------- TREASURE CHESTS (engagement §10, bound by §6.0) ----------------
    A chest ALWAYS pays out (coins, often + a cosmetic) — never empty, never a loss, never a gamble:
    "variable" = WHICH good thing, never WHETHER (constraints #1/#2). Earned by LEARNING (mission
@@ -1850,7 +1916,7 @@ function trainWin(el,w){ const bonus=combo>=3?2:1; trainReps++;
   updateTrainDaily();
   flow(Aud.play(["train_yes"].concat(wordAudio(w))),()=>setTimeout(()=>maybeTrainInterrupt(trainRound),260)); }
 { const bt=$("btnTrain"); if(bt)bt.onclick=()=>showTrain(); }   /* legacy btn (Base now launches Training by tapping the COINS chip) */
-/* "BACK TO BASE" button removed — the HOME nav corner (→Base) replaces it. show() resets __inTraining on every screen change. */
+/* "BACK TO BASE" button removed (#57) — the HOME nav corner (→Base) replaces it. show() resets __inTraining on every screen change. */
 
 /* ---------------- SPELL SCROLL (rec #2 — repeated-reading fluency) ----------------
    A short DECODABLE passage. PHASE 1 listening preview: the mentor reads it, each word
@@ -2056,25 +2122,41 @@ function vaultBuild(it){ const w=it.w, sight=!!it.sight, units=vaultUnits(w,sigh
         if(!sight)Aud.play(["snd_"+want]); setTimeout(()=>b.classList.remove("dim"),900); } };
     cr.appendChild(b); }); }
 { const bv=$("btnVault"); if(bv)bv.onclick=()=>{ Aud.pick(); startVault(); }; }   /* legacy btn (Base now recharges by tapping the GEMS panel) */
-/* "BACK TO BASE" button removed — the HOME nav corner (→Base) replaces it. */
+/* "BACK TO BASE" button removed (#57) — the HOME nav corner (→Base) replaces it. */
 /* open the next pending chest (gold → silver → wood) on tap */
 { const gb=$("btnGifts"); if(gb)gb.onclick=()=>{ const t=nextChestTier(); if(!t)return; Aud.pick&&Aud.pick(); openChest(t); }; }
 /* ---- shop ---- */
 function openShop(){ paintShop(); $("shopPanel").classList.add("on"); }
 function paintShop(){ $("shopCoins").textContent=S.coins||0;
+  /* presents (treasure chests) open here → coins to spend on squishies (parent: gifts ARE squishies) */
+  { const n=pendingChests(), pb=$("btnPresents");
+    if(pb){ pb.style.display=n>0?"":"none"; pb.textContent="OPEN A PRESENT ("+n+")"; pb.classList.toggle("vaultdue",n>0); } }
   const g=$("shopGrid"); g.innerHTML="";
-  BASE_ITEMS.forEach(it=>{ const owned=!!S.owned[it.id], can=(S.coins||0)>=it.cost;
-    const d=document.createElement("div"); d.className="shopitem"+(owned?" owned":"");
-    d.innerHTML=`<div class="ic">${itemArt(it,68)}</div><div class="nm">${it.nm}</div>`;
-    if(owned){ const t=document.createElement("div"); t.className="owned-tag"; t.textContent="OWNED ✓"; d.appendChild(t); }
-    else { const buy=document.createElement("button"); buy.className="buy"+(can?"":" cant"); buy.textContent="💰 "+it.cost;
-      buy.onclick=()=>{ if((S.coins||0)>=it.cost){ S.coins-=it.cost; S.owned[it.id]=true; save(); Aud.ding(); burstAt(d); paintShop();
-          showUnlock(`<div style="line-height:1;">${itemArt(it,124)}</div>`, it.nm.toUpperCase(), "NEW ITEM!"); }
-        else Aud.play("shop_need"); };
-      d.appendChild(buy); }
+  /* OWNED first = his collection (inventory), then the rest = the shop to get more */
+  const items=BASE_ITEMS.slice().sort((a,b)=> (S.owned[b.id]?1:0)-(S.owned[a.id]?1:0));
+  items.forEach(it=>{ const owned=!!S.owned[it.id];
+    const d=document.createElement("button"); d.className="shopitem"+(owned?" owned":"");
+    d.innerHTML=`<div class="ic">${itemArt(it,72)}</div><div class="nm">${it.nm}</div>`
+      +(owned?`<div class="owned-tag">OWNED</div>`:`<div class="price">${coinIcon(16)}<span>${it.cost}</span></div>`);
+    d.onclick=()=>openSquishCard(it);
     g.appendChild(d); }); }
-$("btnShop").onclick=()=>openShop();
+/* tap a squishy → a collectible CARD: full image + name + blurb + buy/owned (parent 2026-06-16) */
+function openSquishCard(it){ const owned=!!S.owned[it.id], can=(S.coins||0)>=it.cost;
+  $("sqArt").innerHTML=itemArt(it,210); $("sqName").textContent=it.nm;
+  $("sqDesc").textContent=(typeof SQUISH_BLURB!=="undefined"&&SQUISH_BLURB[it.id])||"A super-squishy collectible!";
+  const btn=$("sqBtn");
+  if(owned){ btn.className="btn ghost"; btn.disabled=true; btn.textContent="IN YOUR COLLECTION"; btn.onclick=null; }
+  else { btn.disabled=false; btn.className="btn"+(can?"":" cant"); btn.innerHTML=coinIcon(22)+" <span>"+it.cost+"</span>";
+    btn.onclick=()=>{ if((S.coins||0)>=it.cost){ S.coins-=it.cost; S.owned[it.id]=true; save(); Aud.ding();
+        $("squishCard").classList.remove("on");
+        showUnlock(`<div style="line-height:1;">${itemArt(it,170)}</div>`, it.nm.toUpperCase(), "NEW SQUISHY!");
+        paintShop(); }
+      else Aud.play("shop_need"); }; }
+  $("squishCard").classList.add("on"); }
+{ const b=$("btnShop"); if(b)b.onclick=()=>openShop(); }   /* legacy right-panel SHOP button (removed from the Base; guard kept) */
+{ const pb=$("btnPresents"); if(pb)pb.onclick=()=>{ const t=(typeof nextChestTier==="function")&&nextChestTier(); if(!t)return; Aud.pick&&Aud.pick(); openChest(t,()=>paintShop()); }; }
 $("btnShopClose").onclick=()=>{ $("shopPanel").classList.remove("on"); paintBase(); };
+{ const x=$("sqClose"); if(x)x.onclick=()=>$("squishCard").classList.remove("on"); }
 
 /* ---------------- SETTINGS ---------------- */
 /* Parent-facing progress snapshot (read-only) — what Teddy can actually read. */
