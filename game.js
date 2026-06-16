@@ -1706,9 +1706,9 @@ function vaultMilestone(kind){ const dia=(kind==="diamond");
 const TRAIN_TELLERS=[
   {kind:"tank", name:"ARCHIE",  prefix:"train_arch", n:20, unlocked:()=>allyFreed("tank")},
   {kind:"sunny",name:"WILLIAM", prefix:"train_will", n:20, unlocked:()=>allyFreed("sunny")},
-  {kind:"jj",   name:"JJ",      prefix:"train_jj",   n:20, unlocked:()=>(S.act2intro||currentAct()>=2)},   /* met in the Act-2 interlude */
-  {kind:"nora", name:"NORA",    prefix:"train_nora", n:20, unlocked:()=>(S.act2intro||currentAct()>=2)},
-  {kind:"cal",  name:"CAL",     prefix:"train_cal",  n:20, unlocked:()=>(S.act2intro||currentAct()>=2)}
+  {kind:"jj",   name:"JJ",      prefix:"train_jj",   n:20, unlocked:()=>allyFreed("jj")},     /* only once RESCUED (TRAIN-INT-1) — no cheering from a cage */
+  {kind:"nora", name:"NORA",    prefix:"train_nora", n:20, unlocked:()=>allyFreed("nora")},
+  {kind:"cal",  name:"CAL",     prefix:"train_cal",  n:20, unlocked:()=>allyFreed("cal")}
 ];
 let __trainBags={}, __trainNextAt=0;
 function trainBagNext(t){ let bag=__trainBags[t.prefix]; if(!bag||!bag.length){ bag=shuf(Array.from({length:t.n},(_,i)=>i+1)); __trainBags[t.prefix]=bag; } return t.prefix+bag.pop(); }
