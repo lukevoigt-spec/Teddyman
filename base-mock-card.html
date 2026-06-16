@@ -1,0 +1,52 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box} html,body{width:1024px;height:768px;overflow:hidden;font-family:'Baloo 2',sans-serif}
+#stage{position:relative;width:1024px;height:768px;background:#1a1228}
+#bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#dim{position:absolute;inset:0;background:rgba(8,5,20,.62)}
+/* the opened card */
+#card{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:520px;background:linear-gradient(180deg,#241a44,#160e30);
+  border:4px solid #ffd75e;border-radius:26px;padding:26px 28px 30px;box-shadow:0 16px 0 rgba(0,0,0,.4),0 22px 40px rgba(0,0,0,.5)}
+#card h2{font-family:'Bangers';font-size:40px;color:#ffd75e;letter-spacing:.05em;text-align:center;-webkit-text-stroke:3px #1a1430;paint-order:stroke}
+#card .sub{text-align:center;color:#cfc6f2;font-weight:700;font-size:18px;margin:2px 0 18px}
+.gemgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:8px}
+.gem{height:58px;display:flex;align-items:center;justify-content:center;position:relative}
+.gem svg{width:46px;height:56px;filter:drop-shadow(0 0 7px currentColor)}
+.gem.m::after{content:"✦";position:absolute;top:-4px;right:6px;color:#ffe98a;font-size:18px;text-shadow:0 0 6px #ffd75e}
+.gem.empty svg{opacity:.18;filter:none}
+.bigbtn{display:block;width:100%;margin-top:20px;border:0;cursor:pointer;font-family:'Bangers';letter-spacing:.05em;color:#06243f;
+  background:linear-gradient(180deg,#9be7ff,#3a9bff);border-radius:18px;padding:16px;font-size:32px;box-shadow:0 7px 0 #1d5a96}
+.bigbtn .s{display:block;font-family:'Baloo 2';font-weight:700;font-size:14px;color:#06243f;opacity:.8;-webkit-text-stroke:0}
+#x{position:absolute;top:-16px;right:-16px;width:48px;height:48px;border-radius:50%;background:#fff;border:4px solid #1a1430;font-family:'Bangers';font-size:26px;color:#1a1430;cursor:pointer}
+</style></head>
+<body><div id="stage">
+  <img id="bg" src="art/bg-base-room.png">
+  <div id="dim"></div>
+  <div id="card">
+    <button id="x">✕</button>
+    <h2>MY GEMS</h2>
+    <div class="sub">12 of 26 collected &nbsp;·&nbsp; 5 mastered ✦</div>
+    <div class="gemgrid">
+      <div class="gem m" style="color:#ff5e6c"><svg viewBox="0 0 46 56"><polygon points="23,2 44,20 23,54 2,20" fill="#ff5e6c" stroke="#1a1430" stroke-width="3"/></svg></div>
+      <div class="gem m" style="color:#ffd23a"><svg viewBox="0 0 46 56"><polygon points="23,2 44,20 23,54 2,20" fill="#ffd23a" stroke="#1a1430" stroke-width="3"/></svg></div>
+      <div class="gem" style="color:#4ad6a0"><svg viewBox="0 0 46 56"><polygon points="23,2 44,20 23,54 2,20" fill="#4ad6a0" stroke="#1a1430" stroke-width="3"/></svg></div>
+      <div class="gem m" style="color:#3a9bff"><svg viewBox="0 0 46 56"><polygon points="23,2 44,20 23,54 2,20" fill="#3a9bff" stroke="#1a1430" stroke-width="3"/></svg></div>
+      <div class="gem" style="color:#b06aff"><svg viewBox="0 0 46 56"><polygon points="23,2 44,20 23,54 2,20" fill="#b06aff" stroke="#1a1430" stroke-width="3"/></svg></div>
+      <div class="gem m" style="color:#ff9a3a"><svg viewBox="0 0 46 56"><polygon points="23,2 44,20 23,54 2,20" fill="#ff9a3a" stroke="#1a1430" stroke-width="3"/></svg></div>
+      <div class="gem" style="color:#46d0e0"><svg viewBox="0 0 46 56"><polygon points="23,2 44,20 23,54 2,20" fill="#46d0e0" stroke="#1a1430" stroke-width="3"/></svg></div>
+      <div class="gem m" style="color:#ff7ab0"><svg viewBox="0 0 46 56"><polygon points="23,2 44,20 23,54 2,20" fill="#ff7ab0" stroke="#1a1430" stroke-width="3"/></svg></div>
+      <div class="gem" style="color:#a0e84a"><svg viewBox="0 0 46 56"><polygon points="23,2 44,20 23,54 2,20" fill="#a0e84a" stroke="#1a1430" stroke-width="3"/></svg></div>
+      <div class="gem" style="color:#ffb03a"><svg viewBox="0 0 46 56"><polygon points="23,2 44,20 23,54 2,20" fill="#ffb03a" stroke="#1a1430" stroke-width="3"/></svg></div>
+      <div class="gem" style="color:#7a8cff"><svg viewBox="0 0 46 56"><polygon points="23,2 44,20 23,54 2,20" fill="#7a8cff" stroke="#1a1430" stroke-width="3"/></svg></div>
+      <div class="gem" style="color:#ff6c4a"><svg viewBox="0 0 46 56"><polygon points="23,2 44,20 23,54 2,20" fill="#ff6c4a" stroke="#1a1430" stroke-width="3"/></svg></div>
+      <div class="gem empty"><svg viewBox="0 0 46 56"><polygon points="23,2 44,20 23,54 2,20" fill="#888" stroke="#5a4f86" stroke-width="3"/></svg></div>
+      <div class="gem empty"><svg viewBox="0 0 46 56"><polygon points="23,2 44,20 23,54 2,20" fill="#888" stroke="#5a4f86" stroke-width="3"/></svg></div>
+      <div class="gem empty"><svg viewBox="0 0 46 56"><polygon points="23,2 44,20 23,54 2,20" fill="#888" stroke="#5a4f86" stroke-width="3"/></svg></div>
+      <div class="gem empty"><svg viewBox="0 0 46 56"><polygon points="23,2 44,20 23,54 2,20" fill="#888" stroke="#5a4f86" stroke-width="3"/></svg></div>
+      <div class="gem empty"><svg viewBox="0 0 46 56"><polygon points="23,2 44,20 23,54 2,20" fill="#888" stroke="#5a4f86" stroke-width="3"/></svg></div>
+      <div class="gem empty"><svg viewBox="0 0 46 56"><polygon points="23,2 44,20 23,54 2,20" fill="#888" stroke="#5a4f86" stroke-width="3"/></svg></div>
+    </div>
+    <button class="bigbtn">⚡ RECHARGE MY GEMS<span class="s">3 gems are ready to power up!</span></button>
+  </div>
+</div></body></html>
