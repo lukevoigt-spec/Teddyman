@@ -83,6 +83,8 @@ const SCENES = {
   affixchop: `(function(){ S.act=2; CUR={id:170}; startSyllable({id:170,type:"affix",words:["unlock"]}); sylStep(); chopWord("unlock"); return 1; })()`,
   picons:  `(function(){ var words=(arguments,Object.keys(PICONS)); show('scrRead'); document.getElementById('readWord').innerHTML=''; document.querySelector('.bubble#readText').style.display='none'; var cr=document.getElementById('readChoices'); cr.style.flexWrap='wrap'; cr.style.maxWidth='900px'; cr.innerHTML=''; words.forEach(function(o){ var wrap=document.createElement('div'); wrap.style.cssText='display:flex;flex-direction:column;align-items:center;'; var b=document.createElement('div'); b.className='tile picktile'; b.style.cssText='font-size:46px;width:78px;height:78px;'; b.innerHTML=picIcon(o,''); var l=document.createElement('div'); l.textContent=o; l.style.cssText='color:#fff;font-size:12px;font-family:sans-serif;'; wrap.appendChild(b); wrap.appendChild(l); cr.appendChild(wrap); }); return 1; })()`,
   scanintro: `(function(){ show('scrScan'); narrate('scan',document.getElementById('scanText'),['scan_intro']); clearFlow(); return 1; })()`,
+  intro: `(function(){ startIntro(); clearFlow(); return 1; })()`,
+  intro4: `(function(){ startIntro(); introIx=3; paintIntro(); clearFlow(); return 1; })()`,
   menu: `(function(){ toMap(); document.getElementById('navMenu').classList.add('on'); return 1; })()`,
   chests: `(function(){ S.chests={wood:2,silver:1,gold:1}; S.coins=40; [1,3].forEach(function(i){S.done[i]=true;}); paintBase(); show('scrBase'); return 1; })()`,
   rankbar: `(function(){ show('scrBase'); paintBase(); var pf=document.getElementById('powerFill'); if(pf)pf.style.width='62%'; document.getElementById('powerLbl').textContent='SUPER HERO'; return 1; })()`,

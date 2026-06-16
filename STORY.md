@@ -164,7 +164,9 @@ relatedness, end on "you're ready"). Each line ≤1 "!" (§12). Before → after
 
 The key change is `panel4`: **reading the gem is what brings the city back** — so the child *wants* to read (research:
 make reading the superpower the hero craves). Optional stretch: add a short **Vex taunt** (role C) on the threat beat for
-villain juice. *(Status: ✅ APPROVED — parent, 2026-06-16. Next: Neo updates the 5 `panel1-5` texts in `data-lines.js`; drop-in, no art/flow change.)*
+villain juice. *(Status: ✅ SHIPPED — Neo, 2026-06-16: the 5 `panel1-5` texts are live in `data-lines.js`
+(drop-in, art/flow unchanged); rendered intro panels 1 + 4 to confirm. The optional Vex threat-taunt was
+NOT added — say the word if you want it.)*
 
 ## Sources
 Huynh et al. 2021 (*IEEE TVCG*, narrative ↑ engagement, not test scores) · Przybylski, Rigby & Ryan 2010 (Self-Determination

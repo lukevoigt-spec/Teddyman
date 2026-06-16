@@ -155,11 +155,13 @@ const LINES={
   sent_yes:{t:"YES! You READ a whole sentence, Super Teddy!"},
   sent_champ:{t:"You did it! You can READ, Super Teddy! Real sentences! The Story Gate is OPEN — Lord Vex's Fortress is next!"},
   gear_storykey:{t:"The STORY KEY! It unlocks every story in Star Force City!"},
-  panel1:{t:"This is Star Force City. A city powered by magical Letter Gems, words, and stories."},
-  panel2:{t:"But one night, LORD VEX and his Vexbot army attacked! They stole the Letter Gems and smashed every word into pieces. Now nobody can read. Not signs, not books, not even bedtime stories."},
-  panel3:{t:"The city needed a hero. The founders of the Hero League, your mom and dad, searched everywhere... and they chose YOU, Super Teddy."},
-  panel4:{t:"These are the Gem Lenses. Your glasses are superpowered! With them, you can see hidden Letter Gems nobody else can see."},
-  panel5:{t:"Rescue the gems. Rebuild the words. Save Star Force City! Are you ready, Super Teddy?"},
+  /* Beat-1 cold-open hook (STORY.md §G, APPROVED parent 2026-06-16): wonder/threat fast, READING is the
+     superpower (panel4 = reading the gem brings the city back), mom-&-dad-chose-you, end on "you're ready". */
+  panel1:{t:"Look up there — Star Force City, the brightest city in the whole galaxy, powered by glowing Letter Gems."},
+  panel2:{t:"Then the lights went out. Lord Vex and his Vexbots stole the gems and smashed every word to pieces — now no one can read. Not a single sign. Not one bedtime story."},
+  panel3:{t:"The city needs a hero to bring the words back. Your mom and dad searched everywhere — and they chose YOU."},
+  panel4:{t:"Put on your Gem Lenses. When you READ a gem, it lights up — and the city comes back to life, word by word."},
+  panel5:{t:"You're Super Teddy now. Rescue the gems, rebuild the words, save the city. Ready, hero?"},
   welcome:{t:"Welcome back, Super Teddy!"},
   locked_tip:{t:"Not yet, hero! Finish the missions on the path first — then this one unlocks."},
   pick:{t:"Pick your mission, Super Teddy!"},
