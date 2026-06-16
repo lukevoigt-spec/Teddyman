@@ -1960,13 +1960,26 @@ function vaultRoute(key){
 }
 /* the due items we can actually recharge today (vaultDue already caps + orders oldest-first) */
 function vaultDueRoutable(){ return vaultDue().map(vaultRoute).filter(Boolean); }
+/* GRAPHEME SURFACING: a strip of one gem per due item that charges up as each is recharged.
+   A gem's sound/word is revealed ONLY once it's charged (i<vaultPos) — so a not-yet-answered
+   find target is never shown on screen (anti-gaming #4). pending/current gems stay blank + grey. */
+function vaultPaintGems(){ const row=$("vaultGems"); if(!row)return; row.innerHTML="";
+  vaultPlan.forEach((it,i)=>{ const charged=i<vaultPos, cur=i===vaultPos;
+    const d=document.createElement("div");
+    d.className="vgem"+(charged?" charged":(cur?" cur":""))+(i===vaultPos-1?" justcharged":"");
+    const g=(it.mode==="find")?it.g:(toGraphemes(it.w||"")[0]||"");
+    const col=charged?(GEMCOLOR[g]||"#7bd1ff"):"#3a355c";
+    const lbl=charged?((it.mode==="find"?(it.g||""):(it.w||"")).toUpperCase()):"";
+    d.innerHTML=gemSVG("",col,40)+`<span class="vgem-lbl">${escHTML(lbl)}</span>`;
+    row.appendChild(d); }); }
 function startVault(){ clearFlow(); show("scrVault"); vaultPlan=vaultDueRoutable(); vaultPos=0;
   S.vaultNudge=dayKey(); save();                         /* opening the Vault counts as today's nudge */
-  $("vaultWord").innerHTML=""; $("vaultChoices").innerHTML="";
+  $("vaultWord").innerHTML=""; $("vaultChoices").innerHTML=""; vaultPaintGems();
   if(!vaultPlan.length){ $("vaultProg").textContent="✨";
     narrate("vault",$("vaultText"),["vault_full"],"Your gems are fully charged! ✨"); return; }
   flow(narrate("vault",$("vaultText"),["vault_intro"]),()=>vaultStep()); }
 function vaultStep(){
+  vaultPaintGems();                                      /* reflect the latest charge state (incl. all-charged when done) */
   if(vaultPos>=vaultPlan.length){ confetti(40);
     flow(narrate("vault",$("vaultText"),["vault_done"],"All charged up! ⚡"),()=>{ Aud.stop(); showBase(); }); return; }
   $("vaultProg").textContent=(vaultPos+1)+" / "+vaultPlan.length;
