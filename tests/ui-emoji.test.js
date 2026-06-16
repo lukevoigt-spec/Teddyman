@@ -72,6 +72,16 @@ ok("art.js defines the ITEMART registry", /const\s+ITEMART\s*=/.test(art));
 ok("shop render path uses itemArt() (shop grid / trophy shelf / chest + buy unlocks)",
   (game.match(/itemArt\s*\(/g) || []).length >= 4);
 ok("no shop/trophy/chest render site still injects an emoji `.ic` field", !/\$\{?\s*it\.ic\s*\}?/.test(game) && !/\+\s*item\.ic\b/.test(game));
+/* #32: shop/base coin + gem glyphs are PAINTED RASTER (gicon → art/ui-*.png), not OS emoji. 💰 (money
+   bag) and 💎 (gem stone) have NO valid use anywhere (no parent-only context), so assert they're GONE
+   from both child + chrome source. (✓/★ still appear in the parent-only Grown-Up Corner, so they're
+   not blanket-banned here.) */
+const idx = read("index.html");
+ok("game.js defines the gicon() raster-glyph resolver (#32)", /function\s+gicon\s*\(/.test(game));
+ok("shop/HUD render the coin via gicon('coin'), not the SVG coinIcon", /gicon\(["']coin["']/.test(game));
+ok("💰 money-bag emoji fully gone (→ painted ui-coin.png)", !/\u{1F4B0}/u.test(game) && !/\u{1F4B0}/u.test(idx));
+ok("💎 gem-stone emoji fully gone (→ painted ui-gem.png)", !/\u{1F48E}/u.test(game) && !/\u{1F48E}/u.test(idx));
+ok("the painted glyph PNGs exist", ["ui-coin","ui-gem","ui-check","ui-star"].every(n=>fs.existsSync(path.join(ROOT,"art",n+".png"))));
 /* nav de-emoji: art.js still defines the crafted UICONS registry (used elsewhere / kept for reuse) */
 ok("art.js defines the uiIcon() resolver + UICONS registry (crafted nav glyphs)", /function\s+uiIcon\s*\(/.test(art) && /\bUICONS\s*=/.test(art));
 /* NAV-2 + back-button removal: navChrome() builds the 3 corner buttons from the premium raster nav-*.png

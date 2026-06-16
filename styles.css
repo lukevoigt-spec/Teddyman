@@ -181,6 +181,8 @@ body.lite .vaultpop{ animation-duration:1.2s; } body.lite .vaultpopart{ filter:n
 /* (old city-name DROPDOWN nav CSS removed — superseded by the 4-corner nav; .navwrap/.navchip/
    .navmenu/.navitem markup no longer exists, so these rules were dead. QA #58 drift resolved.) */
 .starsrow{font-family:'Bangers',cursive;font-size:clamp(24px,3.8vw,34px);color:var(--gold);-webkit-text-stroke:3px var(--ink);paint-order:stroke;letter-spacing:.04em;}   /* U2: bigger + stroked round-progress counter */
+/* #32 raster glyphs (painted coin/gem/check/star — replace child-facing OS emoji): sit inline like a glyph */
+.gicon{display:inline-block;vertical-align:-0.24em;object-fit:contain;}
 /* ===== 4-CORNER NAV (NAV-PLAN parent revision): HUD UL, Settings UR (gated), Home→Base LL, Map LR =====
    #hud is a full-bleed pass-through; each corner pins to a stage edge. Hidden whole on learning screens
    (body.learning) so the prompt is the only focal point — Replay/.ear + Skip live outside #hud and stay. */
