@@ -407,12 +407,13 @@ function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.r
   /* diegetic corner-bracket frame on the gameplay/learning screens only (not the
      title/map/base/cutscenes, where it'd crowd or clash) */
   document.body.classList.toggle("framed", FRAME_SLOTS.has(BG_MAP[id]));
+  document.body.classList.toggle("learning", FRAME_SLOTS.has(BG_MAP[id]));   /* hide the 4 nav corners during a learning run (parent) — Replay/.ear + Skip stay (#8) */
   /* cinematic "movie mode" (moodier scene grade) on the story cutscenes */
   const cine=(id==="scrIntro"||id==="scrInter");
   document.body.classList.toggle("cinematic", cine);
   if(!cine)document.body.classList.remove("cine-villain");
   if(typeof Music!=="undefined" && Music.setAct) Music.setAct(currentAct());   /* swap the act's theme */
-  $("hud").style.display=(id==="scrTitle")?"none":"flex"; refreshHUD();
+  $("hud").style.display=(id==="scrTitle")?"none":""; refreshHUD();   /* nav corners stay on learning screens; body.learning hides the HUD + makes them recessive (CSS) */
   const dm=$("dailyMeter"); if(dm){ dm.style.display=(id==="scrMap")?"block":"none"; if(id==="scrMap")updateDailyMeter(); } }
 function refreshHUD(){ $("hudStars").textContent="⚡ "+S.stars; }
 /* ---------------- JUICE / FX ----------------
@@ -747,25 +748,24 @@ $("btnSkip").onclick=()=>{ Aud.stop(); const f=__cont; clearFlow(); if(f)f(); };
    "jump ahead". A tap-to-start CTA implied a false gate + extra decision that broke the audio-first flow.) */
 /* CITY-NAME NAV MENU — tap the city chip (on any screen) to jump anywhere, so the
    map view stays uncluttered (no more controls layered over the painting). */
-function closeNav(){ const m=$("navMenu"); if(m)m.classList.remove("on"); }
-function navGo(fn){ closeNav(); Aud.stop(); clearFlow(); fn(); }
-/* Premium UI: prepend crafted SVG icons (house icon language) to the nav chip + items, replacing the
-   old child-facing OS emoji (STYLE §6/§18). Label text stays in index.html; the icon is added here so
-   a missing uiIcon degrades to plain text. */
-(function navIcons(){ if(typeof uiIcon!=="function")return;
-  const set=(id,key,sz)=>{ const el=$(id); if(el)el.innerHTML=uiIcon(key,sz||20)+el.textContent; };
-  set("hudTitle","menu",18); set("navMap","map"); set("navBase","base"); set("navHome","home"); set("navGrown","grown");
-  /* in-game "home" controls: the BACK TO BASE buttons (Recharge/Training/Scroll/Warm) — crafted shield
-     icon in place of the old 🏠 emoji. (replay 🔊 + skip ⏭ are already crafted SVG via CSS/markup.) */
-  ["btnVaultBack","btnTrainBack","btnScrollBack","btnWarmBack"].forEach(id=>set(id,"base",22)); })();
-$("hudTitle").onclick=e=>{ e.stopPropagation(); const m=$("navMenu"); if(m)m.classList.toggle("on"); };
-$("navMap").onclick=()=>navGo(toMap);
-$("navBase").onclick=()=>navGo(showBase);
-$("navHome").onclick=()=>navGo(()=>{ paintTitle(); show("scrTitle"); });
-/* Settings now lives IN the menu as a gated item (the cognitive math-gate replaces the old hidden
-   3s-hold gear) — one nav surface, declutters the HUD. The gate stops a kid who taps it. */
-{ const ng=$("navGrown"); if(ng)ng.onclick=()=>{ closeNav(); Aud.pick&&Aud.pick(); parentGate(); }; }
-document.addEventListener("click",closeNav);   /* tap anywhere else closes the menu */
+function closeNav(){}   /* no dropdown in the 4-corner model — kept as a safe no-op for navGo() */
+function navGo(fn){ Aud.stop(); clearFlow(); fn(); }
+/* 4-CORNER NAV (NAV-PLAN parent revision 2026-06-16): four fixed corner buttons, same on every screen,
+   hidden during a learning run (body.learning). HUD/status = upper-left; Settings (gated) = upper-right;
+   HOME→Hero Base = lower-left; Map = lower-right. Crafted uiIcon glyphs (house icon language, no emoji). */
+(function navChrome(){
+  /* the three corner buttons use the parent's premium ornate-framed raster icons (art/nav-*.png),
+     Clash-of-Clans / Kingdom-Rush house style — the framed image IS the button (see .navcorner CSS). */
+  const img=(id,file,label)=>{ const el=$(id); if(el)el.innerHTML='<img class="navicon" src="art/'+file+'" alt="'+label+'" draggable="false">'; };
+  img("navBaseBtn","nav-home.png","Hero Base");   /* lower-left → Hero Base ("home") */
+  img("navMapBtn","nav-map.png","World Map");      /* lower-right → world map */
+  img("navSettings","nav-settings.png","Grown-ups");/* upper-right → gated Grown-Up Corner */
+  /* in-game "home" controls: the BACK TO BASE buttons (Recharge/Training/Scroll/Warm) — crafted shield glyph. */
+  if(typeof uiIcon==="function"){ const set=(id,key,sz)=>{ const el=$(id); if(el)el.innerHTML=uiIcon(key,sz||22)+el.textContent; };
+    ["btnVaultBack","btnTrainBack","btnScrollBack","btnWarmBack"].forEach(id=>set(id,"base",22)); } })();
+{ const m=$("navMapBtn");  if(m)m.onclick=()=>navGo(toMap); }                          /* lower-right → world map */
+{ const b=$("navBaseBtn"); if(b)b.onclick=()=>navGo(showBase); }                       /* lower-left → Hero Base ("home") */
+{ const s=$("navSettings");if(s)s.onclick=()=>{ Aud.pick&&Aud.pick(); parentGate(); }; }  /* upper-right → gated Grown-Up Corner */
 
 /* ---------------- MISSION FLOW ---------------- */
 let CUR=null;
