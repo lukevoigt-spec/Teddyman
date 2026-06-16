@@ -1154,7 +1154,7 @@ body.calm .scrollword{transition:none;} body.calm .scrollword.lit{transform:none
    HERO BASE — LAYERED HUB (Oracle 2026-06-16): painted backdrop + spotlit hero +
    clean UI sections over it. Replaces the old flat .basewrap list-cards.
    ============================================================ */
-#scrBase{ display:block; padding:0; }   /* keep .screen position:absolute+inset:0 as the positioning context */
+#scrBase.on{ display:block; padding:0; }   /* layered-hub uses absolute children, not flex — but ONLY when active (.on); gating on .on keeps ID specificity above .screen.on while still letting .screen{display:none} hide it on every OTHER screen (else the edge panels bleed through everywhere) */
 /* top-centre status (rank + coins). The 4 nav corners own the screen corners. */
 .bstatus{ position:absolute; top:calc(env(safe-area-inset-top,8px) + 6px); left:50%; transform:translateX(-50%);
   display:flex; gap:10px; align-items:center; z-index:6; }
