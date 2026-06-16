@@ -35,7 +35,7 @@ Award Bar rubric **v1 synthesized** (14 criteria, 5-stream research review). Now
 - **#35 [O]** Mouth art on the big cutscene portraits (driver already shipped)
 - **#36 [O]** Cinematic SVG cutscene pass (beats 2–6: Ken Burns + parallax)
 - **#37 [O]** Portal AI-video spike *(optional, render-gated, SVG fallback)*
-- **#38 [O]** Swap the map ally figures to new art
+- **#38 [O]** Map allies — **ground them standing ON the path by their zone (parent-flagged: they float in mid-air)** + swap to new ally art
 - **#39 [O]** §20 render-gate catch-up on new Act-2 systems + the calm-prompt check
 
 ## ✓ DONE (recent — last sweep)
