@@ -43,7 +43,7 @@ const LEAGUE=[...CAGED.map(t=>({mid:t.mid,kind:t.kind,name:t.name,real:t.real}))
   {mid:128,kind:"kendall",name:"MISS KENDALL",real:"MISS KENDALL"}];
 /* a small LIVING friend on the map — recognizable little figure; captive ones
    wave for help with a ball-and-chain, freed ones cheer with arms up. */
-const ALLY_COL={tank:"#e6453c", flip:"#3a9bff", sunny:"#ffce3a", heart:"#ff7d9c", leighton:"#a06ae8", kendall:"#5fa86a"};
+const ALLY_COL={tank:"#e6453c", flip:"#3a9bff", sunny:"#ffce3a", heart:"#ff7d9c", leighton:"#a06ae8", kendall:"#5fa86a", cal:"#2bb5a6", nora:"#b79be0"};
 /* the newer RASTER ally art (real-photo-based standing token) where it exists (tank/flip/sunny/
    heart/leighton); null otherwise (kendall/jj/cal/nora/mom/dad → caller falls back to the SVG).
    Used for the FULL-FIGURE showcases (hero card, homecoming) so they no longer show the old

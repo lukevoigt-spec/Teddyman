@@ -15,6 +15,24 @@ resolves before merge; this file keeps the durable before/after record. Shots li
 
 ---
 
+## 2026-06-16 · Cast cousins — Cal & Nora flat-2D rasters  ·  PASS
+**Branch:** `oracle/cast-cousins` → PR for Neo.
+**Files:** `art/ally-cal.png` + `art/ally-nora.png` (new 560² rasters), `art.js` (RASTER flags),
+`allies.js` (ALLY_COL signature colors), `tools/shot.mjs` (new `cast` cohesion scene).
+**Story:** parent supplied 3D Pixar-render cousin portraits (Cal approved as likeness; Nora's hair
+re-toned darker/less-red per request). Render-gate caught a style mismatch — the **entire roster is
+flat-2D painterly** (teddy-m*, ally-tank) — so 3D characters would stand out on the Base shelf/map.
+Surfaced both styles to the parent with a side-by-side; parent chose the **flat-2D restyle**. Restyled
+each via gpt-image-1 (likeness preserved: Cal = ginger/freckles/blue shirt; Nora = brown hair/striped
+dress), then enriched the shading to match Tank's painterly finish, normalized to 560² feet-at-baseline.
+**Shot:** `cast` (Archie · Ellie · Cal · Nora through `allyBody`→`rasterArt`). Cohesive — same bold
+outline, grounded feet, soft signature-color aura + contact shadow. Zero emoji. **PASS.**
+**Follow-up for Neo (game logic, NOT art):** Cal & Nora aren't in `CAGED`/`LEAGUE` yet, so they don't
+surface in-game — the art resolves the instant they're rostered (rescue mission + hero alias = a design
+call with the parent). Lore frames JJ/Cal/Nora as Act-2 captured friends.
+
+---
+
 ## 2026-06-15 · Render-gate confirmed live
 `node tools/shot.mjs` runs on this machine (Chromium 1223 / WebKit 2287, Playwright 1.60). The
 render-gate is real — every entry below is from an actual boot of the game in a real browser, not a
