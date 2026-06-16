@@ -176,6 +176,8 @@ body.lite .vaultpop{ animation-duration:1.2s; } body.lite .vaultpopart{ filter:n
 .hud>*{pointer-events:auto;}
 .chip{background:rgba(21,15,46,.85);border:3px solid var(--txt);border-radius:18px;padding:6px 16px;font-family:'Bangers',cursive;font-size:clamp(17px,2.6vw,24px);color:var(--gold);letter-spacing:.06em;}
 .roundbtn{width:72px;height:72px;border-radius:50%;background:rgba(21,15,46,.85);border:3px solid var(--txt);color:var(--txt);font-size:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+/* Skip = audio-first lifeline (#8): visual 72px + a transparent ring → ~100px hit area (>=96px, constraint #6), same trick as .ear::after */
+#btnSkip::after{content:"";position:absolute;inset:-14px;border-radius:50%;}
 /* city-name dropdown nav (tap the chip → menu, reachable on every screen) */
 .navwrap{position:relative;}
 .navchip{cursor:pointer;user-select:none;-webkit-user-select:none;}

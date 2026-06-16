@@ -1486,7 +1486,7 @@ function showWin(firstTime){ show("scrWin");
 function showRest(nextM){ show("scrRest");
   $("restHero").innerHTML=heroMarquee(160);
   narrate("rest",$("restText"),["rest1","rest2"]);
-  $("btnRestDone").onclick=()=>{Aud.stop();show("scrTitle");};
+  $("btnRestDone").onclick=()=>navGo(toMap);   /* Done resting → the MAP (home), not the bare Title (NAV-PLAN slice 4) */
   $("btnRestMore").onclick=()=>{ nextM?startMission(nextM):toMap(); }; }
 
 /* ---------------- HERO BASE ---------------- */
