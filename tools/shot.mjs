@@ -90,6 +90,8 @@ const SCENES = {
   chests: `(function(){ S.chests={wood:2,silver:1,gold:1}; S.coins=40; [1,3].forEach(function(i){S.done[i]=true;}); paintBase(); show('scrBase'); return 1; })()`,
   rankbar: `(function(){ show('scrBase'); paintBase(); var pf=document.getElementById('powerFill'); if(pf)pf.style.width='62%'; document.getElementById('powerLbl').textContent='SUPER HERO'; return 1; })()`,
   basefull:`(function(){ [1,3,4,6,8].forEach(function(i){S.done[i]=true;}); S.coins=40; S.owned={banner:1}; paintBase(); show('scrBase'); return 1; })()`,
+  // portal cutscene video beat in the Act1->Act2 interlude
+  interludevid: `(function(){ startInterlude(); interIx=INTERLUDE.length-1; paintInter(); if(typeof clearFlow==='function')clearFlow(); return 1; })()`,
   // cast cohesion check: full-body rasters of existing allies next to the cousins (Cal/Nora)
   cast: `(function(){ document.body.innerHTML='<div id="cz" style="display:flex;gap:18px;align-items:flex-end;justify-content:center;background:#241a3e;padding:48px 24px;height:100%;box-sizing:border-box;"></div>'; var k=[['tank','Archie'],['flip','Ellie'],['cal','Cal'],['nora','Nora']]; document.getElementById('cz').innerHTML=k.map(function(p){return '<div style="text-align:center;">'+allyBody(p[0],210)+'<div style="color:#fff;font-family:sans-serif;font-size:15px;margin-top:6px;">'+p[1]+'</div></div>';}).join(''); return 1; })()`,
 };

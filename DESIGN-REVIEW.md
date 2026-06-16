@@ -15,6 +15,27 @@ resolves before merge; this file keeps the durable before/after record. Shots li
 
 ---
 
+## 2026-06-16 · Portal cutscene (AI video) wired into the Act1→Act2 interlude  ·  PASS
+**Branch:** `oracle/portal-cutscene` → PR for Neo.
+**Files:** `art/cutscene-portal.mp4` (2.9MB, 1280×854, 18.6s), `game.js` (INTERLUDE video beat +
+`playInterVideo`), `tools/shot.mjs` (`interludevid` scene).
+**What:** the first AI-video cutscene, built entirely from our 2D art (parent loved it). Muscular
+end-of-Act-1 Teddy turns to a swirling time portal → steps through in a burst of light → arrives in
+the medieval realm as a (still-muscular) SQUIRE and delivers a lip-synced line, *"Nobody messes with
+my babysitter but me."* Pipeline: gen.mjs --bg painted scenes → composite our real raster Teddy →
+Kling i2v (fal) → ffmpeg xfade → fal sync-lipsync. Replaces the old portalSVG + knight-reveal SVG beats;
+the Mom&Dad / captives / Vixen SVG beats stay (Step 2 will convert them to video).
+**Safety (constraint #8):** SKIP button ALWAYS present (no hang), auto-advances on `ended`, any
+load/decode error also advances; `play()` runs inside the prior beat's click handler so iPad Safari
+allows sound; Music ducks during playback.
+**Shot:** `interludevid` — video plays on scrInter, framed by the Act-2 gold panel, MENU + SKIP present.
+Tests: curriculum 110/110, save 109/109, `node --check` clean. **PASS.**
+**Note:** the cutscene squire is muscular (parent's cinematic continuity); in-game heroOpts still resets
+muscle to 0 on Act-2 entry (CLAUDE.md) — that's the *playable* state, the video is the cinematic.
+**Voice:** TTS placeholder — to be re-recorded via the Voice Studio (same lip-sync pipeline).
+
+---
+
 ## 2026-06-16 · Cast cousins — Cal & Nora flat-2D rasters  ·  PASS
 **Branch:** `oracle/cast-cousins` → PR for Neo.
 **Files:** `art/ally-cal.png` + `art/ally-nora.png` (new 560² rasters), `art.js` (RASTER flags),
