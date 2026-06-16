@@ -753,11 +753,16 @@ function navGo(fn){ Aud.stop(); clearFlow(); fn(); }
 /* 4-CORNER NAV (NAV-PLAN parent revision 2026-06-16): four fixed corner buttons, same on every screen,
    hidden during a learning run (body.learning). HUD/status = upper-left; Settings (gated) = upper-right;
    HOME→Hero Base = lower-left; Map = lower-right. Crafted uiIcon glyphs (house icon language, no emoji). */
-(function navChrome(){ if(typeof uiIcon!=="function")return;
-  const set=(id,key,sz)=>{ const el=$(id); if(el)el.innerHTML=uiIcon(key,sz||36)+el.textContent; };
-  set("navMapBtn","map",36); set("navBaseBtn","home",36); set("navSettings","grown",36);   /* house=Home→Base, folded-map=Map, gear=Settings (G4) */
-  /* in-game "home" controls: the BACK TO BASE buttons (Recharge/Training/Scroll/Warm) — crafted shield. */
-  ["btnVaultBack","btnTrainBack","btnScrollBack","btnWarmBack"].forEach(id=>set(id,"base",22)); })();
+(function navChrome(){
+  /* the three corner buttons use the parent's premium ornate-framed raster icons (art/nav-*.png),
+     Clash-of-Clans / Kingdom-Rush house style — the framed image IS the button (see .navcorner CSS). */
+  const img=(id,file,label)=>{ const el=$(id); if(el)el.innerHTML='<img class="navicon" src="art/'+file+'" alt="'+label+'" draggable="false">'; };
+  img("navBaseBtn","nav-home.png","Hero Base");   /* lower-left → Hero Base ("home") */
+  img("navMapBtn","nav-map.png","World Map");      /* lower-right → world map */
+  img("navSettings","nav-settings.png","Grown-ups");/* upper-right → gated Grown-Up Corner */
+  /* in-game "home" controls: the BACK TO BASE buttons (Recharge/Training/Scroll/Warm) — crafted shield glyph. */
+  if(typeof uiIcon==="function"){ const set=(id,key,sz)=>{ const el=$(id); if(el)el.innerHTML=uiIcon(key,sz||22)+el.textContent; };
+    ["btnVaultBack","btnTrainBack","btnScrollBack","btnWarmBack"].forEach(id=>set(id,"base",22)); } })();
 { const m=$("navMapBtn");  if(m)m.onclick=()=>navGo(toMap); }                          /* lower-right → world map */
 { const b=$("navBaseBtn"); if(b)b.onclick=()=>navGo(showBase); }                       /* lower-left → Hero Base ("home") */
 { const s=$("navSettings");if(s)s.onclick=()=>{ Aud.pick&&Aud.pick(); parentGate(); }; }  /* upper-right → gated Grown-Up Corner */
