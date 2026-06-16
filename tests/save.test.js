@@ -134,6 +134,18 @@ ok("rollover zeroes today's counters", S.daily.secs===0 && S.daily.missions===0 
 ok("rollover archives yesterday's seconds into history", S.history && S.history["2000-01-01"]===123);
 ok("training time is a SUBSET of total (no double-count)", (function(){ S.daily.secs=10; S.daily.trainSecs=4; return S.daily.trainSecs<=S.daily.secs; })());
 
+grp("CLOUD-2: boot day-rollover must NOT bump S.ts ahead of the cloud comparison (#72)");
+applyProfile("teddy"); S=fresh();
+ensureDaily();                                  // settle today's bucket
+S.ts=1000;                                      // pretend this is the last real save's (old) ts
+S.daily.day="2000-01-01";                        // force a day rollover on the next call
+ensureDaily(true);                              // BOOT path: roll over in-memory, deferred (noSave)
+ok("ensureDaily(true) rolls the day over", S.daily.day===dayKey());
+ok("ensureDaily(true) does NOT bump S.ts (so a stale local can't out-rank newer cloud in the boot pull)", S.ts===1000);
+S.daily.day="2000-01-01";                        // force another rollover
+ensureDaily();                                  // POST-pull path (no noSave) DOES persist → bumps ts
+ok("ensureDaily() (post-pull) DOES bump S.ts (the rollover is persisted after the winner is chosen)", S.ts>1000);
+
 grp("security: profile names are escaped before any innerHTML use (QA #1)");
 ok("escHTML(profileName) neutralises an injected name", (function(){
   var bad=addProfile('<img src=x onerror=alert(1)>'); applyProfile("teddy");

@@ -175,9 +175,15 @@ const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#
 
 /* SAVE/PROFILES/CLOUD/daily-stats layer moved to state-save.js (loaded before game.js). */
 let __lastInteract=Date.now(), __dailyDirty=0, __inTraining=false, __lastTick=0;
+/* CLOUD-2: true until the boot cloud pull settles. While set, nothing that bumps S.ts may persist
+   (the daily tick + the background save), so a fresh local ts can't out-rank a newer cloud save before
+   the pull's comparison. Cleared in the boot cloudPull().then; cloudPull has an 8s fetch timeout so it
+   always settles (no cloud configured → resolves instantly). */
+let __bootPull=true;
 function noteInteract(){ __lastInteract=Date.now(); }
 function dailyGoalSecs(){ return (S.goalMin||15)*60; }
-function trainTick(){ ensureDaily();
+function trainTick(){ if(__bootPull)return;   /* CLOUD-2: don't roll over / count / save until the boot pull has settled (else a tick-save bumps S.ts before the cloud comparison) */
+  ensureDaily();
   const now=Date.now(), gap=now-__lastTick; __lastTick=now;
   const hidden=(typeof document!=="undefined" && document.hidden);
   /* count only genuine active seconds: not hidden, recently interacted, and the
@@ -207,7 +213,7 @@ grandfather();   /* seed the durable gear/friend records in-memory before the fi
    changed branch; re-seeding on a later boot is identical while the mission mapping is unchanged. */
 if(typeof document!=="undefined"){
   document.addEventListener("pointerdown",noteInteract,true);
-  document.addEventListener("visibilitychange",()=>{ if(document.hidden)save(); });
+  document.addEventListener("visibilitychange",()=>{ if(document.hidden && !__bootPull)save(); });   /* CLOUD-2: don't persist a fresh ts mid-boot-pull */
   setInterval(trainTick,1000);
 }
 function mast(g){ if(!S.mastery[g])S.mastery[g]={seen:0,ok:0,str:0}; return S.mastery[g]; }
@@ -601,7 +607,8 @@ cloudPull().then(changed=>{ if(changed){ grandfather(); GEO=geomFor(currentAct()
   /* CLOUD-2: now the pull has settled, persist the deferred boot day-rollover (+ any grandfather seed)
      with a correct POST-pull ts. ensureDaily() rolls over whichever save won (cloud-adopted or device-kept)
      for today; the save can no longer out-rank the cloud (it already adopted the newer one above). */
-  ensureDaily(); save(); });
+  ensureDaily(); save();
+  __bootPull=false;   /* boot settled — the daily tick + background save may now bump S.ts safely */ });
 
 /* While a cutscene character narrates, gently bob the portrait so the mentor
    reads as "talking" to Teddy (face-agnostic — works for bearded Noah, the
