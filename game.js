@@ -753,8 +753,11 @@ function navGo(fn){ closeNav(); Aud.stop(); clearFlow(); fn(); }
    old child-facing OS emoji (STYLE §6/§18). Label text stays in index.html; the icon is added here so
    a missing uiIcon degrades to plain text. */
 (function navIcons(){ if(typeof uiIcon!=="function")return;
-  const set=(id,key)=>{ const el=$(id); if(el)el.innerHTML=uiIcon(key,id==="hudTitle"?18:20)+el.textContent; };
-  set("hudTitle","menu"); set("navMap","map"); set("navBase","base"); set("navHome","home"); set("navGrown","grown"); })();
+  const set=(id,key,sz)=>{ const el=$(id); if(el)el.innerHTML=uiIcon(key,sz||20)+el.textContent; };
+  set("hudTitle","menu",18); set("navMap","map"); set("navBase","base"); set("navHome","home"); set("navGrown","grown");
+  /* in-game "home" controls: the BACK TO BASE buttons (Recharge/Training/Scroll/Warm) — crafted shield
+     icon in place of the old 🏠 emoji. (replay 🔊 + skip ⏭ are already crafted SVG via CSS/markup.) */
+  ["btnVaultBack","btnTrainBack","btnScrollBack","btnWarmBack"].forEach(id=>set(id,"base",22)); })();
 $("hudTitle").onclick=e=>{ e.stopPropagation(); const m=$("navMenu"); if(m)m.classList.toggle("on"); };
 $("navMap").onclick=()=>navGo(toMap);
 $("navBase").onclick=()=>navGo(showBase);
