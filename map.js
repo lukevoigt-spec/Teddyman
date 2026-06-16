@@ -172,6 +172,9 @@ const FRIEND_SIDE={
   1:[ 1, 1, 1, 1,-1, 1, 1,-1, 1],   // Act 1: idx4 left of the bridge, idx7 onto the castle ledge
   2:[-1,-1,-1, 1, 1, 1, 1,-1]       // Act 2: idx0-2 left bank, idx3-6 right bank, idx7 onto the keep path
 };
+/* exact-placement overrides (act → node idx → [x,y] translate) when the side-fan would land a friend
+   awkwardly. Cal's zone node sits right at the river crossing, so stand him ON the painted bridge deck. */
+const FRIEND_POS={ 2:{ 3:[852,726] } };
 function mapAlliesV2(a, zs, spots){
   /* derive from the LEAGUE roster (by act) so the rescue-pacing re-map lives in ONE place (allies.js) */
   const rescues = LEAGUE.filter(t=>Math.floor(t.mid/100)===(a-1)).map(t=>({mid:t.mid,kind:t.kind}));
@@ -183,10 +186,12 @@ function mapAlliesV2(a, zs, spots){
     const zi=zs.findIndex(z=>z.id===m.z); if(zi<0||!spots[zi]) return;
     (byZi[zi]=byZi[zi]||[]).push(r); });
   let out="";
-  const sides=FRIEND_SIDE[a];
+  const sides=FRIEND_SIDE[a], posOv=FRIEND_POS[a];
   Object.keys(byZi).forEach(zik=>{ const zi=+zik, [x,y]=spots[zi], list=byZi[zi];
     const dir = (sides && sides[zi]!=null) ? sides[zi] : (x<768?1:-1);   // push onto grass, not over the river
-    list.forEach((r,i)=>{ const fx=x+dir*(56+i*46), fy=y+6+((i%2)?-12:8);  // feet just below-beside the banner, on the path
+    const pos = posOv && posOv[zi];
+    list.forEach((r,i)=>{ const fx = pos ? pos[0]+i*46 : x+dir*(56+i*46),
+                          fy = pos ? pos[1] : y+6+((i%2)?-12:8);          // feet just below-beside the banner, on the path
       out+=`<g class="mfriend" pointer-events="none" transform="translate(${fx} ${fy}) scale(.66)">${allyMapFig(r.kind, false)}</g>`; }); });
   return out;
 }
