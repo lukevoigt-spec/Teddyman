@@ -123,10 +123,12 @@ ADHD / language delay) and **pace to the child, not the syndrome.** The variabil
    "**learning moment is calm — no animation/decoration competing with the target**" check, and the render-gate enforces it.
    *(Flagged to The Oracle.)*
 
-3. **[MED-HIGH · CONTENT] Grow the language-comprehension strand** (Simple View's 2nd factor). We're decoding-heavy; vocabulary
-   and oral/language comprehension are thin — and Teddy has a **language delay**, so this matters more for him than average.
-   Decoding stays priority #1 (right for a beginner), but **grow meaning alongside**: use mentor narration as rich oral-language
-   input, add light word-meaning/vocabulary moments, lean on the sentence/scramble work. Ramp as decoding solidifies.
+3. **[DEFERRED by parent 2026-06-16 · CONTENT] Grow the language-comprehension strand** (Simple View's 2nd factor).
+   **Parent decision: do NOT build this yet — wait until the decoding is demonstrably paying off (Teddy is visibly
+   learning to read).** Don't pre-emptively add a vocabulary/comprehension system. *(Why it's on the radar:* we're
+   decoding-heavy; vocabulary + oral/language comprehension are thin, and Teddy has a **language delay**, so it matters more
+   for him than average. When un-deferred: decoding stays priority #1, but grow meaning alongside — mentor narration as rich
+   oral-language input, light word-meaning moments, the sentence/scramble work. *)* Revisit on the parent's signal.
 
 4. **[MED · FLUENCY HONESTY] True fluency needs a listener.** The evidenced method is **guided repeated *oral* reading with
    feedback** — which a no-microphone app can't do. Our "fluency" rungs build **rapid word recognition + accuracy** (valuable,

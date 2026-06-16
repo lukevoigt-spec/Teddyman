@@ -150,6 +150,22 @@ screen `scrInter`); ends back at the title/map. All audio-first + `flow()`/watch
 `startHomecoming()` + adds `home1-8` to `data-lines.js` (both Mom/Dad lines under the single existing role **P** — no
 split); The Oracle builds the scene with the mastered-words "proof" beat.)*
 
+## G. BEAT-1 INTRO HOOK — DRAFT SCRIPT (pending parent approval; Neo updates the 5 `panel1-5` texts in `data-lines.js`)
+The Act-1 cold-open. **Drop-in: same 5-panel structure + art** (`INTRO[]` city → Vex → mom&dad → Gem Lenses → hero), just
+elevated line text — cold-open craft (wonder/threat fast, **fuse reading to the superpower**, mom-&-dad-chose-you
+relatedness, end on "you're ready"). Each line ≤1 "!" (§12). Before → after:
+| panel | before | **after (draft)** |
+|---|---|---|
+| `panel1` (city, WONDER) | "This is Star Force City. A city powered by magical Letter Gems, words, and stories." | **"Look up there — Star Force City, the brightest city in the whole galaxy, powered by glowing Letter Gems."** |
+| `panel2` (Vex, THREAT · fx:villain) | "But one night, LORD VEX and his Vexbot army attacked! …Now nobody can read…" | **"Then the lights went out. Lord Vex and his Vexbots stole the gems and smashed every word to pieces — now no one can read. Not a single sign. Not one bedtime story."** |
+| `panel3` (mom&dad, the CALL) | "The city needed a hero. …your mom and dad… chose YOU, Super Teddy." | **"The city needs a hero to bring the words back. Your mom and dad searched everywhere — and they chose YOU."** |
+| `panel4` (Gem Lenses — **the FUSE**) | "These are the Gem Lenses. …you can see hidden Letter Gems…" | **"Put on your Gem Lenses. When you READ a gem, it lights up — and the city comes back to life, word by word."** |
+| `panel5` (hero, GO · fx:heroic) | "Rescue the gems. Rebuild the words. Save Star Force City! Are you ready, Super Teddy?" | **"You're Super Teddy now. Rescue the gems, rebuild the words, save the city. Ready, hero?"** |
+
+The key change is `panel4`: **reading the gem is what brings the city back** — so the child *wants* to read (research:
+make reading the superpower the hero craves). Optional stretch: add a short **Vex taunt** (role C) on the threat beat for
+villain juice. *(Status: DRAFT — Trinity, 2026-06-16, pending approval. Drop-in = rewrite 5 texts; no art/flow change.)*
+
 ## Sources
 Huynh et al. 2021 (*IEEE TVCG*, narrative ↑ engagement, not test scores) · Przybylski, Rigby & Ryan 2010 (Self-Determination
 Theory & games) · Mueller & Dweck (process vs. trait praise) · Pixar story-structure craft canon · MDN/WebKit (iPad video
