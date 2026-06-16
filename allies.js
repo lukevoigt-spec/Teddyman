@@ -13,7 +13,9 @@
    zone 1). tank=zone1(m8), flip=zone3(m26), sunny=zone5(m30), heart=zone7(m36), leighton=finale(m48).
    Save-safe: grandfather() seeds S.freed from the FROZEN legacy mids (LEGACY_RESCUE_MID, game.js) so
    anyone who already freed a friend under the old mids keeps them. */
-const CAGED=[{mid:8,kind:"tank",name:"TANK",real:"ARCHIE"},{mid:26,kind:"flip",name:"FLIP",real:"ELLIE"},{mid:30,kind:"sunny",name:"SUNNY",real:"WILLIAM"}];
+/* name === real for everyone: Teddy knows his friends by their REAL names, not hero aliases (parent
+   2026-06-16) — the old aliases (Tank/Flip/Sunny) confused him. Voice lines re-recorded to match. */
+const CAGED=[{mid:8,kind:"tank",name:"ARCHIE",real:"ARCHIE"},{mid:26,kind:"flip",name:"ELLIE",real:"ELLIE"},{mid:30,kind:"sunny",name:"WILLIAM",real:"WILLIAM"}];
 /* Hero League: each friend (a REAL person Teddy knows) owns one mission type and
    cheers him BY NAME during it, once freed. Amelia cheers on every win. */
 const ALLY={
@@ -38,8 +40,8 @@ function allyPop(kind){ const st=$("stage"); if(!st)return;
 /* Full league roster for the Hero Base shelf (mid = mission that frees them).
    real = the actual person Teddy knows; name = their hero alias. */
 const LEAGUE=[...CAGED.map(t=>({mid:t.mid,kind:t.kind,name:t.name,real:t.real})),
-  {mid:36,kind:"heart",name:"HEARTGUARD",real:"AMELIA"},
-  {mid:48,kind:"leighton",name:"STARLIGHT PRINCESS",real:"LEIGHTON"},
+  {mid:36,kind:"heart",name:"AMELIA",real:"AMELIA"},
+  {mid:48,kind:"leighton",name:"LEIGHTON",real:"LEIGHTON"},
   /* ACT 2 captured friends — rescued like the Act-1 league, spread across zones for fun progression
      (parent 2026-06-16): JJ at the Iron Forge (m118), Cal at the Singing Glade (m137), Nora at the
      Giant's Bridge (m172); Miss Kendall at the Dragon Keep finale (m128). NO hero aliases — Teddy knows

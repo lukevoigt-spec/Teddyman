@@ -392,9 +392,13 @@ beautiful are the **amplifiers** that make the learning happen — they get him 
   done) drops those filters on Lite for older iPads. Allies got a glow-up too: allyFace gained skin
   gradient + rim shadow + brows/cheeks/nose (depth, not flat), and allyMapFig a torso sheen + chest
   emblem (rendered smaller on the map). Tune characters in hero-lab.html / via the puppeteer shot harness.
-- Allies are real family/friends, freed from Vex's cages at milestone missions:
-  Tank (Archie), Flip (Ellie), Sunny (William, comic relief), Heartguard (Amelia, M2 rescue arc),
-  Leighton the Starlight Princess (final rescue at Vex's Fortress). Mentors = Mom & Dad.
+- Allies are real family/friends, freed from Vex's cages at milestone missions: Archie (boss),
+  Ellie (trace), William (patrol, comic relief), Amelia (M2 rescue arc), Leighton (final rescue at
+  Vex's Fortress). Mentors = Mom & Dad. NO hero aliases — they're shown by their REAL names (parent
+  2026-06-16: aliases like Tank/Sunny/Heartguard confused Teddy). The internal `kind` keys stay
+  (tank/flip/sunny/heart/leighton) for save compatibility; only the display `name` is the real name.
+  Act-2 friends rescued the same way, spread across zones: JJ (Iron Forge), Cal (Singing Glade),
+  Nora (Giant's Bridge), Miss Kendall (Dragon Keep finale).
 - Show only EARNED items in collections (gems, gear, league members) — never empty slots.
 
 ## Curriculum state

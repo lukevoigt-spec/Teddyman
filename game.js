@@ -1439,7 +1439,7 @@ function showWin(firstTime){ show("scrWin");
   else if(CUR.finale) ids = currentAct()===2 ? ["act2_win"] : (CUR.z===4 ? ["m4_letters"] : (CUR.z===3 ? ["m3_done"] : ["finale1","finale2","finale3"]));
   else if(firstTime&&gear) ids=[currentAct()===2?"win_grow2":"win_grow","win_gear",GEARLINE[gear]];
   else ids=[currentAct()===2?"win_grow2":"win_grow"];
-  const FREE={3:"free_tank",6:"free_flip",8:"free_sunny"};
+  const FREE={8:"free_tank",26:"free_flip",30:"free_sunny"};   /* current CAGED rescue mids (was the stale legacy 3/6/8 → played the wrong friend's line) */
   if(firstTime&&FREE[CUR.id])ids.unshift(FREE[CUR.id]);
   /* Heartguard, once rescued, is the league's cheerleader on every win */
   if(S.done[17]&&!CUR.rescue)ids.push("heart_cheer"+(1+(S.stars%3)));
@@ -1554,13 +1554,13 @@ function paintBase(){
 
 /* ---------------- HERO CARD (Pokémon-style full-body popup) ----------------
    Tap a freed friend on the Base league shelf → a flip card: full-body art +
-   alias on the front, a short bio + stats on the back. Pure cosmetic delight. */
+   name on the front, a short bio + stats on the back. Pure cosmetic delight. */
 const HERO_BIO={
   tank:"Archie — Teddy’s mighty friend. Smashes through Vexbot armies and powers up every Boss Battle.",
   flip:"Ellie — quick and fearless. Flips past danger and guides Teddy through letter tracing.",
   sunny:"William — Teddy’s cousin and the team’s ray of sunshine. Cracks jokes and keeps every patrol bright.",
-  heart:"Amelia — the Heartguard. Shields her friends and cheers Teddy on after every victory.",
-  leighton:"Leighton — the Starlight Princess, freed from Lord Vex’s Fortress at the end of the Star Force City story.",
+  heart:"Amelia — shields her friends and cheers Teddy on after every victory.",
+  leighton:"Leighton — freed from Lord Vex’s Fortress at the end of the Star Force City story.",
   kendall:"Miss Kendall — Teddy’s beloved teacher, rescued from the Vixen’s Dragon Keep.",
   jj:"JJ — small, wild, and bursting with energy.",
   cal:"Cal — a mischievous grin and always scheming something fun.",
