@@ -655,6 +655,25 @@ const PICONS={
   pig:()=>`<svg class="picicon" viewBox="0 0 100 100"><path d="M30 28 L41 41 L26 45 Z" fill="#f4a0c0" stroke="${PI_INK}" stroke-width="4" stroke-linejoin="round"/><path d="M70 28 L59 41 L74 45 Z" fill="#f4a0c0" stroke="${PI_INK}" stroke-width="4" stroke-linejoin="round"/><circle cx="50" cy="56" r="30" fill="#f7b6d2" stroke="${PI_INK}" stroke-width="4"/><circle cx="40" cy="51" r="4" fill="${PI_INK}"/><circle cx="60" cy="51" r="4" fill="${PI_INK}"/><ellipse cx="50" cy="65" rx="14" ry="10" fill="#ef8fb8" stroke="${PI_INK}" stroke-width="3"/><circle cx="45" cy="65" r="2.6" fill="${PI_INK}"/><circle cx="55" cy="65" r="2.6" fill="${PI_INK}"/></svg>`
 };
 
+/* UI ICONS (Premium UI Overhaul — nav/chip, batch: nav menu): crafted SVG glyphs in the house icon
+   language (PI_INK outline, gold flat fill) to replace child-facing OS emoji (STYLE §6/§18, rule #4).
+   Parametric size; gold reads on the dark nav menu. uiIcon(key,size) returns "" for an unknown key so
+   a missing icon degrades to just the text label (never breaks a button). */
+const UI_GOLD="#ffd23a";
+const UICONS={
+  /* hamburger MENU */
+  menu:(s=20)=>`<svg viewBox="0 0 100 100" width="${s}" height="${s}" style="vertical-align:-3px;margin-right:7px" aria-hidden="true"><g fill="${UI_GOLD}" stroke="${PI_INK}" stroke-width="5" stroke-linejoin="round"><rect x="16" y="24" width="68" height="13" rx="6"/><rect x="16" y="44" width="68" height="13" rx="6"/><rect x="16" y="64" width="68" height="13" rx="6"/></g></svg>`,
+  /* World Map — location pin */
+  map:(s=20)=>`<svg viewBox="0 0 100 100" width="${s}" height="${s}" style="vertical-align:-4px;margin-right:7px" aria-hidden="true"><path d="M50 10 C31 10 18 25 18 43 C18 67 50 92 50 92 C50 92 82 67 82 43 C82 25 69 10 50 10 Z" fill="${UI_GOLD}" stroke="${PI_INK}" stroke-width="6" stroke-linejoin="round"/><circle cx="50" cy="42" r="12" fill="${PI_INK}"/></svg>`,
+  /* Hero Base — shield with a star */
+  base:(s=20)=>`<svg viewBox="0 0 100 100" width="${s}" height="${s}" style="vertical-align:-4px;margin-right:7px" aria-hidden="true"><path d="M50 12 L84 24 V50 C84 73 50 90 50 90 C50 90 16 73 16 50 V24 Z" fill="${UI_GOLD}" stroke="${PI_INK}" stroke-width="6" stroke-linejoin="round"/><path d="M50 32 l6 12 13 1 -10 9 3 13 -12 -7 -12 7 3 -13 -10 -9 13 -1z" fill="${PI_INK}"/></svg>`,
+  /* Home — house */
+  home:(s=20)=>`<svg viewBox="0 0 100 100" width="${s}" height="${s}" style="vertical-align:-4px;margin-right:7px" aria-hidden="true"><path d="M50 14 L88 48 H76 V86 H24 V48 H12 Z" fill="${UI_GOLD}" stroke="${PI_INK}" stroke-width="6" stroke-linejoin="round"/><rect x="42" y="60" width="16" height="26" fill="${PI_INK}"/></svg>`,
+  /* Grown-Ups — gear (two crossed plus-bars + hub = 8-tooth cog) */
+  grown:(s=20)=>`<svg viewBox="0 0 100 100" width="${s}" height="${s}" style="vertical-align:-4px;margin-right:7px" aria-hidden="true"><g fill="${UI_GOLD}" stroke="${PI_INK}" stroke-width="4" stroke-linejoin="round"><rect x="36" y="12" width="28" height="76" rx="7"/><rect x="12" y="36" width="76" height="28" rx="7"/><g transform="rotate(45 50 50)"><rect x="36" y="12" width="28" height="76" rx="7"/><rect x="12" y="36" width="76" height="28" rx="7"/></g></g><circle cx="50" cy="50" r="25" fill="${UI_GOLD}" stroke="${PI_INK}" stroke-width="5"/><circle cx="50" cy="50" r="9" fill="${PI_INK}"/></svg>`
+};
+function uiIcon(k,s){ return (UICONS[k]?UICONS[k](s):""); }
+
 /* TREASURE ICONS (Training-Room Vault climax — coin -> gold bar -> diamond). House icon language
    (PI_INK outline, flat gem-palette fills, a floor shadow + white specular so each reads as a
    sculpted object, NOT an emoji — STYLE §6/§18). Parametric size; pure SVG, no game state.

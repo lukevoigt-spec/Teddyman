@@ -749,6 +749,12 @@ $("btnSkip").onclick=()=>{ Aud.stop(); const f=__cont; clearFlow(); if(f)f(); };
    map view stays uncluttered (no more controls layered over the painting). */
 function closeNav(){ const m=$("navMenu"); if(m)m.classList.remove("on"); }
 function navGo(fn){ closeNav(); Aud.stop(); clearFlow(); fn(); }
+/* Premium UI: prepend crafted SVG icons (house icon language) to the nav chip + items, replacing the
+   old child-facing OS emoji (STYLE §6/§18). Label text stays in index.html; the icon is added here so
+   a missing uiIcon degrades to plain text. */
+(function navIcons(){ if(typeof uiIcon!=="function")return;
+  const set=(id,key)=>{ const el=$(id); if(el)el.innerHTML=uiIcon(key,id==="hudTitle"?18:20)+el.textContent; };
+  set("hudTitle","menu"); set("navMap","map"); set("navBase","base"); set("navHome","home"); set("navGrown","grown"); })();
 $("hudTitle").onclick=e=>{ e.stopPropagation(); const m=$("navMenu"); if(m)m.classList.toggle("on"); };
 $("navMap").onclick=()=>navGo(toMap);
 $("navBase").onclick=()=>navGo(showBase);

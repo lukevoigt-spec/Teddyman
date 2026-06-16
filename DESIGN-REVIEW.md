@@ -30,6 +30,23 @@ merged separately) is unaffected.
 
 ---
 
+## 2026-06-16 · Premium UI — nav menu crafted icons (de-emoji)  ·  PASS
+**Branch:** `oracle/premium-buttons` → PR for Neo. Premium UI Overhaul, batch: **nav menu + MENU chip**.
+**Problem:** the nav dropdown (on every screen via the MENU chip) used raw OS emoji — `☰ MENU`,
+`🗺️ World Map`, `🏰 Hero Base`, `🏠 Home`, `⚙️ Grown-Ups` — a child-facing rule-#6 violation + premium
+gap (emoji render per-OS, off the painted/gold look).
+**Fix:** new `UICONS` registry + `uiIcon(key,size)` in art.js — crafted SVG glyphs in the house icon
+language (`PI_INK` outline, gold flat fill): hamburger / location-pin / shield-with-star / house / gear.
+`index.html` nav labels are now plain text; game.js `navIcons()` prepends the icon (degrades to text if
+`uiIcon` is missing — never breaks a button). Onclick handlers untouched.
+**Shot:** `menu` — five crisp gold icons, cohesive with the ARENA gold, zero emoji. `node --check` clean,
+`ui-emoji.test` 6/6. **PASS.**
+**Next batches (logged, sequenced):** action rail (`🏋️ TRAINING ROOM` / `🛒 SHOP` / `🔋 RECHARGE` /
+`🎁 GIFTS`), then HUD (`⚡`/coin), then in-game controls (replay/skip/home) — each its own render-gated PR,
+reusing `UICONS`.
+
+---
+
 ## 2026-06-16 · Portal cutscene (AI video) wired into the Act1→Act2 interlude  ·  PASS  ·  (REVERTED — see above)
 **Branch:** `oracle/portal-cutscene` → PR for Neo.
 **Files:** `art/cutscene-portal.mp4` (2.9MB, 1280×854, 18.6s), `game.js` (INTERLUDE video beat +
