@@ -276,6 +276,22 @@ ok("migrate converts the OLD default goalMin=30 to the new default 15", migrate(
 ok("migrate PRESERVES a custom goal the parent set (not the old default)", migrate({v:1,goalMin:45,done:{},mastery:{}}).goalMin===45 && migrate({v:1,goalMin:20,done:{},mastery:{}}).goalMin===20);
 ok("a save with no goalMin is left for ensureDaily to default (migrate doesn't force it)", migrate({v:1,done:{},mastery:{}}).goalMin===undefined);
 
+grp("CLOUD-2: the BOOT day-rollover must not bump ts before the cloud pull (no out-ranking a newer cloud save)");
+ok("ensureDaily(true) rolls over the day but does NOT bump S.ts (deferred save — can't out-rank cloud)", (function(){
+  S=fresh(); S.ts=1000; S.daily={day:"2000-01-01",secs:120,trainSecs:30,missions:2,goalHit:true};
+  ensureDaily(true);
+  return S.ts===1000 && S.daily.day!=="2000-01-01" && S.daily.secs===0; })());   /* rolled over in-memory, ts untouched */
+ok("a normal ensureDaily() (no flag) DOES persist the rollover (bumps ts via save)", (function(){
+  S=fresh(); S.ts=1000; S.daily={day:"2000-01-01",secs:60};
+  ensureDaily();
+  return S.ts>1000 && S.daily.day!=="2000-01-01"; })());
+ok("a stale device save no longer wins the boot pull: a newer cloud ts is adopted after a deferred rollover", (function(){
+  /* mirror cloudPull's compare: device rolled over WITHOUT save (ts stays old) → cloud(newer) > device → cloud wins */
+  S=fresh(); S.ts=500; S.done={0:true}; S.daily={day:"2000-01-01",secs:90};
+  ensureDaily(true);                       // boot rollover, deferred (no ts bump)
+  var cloud={ts:900, done:{0:true,1:true,2:true}};
+  return cloud.ts > (S.ts||0); })());      // cloud adopted (would have FAILED if the rollover had bumped ts to now)
+
 grp("CLOUD-1: a wrong family code is flagged + cleared, never cached behind a false 'Connected ✓'");
 // cloudPull's 401 path is async; run it in a promise the host awaits before reporting (ctx.setTimeout is a stub).
 __pending = (async function(){

@@ -198,7 +198,9 @@ function updateDailyMeter(){ const fill=$("dailyFill"); if(!fill)return;
   updateTrainDaily();   /* keep the Training-Room practice bar in sync each tick */
 }
 function dailyGoalReached(){ try{Aud.ding();}catch(e){} Aud.play("daily_goal"); }
-ensureDaily();
+ensureDaily(true);   /* CLOUD-2: roll over the day in-memory but DON'T save yet — a save here would bump
+   S.ts and let this (possibly stale) device save out-rank newer cloud progress in the boot pull below.
+   The boot cloudPull().then persists the rollover AFTER the pull settles. */
 grandfather();   /* seed the durable gear/friend records in-memory before the first hero paint. NOT save()d
    here: save() would bump S.ts and could let a stale local save out-rank newer cloud progress in the boot
    pull below. The seed persists on the next natural save (mission/setting/visibilitychange) or the cloud-
@@ -541,8 +543,12 @@ function switchProfile(id){ closePicker(); if(id===ACTIVE)return;
 $("btnPlayer").onclick=()=>{ Aud.pick(); openPicker(); };
 $("btnPickerClose").onclick=closePicker;
 /* on boot, restore newer cloud progress (if a Worker URL is configured/baked in) */
-cloudPull().then(changed=>{ if(changed){ if(grandfather())save(); GEO=geomFor(currentAct()); paintTitle();
-  cloudStatus("Restored his latest progress from the cloud ✓"); } });
+cloudPull().then(changed=>{ if(changed){ grandfather(); GEO=geomFor(currentAct()); paintTitle();
+    cloudStatus("Restored his latest progress from the cloud ✓"); }
+  /* CLOUD-2: now the pull has settled, persist the deferred boot day-rollover (+ any grandfather seed)
+     with a correct POST-pull ts. ensureDaily() rolls over whichever save won (cloud-adopted or device-kept)
+     for today; the save can no longer out-rank the cloud (it already adopted the newer one above). */
+  ensureDaily(); save(); });
 
 /* While a cutscene character narrates, gently bob the portrait so the mentor
    reads as "talking" to Teddy (face-agnostic — works for bearded Noah, the

@@ -192,7 +192,9 @@ function sessionTick(){ if(S.session.day!==today()){S.session={count:0,day:today
    missed your goal" penalty (hard constraints #1/#2). Spread across short
    sessions is by design (better retention; ADHD-friendly).                   */
 function dayKey(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
-function ensureDaily(){ const d=dayKey();
+/* noSave = roll over in-memory but DON'T save() — used at BOOT before the cloud pull, so the rollover's
+   fresh ts can't out-rank a newer cloud save (CLOUD-2). The boot pull persists it afterwards. */
+function ensureDaily(noSave){ const d=dayKey();
   if(!S.daily || S.daily.day!==d){
     if(S.daily && S.daily.secs){ S.history=S.history||{}; S.history[S.daily.day]=S.daily.secs;
       const ks=Object.keys(S.history).sort(); while(ks.length>60)delete S.history[ks.shift()]; }
@@ -201,6 +203,6 @@ function ensureDaily(){ const d=dayKey();
     /* daily SURPRISE = a wood gift, once/day (§6.0: daily reward is the smallest tier, a "hello" — never
        a streak/"you missed a day" penalty, §6.1/#2). Gated on chestDay so it grants at most once per day. */
     if(S.chestDay!==d){ S.chests=S.chests||{wood:0,silver:0,gold:0}; S.chests.wood=(S.chests.wood||0)+1; S.chestDay=d; }
-    save();
+    if(!noSave)save();
   } else { if(!S.goalMin)S.goalMin=15; if(S.daily.trainSecs===undefined)S.daily.trainSecs=0; }
 }
