@@ -14,6 +14,7 @@
 - **#22 [N]** Intro-hook: update the 5 panel texts to `STORY.md §G`
 - **#23 [N]** Training interrupts: sync the process-praise fixes + gate JJ/Nora/Cal until rescued
 - **#25 [N]** Working-tree isolation guard *(bumped from Deferred 2026-06-16 — two agents now edit the visual layer, so it's required)*
+- **#46 [N]** Voice Studio: upload pre-recorded files for the letter sounds + add the Act-2 phonemes (ai/ee/oa/ar/or/er) to the recorder *(parent-directed — unblocks his premium-phoneme upload route; see `AUDIO-SOURCING.md`)*
 
 **The 3 big redesigns — delegation model (AGENTS rule 8): `[O]` designs + makes art + gates · `[N]` implements to spec · `[O]` posts `§20 PASS` · `[N]` merges.**
 *Oracle keeps taste/composition; Neo takes execution. Proposed Neo slices below — the Oracle confirms/adjusts as she specs each task.*
