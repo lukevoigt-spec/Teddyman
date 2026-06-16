@@ -60,9 +60,13 @@ with objective #1:
 - **G3 (resolves Neo flag #2). Settings keeps the fixed upper-right POSITION but LOWER visual weight** than the three kid
   buttons (principle #6 — parent area stays low-prominence). Stays math-gated. A big equal-weight gear invites an
   ADHD/OCD child to fixate on / hammer a locked gate.
-- **G4. Two-destination split (Base vs Map) needs literal, unmistakable icons + a one-word label each** (house/castle vs
-  folded map). Model A's research basis was ONE obvious escape; re-splitting into Base+Map is fine ONLY if a pre-reader
-  can't confuse them and BOTH are genuinely "safe" rescue destinations. Do not rely on icon-alone.
+- **G4 (parent override 2026-06-16: ICON-ONLY, NO words/labels).** Standard, instantly-recognizable, quiet icons —
+  **a HOME (house) icon for the Home→Base button, a MAP (folded-map) icon for the Map button, a GEAR for Settings.**
+  No text labels. Crafted SVG in ONE consistent line/weight (`icon()`/`PICONS`, art.js — NOT emoji, non-negotiable #6),
+  sized for ≥96px touch, calm (not noisy). Pedagogy note (the original icon-alone concern, now mitigated, not dismissed):
+  a pre-reader learns these because (a) house vs folded-map vs gear are genuinely distinct universal shapes, (b) they
+  sit in a FIXED corner every screen so position teaches them too, and (c) first taps can speak the destination via the
+  existing audio (audio-first #8). Keep the house and the map visually unmistakable from each other.
 - **G5. Locked-node tap feedback stays gentle/encouraging, never a harsh-fail buzz** (constraint #2). "Not yet — finish
   here first," a soft shake + the `locked_tip` cue — visible state (principle #7) without a punitive tone.
 - **G6. Control-count budget ≤3–5 per screen (principle #4).** On Base sub-screens the one-level BACK should REPLACE the
@@ -74,7 +78,8 @@ with objective #1:
 1. **One persistent nav element, same place every screen.** Kids 5–8 do worse with hidden nav; never make them hunt.
 2. **The World Map is HOME (the hub).** Everything radiates from it. Collapse today's three "homes" (Title / Hero Base / Map) into one.
 3. **Kids don't use "back" — they need one obvious HOME** that always rescues them. Always visible (except mid-prompt).
-4. **Literal icons + short labels**, large targets **≥96px**, **≤3–5 options**, no clutter.
+4. **Literal icons**, large targets **≥96px**, **≤3–5 options**, no clutter. *(Persistent nav corners are ICON-ONLY — no
+   text labels — per parent override 2026-06-16; see G4.)*
 5. **Keep the learning moment calm** — during an active prompt, chrome shrinks to: Home + Replay + slim status. (Honors the seductive-details guardrail.)
 6. **Parent area is low-prominence + gated**, separate from the kid's nav.
 7. **Clear, visible state + feedback** — map node done/current/locked must read *visually*, not only via audio.
@@ -84,7 +89,8 @@ with objective #1:
 ## Target system (Model A)
 
 ### Persistent chrome (every screen except the bare Title splash + active learning prompt)
-- **HOME button** — top-left, fixed position, ≥96px touch. House icon + "HOME". **Always returns to the World Map.** Replaces the `#hudTitle` hamburger + `#navMenu` dropdown entirely.
+- **HOME button** — fixed corner, ≥96px touch. **House icon, no label** (G4). (Per the four-corner revision the HOME
+  corner goes to the **Hero Base**; the **Map** corner has the folded-map icon → world map.) Replaces the `#hudTitle` hamburger + `#navMenu` dropdown entirely.
 - **STATUS cluster** — top-right, fixed. Power/rank + coins (+ the daily-training ring), identical on every screen. Display-only (not a button) for the child.
 - **GROWN-UPS** — a small gear, bottom-corner, low-prominence, behind the existing math gate. Not part of the kid's primary nav.
 
