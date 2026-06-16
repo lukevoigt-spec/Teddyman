@@ -1732,7 +1732,7 @@ function openChest(tier,done){ const cfg=CHESTS[tier]; if(!cfg||!(S.chests&&S.ch
   const gain=coins+bonus, before=S.coins||0; S.coins=before+gain;
   if(item){ S.owned=S.owned||{}; S.owned[item.id]=true; }
   S.chests[tier]=Math.max(0,(S.chests[tier]||0)-1); save();
-  try{ flashScreen("rgba(255,210,90,.42)"); confetti(tier==="gold"?64:40); if(typeof Sfx!=="undefined")Sfx.unlock(); }catch(e){}
+  try{ flashScreen("rgba(255,210,90,.42)"); confetti(tier==="gold"?64:40); rewardShower(tier==="gold"?14:10,{fromEl:$("btnGifts")||$("stage")}); if(typeof Sfx!=="undefined")Sfx.unlock(); }catch(e){}
   const ctr=$("baseCoins"); if(ctr){ ctr.textContent=before; flyReward($("btnGifts")||$("stage"), ctr, gain); }
   const finish=()=>{ paintBase(); if(done)done(); };
   if(item)setTimeout(()=>showUnlock('<div style="line-height:1;">'+itemArt(item,120)+'</div>', item.nm, "NEW!", finish), 650);
