@@ -42,10 +42,11 @@ const LEAGUE=[...CAGED.map(t=>({mid:t.mid,kind:t.kind,name:t.name,real:t.real}))
   {mid:48,kind:"leighton",name:"STARLIGHT PRINCESS",real:"LEIGHTON"},
   /* ACT 2 captured friends — rescued like the Act-1 league, spread across zones for fun progression
      (parent 2026-06-16): JJ at the Iron Forge (m118), Cal at the Singing Glade (m137), Nora at the
-     Giant's Bridge (m172); Miss Kendall at the Dragon Keep finale (m128). Aliases are easily renamed. */
-  {mid:118,kind:"jj",name:"BOLT",real:"JJ"},
-  {mid:137,kind:"cal",name:"FOX",real:"CAL"},
-  {mid:172,kind:"nora",name:"WREN",real:"NORA"},
+     Giant's Bridge (m172); Miss Kendall at the Dragon Keep finale (m128). NO hero aliases — Teddy knows
+     them by their REAL names (parent 2026-06-16), so name === real. */
+  {mid:118,kind:"jj",name:"JJ",real:"JJ"},
+  {mid:137,kind:"cal",name:"CAL",real:"CAL"},
+  {mid:172,kind:"nora",name:"NORA",real:"NORA"},
   {mid:128,kind:"kendall",name:"MISS KENDALL",real:"MISS KENDALL"}];
 /* a small LIVING friend on the map — recognizable little figure; captive ones
    wave for help with a ball-and-chain, freed ones cheer with arms up. */
@@ -60,12 +61,15 @@ function allyRasterImg(kind, w){
   return (typeof RASTER!=="undefined" && RASTER[file])
     ? `<img src="art/${file}.png" width="${w}" height="${w}" alt="" style="display:block;object-fit:contain;" aria-hidden="true">` : null; }
 function allyMapFig(kind, freed){
-  /* RESCUED ally with generated art -> show the raster token (feet grounded at ~y50, centred at x0),
-     same footprint as the SVG figure so map placement is unchanged. Captive (or no-raster) allies keep
-     the SVG figure (the raster is a happy standing pose, wrong for a caged captive). */
-  if(freed && typeof RASTER!=="undefined" && RASTER["ally-"+kind]){
+  /* Use the GENERATED RASTER token (real likeness) wherever it exists — for BOTH freed and captive
+     friends (parent 2026-06-16: show the real image on the map, not the SVG). Feet grounded at ~y50,
+     centred at x0, same footprint as the SVG figure so map placement is unchanged. A captive keeps a
+     small ball-and-chain so it still reads as "needs rescuing"; freed shows the clean token. Only kinds
+     without a raster (e.g. JJ until his art lands) fall back to the parametric SVG figure below. */
+  if(typeof RASTER!=="undefined" && RASTER["ally-"+kind]){
+    const chain = freed ? '' : `<g stroke="#5a5570" stroke-width="3"><line x1="7" y1="47" x2="21" y2="53"/></g><circle cx="25" cy="55" r="7" fill="#4a455e" stroke="#150f2e" stroke-width="2.5"/>`;
     return `<g><ellipse cx="0" cy="50" rx="20" ry="5.5" fill="#000" opacity=".3"/>`
-      +`<g transform="translate(-50.4 -42.9) scale(.42)"><image x="8" y="2" width="224" height="224" href="art/ally-${kind}.png"/></g></g>`;
+      +`<g transform="translate(-50.4 -42.9) scale(.42)"><image x="8" y="2" width="224" height="224" href="art/ally-${kind}.png"/></g>${chain}</g>`;
   }
   const c=ALLY_COL[kind]||"#7a6fb0", u="mf"+(__huid++);
   const arms = freed
