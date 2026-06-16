@@ -27,10 +27,11 @@ const ZONESPOTS={
    onto the open corridor: house -> meadow -> bridge -> canyon -> fortress, 9 zones in order. */
 const MAPSPOTS_V2={
   1:[[235,872],[300,712],[252,556],[404,470],[565,540],[690,650],[902,600],[1062,468],[1208,322]],
-  /* Act 2 (8 zones — parent's locked marks): one continuous route on LAND — village -> bottom meadow
-     -> stone bridge (single crossing) -> swing WIDE onto the right-bank grass (clear of the river) ->
-     climb to the dragon keep at index 7. Play order: 101,102,103,104,107(cove),108(bridge),105,106. */
-  2:[[335,875],[500,850],[640,815],[720,765],[880,665],[1085,565],[1110,410],[1120,255]]
+  /* Act 2 (8 zones): calibrated ONTO the painted dirt road in bg-map-a2 (1536x1024 space) — village
+     (bottom-left) -> left-bank road -> the painted STONE BRIDGE crosses the river between idx 2 & 3 ->
+     climb the right-bank dirt road -> the Dragon Keep at idx 7. Sits on the road, clear of the river.
+     Play order: 101,102,103,104,107(cove),108(bridge),105,106. */
+  2:[[360,798],[500,775],[615,750],[760,712],[885,648],[995,565],[1075,470],[1110,315]]
 };
 /* day/twilight by the DEVICE clock (the iPad is in the family's timezone): 6am-6pm day, else dusk. */
 function mapBgFor(a){
