@@ -541,6 +541,7 @@ document.body.classList.add("scene-ambient");     /* the boot title screen is am
 /* ONE primary action: PLAY → brand-new player gets the origin cutscene→scan→map; a returning
    player resumes on the map. (Replaces START + the duplicate CONTINUE — both only called toMap.)
    Must stay the FIRST user gesture so Aud.pick() unlocks iOS audio. */
+{ const bp=$("btnPlay"); if(bp)bp.innerHTML=(typeof uiIcon==="function"?uiIcon("play",28):"")+" PLAY"; }   /* crafted play triangle, not the ▶ glyph */
 $("btnPlay").onclick=()=>{ Aud.pick(); if(!S.intro)startIntro(); else {Aud.play("welcome"); toMap();} };
 /* ---- player picker (select an existing player; add/remove is parent-only) ---- */
 const PC_CAPES=["red","gold","purple"];
@@ -1508,7 +1509,8 @@ function showRest(nextM){ show("scrRest");
   $("restHero").innerHTML=heroMarquee(160);
   narrate("rest",$("restText"),["rest1","rest2"]);
   $("btnRestDone").onclick=()=>{Aud.stop();show("scrTitle");};
-  $("btnRestMore").onclick=()=>{ nextM?startMission(nextM):toMap(); }; }
+  { const bm=$("btnRestMore"); if(bm){ bm.innerHTML=(typeof uiIcon==="function"?uiIcon("play",22):"")+" One more mission";   /* crafted play icon, not the 🎯 emoji */
+    bm.onclick=()=>{ nextM?startMission(nextM):toMap(); }; } } }
 
 /* ---------------- HERO BASE ---------------- */
 const LETTER_MISSION={s:0,a:1,t:3,p:5,i:6,n:7,m:9,d:10,g:12,o:14,c:15,k:16,e:18,u:19,r:21,h:23,b:24,f:25,
