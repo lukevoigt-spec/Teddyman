@@ -333,7 +333,9 @@ function heroProgress(){ const a=currentAct(), am=actMissions(a), total=am.lengt
    Loadout still shows the equipped weapon/cape in the parametric pose. */
 function heroMarquee(w){ const o=heroOpts();
   if(o.theme!=="hero"&&o.theme!=="knight") return heroSVG(w,o);
-  const m=Math.max(0,Math.min(2,o.muscle|0)), base=(o.theme==="knight"?"teddy-knight-m":"teddy-m")+m;
+  const m=Math.max(0,Math.min(2,o.muscle|0));
+  const cape=S.equip.cape, outfit=(o.theme!=="knight"&&(cape==="blue"||cape==="gold"))?cape+"-":"";
+  const base=(o.theme==="knight"?"teddy-knight-m":"teddy-"+outfit+"m")+m;
   /* armed variant (he holds the equipped weapon) when one is loaded out, else the plain tier */
   const file=(o.weapon&&o.weapon!=="none")?base+"-"+o.weapon:base;
   return rasterArt(file, w, o.theme==="knight"?"#ffba4a":"#ffce3a", o.theme==="knight"?"#c77a2a":"#3a7bff"); }
@@ -1510,7 +1512,11 @@ function paintBase(){
   /* painted raster hero as a CLEAN cutout (no aura/halo), seated on the pedestal. Per stage (m0-m2 ×
      hero/knight) and, when a weapon is equipped, the ARMED variant teddy[-knight]-m<tier>-<weapon>
      (he holds it). onerror falls back to the unarmed tier image so it can never break. */
-  { const o=heroOpts(), m=Math.max(0,Math.min(2,o.muscle|0)), base=(o.theme==="knight"?"teddy-knight-m":"teddy-m")+m;
+  { const o=heroOpts(), m=Math.max(0,Math.min(2,o.muscle|0));
+    /* Act-1 capes also swap the OUTFIT (base=blue suit/red cape, blue=red suit/blue cape, gold=black/gold);
+       Act-2 knight has no cape/outfit variants. */
+    const cape=S.equip.cape, outfit=(o.theme!=="knight"&&(cape==="blue"||cape==="gold"))?cape+"-":"";
+    const base=(o.theme==="knight"?"teddy-knight-m":"teddy-"+outfit+"m")+m;
     const armed=!!(o.weapon&&o.weapon!=="none"), file=armed?base+"-"+o.weapon:base;
     $("baseHero").innerHTML='<img class="baseheroimg" src="art/'+file+'.png" alt="" draggable="false"'
       +(armed?' onerror="this.onerror=null;this.src=\'art/'+base+'.png\'"':'')+'>'; }
@@ -1527,13 +1533,16 @@ function paintBase(){
     wrow.appendChild(b); });
   if(weapons.length===1){ const hint=document.createElement("div"); hint.className="baselbl";
     hint.style.fontSize="13px"; hint.textContent="Forge words to earn weapons!"; wrow.appendChild(hint); }
-  /* capes */
+  /* CAPES = full OUTFIT looks (Act-1 only): base (blue suit/red cape) · premium (red suit/blue cape) ·
+     bougie (black suit/gold cape). Legacy red/purple migrate to base. */
+  if(S.equip.cape!=="blue"&&S.equip.cape!=="gold"&&S.equip.cape!=="base"){ S.equip.cape="base"; }
+  { const cl=$("capeLoadout"); if(cl)cl.style.display=(currentAct()===1)?"":"none"; }
   const crow=$("capeRow"); crow.innerHTML="";
-  const capes=[["red","RED",0],["gold","GOLD",15],["purple","PURPLE",27]];
-  capes.forEach(([k,lbl,need])=>{ const locked=S.stars<need;
+  const capes=[["base","BASE","red",0],["blue","PREMIUM","blue",15],["gold","BOUGIE","gold",30]];
+  capes.forEach(([k,lbl,img,need])=>{ const locked=S.stars<need;
     const b=document.createElement("button");
     b.className="wtile"+(S.equip.cape===k?" onsel":"")+(locked?" lockd":""); b.title=lbl;
-    b.innerHTML='<img src="art/cape-'+k+'.png" alt="'+lbl+'" draggable="false"><span class="wname">'+(locked?(lbl+" · "+need):lbl)+'</span>';
+    b.innerHTML='<img src="art/cape-'+img+'.png" alt="'+lbl+'" draggable="false"><span class="wname">'+(locked?(lbl+" · "+need):lbl)+'</span>';
     b.onclick=()=>{ if(locked){Aud.play&&Aud.play("shop_need");return;} S.equip.cape=k;save();Aud.ding();paintBase(); };
     crow.appendChild(b); });
   /* gem shelf: earned letters only */
