@@ -825,6 +825,10 @@ body.calm .bubble::after{animation:none;}
 }
 @keyframes speakBob{0%,100%{transform:translateY(0) rotate(0deg);}25%{transform:translateY(-3px) rotate(-.5deg);}75%{transform:translateY(-2px) rotate(.5deg);}}
 body.calm #introArt.talking>*,body.calm #interArt.talking>*{animation:none;}
+/* MOUTH DRIVER contract: the JS driver sets --mouth (0=closed … 1=open) on the speaking portrait; any
+   .spkmouth element opens by scaling its height from that var. --mouth=0 collapses the open-mouth shape
+   so the painted smile shows through. transform-box:fill-box pivots the scale at the mouth's own centre. */
+.spkmouth{ transform-box:fill-box; transform-origin:center; transform:scaleY(var(--mouth,0)); }
 
 /* ===================== CINEMATIC CUTSCENES (story beats) =====================
    Per-beat drama for the intro / Act-1→Act-2 interlude: a moodier scene grade,

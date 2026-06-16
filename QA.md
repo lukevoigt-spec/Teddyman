@@ -67,6 +67,18 @@ Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under *
 > `faceSpeak`/`Aud.play`, reused for the training `allyPop`. **Caveat:** browser TTS exposes no tappable stream → TTS lines
 > keep the bob; recorded/generated audio gets the real flap. Phoneme/viseme lip-sync = overkill, skip. Detail-tier /
 > reduced-motion gated. — Trinity, 2026-06-15
+>
+> ✅ **NEO DONE (driver shipped) — ⚠️ ORACLE TODO (mouth art on the big portraits).** The mouth DRIVER is live
+> (`mouthStart`/`mouthStop` + `faceSpeak` wiring + the `--mouth` CSS contract, `.spkmouth{transform:scaleY(var(--mouth))}`).
+> **Engineering call:** I drive it **procedurally** (a lifelike smoothed jaw signal for the narration's duration), NOT by
+> tapping `Aud.el`'s Web-Audio pipeline — a `MediaElementSource` tap risks **silencing the audio-first instructions on
+> iPad/WebKit (#8)** and can't be validated headlessly while **SHOT-1** blocks the WebKit render path. Bonus: procedural
+> works for **TTS too** (no stream needed), so mouths move now, before any clip is recorded — supersedes the "TTS keeps only
+> the bob" caveat. Real-RMS is a future upgrade gated on SHOT-1. **Reference art added:** a `.spkmouth` open-mouth on
+> `allyFace` (shared smile + JJ/Cal/Nora) so the training pop-ins (and any allyFace speaker) flap today. **Oracle's lane:**
+> add the same `.spkmouth` hook (a controllable open/closed mouth, positioned per face) to the BIG cutscene portraits —
+> `noahSVG`, `inkblotSVG`/Vex, `vixenSVG`, `dragonSVG`, `teddyArt` — so the cutscenes + beat-7 ending flap; the driver is
+> already wired to them (inert until the element exists). Refine the reference allyFace mouth shape to the §20 bar. — Neo, 2026-06-16
 
 > ✅ **WIN-screen "hard square" — FIXED 2026-06-15** (Oracle, commit `abe5775`). Root cause was NOT a clipping container:
 > the character **aura ellipse overflowed the SVG viewBox**, so `overflow:hidden` clipped the soft glow to the viewBox

@@ -548,8 +548,37 @@ cloudPull().then(changed=>{ if(changed){ if(grandfather())save(); GEO=geomFor(cu
 function faceSpeak(artEl, key, textEl, ids, display){
   const pr=narrate(key, textEl, ids, display);
   if(artEl){ const tok=(artEl.__sp=(artEl.__sp||0)+1); artEl.classList.add("talking");
-    pr.then(()=>{ if(artEl.__sp===tok) artEl.classList.remove("talking"); }); }
+    mouthStart(artEl);   /* flap any .spkmouth on the portrait for the narration's duration */
+    pr.then(()=>{ if(artEl.__sp===tok){ artEl.classList.remove("talking"); mouthStop(artEl); } }); }
   return pr; }
+/* MOUTH DRIVER (mouth-move/talking upgrade — Neo's lane). While a character narrates, animate the
+   openness of any `.spkmouth` element on the portrait via the `--mouth` CSS var (0=closed … 1=open),
+   so the jaw flaps as if talking. DELIBERATELY PROCEDURAL — a smoothed, lifelike jaw signal for the
+   narration's duration — NOT a tap of the audio element's Web-Audio pipeline, so it can NEVER silence
+   the audio-first instructions (#8) on iPad/WebKit (unvalidatable headlessly while SHOT-1 blocks the
+   WebKit render path). Bonus over the RMS plan: it works for TTS too (no stream needed), so mouths move
+   now, before any clip is recorded. Reduced-motion / Calm → no flap (the gentle bob remains). The
+   `.spkmouth` ART (where the mouth sits, its open/closed shape) is The Oracle's lane on the big
+   cutscene portraits (noahSVG/villains/teddyArt); the driver is ready for whatever she adds. Real-RMS
+   amplitude is a future upgrade once SHOT-1 lets us validate MediaElementSource on-device. */
+let __mouthRAF=0, __mouthEls=new Set(), __mouthV=0, __mouthPhase=0;
+function __mouthAnimating(){ return !(REDUCE || (document.body&&document.body.classList.contains("calm"))); }
+function mouthStart(el){ if(!el||!__mouthAnimating())return; __mouthEls.add(el); el.classList.add("speaking");
+  if(!__mouthRAF)__mouthLoop(); }
+function __mouthLoop(){
+  const step=()=>{ if(!__mouthEls.size){ __mouthRAF=0; return; }
+    /* wandering target + quick attack, smoothed — a believable jaw, never a metronome */
+    __mouthPhase+=0.16+Math.random()*0.13;
+    let t=0.16+0.5*Math.abs(Math.sin(__mouthPhase))+Math.random()*0.28; if(t>1)t=1;
+    __mouthV+=(t-__mouthV)*0.5;
+    const v=__mouthV.toFixed(3); __mouthEls.forEach(el=>el.style.setProperty("--mouth",v));
+    __mouthRAF=requestAnimationFrame(step); };
+  __mouthRAF=requestAnimationFrame(step); }
+function mouthStop(el){ if(el){ __mouthEls.delete(el);
+    /* ease the jaw shut so it doesn't snap */
+    let v=__mouthV; const close=()=>{ v*=0.55; el.style.setProperty("--mouth",v>0.02?v.toFixed(3):"0");
+      if(v>0.02)requestAnimationFrame(close); else el.classList.remove("speaking"); }; close(); }
+  if(!__mouthEls.size){ cancelAnimationFrame(__mouthRAF); __mouthRAF=0; __mouthV=0; } }
 
 /* ---------------- CINEMATIC CUTSCENE FX ----------------
    Per-beat drama for the story screens: a fade/push-in entrance + optional set
@@ -1673,16 +1702,16 @@ const TRAIN_TELLERS=[
 ];
 let __trainBags={}, __trainNextAt=0;
 function trainBagNext(t){ let bag=__trainBags[t.prefix]; if(!bag||!bag.length){ bag=shuf(Array.from({length:t.n},(_,i)=>i+1)); __trainBags[t.prefix]=bag; } return t.prefix+bag.pop(); }
-function trainPop(kind,name){ const st=$("stage"); if(!st)return;   /* like allyPop but name-driven (jj/nora/cal aren't in ALLY{}) */
+function trainPop(kind,name){ const st=$("stage"); if(!st)return null;   /* like allyPop but name-driven (jj/nora/cal aren't in ALLY{}) */
   const d=document.createElement("div"); d.className="allypop";
   d.innerHTML=`<svg viewBox="-34 -40 68 84" width="76" aria-hidden="true">${allyFace(kind)}</svg><div class="allyname">${name}!</div>`;
-  st.appendChild(d); setTimeout(()=>d.remove(),2200); }
+  st.appendChild(d); setTimeout(()=>d.remove(),3200); return d.querySelector("svg"); }
 function maybeTrainInterrupt(done){ const avail=TRAIN_TELLERS.filter(t=>t.unlocked());
   if(!avail.length || trainReps<__trainNextAt){ done(); return; }
   __trainNextAt = trainReps + 8 + Math.floor(Math.random()*5);   /* next pop-in in ~8–12 reps (jittered, not clockwork) */
   const t=avail[Math.floor(Math.random()*avail.length)];
-  trainPop(t.kind,t.name);
-  flow(Aud.play([trainBagNext(t)]), done); }   /* skippable + watchdog'd; resumes the loop after the line */
+  const pop=trainPop(t.kind,t.name); if(pop)mouthStart(pop);   /* the friend's mouth flaps while they talk */
+  flow(Aud.play([trainBagNext(t)]), ()=>{ if(pop)mouthStop(pop); done(); }); }   /* skippable + watchdog'd; resumes after the line */
 function showTrain(){ clearFlow(); trainReps=0; __scrollServed=false; __warmDone=false;
   __trainNextAt = 8 + Math.floor(Math.random()*5);   /* first interrupt after ~8–12 reps */
   show("scrTrain"); updateTrainHUD(); updateTrainDaily();

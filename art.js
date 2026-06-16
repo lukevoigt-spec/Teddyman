@@ -270,9 +270,13 @@ function allyFace(kind){
   const head=`<defs><radialGradient id="${u}sk" cx=".4" cy=".3" r=".78"><stop offset="0" stop-color="#ffeada"/><stop offset=".68" stop-color="#ffd3b0"/><stop offset="1" stop-color="#e3a57e"/></radialGradient>`+
     `<radialGradient id="${u}rm" cx=".5" cy=".42" r=".6"><stop offset=".68" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#7a3a1a" stop-opacity=".24"/></radialGradient></defs>`+
     `<circle r="26" fill="url(#${u}sk)" stroke="#150f2e" stroke-width="4"/><circle r="26" fill="url(#${u}rm)"/>`;
+  /* drivable "talking" mouth (Neo's mouth-driver hooks this): an open-mouth shape that opens via the
+     --mouth CSS var (0=closed -> the painted smile shows; 1=open). REFERENCE art — Oracle to refine the
+     shape/placement per face + add the same .spkmouth hook to the big cutscene portraits (noahSVG etc.). */
+  const spkM=`<ellipse class="spkmouth" cx="0" cy="12" rx="6.5" ry="5.2" fill="#6e2b2b" stroke="#150f2e" stroke-width="1.4"/>`;
   const smile=`<path d="M-8 10 Q1 17 9 9" stroke="#9c4a3a" stroke-width="3.2" fill="none" stroke-linecap="round"/>`+
     `<path d="M-1 1 Q3 7 -2 9" stroke="#d2926a" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".7"/>`+
-    `<g fill="#ff9a8a" opacity=".3"><circle cx="-13" cy="6" r="3.8"/><circle cx="13" cy="6" r="3.8"/></g>`;
+    `<g fill="#ff9a8a" opacity=".3"><circle cx="-13" cy="6" r="3.8"/><circle cx="13" cy="6" r="3.8"/></g>`+spkM;
   if(kind==="leighton")return head+   /* Leighton — long flowing light-brown hair + her star */
     `<path d="M-26 -2 Q-28 -32 0 -32 Q28 -32 26 -2 Q26 16 19 24 L16 -8 Q14 -22 0 -20 Q-14 -22 -16 -8 L-19 24 Q-26 16 -26 -2Z" fill="#c6a06a" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>`+
     `<path d="M-17 16 Q-22 28 -15 34 M17 16 Q22 28 15 34" stroke="#c6a06a" stroke-width="7" fill="none" stroke-linecap="round"/>`+
@@ -305,18 +309,18 @@ function allyFace(kind){
     `<path d="M-25 -4 Q-27 -33 -2 -34 Q26 -35 25 -3 Q19 -22 11 -17 Q14 -29 5 -22 Q8 -33 -3 -24 Q-5 -33 -13 -22 Q-13 -30 -21 -16 Q-24 -12 -25 -4Z" fill="#2e2014" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>`+
     allyEyes()+
     `<path d="M-12 8 Q0 22 12 8 Q0 15 -12 8Z" fill="#7c3a3a" stroke="#150f2e" stroke-width="2.6"/>`+
-    `<path d="M-9 8 Q0 11 9 8 L9 10 Q0 12 -9 10Z" fill="#fff"/>`;
+    `<path d="M-9 8 Q0 11 9 8 L9 10 Q0 12 -9 10Z" fill="#fff"/>`+spkM;
   if(kind==="cal")return head+   /* Cal — strawberry-blonde, freckles, mischievous smirk */
     `<path d="M-25 -2 Q-27 -31 0 -32 Q27 -31 25 -2 Q20 -20 12 -16 Q15 -27 6 -21 Q8 -31 -3 -23 Q-5 -31 -13 -21 Q-13 -28 -21 -15 Q-24 -10 -25 -2Z" fill="#e8a85e" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>`+
     allyEyes()+
     `<g stroke="none" fill="#d98a5a" opacity=".75"><circle cx="-12" cy="6" r="1.5"/><circle cx="-7" cy="9" r="1.5"/><circle cx="7" cy="9" r="1.5"/><circle cx="12" cy="6" r="1.5"/><circle cx="0" cy="10" r="1.4"/></g>`+
-    `<path d="M-9 9 Q2 18 12 7" stroke="#9c4a3a" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
+    `<path d="M-9 9 Q2 18 12 7" stroke="#9c4a3a" stroke-width="3.2" fill="none" stroke-linecap="round"/>`+spkM;
   if(kind==="nora")return head+   /* Nora — very petite, hair in a neat bun */
     `<path d="M-24 -2 Q-26 -29 0 -29 Q26 -29 24 -2 Q24 14 18 22 L15 -6 Q14 -20 0 -19 Q-14 -20 -15 -6 L-18 22 Q-24 14 -24 -2Z" fill="#5a4030" stroke="#150f2e" stroke-width="3"/>`+
     `<circle cx="0" cy="-26" r="8" fill="#5a4030" stroke="#150f2e" stroke-width="2.5"/>`+
     allyEyes()+
     `<path d="M-7 10 Q0 15 7 10" stroke="#9c4a3a" stroke-width="3" fill="none" stroke-linecap="round"/>`+
-    `<g fill="#ff9a8a" opacity=".3"><circle cx="-12" cy="7" r="3.4"/><circle cx="12" cy="7" r="3.4"/></g>`;
+    `<g fill="#ff9a8a" opacity=".3"><circle cx="-12" cy="7" r="3.4"/><circle cx="12" cy="7" r="3.4"/></g>`+spkM;
   if(kind==="mom")return head+   /* Mom — warm, long auburn hair, kind smile */
     `<path d="M-26 0 Q-28 -32 0 -32 Q28 -32 26 0 Q26 20 19 30 L16 -8 Q14 -22 0 -20 Q-14 -22 -16 -8 L-19 30 Q-26 20 -26 0Z" fill="#8a4b2e" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>`+
     `<path d="M-19 18 Q-24 32 -16 38 M19 18 Q24 32 16 38" stroke="#8a4b2e" stroke-width="7" fill="none" stroke-linecap="round"/>`+
