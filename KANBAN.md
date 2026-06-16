@@ -8,6 +8,17 @@
 ## 📥 TRIAGE — candidates awaiting the parent's call
 *(empty — all caught up)*
 
+## 🔬 FULL CODE SWEEP — Trinity 2026-06-16 (5 parallel specialist reviews; new findings filed)
+*Pedagogy/constraints + security came back CLEAN (no anti-gaming #4 leak, no sequencing violation, profile-name escaping verified, no committed secrets). Save layer solid for single-profile; runtime/perf had consistency-lapse bugs. Build-now first:*
+- **#81 [N] HIGH** Cross-profile cloud clobber — debounced `cloudPush` stringifies live `S` after `switchProfile` reassigns it → one child's data into another's cloud slot (multi-profile wipe, #7)
+- **#82 [N] HIGH** Missing `lockRow` on forge/spell/read/cloze/scramble/sentence correct-paths → double-tap inflates mastery (§6.0)
+- **#83 [N] HIGH** Crash-guards — `magicStep` `me.v` deref · `forgeWord` null sprite · `flow()` unguarded `btnSkip` (uncaught throws freeze the screen)
+- **#84 [N] MED** Win-screen NEXT uses flat id-order not play-order → can jump to out-of-sequence/locked mission
+- **#85 [N] MED** Lite tier doesn't strip `backdrop-filter` (HUD chips/modals) or cap `confetti(90)` — defeats Lite on old iPads (P14)
+- **#86 [N] MED** Audio robustness — music can stick ducked (unduck only via `_settle`); `Aud.ding` fallback ctx no iOS resume
+- **#87 [N] LOW** Hygiene — goalMin sticky-30 + migrate type-coercion + Forget-publish-token button
+- **#88 [N] INFO** Vault meter counts synthetic mastery keys + Training Room stays Act-1-only (deliberate-decision)
+
 ## 🏆 ELEVATION LOOP — "make it award-winning & beautiful" (`ELEVATION-LOOP.md`, active)
 Award Bar rubric **v1 synthesized** (14 criteria, 5-stream research review). Now running wave-by-wave:
 - **#54 [O]** Ratify the Award Bar into `STYLE.md §20` (Oracle adjusts + owns)
@@ -50,5 +61,4 @@ painted nav-corner icons + back-to-base removal (PRs #52/#57) · Rest→map + Sk
 gem-shower juice on win/unlock/chest (#67/#68) · **parent deep-dive bugs all fixed: #76→#72 cloud/daily timing · #77→#71
 interrupt buffer · #78→#74 reward-shower cap · #79→#73 Base shelf caps · #80→#75 hardening trio.** *(history in git + QA.md)*
 
-> **Trinity full code sweep in progress (2026-06-16):** 5 parallel specialist reviews (runtime/flow · save/cloud ·
-> pedagogy/constraints · perf/audio · security/hygiene). New findings being triaged into issues; see the next sweep.
+> **Trinity full code sweep complete (2026-06-16):** 5 parallel specialist reviews → findings filed as #81–#88 (see top of board).
