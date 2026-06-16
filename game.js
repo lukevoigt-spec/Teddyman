@@ -1513,11 +1513,14 @@ function paintBase(){
   const wrow=$("weaponRow"); wrow.innerHTML="";
   const weapons=[["none","HANDS"],...ownedWeapons().map(w=>[w.k,w.lbl])];
   weapons.forEach(([k,lbl])=>{ const b=document.createElement("button");
-    b.className="echip"+(S.equip.weapon===k?" onsel":""); b.textContent=lbl;
+    b.className="wtile"+(S.equip.weapon===k?" onsel":""); b.title=lbl;
+    b.innerHTML=(k!=="none" ? '<img src="art/wpn-'+k+'.png" alt="'+lbl+'" draggable="false">'
+                            : '<span class="wname only">HANDS</span>')
+              + (k!=="none" ? '<span class="wname">'+lbl+'</span>' : '');
     b.onclick=()=>{S.equip.weapon=k;save();Aud.ding();paintBase();};
     wrow.appendChild(b); });
   if(weapons.length===1){ const hint=document.createElement("div"); hint.className="baselbl";
-    hint.style.fontSize="15px"; hint.textContent="Forge words to earn weapons!"; wrow.appendChild(hint); }
+    hint.style.fontSize="13px"; hint.textContent="Forge words to earn weapons!"; wrow.appendChild(hint); }
   /* capes */
   const crow=$("capeRow"); crow.innerHTML="";
   const capes=[["red","RED",0],["gold","GOLD",15],["purple","PURPLE",27]];
@@ -1622,14 +1625,16 @@ $("heroCard").onclick=e=>{ if(e.target.id==="heroCard")closeHeroCard(); };
    Every defeated, NAMED villain lives shrunken in a cage on a Base shelf
    (Bowser-in-the-Mario-movie). Tap one for a villain quip (in its own voice).
    Keyed by the finale/boss mission that beat it. */
+/* Each zone's villain is a DISTINCT painted raster (parent 2026-06-16 — no redundancy). rasterArt
+   wraps art/<file>.png with the cast's aura + contact shadow, tinted to the villain's signature colour. */
 const BOSSES=[
-  {mid:26, name:"VEX CAPTAIN", quip:"cage_captain", art:w=>inkblotSVG(w)},
-  {mid:48, name:"LORD VEX",    quip:"cage_vex",     art:w=>inkblotSVG(w)},
-  {mid:110,name:"THE DRAGON",  quip:"cage_dragon",  art:w=>dragonSVG(w)},
-  {mid:118,name:"IRON WYRM",   quip:"cage_dragon",  art:w=>dragonSVG(w)},
-  {mid:127,name:"VOWEL WYRM",  quip:"cage_dragon",  art:w=>dragonSVG(w)},
-  {mid:137,name:"VOWEL CHOIR", quip:"cage_dragon",  art:w=>dragonSVG(w)},
-  {mid:128,name:"THE VIXEN",   quip:"cage_vixen",   art:w=>vixenSVG(w)}
+  {mid:26, name:"VEX CAPTAIN", quip:"cage_captain", art:w=>rasterArt("boss-captain",w,"#9fb4d6","#3a5a9a")},
+  {mid:48, name:"LORD VEX",    quip:"cage_vex",     art:w=>rasterArt("vex",w,"#ff5a5a","#c01020")},
+  {mid:110,name:"THE DRAGON",  quip:"cage_dragon",  art:w=>rasterArt("dragon",w,"#ff6a2a","#c0301a")},
+  {mid:118,name:"IRON WYRM",   quip:"cage_dragon",  art:w=>rasterArt("boss-ironwyrm",w,"#9aa0aa","#3a3f4a")},
+  {mid:127,name:"VOWEL WYRM",  quip:"cage_dragon",  art:w=>rasterArt("boss-vowelwyrm",w,"#c08aff","#6a2a9a")},
+  {mid:137,name:"VOWEL CHOIR", quip:"cage_dragon",  art:w=>rasterArt("boss-vowelchoir",w,"#4ad6c0","#1a8a7a")},
+  {mid:128,name:"THE VIXEN",   quip:"cage_vixen",   art:w=>rasterArt("vixen",w,"#ff4f8a","#c0206a")}
 ];
 function paintBossShelf(){ const sh=$("bossShelf"); if(!sh)return; sh.innerHTML=""; let any=false;
   BOSSES.forEach(b=>{ if(S.done[b.mid]){ any=true;

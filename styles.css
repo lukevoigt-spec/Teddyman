@@ -1201,3 +1201,19 @@ body.calm .scrollword{transition:none;} body.calm .scrollword.lit{transform:none
 /* Act-2 medieval skin parity */
 body[data-act="2"] #scrBase .bpanel{ border-color:#6a5436; background:rgba(40,30,16,.5); }
 body[data-act="2"] .bchip{ border-color:#caa15a; }
+
+/* painted LETTER GEMS (gemSVG): crystal raster tinted to the grapheme colour (multiply, masked to the
+   gem shape) + the Andika letter overlaid crisply on top. */
+.gemwrap{ position:relative; display:inline-block; vertical-align:middle; }
+.gemwrap .gembase{ width:100%; height:100%; display:block; filter:drop-shadow(0 2px 2px rgba(0,0,0,.35)); }
+.gemwrap .gemtint{ position:absolute; inset:0; mix-blend-mode:multiply;
+  -webkit-mask:url("art/gem-base.png") center/contain no-repeat; mask:url("art/gem-base.png") center/contain no-repeat; }
+.gemwrap .gemlet{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-family:'Andika',sans-serif; font-weight:700; color:#fff; paint-order:stroke; line-height:1; }
+/* WEAPON loadout tiles (painted framed icons) */
+#scrBase .wtile{ width:56px; padding:0; border:0; background:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:2px; }
+#scrBase .wtile img{ width:54px; height:54px; object-fit:contain; border-radius:12px; display:block; }
+#scrBase .wtile .wname{ font-family:'Baloo 2',sans-serif; font-weight:800; font-size:9px; color:#cfc6f2; text-align:center; line-height:1.05; max-width:56px; }
+#scrBase .wtile .wname.only{ width:54px; height:54px; display:flex; align-items:center; justify-content:center; background:linear-gradient(180deg,#3a2f5e,#241a44); border:2px solid #4a3a86; border-radius:12px; font-size:11px; color:#cfc6f2; }
+#scrBase .wtile.onsel img,#scrBase .wtile.onsel .wname.only{ outline:3px solid #fff; box-shadow:0 0 10px #ffd75e; }
+#scrBase .wtile.onsel .wname{ color:#ffd75e; }

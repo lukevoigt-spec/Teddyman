@@ -601,21 +601,16 @@ function dragonSVG(w=240){ return rasterArt("dragon", w, "#ff6a2a", "#c0301a"); 
    outlined letter, used for the Base gem shelf / collectibles. Keeps the
    "letter gems power the hero" motif premium without hurting readability.
 ========================================================= */
-function gemSVG(g, color, w){
-  const u="g"+(__huid++);
-  return `<svg viewBox="-26 -28 52 56" width="${w||46}" aria-hidden="true">
-<defs>
-<radialGradient id="${u}b" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="${color}" stop-opacity=".7"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient>
-<radialGradient id="${u}f" cx=".4" cy=".28" r=".85"><stop offset="0" stop-color="#ffffff"/><stop offset=".28" stop-color="${color}"/><stop offset="1" stop-color="#0a0414" stop-opacity=".55"/></radialGradient>
-</defs>
-<ellipse cx="0" cy="20" rx="15" ry="4" fill="#000" opacity=".35"/>
-<circle cx="0" cy="-1" r="25" fill="url(#${u}b)"/>
-<polygon points="0,-19 17,-8 17,9 0,20 -17,9 -17,-8" fill="url(#${u}f)" stroke="#150f2e" stroke-width="3" stroke-linejoin="round"/>
-<polygon points="0,-19 17,-8 0,3 -17,-8" fill="#fff" opacity=".26"/>
-<g stroke="#150f2e" stroke-width="1" opacity=".35" fill="none"><path d="M-17,-8 L0,3 L17,-8 M0,3 L0,20"/></g>
-<path d="M-9,-12 L-3,-14 L-5,-7 L-11,-6Z" fill="#fff" opacity=".9"/>
-<text y="10" text-anchor="middle" font-family="Andika,sans-serif" font-weight="700" font-size="17" fill="#fff" stroke="#150f2e" stroke-width="3.4" paint-order="stroke" style="paint-order:stroke">${g}</text>
-</svg>`;
+/* PAINTED letter gem (parent 2026-06-16): the premium painted crystal (art/gem-base.png) tinted to the
+   grapheme's signature colour (multiply, masked to the gem shape so facets + highlights survive), with
+   the Andika letter crisply overlaid on top (learning content stays scalable text). One painted asset
+   serves all graphemes. CSS in styles.css (.gemwrap). */
+function gemSVG(g, color, w){ const s=w||46; const two=(""+g).length>1;
+  return `<span class="gemwrap" style="width:${s}px;height:${s}px">`+
+    `<img class="gembase" src="art/gem-base.png" alt="" draggable="false">`+
+    `<span class="gemtint" style="background:${color}"></span>`+
+    `<span class="gemlet" style="font-size:${Math.round(s*(two?0.32:0.46))}px;-webkit-text-stroke:${Math.max(2,Math.round(s*0.06))}px #150f2e">${g}</span>`+
+    `</span>`;
 }
 
 /* MOUTH CUE (research rec #3): a small, friendly articulatory-cue mouth for the Learn screen — a
