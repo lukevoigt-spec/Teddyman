@@ -109,6 +109,19 @@ A free-form agent group-chat dilutes context and produces incompatible decisions
 
 — Trinity, 2026-06-15
 
+## Work tracking — GitHub ISSUES are the live tracker (2026-06-16)
+The backlog moved from prose tickets in `QA.md` (which drifted — see Status discipline) to **GitHub Issues**:
+- **Issues = the single live work list.** Every actionable item — guest findings, parent feature requests, Trinity specs —
+  becomes one Issue, owner in the title (`[Neo]` / `[Oracle]`; the agents aren't GitHub users, so the title prefix is the
+  "assignment", filterable by search). Detailed specs stay in the design/story/curriculum docs; the Issue links to them.
+- **Trinity opens + owns the Issues.** Guests (Morpheus/Cypher) still write findings into the **`QA.md` Inbox** via QA-only
+  PRs that Trinity gates; Trinity then **converts each into an assigned Issue and clears it from the Inbox.** Parent requests
+  → Trinity opens an Issue too. **The `QA.md` Inbox should usually be empty.**
+- **Neo / The Oracle close Issues via PRs** — put `Closes #N` in the PR body so the Issue auto-closes on merge. This makes
+  "done" *mechanical* (closed = shipped), killing the manual-reconcile burden.
+- `QA.md` now holds only: the Inbox, the open-Issues index, the resolved-ledger history, and durable analyses. It is **not**
+  where new work is logged — open an Issue.
+
 ## Status discipline — keeping `QA.md` honest (added after a real stale-status miss, 2026-06-14)
 `QA.md`'s open/shipped status drifts because **Neo changes the code in his session while only Trinity edits `QA.md`** —
 so the doc lags reality. Reality lives in **git + the code**, never in prose. Five rules to stop it recurring:

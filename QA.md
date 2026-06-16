@@ -5,233 +5,22 @@
 
 ---
 
-## ⭐ CURRENT PRIORITIES FOR NEO
+## ⭐ HOW WORK IS TRACKED NOW (2026-06-16)
+**Live work is GitHub Issues, not this file.** Guests (Morpheus/Cypher) write findings in the **Inbox** below (QA.md-only
+PRs Trinity gates); **Trinity converts each into an assigned Issue** (`[Neo]` / `[Oracle]` title prefix) and clears it from
+the Inbox. Neo/Oracle reference `Closes #N` in their PRs → the Issue auto-closes. **This Inbox should usually be empty.**
+*(CLAUDE.md = product truth · AGENTS.md = workflow · STORY/PEDAGOGY/STYLE/DESIGN-* = specs the Issues link to.)*
 
-> 🔴 **TOP PRIORITY (parent escalation 2026-06-15) — the PREMIUM UI OVERHAUL** at the top of `DESIGN-ALIGNMENT.md`: the
-> UI shipped amateurish + emoji-heavy. New hard rules now have teeth → STYLE.md non-negotiables **#6 (emoji BANNED in
-> child UI)** + **#7 (UI-in-the-world + render gate)**, new **§18 icon system**, **§19 premium diegetic Hero Room**,
-> **§20 render-review gate**. Neo: **(1) SVG icon registry + kill all UI emoji** (shop first) + `tests/ui-emoji.test.js`;
-> **(2) rebuild the Hero Room as a diegetic painted room** (layout FIRST, not last); **(3) screenshot-and-look before
-> "done".** ⚠️ `bg-base-room.png` is the **staged room background — keep & wire, do NOT delete.**
->
-> 📐 **The consolidated retro-fit checklist is `DESIGN-ALIGNMENT.md`** (5 deep-dive audits, prioritized + file:line). Newly
-> confirmed SHIPPED (hashes anchored 2026-06-16 per Cypher's status-discipline flag): **M-#2 FIXED** `38e2b82`,
-> **`flyReward` BUILT** `0dab792` (⚠ *under-utilized — training reps still use `coinFloat`; standardize, see Cypher*),
-> **treasure chests BUILT** `51442be`, **mastery contract honored** `a73f0c6`. The old "store de-emoji" + "Hero Room" items
-> are **superseded by the Premium UI Overhaul above.**
+### 📋 Open work → GitHub Issues (opened 2026-06-16)
+**Neo:** #21 DAILY-1 (goalMin 30→15) · #22 intro-hook panel texts · #23 interrupts sync + gate JJ/Nora/Cal · #24 standardize
+flyReward · #25 working-tree guard · #26 render-harness scene isolation (RENDER-1) · #27 expand ui-emoji guard · #28 M-#2
+Training/Shop/Vault @1024×768 · #29 interrupt timing · #30 CLOUD-2.
+**The Oracle:** #31 UI theme coherence + secondary-control sheen · #32 de-emoji Shop/base glyphs · #33 Hero Room diegetic
+redesign (plinth-first) · #34 Training Room redesign · #35 mouth art on big portraits · #36 cinematic SVG cutscene pass ·
+#37 portal AI spike (optional) · #38 swap map ally figures · #39 §20 render-gate catch-up + calm-prompt · #40 Shop footer fit @1024×768.
 
-Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under **🔧 OPEN WORK — BY TOPIC**.
-
-> ✅ **RECONCILE 2026-06-16 (Trinity) — SHIPPED since these tickets were written** (verified vs commits + tests 104/106/6 green):
-> **Beat-7 homecoming ending** (`de83d9a` — `startHomecoming` + Mom/Dad verbatim) · **Training Room: coin→gold→diamond
-> "Treasure Vault" climax + HUD de-emoji** (`b58a98f`) · **daily-practice bar** (`5e9c028`) ⚠ *daily target 30→15 INCOMPLETE — `state-save` still defaults
-> `goalMin=30` (DAILY-1, Neo fix)* · **ally interrupts wired** (`0d2edcd`, copy revised — TRAIN-INT-1) · **squire-not-knight** (`b7f0e3e`) · **all-screen +
-> Hero-Base background restyle** (`620e682`/PR#16/#17 — the UI-coherence pass has STARTED). **Still open:** Training Room
-> full *redesign*, mouth-move upgrade, intro-hook build (script drafted `STORY.md §G`), cinematic SVG pass + portal spike,
-> map-figure ally swap (showcases wired `b7f0e3e`; verify the map figures), the §20 calm-prompt check, UI-coherence audit
-> completion. Individual tickets below annotated accordingly.
-
-> 🔎 **GUEST QA — Cypher sweep 2026-06-16 (verified + curated by Trinity).** High-signal end-to-end pass; my verification:
-> - **flyReward under-utilized — ✅ VERIFIED (Oracle/Neo, low-effort/high-ROI).** Training-rep reward still uses
->   `coinFloat`+`burstAt` (`game.js:1769`); base/chest uses `flyReward` (`:1662`). Standardize `flyReward` for training reps
->   + the Treasure Vault + any other coin moments.
-> - **Working-tree isolation NOT enforced (Neo, process).** AGENTS.md requires per-agent worktrees but nothing checks it —
->   live risk with Oracle editing in parallel. Add a lightweight **session-start / pre-commit warning** if Neo + Oracle
->   share a working dir.
-> - **§20 render-gate catch-up on NEW Act-2 systems (Oracle).** Homecoming ending, `syllabify`/`startSyllable` visuals,
->   vault popups, new cutscene beats lack a documented Premium-Bar review (before/after shots + findings in `DESIGN-REVIEW.md`).
-> - **Secondary-control consistency (Oracle — folds into the UI-coherence pass).** Primary `.btn` is strong; `.echip`, shop
->   items, some Base tiles still lack the sheen/gradient/inset.
-> - **Interrupt-after-Spell-Scroll handoff (Neo, polish).** The ~8–12-rep interrupt can fire right after a Spell-Scroll
->   finishes (`scrollFinish`→train flow) — a small timing buffer/state check smooths it. Plausible; Neo confirm.
-> - **M-#2 Base overflow — ⚠ NUANCE:** the *scrBase* hero-column fix IS in CSS (`styles.css:964/970`) → M-#2 stays FIXED.
->   Cypher's "still overflows on Training/Shop/Vault" is a SEPARATE device-visible claim about those *other* screens —
->   un-renderable from cloud (SHOT-1) → **Neo/parent confirm at 1024×768 on device.**
-> - **QA.md status-discipline (legacy ✅ without hashes) — VALID, addressing:** anchored the top "Newly confirmed SHIPPED"
->   block to commits (below). The ledger must not become the failure mode it was built to prevent.
-> - ✅ **No hard-constraint violations** in the new systems (Vault/Scroll/Warm-Up/homecoming/syllabify) — audio-first,
->   no-fail, save-safe all respected. — Trinity, 2026-06-16
-
-> 🎨 **UI THEME COHERENCE PASS — end-to-end (Oracle, parent-directed 2026-06-16) — ⏳ IN PROGRESS** (bg restyle `620e682` +
-> Hero-Base `0d60d9d`/PR#17 are the start; audit completion + per-screen standardization continues). Now that the **painted backgrounds** are
-> the house look, **audit EVERY screen end-to-end and standardize all UI themes to match the paintings.** The chrome
-> (buttons, panels/cards, HUD chips, icons, text treatments, frame corners, scene-grade) must read as ONE coherent system
-> that belongs to the painted world it sits on — not leftover/old or per-screen-inconsistent styling. **Method:** render
-> every scene (`node tools/shot.mjs <all>`, Act 1 + 2, landscape + portrait — **WebKit now renders (SHOT-1 hang resolved,
-> per Morpheus); ⚠ but the all-scene harness still leaks modals between scenes (RENDER-1) — run high-risk scenes isolated until fixed**),
-> eyeball each against its painting, list the **mismatches** in `DESIGN-REVIEW.md`, then standardize via PRs Neo merges.
-> Extend the **locked ARENA house look** (§21) + the scene-harmonizer consistently everywhere; keep **per-act theming**
-> (Act 1 cosmic / Act 2 medieval, §0.5) but coherent within each act. This is §7 / non-negotiable #7 (UI lives in the
-> painting) + the §20 Premium Bar. **⚠ EXCEPTION — the landing/title screen (`scrTitle`) is parent-approved; LEAVE IT
-> AS-IS, do NOT restyle it.** — Trinity, 2026-06-16
-
-> ✅ **SHIPPED + FYI for Trinity (Neo, 2026-06-15) — Act 2 → 8 zones, TEKS Grade-2 gap CLOSED.** Built
-> `CURRICULUM-GRADE2.md` end-to-end: zone **107 THE PIRATE COVE** (r-controlled ar/or/er/ir/ur, 150–159) +
-> **108 THE GIANT'S BRIDGE** (multisyllabic + affixes, 160–172), in play order after the Singing Glade, before
-> the Great Library; Dragon Keep finale stays last. New `startSyllable`/`syllabify`, /ər/-homophone foil-exclude
-> + forge pre-place, map `MAPSPOTS_V2[2]` 8-array (atomic). curriculum.test 100/100 (+new guards). **I synced the
-> CLAUDE.md Act-2 ladder bullets myself** (the "content-complete through fluency" text was stale) — flagging so you
-> can adjust pedagogy-doc wording (`PEDAGOGY.md §3` still frames r-controlled/multisyllabic as the open gap; it's
-> now closed). Also: **SHOT-1** — Oracle reports `tools/shot.mjs --webkit` hangs on Playwright's font-wait, so the
-> §20 render-gate can't catch iPad-only (WebKit) bugs; on my backlog to fix the WebKit render path.
-
-> 🏋️ **TRAINING ROOM — engagement cluster (parent playtest 2026-06-15) — MOSTLY SHIPPED.** Peaks/variety that buy MORE reps
-> without diluting them (juice/jokes BETWEEN reps, never on the prompt — §6.0 + seductive-details):
-> - ✅ **Coin STACK → gold bars → diamonds** "Treasure Vault" climax, crafted SVG (no emoji) — SHIPPED `b58a98f`.
-> - ✅ **Daily-practice PROGRESS bar** (non-timed, gentle) — SHIPPED `5e9c028`.
-> - ✅ **Ally INTERRUPTS** (unlocked allies pop in between reps; cheers + jokes, banks `TRAINING-INTERRUPTS.md`, roles J/R/X) — SHIPPED `0d2edcd`.
-> - ⏳ **DE-EMOJI:** HUD done (`b58a98f`); verify the rest of the room + **tighten `ui-emoji.test`** (coverage gap, cf SCROLL-2).
-> - ⬜ **Full Training Room REDESIGN (Oracle — "not great") to the §20 Premium Bar** — still open, render-gated.
-> — Trinity, 2026-06-15 (reconciled 2026-06-16)
->
-> 🗣️ **MOUTH-MOVE / talking upgrade (Oracle + Neo, parent-asked 2026-06-15) — vector makes this EASIER, not harder.** We
-> already bob the speaking portrait (`faceSpeak`); the upgrade = **amplitude-driven mouth open/close**: a Web-Audio
-> `AnalyserNode` on the playing clip (RMS → mouth openness) animates a parametric SVG **mouth element** on the face.
-> Convincing jaw-flap, cheap (one shape, transform/opacity), **zero per-line data**, works for ANY recorded / ElevenLabs /
-> voicepack clip — upgrades ALL speaking characters (cutscenes, the beat-7 ending, training allies). **Oracle:** expose a
-> controllable mouth element + open/closed art in `allyFace`/the portraits. **Neo:** the analyser→mouth driver, hooked into
-> `faceSpeak`/`Aud.play`, reused for the training `allyPop`. **Caveat:** browser TTS exposes no tappable stream → TTS lines
-> keep the bob; recorded/generated audio gets the real flap. Phoneme/viseme lip-sync = overkill, skip. Detail-tier /
-> reduced-motion gated. — Trinity, 2026-06-15
->
-> ✅ **NEO DONE (driver shipped) — ⚠️ ORACLE TODO (mouth art on the big portraits).** The mouth DRIVER is live
-> (`mouthStart`/`mouthStop` + `faceSpeak` wiring + the `--mouth` CSS contract, `.spkmouth{transform:scaleY(var(--mouth))}`).
-> **Engineering call:** I drive it **procedurally** (a lifelike smoothed jaw signal for the narration's duration), NOT by
-> tapping `Aud.el`'s Web-Audio pipeline — a `MediaElementSource` tap risks **silencing the audio-first instructions on
-> iPad/WebKit (#8)** and can't be validated headlessly while **SHOT-1** blocks the WebKit render path. Bonus: procedural
-> works for **TTS too** (no stream needed), so mouths move now, before any clip is recorded — supersedes the "TTS keeps only
-> the bob" caveat. Real-RMS is a future upgrade gated on SHOT-1. **Reference art added:** a `.spkmouth` open-mouth on
-> `allyFace` (shared smile + JJ/Cal/Nora) so the training pop-ins (and any allyFace speaker) flap today. **Oracle's lane:**
-> add the same `.spkmouth` hook (a controllable open/closed mouth, positioned per face) to the BIG cutscene portraits —
-> `noahSVG`, `inkblotSVG`/Vex, `vixenSVG`, `dragonSVG`, `teddyArt` — so the cutscenes + beat-7 ending flap; the driver is
-> already wired to them (inert until the element exists). Refine the reference allyFace mouth shape to the §20 bar. — Neo, 2026-06-16
->
-> ✅ **SHOT-1 RESOLVED (Neo, 2026-06-16) — the §20 render-gate now works on WebKit (iPad engine).** Root cause: Playwright
-> 1.60's `page.screenshot()` races `document.fonts.ready` (evaluated in a UTILITY world, so page-side stubs can't reach it)
-> against the 30s screenshot timeout; WebKit headless never settles it → every WebKit shot timed out. Fix in `tools/shot.mjs`:
-> set the official escape hatch `PW_TEST_SCREENSHOT_NO_FONTS_READY=1` (skips that blocking wait) + our own capped
-> `document.fonts.ready` race (Chromium keeps real fonts; WebKit hits the cap and proceeds) + block the network-first SW so the
-> harness renders fresh assets. `node tools/shot.mjs --webkit <scenes>` now works. **Bonus: the WIN-screen hero box is
-> CONFIRMED FIXED on WebKit** (`webkit-win.png`: soft edgeless glow, no rectangle) — closes the win-square iPad verification.
-> Real-RMS mouth amplitude (above) is now UNBLOCKED if we want it later. — Neo, 2026-06-16
-
-> ✅ **WIN-screen "hard square" — FIXED 2026-06-15** (Oracle, commit `abe5775`). Root cause was NOT a clipping container:
-> the character **aura ellipse overflowed the SVG viewBox**, so `overflow:hidden` clipped the soft glow to the viewBox
-> **rectangle** — invisible on Chromium, but on iPad/WebKit the `#winHero>svg` drop-shadow *outlined* that clipped rect →
-> the reported hard square. Fix: fit every character aura inside its viewBox (hero + allies + villains). **✅ CONFIRMED GONE
-> ON THE iPAD (parent, 2026-06-16) — RESOLVED.** *(Reminder: this was an iPad-only/WebKit bug the Chromium gate couldn't
-> catch — until **SHOT-1** is fixed, iPad-specific visuals still need the parent's eyes.)* — Trinity, 2026-06-16
->
-> ⏳ **DAILY TARGET 30 → 15 min/day — INCOMPLETE / DAILY-1 STILL LIVE** (corrected per Morpheus STATUS-1): the daily-split
-> *bar* shipped (`5e9c028`), **but `state-save.js:196,201` still default `goalMin=30`**, so the target boots at 30
-> (confirmed in WebKit renders). **NEO: change the fresh + migration default to 15 + add a `save.test` guard.** — Trinity, 2026-06-16
->
-> 🗺️🎨 **MAP ALLY ART (Oracle, parent 2026-06-15) — ⏳ PARTIAL:** raster allies wired into the showcases/cards
-> (`b7f0e3e`/`7f040bf`); **verify the MAP figures (`mapFriends`/`allyMapFig`) specifically** still need the swap to the
-> NEW ally art (`allyBody`/`allyFace`). Files: `map.js` + `allies.js`/`art.js`. Render-gate per §20.
-
-> 🎬 **STORYLINE / CUTSCENES (parent-directed 2026-06-15; full plan + research in `STORY.md`). Decision: SVG motion-comic
-> spine + ONE render-gated AI-video portal spike.** Core principle: cutscenes stay SHORT + SKIPPABLE and **fuse the reward
-> to the reading act**; invest in the hook + the ending. Build order:
-> - ✅ **① BEAT-7 HOMECOMING ENDING — SHIPPED `de83d9a`** (`startHomecoming` wired after the finale; `home1-8` in
->   `data-lines.js`, Mom/Dad words verbatim under role P, mastered-words "proof" beat). Script was `STORY.md §F`. *Oracle*
->   may still polish the cinematic art.
-> - ✅ **② INTRO HOOK — script APPROVED (parent 2026-06-16), `STORY.md §G`.** **NEO: update the 5 `panel1-5` texts in
->   `data-lines.js`** to the §G after-column (drop-in, no art/flow change; fuses reading=the superpower).
-> - **③ CINEMATIC SVG PASS over beats 2–6** (Ken Burns `scale3d/translate3d` + 2.5D parallax layers over existing painted
->   art + `cutsceneFX`/`faceSpeak`; optional vendored `gsap.min.js` for timeline sequencing; **skip Lottie/SMIL**; keep
->   `transform`/`opacity` + Lite/reduced-motion gating). ✅ **Squire fix SHIPPED `b7f0e3e`** (reveal is now SQUIRE); the
->   cinematic Ken-Burns/parallax SVG pass over beats 2–6 remains **open**, render-gated (§20).
-> - **④ PORTAL AI-SPIKE (Oracle, optional, render-gated).** ONE short clip for the time-travel portal, keyframed from our
->   rendered art (Sora-2 cameo / Veo 3.1 / Kling / Grok). Ship ONLY if it clears the Premium Bar; **keep the SVG portal as
->   fallback**. Serving: H.264 mp4 ~3–5 MB, `<video playsinline>` gesture-launched, **store as IndexedDB Blob** (mirrors
->   `VStore`, sidesteps the SW 206 gotcha). Budget a 3–4×+ reroll; never the character/likeness beats.
-> *(All cutscenes stay audio-first + `flow()`/watchdog skippable — hard constraint #8.) — Trinity, 2026-06-15*
-
-> ✅ **PEDAGOGY GAP — SHIPPED 2026-06-15** (was *the* #1 threat to objective #1): r-controlled + multisyllabic/affixes built
-> to `CURRICULUM-GRADE2.md` (Neo, commit `cd79486` — Act-2 zones **107 Pirate Cove** + **108 Giant's Bridge**, missions
-> 150–172; `curriculum.test` 100/100). Verified by Trinity (zones/hooks live, tests green); `PEDAGOGY.md §3` reconciled to
-> CLOSED. *(See the SHIPPED+FYI note at top.)* — Trinity, 2026-06-15
->
-> 🎨 **PEDAGOGY GUARDRAIL (The Oracle) — add a "calm learning moment" check to the §20 Premium Bar.** Per `PEDAGOGY.md §3#2`
-> (seductive-details effect, worst for novices like Teddy): the active decision moment (sound→letter / build / decode) must
-> stay **uncluttered — no decoration/animation competing with the target**; juice + ARENA polish fire *around and after* the
-> rep, never on the prompt. Make it a render-gate pass/fail item.
->
-> 🔎 **GUEST QA — Morpheus, verified + gated by Trinity (2026-06-15; PRs #7/#8 reconciled against current `main` → curated here, PRs closed).**
-> - **SCROLL-1 — ✅ FIXED** (Neo `05b9d84`): Spell Scroll now gates on taught words (`scrollPool`→`scrollReadable`), honouring constraint #5. *Verified.*
-> - **SCROLL-2 — ⚠️ OPEN (Oracle + guard).** The Spell Scroll result line renders **raw glyphs `★`/`✓`** as child-facing `textContent` (`game.js:1610` `"★ NEW BEST!"` / `"✓ Scroll read!"`) — OS glyphs, not crafted SVG → violates non-negotiable #6. **The `ui-emoji` guard misses them** (test passes), so its ranges don't cover `U+2605`/`U+2713` (vs the §18 spec's `☀–➿`). **Fix:** Oracle → replace `★`/`✓` with `icon()` SVG; tighten `ui-emoji.test` to cover 2600–27BF + sweep for other `★`/`✓`/`✦` leaks. *Verified.*
-> - **SHOT-1 — ⚠️ OPEN (render-gate tooling).** `tools/shot.mjs:84` creates ONE page and reuses it across all scenes (no fresh page / reset per scene), so a gate overlay or pending async can contaminate the next screenshot — a risk for the §20 render-gate's own integrity. **Fix:** fresh `newPage()` (or reload+reset) per scene. *Verified.*
-> - **CLOUD-2 — ⚠️ OPEN (Neo to confirm).** Boot-time daily rollover may bump local `S.ts` before the initial cloud restore, letting stale local progress outrank a newer cloud save (constraint #7 newer-wins). Morpheus-validated; Neo confirm against the boot/cloud order + add a `save.test` guard. *(Not independently re-verified by Trinity.)*
-> — Trinity, 2026-06-15
-
-### Morpheus fresh sweep - 2026-06-16
-
-Fresh against `origin/main` at `c3e62ac`. I did not re-list the existing SCROLL-2 / SHOT-1 / CLOUD-2 / UI-overhaul backlog items; these are additional confirmed issues from the latest sweep.
-
-1. **DAILY-1 - OPEN (Neo): the 15-minute daily target is still booting as 30 minutes, and the goal celebration can preempt active learning audio.** `CLAUDE.md:367` now sets the canon at `~15 min/day TOTAL`, and the current priorities already call for 30 -> 15. But `state-save.js:196` creates fresh daily state with `if(!S.goalMin)S.goalMin=30`, and `state-save.js:201` repeats that migration default for existing saves. `game.js:175` then honors `S.goalMin`, while `game.js:193` prints it in the map/training meter; a Chromium map render showed `0 / 30 min` on a fresh profile. Separate but related: `trainTick()` calls `dailyGoalReached()` at `game.js:176-186`, `dailyGoalReached()` calls bare `Aud.play("daily_goal")` at `game.js:196`, and `audio.js:73` starts every play by `this.stop()`. In a VM/browser probe, triggering `dailyGoalReached()` while a `flow(Aud.play(...), done)` was pending caused the flow continuation to fire, because `audio.js:131-135` advances when the interrupted promise resolves. **Risk:** this violates the parent-approved 15-minute daily loop and can skip/advance an audio-first training prompt at the exact threshold crossing. **Proposed fix:** change the default/migration path to 15 and add a `save.test` guard for fresh + legacy saves; for the celebration, set a pending daily-goal flag and announce it only on a safe surface or after the active `flow()` has cleared, instead of calling `Aud.play()` directly from `trainTick()`. — Morpheus, 2026-06-16
-
-2. **TRAIN-INT-1 - OPEN (Neo + Trinity): the new Training Room ally interrupts need a copy/narrative safety pass before voice recording.** The feature is wired live through `TRAIN_TELLERS` / `trainBagNext()` / `maybeTrainInterrupt()` at `game.js:1667-1685`, and it resumes reps via `flow(Aud.play([trainBagNext(t)]), done)` at `game.js:1685`. The issue is content + gating. First, several child-facing lines drift from the no-streak / process-praise rules: `CLAUDE.md:17` rejects streak pressure, `CLAUDE.md:117` says no streak loss language, and `STORY.md:89` says process praise instead of trait praise; current lines include `train_arch17` "Keep that streak alive..." at `data-lines.js:315`, `train_arch20` "strong, brave, and SMART" at `data-lines.js:318`, `train_nora5` "getting smarter..." at `data-lines.js:363`, and `train_nora18` "I always knew you were smart..." at `data-lines.js:376` (same draft text in `TRAINING-INTERRUPTS.md:41,44,95,108`). Second, the live unlock gates let JJ/Nora/Cal appear as normal Training Room pop-ins once Act 2 starts (`game.js:1670-1672` uses `S.act2intro||currentAct()>=2`), even though `CLAUDE.md:328` / `data-lines.js:256` say they have just been kidnapped and `TRAINING-INTERRUPTS.md:11` describes the banks as freed friends. A fresh Act-2 VM probe with no `S.freed` state still returned `["JJ","NORA","CAL"]` as eligible tellers. **Risk:** the feature buys valuable reps, but it can create streak/trait-praise pressure and story confusion during a high-frequency loop. **Proposed fix:** replace streak/smart lines with effort/process/mastery language before recording, add a small copy guard or checklist for Training interrupt text, and either gate JJ/Nora/Cal until their rescue/homecoming flag or explicitly frame them as remote/captive radio messages rather than in-room ally visits. — Morpheus, 2026-06-16
-
-Validation: `node tests\save.test.js` (106 pass), `node tests\curriculum.test.js` (104 pass), `node tests\ui-emoji.test.js` (6 pass), JS syntax sweep via `node --check`, Chromium shot harness for `title map base win settings` plus `coinfly train_pop vault_hud rctrl_learn rctrl_forge bigword bigchop affixchop chests`. — Morpheus, 2026-06-16
-
-### Morpheus design + engagement audit - 2026-06-16
-
-Fresh against `origin/main` at `5745a61`. I rendered the full `tools/shot.mjs` scene set in Chromium and WebKit, then re-ran high-risk scenes in isolation to separate real UI from harness contamination. I did not re-list the broad Premium UI overhaul / Hero Room / global-nav backlog; these are specific missed adherences or proof gaps.
-
-1. **STATUS-1 - DAILY-1 is still live, despite one top-line "SHIPPED" note.** `QA.md:26` correctly says `goalMin=30` is still incomplete, and the Morpheus `DAILY-1` entry below remains accurate, but `QA.md:101` also says "DAILY TARGET 30 -> 15 min/day - SHIPPED." Latest source still defaults both fresh daily state and legacy daily state to 30 (`state-save.js:196`, `state-save.js:201`), and the rendered WebKit Training/Progress screens still showed `30 min`. **Proposed fix:** keep DAILY-1 open in the top handoff until the default/migration changes to 15 and `save.test` covers it; otherwise Trinity/Neo may stop chasing a still-live engagement-spec miss. — Morpheus, 2026-06-16
-
-2. **RENDER-1 - the §20 render gate is WebKit-capable now, but not scene-isolated.** `tools/shot.mjs:110` creates one page, then `tools/shot.mjs:120-124` reuses it for every requested scene. Some scenes intentionally leave overlays open: `gate` calls `showParentGate()` (`tools/shot.mjs:63`), `openShop()` only adds `#shopPanel.on` (`game.js:1977`), and normal `show()` only swaps `.screen.on` (`game.js:392`), not modal overlays. In a default all-scene WebKit run, later screenshots such as `webkit-shop.png` were covered by the Grown-Up gate; in a targeted `shop vault_hud train_pop chests` run, the later shots were still the Shop overlay. Running `shop` alone rendered normally. **Risk:** the current all-scene audit can produce false failures and false passes, undermining STYLE.md §20's "render every scene" process. **Proposed fix:** create a fresh page/context per scene (or reload + deterministic overlay reset) and add per-scene assertions such as "no `#parentGate.on` unless scene=gate" and "no `#shopPanel.on` unless scene=shop"; then re-run Chromium + WebKit. — Morpheus, 2026-06-16
-
-3. **SHOP-DEMOJI-1 - the Shop item art conversion landed, but price/coin/DONE glyphs still violate the no-emoji contract and the guard misses them.** STYLE.md §18 bans child-facing emoji (`STYLE.md:62-66`), and the ARENA rollout explicitly includes "shop cards + collection tiles + the price/coins/DONE glyphs" (`STYLE.md:726-728`). Current Shop still has a raw money-bag in the coin row (`index.html:214`), raw checkmark in the close button (`index.html:217`), raw `OWNED ✓` (`game.js:1983`), and raw money-bag price buttons (`game.js:1984`). `tests/ui-emoji.test.js:39-66` only ratchets `BASE_ITEMS` / `itemArt()` structure, so `node tests\ui-emoji.test.js` passes while the rendered Shop still shows emoji. **Proposed fix:** replace these with crafted inline SVG (`coinIcon()` already exists; add/use a check icon), and expand the emoji guard to scan the `#shopPanel` markup plus `paintShop()` render strings, not just `BASE_ITEMS`. — Morpheus, 2026-06-16
-
-4. **SHOP-FIT-1 - the isolated WebKit Shop render fails the iPad landscape Premium Bar because the only close/confirm button is clipped below the fold.** At 1024x768 WebKit, `HERO SHOP` renders the grid but the blue `DONE` button is only partially visible at the bottom. Source shape matches the screenshot: `#shopPanel` is a flex column with `overflow-y:auto` (`styles.css:466-467`), `#shopGrid` precedes the close button (`styles.css:469`, `index.html:215-217`), and the footer is not sticky. This is technically scrollable, but the primary escape/action is not reliably visible on the target iPad viewport, which is a §20 / large-touch-target ergonomics miss. **Proposed fix:** make the close/footer sticky inside `#shopPanel` with safe-area padding, or give the grid its own capped scroll area so the close button remains fully visible; verify WebKit 1024x768 and portrait. — Morpheus, 2026-06-16
-
-5. **HEROBASE-PLINTH-1 - material suggestion for the already-open premium Hero Room work: make the avatar plinth the first slice, not a later polish pass.** STYLE.md §19 says the hero should stand in the painted room on a pedestal as the focal point (`STYLE.md:670-671`), and DESIGN-ENGAGEMENT §4.2 calls for a center "Hero plinth" with current outfit/weapon/companion and big premium art (`DESIGN-ENGAGEMENT.md:82`, `DESIGN-ENGAGEMENT.md:91`). Current code explicitly uses generated Teddy art for title/win/rest while keeping Hero Base on `heroNow()` (`game.js:326-328`), and `paintBase()` injects that smaller parametric hero into the left card (`game.js:1473-1474`). The WebKit Base render still reads as a card dashboard over the painted room, with the main avatar smaller and less premium than the generated art elsewhere. **Proposed direction:** when Neo/Oracle start the Hero Room slice, lead with a loadout-aware premium plinth (generated Teddy art plus equipment overlays, or generated variants) and then attach collection hotspots around it; that attacks the parent complaint faster than rearranging the shelves again. — Morpheus, 2026-06-16
-
-Validation: `node tests\save.test.js` (106 pass), `node tests\curriculum.test.js` (104 pass), `node tests\ui-emoji.test.js` (6 pass), full `node tools\shot.mjs` in Chromium, full `node tools\shot.mjs --webkit`, and isolated Chromium/WebKit reruns for `shop vault_hud train_pop chests` plus `find learn_s read rctrl_learn bigword`. — Morpheus, 2026-06-16
-
-> ⭐ **PARENT FEATURE — PLAYTEST FEEDBACK BOX (Neo, build-ready; high value — it unlocks the playtest loop in `AGENTS.md`).**
-> A frictionless in-app way for the parent to log what he sees Teddy do, straight to GitHub. **Spec:**
-> - **UI:** Grown-Up Corner ▸ a "Playtest notes" card (parent-gated already by the cognitive math-gate) = a big `<textarea>`
->   + a **Send** button. Wire via `showSection`/`backToHub` like the other sections. Parent-area text, so plain copy is fine.
-> - **Submit = commit to the repo, reusing the studio's GitHub flow** (`audio-studio.js`): the remembered token
->   `localStorage["stGhToken"]` (`LS_GH`, `audio-studio.js:15`) + the `ghApi(token,path,opts)` helper + the blob→tree→
->   commit→patch-ref pattern in `publish()` (`audio-studio.js:305-325`). If no token saved, reuse/point to the studio's
->   token field. **Write a NEW file** `playtest/<ISO-timestamp>.md` (race-free — no read-modify-write), body = the free
->   text + ISO timestamp + app version + active profile. Commit msg: `Playtest note <timestamp>`.
-> - **"Trigger a review":** ALSO open a GitHub Issue via `ghApi(token,"/issues",{method:"POST",body:{title:"Playtest: "+
->   firstLine, body:note}})` as the assignable trigger surface — **graceful if the token lacks Issues:write (catch 403, the
->   committed file is still the record).** (If the parent wires a Claude-Code-on-web trigger on issue-open, reviews auto-launch.)
-> - **Resilience (mirror the save layer):** optimistic "Sent ✓ — the team will review" message; if `fetch` fails, **queue
->   the note in localStorage and retry on next Grown-Up Corner open** — never block, never lose a note, never break play.
-> - **Verify:** boot → Grown-Up Corner → type → Send (test token) → confirm `playtest/…md` appears on the branch + the
->   Issue opens (or 403 is handled); offline path queues + flushes; `save`+`curriculum`+`ui-emoji` green; no console errors.
-> - **Files:** `index.html` (the box markup) + `game.js`/a small `playtest.js` (handler + `showSection` wiring) reusing the
->   studio's `ghApi`/token (factor a tiny shared `ghCommitFile()` if cleaner). Token stays device-only, never committed.
-> — Trinity, 2026-06-15 (parent-requested; logs land in `PLAYTEST.md`/`playtest/`)
-
-1. **🐛 Hero Base action-rail bug (do early) — M-#2** (credit: Morpheus). The left `.basecol-hero`/Loadout has
-   **no scroll path**, so at 1024×768 landscape it overflows under `.baseactions` (TRAINING/SHOP/RECHARGE/CITY MAP),
-   hiding earned-gear controls. `#scrBase` fixed-height flex col (`styles.css:855`); `.baseactions` after the
-   growing `.basewrap` (`index.html:166-170`); only `.basecol-coll` gets `overflow-y:auto` (`styles.css:882-883`).
-   **Fix:** give `.basecol-hero` `max-height:100%; overflow-y:auto` on short landscape, OR a fixed bottom action
-   rail + matching `.basewrap` bottom-padding (STYLE.md §7.4 #4). Keep ≥96px; verify `shot.mjs base basefull` +
-   Act-2 Base at 1024×768 + portrait.
-2. **🎮 Engagement / juice build order** (specs in **DESIGN-ENGAGEMENT.md §4–11**; all bound by the **§6.0
-   Mastery-not-participation contract**): coin-fly `flyReward` juice pass → **treasure chests** (§10) → **Hero Rank
-   meter** → **store expansion / de-emoji** → **Hero Room** (§11). Best delight-per-effort order is §7.
-3. **🗺️ MAP REDO** (parent directive) — regenerate a **calmer** painted bg, then rebuild the path + `ZONESPOTS`.
-   Supersedes the cosmetic map tweaks (U2/U6/U12). See **World Map** below.
-4. **⚙️ Settings game-feel pass** — DESIGN-ENGAGEMENT.md §9.1 (detailed spec).
-5. **🔧 Remaining U-series chrome fixes** — **U8** (finale boss escalation), **U10** (intro skyline art), **U13**
-   (league-name fit). *(U1–U7, U9, U11 all shipped this session — see ledger; U12 folds into MR2 / MAP REDO.)*
-6. **🧠 Pedagogy** — **rec #2 Spell Scroll** (repeated reading), **rec #6 Word Crafting** (morphology capstone), the
-   **Act-2 finale comprehension-proof gap** (top reading-core item), and **gear pacing P2/P3**. *(Memory Vault
-   scheduler #1 + Recharge surfacing, rec #3 articulatory cue, and rec #4 mastery-threshold all shipped this
-   session — see ledger.)*
-
----
+### 📥 Inbox — guests write findings here (Trinity converts to Issues, then clears)
+*(empty — caught up 2026-06-16)*
 
 ## ✅ RESOLVED LEDGER
 
@@ -296,6 +85,8 @@ One line each; long detail/spec blocks were removed on consolidation.
 ---
 
 ## 🔧 OPEN WORK — BY TOPIC
+> ⚠️ **LEGACY (pre-Issues, 2026-06-14/15 — mostly resolved). Being triaged into GitHub Issues; anything still-live will be re-surfaced as an Issue. Do NOT add new work here — open an Issue.**
+
 
 ### 🧭 NAVIGATION VALIDATION — first-principles (Trinity, 2026-06-14)
 Validated the **shipped** nav (code + the parent's real forge/trace screenshots) against the STYLE.md §7 canon. Holistic
