@@ -45,14 +45,50 @@ and applied going forward.
 - **Wave 3 — narrative & cohesion:** cutscenes (intro/interlude/homecoming) · Settings/Grown-Up Corner · cross-screen
   transitions & motion language.
 
-## THE AWARD BAR (rubric) — *PROPOSED, pending the research synthesis + Oracle ratification*
-*(Trinity is commissioning a 3-stream research review — award-winning kids/education game design, game-feel/juice +
-premium UI craft, and ethical engagement/onboarding/reward loops. The distilled, checkable rubric lands here and is
-ratified into `STYLE.md §20` as the elevated "Premium Bar → Award Bar." Until then, the existing §20 Premium Bar +
-non-negotiables hold. Placeholder criteria to be replaced/confirmed by research: focal clarity · world-cohesion / UI
-lives in the painting · palette & lighting discipline · cohesive motion language · juice on success (off the prompt) ·
-crafted consistent iconography · typographic restraint · generous negative space · inviting zero-states · screen
-choreography/transitions · restraint / clutter-free · WebKit-performant.)*
+## THE AWARD BAR (rubric v1) — *PROPOSED for The Oracle to ratify into `STYLE.md §20`*
+Synthesized from a 5-stream research review (sources at bottom). **Score every screen pass/fail on each criterion**; a
+screen is "award-bar" only when all VISUAL+FEEL+ENGAGEMENT criteria pass AND the CALM-LEARNING gate + PERF gate pass.
+The CALM-LEARNING gate (C13) is the **hard filter** — it overrides any juice/beauty criterion on an active prompt.
+
+**VISUAL / CRAFT**
+- **A1 Focal clarity** — exactly ONE unmistakable primary element per screen; everything else recedes. *(MV composition; restraint; pedagogy salience)*
+- **A2 Palette & lighting discipline** — every element pulls only from the scene's 3–5 color tokens (extend `SCENE_TONE`, no raw hexes); characters/gems all get the house three-part lighting: key sheen + rim + contact shadow. *(Monument Valley "color script"; `feSpecularLighting`)*
+- **A3 UI lives in the painting (diegetic)** — controls look like world objects (gem buttons, stone/parchment chrome, `#sceneFrame`), NOT list-cards floating over a background. *(the single biggest "premium" tell; §20/#7)*
+- **A4 One motion personality** — a single easing-curve family (gentle back-out spring) + short duration bands (micro 120–220ms / feedback 200–400ms / scene 400–800ms) reused app-wide; nothing `linear`. *(juice canon)*
+- **A5 Crafted, consistent iconography** — ONE stroke weight / corner / detail grammar across all `icon()`/`PICONS`; ZERO emoji. *(§18/non-negotiable #6)*
+- **A6 Typographic restraint** — 2–3 type sizes; Andika for letter content, display face for chrome only; generous negative space / the painting breathes. *(premium type discipline)*
+- **A7 Continuous screen choreography** — scenes glide/stagger in (focal element first), never hard-cut; reuse `beatIn` everywhere, not just cutscenes. *(Alto's/Gris)*
+- **A8 Inviting zero-states** — first-time/empty states feel like an invitation ("your first gem goes here", glowing pedestal), not a blank slot. *(§20; "show only earned" stays)*
+
+**FEEL / JUICE** *(fires AFTER/AROUND a rep — never on the active prompt; see C13)*
+- **F9 Layered reward on success** — one correct answer fires SIMULTANEOUS squash-pop + particle burst + pitch-varied ding + a collectible that flies to the shelf and STAYS; escalates to a *which-good-thing-varies* mastery celebration (loudest on mastery, §6.0). *(Vlambeer "do it all on the same event")*
+- **F10 Tactile micro-interactions** — every interactive element has rest→press (scale ~0.94 + darker) →release (spring overshoot) + a soft tap sound; the visual-punch+sound is the iOS-haptics substitute. Wrong answer gets the OPPOSITE of juice: soft dim + replay + retry, never a harsh shake (#2). *(micro-interaction craft)*
+
+**ENGAGEMENT / PEDAGOGY (ethical)**
+- **E11 The reward teaches / intrinsic integration + a contingently-responsive companion** — the payoff carries meaning where it can (the decode IS what shatters the cage); reading is the mechanic, not a wrapper. The guide character (mentor/ally) is **contingently responsive — it reacts to what Teddy *just did*** (not a static smile), celebrates mastery, and models *thinking* on a miss, never scolds. Characters are recurring, named, persistent with an emotional range; the captured-friend-awaiting-rescue is an enduring-bond hook; allies cheer *by real name* (fuses competence + relatedness). *(Endless Alphabet teaching skits; Habgood intrinsic-integration 7× time-on-task; Calvert 2020 — responsive character → faster/more-accurate answers + transfer; Khan's Kodi; Malone&Lepper intrinsic fantasy)*
+- **E12 Healthy pull, no dark patterns** — surprise = *which* good thing, never *whether*; rewards guaranteed, non-random, non-paid; lean on curiosity-gap teasers (next zone/rescue silhouette) + set-completion (gem shelf, rescued-friends league). **Progress visualization: never start a bar at zero — endow a little progress, and show an "almost there" state near a goal (endowed-progress + goal-gradient pull hardest near the end).** BANNED: timers, streak-guilt, loss-aversion, FOMO, paid-repair, infinite/auto-advance loops. **"Are we healthy?" test: if minutes rise but *enjoyment* falls, we've drifted (SDT obsessive vs harmonious).** *(Loewenstein curiosity-gap; Nunes&Drèze endowed-progress; Kivetz goal-gradient; SDT; Lepper; ICO Children's Code; deceptive.design)*
+
+**CALM-LEARNING GATE (C13 — HARD FILTER, overrides all juice/beauty on a prompt)**
+- **C13 Calm prompt** — the active decoding moment is uncluttered + audio-first; the target is NEVER shown as text (#4); no decoration/animation/coin-counter competes with it (HUD hidden per `NAV-PLAN` G1); juice is suspended until the answer lands. *(seductive-details depress recall even when they don't disrupt; cognitive-load; ADHD/dyslexia guidance — front-loaded decoration is worst)*
+
+**PERFORMANCE GATE (P14)**
+- **P14 WebKit-performant** — transform/opacity-only animation (never width/top/left/box-shadow); capped+pooled particles; `will-change` only while animating then removed; Lite strips GPU filters/blur/rim-shadows/idle-motion but keeps the cheap reward bursts + ALL learning content; one big filtered character at a time; `prefers-reduced-motion` honored. *(WebKit compositor reality)*
+
+**The 6 highest-leverage upgrades (research consensus, best ratio of premium-feel ÷ effort):** (1) layer the correct-answer
+response [F9], (2) lock palette+lighting+easing to a token set and audit every screen [A2/A4], (3) spring press-states +
+a tap sound on every button [F10], (4) mastery-escalated reward with a small variant pool [F9/E11], (5) staggered
+continuous transitions [A7], (6) pitch-vary repeated SFX [F9]. Nearly all extend code we already have.
+
+*Sources (5-stream review, 2026-06-16): Apple Design Awards / Children's BAFTA + editors'-choice teardown (Endless
+Alphabet, Toca/Sago/Pok Pok, Khan Kids, Teach Your Monster, Duolingo ABC, LEGO/StoryToys); juice canon (Vlambeer "Art
+of Screenshake", Jonasson&Purho "Juice It or Lose It", GMTK, Swink "Game Feel") + premium art direction (Monument
+Valley color-script, Alto's/Gris) + WebKit perf (web.dev/MDN/Motion); pitfalls (Garner 1989 / Harp&Mayer 1998 seductive
+details, Sweller CLT, Mayer coherence/redundancy, Lepper 1973 + Deci/Koestner/Ryan 1999 overjustification, Mueller&Dweck
+1998 process-praise, Habgood&Ainsworth 2011 intrinsic integration, Hanus&Fox 2015 PBL); retention/ethics (Loewenstein
+1994 curiosity, Nunes&Drèze 2006 endowed-progress, Kivetz 2006 goal-gradient, Eyal Hook, ICO Children's Code, D4CR,
+deceptive.design, Drummond&Sauer 2018 loot-boxes); character/SDT (Ryan&Deci 2000, Ryan/Rigby/Przybylski 2006 PENS,
+Calvert et al. 2020 parasocial learning, Birk et al. 2016 avatar identification, Naul&Liu 2020 narrative). Full URLs in
+the research task outputs.*
 
 ## Cadence + control
 Trinity runs the coordinating loop (status sweep → review any new render-gated PRs against the bar → update board →
