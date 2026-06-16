@@ -535,18 +535,20 @@ function flyReward(fromEl,toEl,n,opts){ opts=opts||{}; if(!toEl||!n)return;
    (win / unlock / milestone) — NEVER during a learning run (C13: nothing competes with the active prompt).
    Pure WAAPI (transform/opacity → GPU, P14), pooled, detail-tier aware: Lite/reduced-motion skip it,
    Calm uses fewer + slower + no spin. Quieter than the reading/mastery cue by design (§6.0). */
-let __showerPool=[];
+let __showerPool=[], __showerLive=0;   /* __showerLive caps CONCURRENT sprites so stacked reward events (e.g. a gear-win: win + 2nd wave + unlock card, ~700ms apart) can't pile up gem nodes on older iPads (P14, #74). */
+const SHOWER_LIVE_CAP=40;
 const SHOWER_COLORS=["#3b82f0","#ff8a3d","#3ec97e","#a06ae8","#7fd9ff","#ffc93c","#ff5e8a"];
 function rewardShower(n, opts){ opts=opts||{}; const s=stageEl(); if(!s)return;
   if(REDUCE || (document.body&&document.body.classList.contains("lite")))return;   /* keep cheap confetti only on Lite/reduced-motion */
   const calm=document.body&&document.body.classList.contains("calm");
   if(typeof document.body.animate!=="function" && typeof Element.prototype.animate!=="function")return;
   n=Math.max(1,Math.min(n||12, calm?8:18));
+  n=Math.min(n, SHOWER_LIVE_CAP-__showerLive); if(n<=0)return;   /* P14 (#74): don't pile up concurrent sprites on stacked reward events */
   const sr=s.getBoundingClientRect();
   let cx=sr.left+sr.width/2, cy=sr.top+sr.height*0.46;
   if(opts.fromEl){ try{ const fr=opts.fromEl.getBoundingClientRect(); cx=fr.left+fr.width/2; cy=fr.top+fr.height*0.55; }catch(e){} }
   if(opts.x!=null)cx=opts.x; if(opts.y!=null)cy=opts.y;
-  for(let i=0;i<n;i++){ const sp=__showerPool.pop()||document.createElement("div");
+  for(let i=0;i<n;i++){ const sp=__showerPool.pop()||document.createElement("div"); __showerLive++;
     const col=SHOWER_COLORS[Math.floor(Math.random()*SHOWER_COLORS.length)];
     sp.style.cssText="position:fixed;left:0;top:0;z-index:75;pointer-events:none;width:34px;height:34px;will-change:transform,opacity;";   /* >70 so it also shows over the unlock-card modal */
     sp.innerHTML=gemSVG("",col,34); document.body.appendChild(sp);
@@ -560,7 +562,7 @@ function rewardShower(n, opts){ opts=opts||{}; const s=stageEl(); if(!s)return;
       {transform:`translate(${peakX-17}px,${peakY-17}px) scale(1) rotate(${spin*0.5}deg)`,opacity:1,offset:.4},
       {transform:`translate(${endX-17}px,${endY-17}px) scale(.82) rotate(${spin}deg)`,opacity:0}
     ],{duration:(calm?1100:900)+Math.random()*500,delay:i*(calm?64:34),easing:"cubic-bezier(.25,.7,.4,1)",fill:"forwards"})
-      .finished.then(()=>{ sp.remove(); if(__showerPool.length<24)__showerPool.push(sp); }).catch(()=>{ try{sp.remove();}catch(e){} });
+      .finished.then(()=>{ __showerLive--; sp.remove(); if(__showerPool.length<24)__showerPool.push(sp); }).catch(()=>{ __showerLive--; try{sp.remove();}catch(e){} });
   } }
 
 /* ---------------- TITLE ---------------- */
