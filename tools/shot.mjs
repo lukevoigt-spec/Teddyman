@@ -47,6 +47,7 @@ const SCENES = {
   settings: `(window.openSettings && openSettings(), 1)`,
   hubsettings: `(openSettings(), showSection('tabSettings'), 1)`,
   hubprogress: `(openSettings(), showSection('tabProgress'), 1)`,
+  audiostudio: `(function(){ openSettings(); var b=document.getElementById('hubAudio'); if(b)b.click(); if(window.showSection)showSection('tabAudio'); var t=document.querySelector('.tabbtn[data-tab="tabAudio"]'); if(t)t.click(); return 1; })()`,
   // Memory Vault: seed a due word + a due grapheme, then render a recharge round directly
   // (bypass the intro flow() so the round DOM is present at screenshot time).
   vault: `(function(){ S.mastery={ "w_cat":{seen:5,ok:5,str:5,box:0,due:"2020-01-01"}, t:{seen:5,ok:5,str:5,box:0,due:"2020-01-01"} };

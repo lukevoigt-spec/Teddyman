@@ -24,6 +24,7 @@
      get NO added 'uh' (the classic /b/→'buh' error that breaks blending). */
   const PH_ORDER="s a t p i n m d g o c k e u r h b f l j v w x y z q".split(" ")
     .concat(["sh","ch","th","wh","ck","ng"])
+    .concat(["ai","ee","oa","ar","or","er"])   /* #46: vowel teams + r-controlled (ir/ur reuse snd_er via PHON_ALIAS, no own tile) */
     .concat(["a_long","e_long","i_long","o_long","u_long"]);
   const LONG_KW={a_long:["cake","🎂"],e_long:["feet","🦶"],i_long:["kite","🪁"],o_long:["home","🏠"],u_long:["cube","🧊"]};
   const PH_COACH={
@@ -59,6 +60,12 @@
     wh:"“wh” (whale) — a “w” with a little breath in front.",
     ck:"/k/ (duck). Just like K: “k.” No “uh.”",
     ng:"Hum at the back of the mouth: “ng” (ring). One sound.",
+    ai:"Vowel team A-I — says long A's NAME: “ay” (rain). One smooth sound.",
+    ee:"Vowel team E-E — long E: “ee” (bee). One sound, hold it.",
+    oa:"Vowel team O-A — says long O's NAME: “oh” (boat). One sound.",
+    ar:"Bossy R — “ar” (car), like a pirate's arrr. One sound.",
+    or:"Bossy R — “or” (corn). One sound.",
+    er:"Bossy R — “er” (fern). Same sound as ir/ur (bird, surf) — record it once here.",
     a_long:"Long A — the vowel says its NAME: “ay” (cake).",
     e_long:"Long E — says its NAME: “ee” (feet).",
     i_long:"Long I — says its NAME: “eye” (kite).",
@@ -197,7 +204,8 @@
       fileInp.style.display="none"; document.body.appendChild(fileInp);
       fileInp.onchange=async()=>{ if(!fileTarget||!fileInp.files[0])return;
         try{ await saveClip(fileTarget, await blobToDataURI(fileInp.files[0]));
-          setMsg("Saved your audio for "+fileTarget+" to this iPad."); refreshAll(); }
+          setMsg("Saved your audio for "+fileTarget+" to this iPad."); refreshAll();
+          if($("recOverlay")&&$("recOverlay").classList.contains("on"))renderRec(); }   /* #46: live-refresh the guided recorder if it's open */
         catch(e){ setMsg("Couldn't read that file.",1); } fileInp.value=""; }; }
     fileInp.click();
   }
@@ -349,6 +357,7 @@
     on("recPlay",()=>{ const p=recList[recIx]; if(p)Aud.play(p.id); });
     on("recPrev",()=>{ if(recIx>0){recIx--;showKeep(false);lastTake=null;renderRec();} });
     on("recNext",()=>{ if(recIx<recList.length-1){recIx++;showKeep(false);lastTake=null;renderRec();} });
+    on("recUpload",()=>{ const p=recList[recIx]; if(p)pickFile(p.id); });   /* #46: upload a pre-recorded file for THIS phoneme (not just mic) */
     on("btnElLoad",elLoad); on("btnElForget",elForget); on("btnGenAll",genAll);
     on("btnExportVP",exportVP); on("btnImportVP",()=>$("vpFile").click()); on("btnPublish",publish);
     const vf=$("vpFile"); if(vf)vf.onchange=()=>{ if(vf.files[0]){ importVP(vf.files[0]); vf.value=""; } };
