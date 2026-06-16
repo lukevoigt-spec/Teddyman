@@ -10,6 +10,30 @@ logic. Each slice ships as its own render-gated PR.
 
 ---
 
+## ⚠ PARENT REVISION (2026-06-16) — FOUR FIXED CORNER BUTTONS (supersedes Model A's *layout* where they conflict)
+Parent refined the model to **four fixed square corner buttons, identical on every screen** (max consistency +
+big corner targets — very learnable for a 7-yo):
+- **Upper-LEFT — HUD / status** (power/rank + coins + daily ring; display-only, not a button).
+- **Upper-RIGHT — SETTINGS** (the Grown-Ups gear) — prominent corner, but **stays behind the math gate** (kid-locked).
+- **Lower-LEFT — HOME → HERO BASE** (parent treats the Base as "home"; this goes straight to the **Base**, NOT the map).
+- **Lower-RIGHT — MAP → world map.**
+
+**Changes vs Model A:** Base and Map are now BOTH dedicated corner buttons (not "Map = Home, Base via the castle"),
+and "Home" means the **Hero Base**. So drop Model A's single top-left Home→map button + castle-only Base access; the
+per-screen-class "Home btn" column below becomes this fixed 4-corner set. Square buttons, ≥96px touch.
+
+**Neo flags (for parent + Oracle to resolve):**
+1. **Calm during learning (principle #5 / seductive-details guardrail — protects objective #1).** Four corners on an
+   active decoding prompt risks clutter. Recommend: keep all four on hub / Base / Win / Rest, but on **learning
+   screens** dim+shrink them (or drop to Home + Replay + slim status) so the prompt stays the focal point. *(Confirm.)*
+2. **Settings stays math-gated** even though it's now a prominent corner — the child must not wander into the parent area.
+
+Ownership unchanged: **Oracle** builds the corner-button chrome (render-gated §20); **Neo** wires the handlers
+(lower-left → `showBase`, lower-right → `toMap`, upper-right → the gated Grown-Up Corner). The diegetic castle-on-map
+Base entry can remain as a secondary path; the lower-left HOME button is primary.
+
+---
+
 ## Principles (research-backed — sources at bottom)
 1. **One persistent nav element, same place every screen.** Kids 5–8 do worse with hidden nav; never make them hunt.
 2. **The World Map is HOME (the hub).** Everything radiates from it. Collapse today's three "homes" (Title / Hero Base / Map) into one.
