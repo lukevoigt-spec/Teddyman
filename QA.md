@@ -15,8 +15,10 @@
 > "done".** ⚠️ `bg-base-room.png` is the **staged room background — keep & wire, do NOT delete.**
 >
 > 📐 **The consolidated retro-fit checklist is `DESIGN-ALIGNMENT.md`** (5 deep-dive audits, prioritized + file:line). Newly
-> confirmed SHIPPED: **M-#2 action-rail FIXED**, **`flyReward` BUILT**, **treasure chests BUILT**, **mastery contract
-> honored**. The old "store de-emoji" + "Hero Room" items are **superseded by the Premium UI Overhaul above.**
+> confirmed SHIPPED (hashes anchored 2026-06-16 per Cypher's status-discipline flag): **M-#2 FIXED** `38e2b82`,
+> **`flyReward` BUILT** `0dab792` (⚠ *under-utilized — training reps still use `coinFloat`; standardize, see Cypher*),
+> **treasure chests BUILT** `51442be`, **mastery contract honored** `a73f0c6`. The old "store de-emoji" + "Hero Room" items
+> are **superseded by the Premium UI Overhaul above.**
 
 Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under **🔧 OPEN WORK — BY TOPIC**.
 
@@ -28,6 +30,27 @@ Skim top-to-bottom; roughly priority order. Detail (file:line / spec) is under *
 > full *redesign*, mouth-move upgrade, intro-hook build (script drafted `STORY.md §G`), cinematic SVG pass + portal spike,
 > map-figure ally swap (showcases wired `b7f0e3e`; verify the map figures), the §20 calm-prompt check, UI-coherence audit
 > completion. Individual tickets below annotated accordingly.
+
+> 🔎 **GUEST QA — Cypher sweep 2026-06-16 (verified + curated by Trinity).** High-signal end-to-end pass; my verification:
+> - **flyReward under-utilized — ✅ VERIFIED (Oracle/Neo, low-effort/high-ROI).** Training-rep reward still uses
+>   `coinFloat`+`burstAt` (`game.js:1769`); base/chest uses `flyReward` (`:1662`). Standardize `flyReward` for training reps
+>   + the Treasure Vault + any other coin moments.
+> - **Working-tree isolation NOT enforced (Neo, process).** AGENTS.md requires per-agent worktrees but nothing checks it —
+>   live risk with Oracle editing in parallel. Add a lightweight **session-start / pre-commit warning** if Neo + Oracle
+>   share a working dir.
+> - **§20 render-gate catch-up on NEW Act-2 systems (Oracle).** Homecoming ending, `syllabify`/`startSyllable` visuals,
+>   vault popups, new cutscene beats lack a documented Premium-Bar review (before/after shots + findings in `DESIGN-REVIEW.md`).
+> - **Secondary-control consistency (Oracle — folds into the UI-coherence pass).** Primary `.btn` is strong; `.echip`, shop
+>   items, some Base tiles still lack the sheen/gradient/inset.
+> - **Interrupt-after-Spell-Scroll handoff (Neo, polish).** The ~8–12-rep interrupt can fire right after a Spell-Scroll
+>   finishes (`scrollFinish`→train flow) — a small timing buffer/state check smooths it. Plausible; Neo confirm.
+> - **M-#2 Base overflow — ⚠ NUANCE:** the *scrBase* hero-column fix IS in CSS (`styles.css:964/970`) → M-#2 stays FIXED.
+>   Cypher's "still overflows on Training/Shop/Vault" is a SEPARATE device-visible claim about those *other* screens —
+>   un-renderable from cloud (SHOT-1) → **Neo/parent confirm at 1024×768 on device.**
+> - **QA.md status-discipline (legacy ✅ without hashes) — VALID, addressing:** anchored the top "Newly confirmed SHIPPED"
+>   block to commits (below). The ledger must not become the failure mode it was built to prevent.
+> - ✅ **No hard-constraint violations** in the new systems (Vault/Scroll/Warm-Up/homecoming/syllabify) — audio-first,
+>   no-fail, save-safe all respected. — Trinity, 2026-06-16
 
 > 🎨 **UI THEME COHERENCE PASS — end-to-end (Oracle, parent-directed 2026-06-16) — ⏳ IN PROGRESS** (bg restyle `620e682` +
 > Hero-Base `0d60d9d`/PR#17 are the start; audit completion + per-screen standardization continues). Now that the **painted backgrounds** are
