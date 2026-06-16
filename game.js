@@ -128,6 +128,10 @@ function grandfather(){ let seeded=false;
       const seed=tbl=>Object.keys(tbl).filter(id=>mids.has(+id)&&S.done[id]).map(id=>tbl[id]);
       /* live ∪ FROZEN-legacy GEAR_AT — earned gear survives the P2-A pacing re-map */
       S.gearByAct[a.id]=[...new Set([...seed(GEAR_AT), ...seed(LEGACY_GEAR_AT)])]; }); }
+  /* reconcile newly-rostered friends (e.g. Act-2 JJ/Cal/Nora added after a save existed): if their
+     rescue mission is already done, mark them freed so they join the league instead of lingering
+     captive on a cleared zone. Idempotent + save-safe (only ever sets freed true, never un-frees). */
+  if(S.freed){ LEAGUE.forEach(t=>{ if(S.done[t.mid] && !S.freed[t.kind]){ S.freed[t.kind]=true; seeded=true; } }); }
   return seeded; }
 /* missions of an act in PLAY ORDER (zones run in ZONES-array order; missions
    within a zone by id). Used by the parent's level-override slider so its order
@@ -1417,9 +1421,13 @@ function showWin(firstTime){ show("scrWin");
   if(typeof Sfx!=="undefined")Sfx.win();
   flashScreen("rgba(255,255,255,.5)"); confetti(CUR.finale||CUR.rescue||CUR.type==="fortress"?110:64);
   if(CUR.finale||CUR.rescue||CUR.type==="fortress")setTimeout(()=>confetti(90),520);  /* extra pop on big milestones */
-  const ally=CUR.rescue?"heart":(CUR.type==="fortress"?(currentAct()===2?"kendall":"leighton"):null);
+  /* who got freed this win — derive the rescued ally from the LEAGUE roster by mission id (generalized
+     beyond the old hardcoded Amelia, so JJ/Cal/Nora rescues show the RIGHT face + name). */
+  const rescuedKind = CUR.rescue ? (LEAGUE.find(t=>t.mid===CUR.id)||{}).kind : null;
+  const ally = rescuedKind || (CUR.type==="fortress" ? (currentAct()===2?"kendall":"leighton") : null);
+  const allyEnt = ally ? LEAGUE.find(t=>t.kind===ally) : null;
   $("winHero").innerHTML=heroMarquee(170)+
-    (ally?`<svg viewBox="-32 -36 64 80" width="98" style="vertical-align:bottom;">${allyFace(ally)}<text y="42" text-anchor="middle" font-family="Bangers" font-size="12" fill="#ffc93c">${ally==="leighton"?"LEIGHTON":ally==="kendall"?"MISS KENDALL":"HEARTGUARD"}</text></svg>`:"");
+    (ally?`<svg viewBox="-32 -36 64 80" width="98" style="vertical-align:bottom;">${allyFace(ally)}<text y="42" text-anchor="middle" font-family="Bangers" font-size="12" fill="#ffc93c">${allyEnt?allyEnt.name:""}</text></svg>`:"");
   $("winHero").className="winpose"+(1+Math.floor(Math.random()*4));   /* random victory celebration */
   const gear=GEAR_AT[CUR.id];
   $("winGear").innerHTML=(firstTime&&gear)?`<div class="gearbadge">NEW GEAR: ${gear}</div>`:"";
@@ -1427,7 +1435,7 @@ function showWin(firstTime){ show("scrWin");
   if(firstTime&&gear)setTimeout(()=>showUnlock(rewardGemArt(), gear.toUpperCase(), "NEW GEAR!"), 420);
   let ids;
   if(CUR.type==="fortress") ids=currentAct()===2?["kendall1","kendall2","kendall3"]:["leighton1","leighton2","leighton3"];
-  else if(CUR.rescue) ids=["free_heart1","free_heart2","m2_done"];
+  else if(CUR.rescue) ids=({heart:["free_heart1","free_heart2","m2_done"],jj:["jj_freed"],cal:["cal_freed"],nora:["nora_freed"]}[rescuedKind])||["free_heart1","free_heart2","m2_done"];
   else if(CUR.finale) ids = currentAct()===2 ? ["act2_win"] : (CUR.z===4 ? ["m4_letters"] : (CUR.z===3 ? ["m3_done"] : ["finale1","finale2","finale3"]));
   else if(firstTime&&gear) ids=[currentAct()===2?"win_grow2":"win_grow","win_gear",GEARLINE[gear]];
   else ids=[currentAct()===2?"win_grow2":"win_grow"];

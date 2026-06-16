@@ -66,6 +66,8 @@ const SCENES = {
   // Treasure Vault: a near-full coin row, mid-stack — shows the diamond/bar/coin HUD
   vault_hud: `(function(){ S.hoard=149; ensureDaily(); S.daily.secs=380; showTrain(); return 1; })()`,
   train_pop: `(function(){ S.act=2; S.hoard=63; ensureDaily(); S.daily.secs=300; show('scrTrain'); updateTrainHUD(); updateTrainDaily(); var s=trainPop('jj','JJ'); if(s){ var m=s.querySelector('.spkmouth'); if(m)m.style.setProperty('--mouth','1'); } return 1; })()`,
+  a2map: `(function(){ S.act=2; toMap(); return 1; })()`,
+  rescue_win: `(function(){ S.act=2; CUR={id:137,rescue:true,finale:true,lbl:"Vowel Choir: Free Cal!"}; showWin(true); return 1; })()`,
   // the milestone climax burst (crossing a tier on a rep)
   vault_bar: `(function(){ S.hoard=9; show('scrTrain'); updateTrainHUD(); vaultMilestone('bar'); return 1; })()`,
   vault_dia: `(function(){ S.hoard=99; show('scrTrain'); updateTrainHUD(); vaultMilestone('diamond'); return 1; })()`,

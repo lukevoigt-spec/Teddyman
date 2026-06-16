@@ -40,10 +40,16 @@ function allyPop(kind){ const st=$("stage"); if(!st)return;
 const LEAGUE=[...CAGED.map(t=>({mid:t.mid,kind:t.kind,name:t.name,real:t.real})),
   {mid:36,kind:"heart",name:"HEARTGUARD",real:"AMELIA"},
   {mid:48,kind:"leighton",name:"STARLIGHT PRINCESS",real:"LEIGHTON"},
+  /* ACT 2 captured friends — rescued like the Act-1 league, spread across zones for fun progression
+     (parent 2026-06-16): JJ at the Iron Forge (m118), Cal at the Singing Glade (m137), Nora at the
+     Giant's Bridge (m172); Miss Kendall at the Dragon Keep finale (m128). Aliases are easily renamed. */
+  {mid:118,kind:"jj",name:"BOLT",real:"JJ"},
+  {mid:137,kind:"cal",name:"FOX",real:"CAL"},
+  {mid:172,kind:"nora",name:"WREN",real:"NORA"},
   {mid:128,kind:"kendall",name:"MISS KENDALL",real:"MISS KENDALL"}];
 /* a small LIVING friend on the map — recognizable little figure; captive ones
    wave for help with a ball-and-chain, freed ones cheer with arms up. */
-const ALLY_COL={tank:"#e6453c", flip:"#3a9bff", sunny:"#ffce3a", heart:"#ff7d9c", leighton:"#a06ae8", kendall:"#5fa86a", cal:"#2bb5a6", nora:"#b79be0"};
+const ALLY_COL={tank:"#e6453c", flip:"#3a9bff", sunny:"#ffce3a", heart:"#ff7d9c", leighton:"#a06ae8", kendall:"#5fa86a", cal:"#2bb5a6", nora:"#b79be0", jj:"#ff8a3a"};
 /* the newer RASTER ally art (real-photo-based standing token) where it exists (tank/flip/sunny/
    heart/leighton); null otherwise (kendall/jj/cal/nora/mom/dad → caller falls back to the SVG).
    Used for the FULL-FIGURE showcases (hero card, homecoming) so they no longer show the old

@@ -278,6 +278,11 @@ const LINES={
   free_heart1:{t:"TOWER UNLOCKED! You read your way to the top of Heart Tower!"},
   free_heart2:{t:"Super Teddy! You saved me! I KNEW you could read those words! Heartguard is on the team, little hero!", v:"B"},
   m2_done:{t:"HEARTGUARD has joined the Hero League! Lord Vex is furious... and Star Force City shines brighter than ever!"},
+  /* ACT 2 friend rescues (spread across zones, parent 2026-06-16): the dragon falls + the friend is freed.
+     Best in the real kids' voices via the Studio (roles J/R/X). */
+  jj_freed:{t:"The Iron Wyrm is down — and you freed ME! Whoa, that was AWESOME reading! BOLT is on the team!", v:"J"},
+  cal_freed:{t:"You beat the dragon AND busted me out? Ha! Knew you'd do it. FOX has joined the league!", v:"X"},
+  nora_freed:{t:"You read your way right to me — thank you, Super Teddy! WREN is so proud to join your team!", v:"R"},
   heart_cheer1:{t:"Amazing reading, Super Teddy!", v:"B"},
   heart_cheer2:{t:"That's my little brother, everyone!", v:"B"},
   heart_cheer3:{t:"Heartguard is SO proud of you!", v:"B"},

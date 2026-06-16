@@ -91,7 +91,7 @@ const MISSIONS=[
   {id:115,type:"read", words:["hand","jump","lamp","tent","mask"],lbl:"Blend Reading II",z:102},
   {id:116,type:"forge",words:["sled","gift","trap","belt"],lbl:"Blend Smith: Master Blades",z:102},
   {id:117,type:"read", words:["sled","gift","trap","frog","jump","milk"],lbl:"Blend Reading Rally",z:102},
-  {id:118,type:"forge",words:["stomp","blend","crust","drink"],lbl:"Dragon Duel: The Iron Wyrm!",finale:true,z:102},
+  {id:118,type:"forge",words:["stomp","blend","crust","drink"],lbl:"Iron Wyrm: Free JJ!",finale:true,rescue:true,z:102},
   /* === ACT 2 · ZONE 3 · THE SPELLERY — LONG VOWELS / magic-e (the Magic-E Spell) === */
   {id:119,type:"magic",vowel:"a",unit:"a_e",pairs:[["cap","cape"],["tap","tape"]],lbl:"Magic-E Spell: Long A",z:103},
   {id:120,type:"magic",vowel:"i",unit:"i_e",pairs:[["kit","kite"],["pin","pine"]],lbl:"Magic-E Spell: Long I",z:103},
@@ -112,7 +112,7 @@ const MISSIONS=[
   {id:134,type:"forge",words:["boat","coat","goat","soap"],lbl:"Vowel Forge: OA",z:104},
   {id:135,type:"read", words:["boat","goat","rain","feet"],lbl:"Glade Reading II",z:104},
   {id:136,type:"forge",words:["rain","feet","boat","seed"],lbl:"Vowel Forge Rally",z:104},
-  {id:137,type:"forge",words:["sail","tree","road","goat"],lbl:"Dragon Duel: The Vowel Choir!",finale:true,z:104},
+  {id:137,type:"forge",words:["sail","tree","road","goat"],lbl:"Vowel Choir: Free Cal!",finale:true,rescue:true,z:104},
   /* === ACT 2 · ZONE 5 · THE GREAT LIBRARY — FLUENCY: rapid mixed decoding across every Act-2
      skill (digraphs + blends + magic-e + vowel teams) for automaticity before the finale. === */
   {id:138,type:"read",words:["ship","frog","cake","rain"],lbl:"Fluency: Mixed Reading I",z:105},
@@ -155,7 +155,7 @@ const MISSIONS=[
   {id:169,type:"forge",words:["faster","fastest","longer","jumper"],lbl:"Endings: -er / -est",z:108},
   {id:170,type:"affix",words:["undo","redo","unlock","unzip"],lbl:"Word Starts: un- / re-",z:108},
   {id:171,type:"forge",words:["unlock","jumping","faster","redo","distrust"],lbl:"Bridge Forge: Mix",z:108},
-  {id:172,type:"read",words:["sunset","rabbit","magnet","basket","helmet","hotdog"],lbl:"The Giant Word Champion",finale:true,z:108},
+  {id:172,type:"read",words:["sunset","rabbit","magnet","basket","helmet","hotdog"],lbl:"Giant Word Champion: Free Nora!",finale:true,rescue:true,z:108},
   /* ===== ACT-2 FINALE — the Dragon Keep: a multi-phase boss (sound→read→spell→read)
      that gates on Act-2 mastery (digraphs + magic-e) and frees MISS KENDALL. ===== */
   {id:128,type:"fortress",lbl:"Dragon Keep: Free Miss Kendall!",finale:true,climax:true,z:106}
