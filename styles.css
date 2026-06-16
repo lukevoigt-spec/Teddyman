@@ -519,12 +519,16 @@ body.calm .gembox>svg,body.calm .trophy,body.calm .gembox.mastered::after{animat
 #bgLayer.on{box-shadow:inset 0 0 150px 36px rgba(6,3,18,.5), inset 0 -120px 130px rgba(6,3,18,.55);}
 
 /* characters & art "sit" in the scene: soft grounding shadow (+ faint hero glow) */
-#titleHero,#baseHero,#restHero,#winHero,
+#titleHero,#restHero,#winHero,
 .boss,#bossArt,#forgeBoss,#fortVexSprite,.playercard .pchero,.allypop{
   filter:drop-shadow(0 16px 16px rgba(0,0,0,.5));}
 /* art inside the see-through panel casts its own shadow → pops in 3D */
 .panelart svg{filter:drop-shadow(0 12px 12px rgba(0,0,0,.55));}
-#titleHero,#baseHero{filter:drop-shadow(0 16px 16px rgba(0,0,0,.5)) drop-shadow(0 0 30px rgba(120,180,255,.32));}
+/* NOTE: #baseHero is DELIBERATELY excluded here — it now wraps an <img class="baseheroimg"> that carries
+   its OWN filter. A filter on the div PLUS a filter on the child img nests two filter regions, which
+   WebKit/iPad renders as a faint rectangular "box" around the hero. The img-level filter (below) is the
+   single source of the hero's shadow + scene glow. */
+#titleHero{filter:drop-shadow(0 16px 16px rgba(0,0,0,.5)) drop-shadow(0 0 30px rgba(120,180,255,.32));}
 
 /* premium buttons: glossy top sheen + outer glow + crisp press */
 .btn{position:relative;overflow:visible;border-width:6px;
@@ -1163,19 +1167,20 @@ body.calm .scrollword{transition:none;} body.calm .scrollword.lit{transform:none
 .bchip.rank{ color:#fff; border-color:#fff; }
 .bchip.rank .powerbar{ width:96px; height:11px; }
 .bchip.tap{ cursor:pointer; } .bchip.tap:active{ transform:translateY(2px); }
-/* status bar: rank title + TWO STACKED meter rows, each [icon][bar] — clock=today, bolt=Gem Charge */
-.bchip.statusbar{ flex-direction:column; align-items:stretch; gap:6px; padding:8px 15px; }
-.statusbar .rankname{ font-family:'Bangers',cursive; font-size:14px; color:#fff; letter-spacing:.05em; line-height:1; text-align:center; white-space:nowrap; }
-.srow{ display:flex; align-items:center; gap:8px; background:none; border:0; box-shadow:none; padding:0; margin:0; cursor:pointer; font:inherit; }
+/* status bar: TWO STACKED meter rows, each [icon][bar] — clock=today (yellow), bolt=Gem Charge (blue).
+   Fixed chip width so the bars always sit INSIDE the rounded box (no overrun). */
+#scrBase .bstatus .bchip.statusbar{ display:block; padding:9px 14px; width:clamp(168px,23vw,208px); box-sizing:border-box; }
+.srow{ display:flex; align-items:center; gap:9px; width:100%; min-height:22px; background:none; border:0; box-shadow:none; padding:0; margin:0; cursor:pointer; font:inherit; }
+.srow + .srow{ margin-top:8px; }
 .srow:active{ transform:translateY(1px); }
 .sicon{ display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; flex:0 0 auto; }
 .sicon svg{ display:block; }
-.srow .bmbar{ display:inline-block; flex:1 1 auto; width:128px; max-width:36vw; height:11px; border-radius:6px;
-  background:rgba(10,5,24,.7); overflow:hidden; border:1.5px solid rgba(0,0,0,.45); }
+.srow .bmbar{ display:block; flex:1 1 0; min-width:0; height:12px; border-radius:6px;
+  background:rgba(10,5,24,.7); overflow:hidden; border:1.5px solid rgba(0,0,0,.45); box-sizing:border-box; }
 .bmfill{ display:block; height:100%; width:0; border-radius:6px; transition:width .5s ease; }
-.srow.charge .bmfill{ background:linear-gradient(90deg,#7fe3ff,#5f8bff); }
-.srow.charge .bmfill.low{ background:linear-gradient(90deg,#ffd23a,#ff9e1f); }
-.srow.daily .bmfill{ background:linear-gradient(90deg,#9be8b0,#3ec97e); }
+.srow.charge .bmfill{ background:linear-gradient(90deg,#7fe3ff,#5f8bff); }   /* Gem Charge = blue */
+.srow.charge .bmfill.low{ background:linear-gradient(90deg,#9bd0ff,#5f8bff); }
+.srow.daily .bmfill{ background:linear-gradient(90deg,#ffe07a,#f0a81e); }    /* Today / time = yellow-gold */
 .srow.daily.hit .bmbar{ box-shadow:0 0 0 2px #fff; }
 .srow.charge.due .bmbar{ animation:bmpulse 1.9s ease-in-out infinite; }
 @keyframes bmpulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(127,227,255,0); } 50%{ box-shadow:0 0 10px 2px rgba(127,227,255,.7); } }
@@ -1184,7 +1189,7 @@ body.calm .srow.charge.due .bmbar{ animation:none; }
 /* hero: a CLEAN painted-raster cutout seated on the painted pedestal (no aura/halo) */
 #scrBase .basehero{ position:absolute; left:50%; bottom:34%; transform:translateX(-50%); width:clamp(180px,28vw,260px);
   z-index:4; pointer-events:none; text-align:center; }
-#scrBase .baseheroimg{ width:100%; height:auto; display:block; filter:drop-shadow(0 9px 6px rgba(0,0,0,.5)); }
+#scrBase .baseheroimg{ width:100%; height:auto; display:block; filter:drop-shadow(0 10px 7px rgba(0,0,0,.5)) drop-shadow(0 0 16px var(--scene-rim,#6db5ff)); }
 /* side accomplishment panels — content-sized, capped so they NEVER overrun the ↙ PLAY / ↘ MAP corner tiles */
 #scrBase .bpanel{ position:absolute; top:96px; width:clamp(156px,20vw,194px); max-height:calc(100% - 244px); z-index:5;
   text-align:left; background:rgba(18,11,38,.46); border:3px solid #4a3a86; border-radius:20px; padding:11px 12px 13px;

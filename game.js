@@ -1540,8 +1540,8 @@ function paintBase(){
     const cm=$("chargeMeter"); if(cm)cm.classList.toggle("due", due>0); }
   /* TODAY meter — gentle 15-min practice target (a meter, never a countdown/penalty — constraint #1). */
   { ensureDaily(true); const pct=Math.min(100, Math.round(100*((S.daily&&S.daily.secs)||0)/dailyGoalSecs()));
-    const df=$("dailyFill"); if(df){ df.style.width=pct+"%"; }
-    const dm=$("dailyMeter"); if(dm)dm.classList.toggle("hit", pct>=100); }
+    const df=$("baseDailyFill"); if(df){ df.style.width=pct+"%"; }
+    const dm=$("baseDailyMeter"); if(dm)dm.classList.toggle("hit", pct>=100); }
   /* weapons — HANDS + every weapon skin unlocked in THIS act */
   const wrow=$("weaponRow"); wrow.innerHTML="";
   const weapons=[["none","HANDS"],...ownedWeapons().map(w=>[w.k,w.lbl])];
@@ -1609,7 +1609,7 @@ function playNextMission(){ const ms=playMissions(currentAct()); const m=ms.find
 { const gp=$("gemsPanel");   if(gp)gp.onclick=()=>{ Aud.pick&&Aud.pick(); startVault(); }; }      /* GEMS → recharge */
 { const cm=$("chargeMeter"); if(cm)cm.onclick=()=>{ Aud.pick&&Aud.pick(); startVault(); }; }      /* Gem Charge meter → recharge */
 { const sp=$("squishPanel"); if(sp)sp.onclick=()=>{ Aud.pick&&Aud.pick(); openShop(); }; }        /* SQUISHIES → inventory + shop */
-{ const dm=$("dailyMeter");  if(dm)dm.onclick=()=>{ Aud.pick&&Aud.pick(); showTrain(); }; }       /* Today meter → train */
+{ const dm=$("baseDailyMeter");  if(dm)dm.onclick=()=>{ Aud.pick&&Aud.pick(); showTrain(); }; }   /* Today meter → train */
 { const cc=$("hudCoins"); if(cc){ cc.style.cursor="pointer"; cc.title="Earn coins in the Training Room"; cc.onclick=()=>{ Aud.pick&&Aud.pick(); showTrain(); }; } }
 { const bb=$("btnBaseBack"); if(bb)bb.onclick=()=>{Aud.stop();toMap();}; }   /* CITY MAP button removed from the Base (map-exit lives in ☰ MENU); guard kept for safety */
 

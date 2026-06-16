@@ -93,6 +93,7 @@ const SCENES = {
   rankbar: `(function(){ show('scrBase'); paintBase(); var pf=document.getElementById('powerFill'); if(pf)pf.style.width='62%'; document.getElementById('powerLbl').textContent='SUPER HERO'; return 1; })()`,
   basefull:`(function(){ [1,3,4,6,8].forEach(function(i){S.done[i]=true;}); S.coins=40; S.owned={banner:1}; paintBase(); show('scrBase'); return 1; })()`,
   base2:`(function(){ S.act=2; [100,101,118].forEach(function(i){S.done[i]=true;}); S.coins=30; paintBase(); show('scrBase'); return 1; })()`,
+  basedaily:`(function(){ for(var i=1;i<=20;i++)S.done[i]=true; ensureDaily(true); S.daily.secs=Math.round(0.6*dailyGoalSecs()); S.equip={weapon:"sword",cape:"red"}; paintBase(); show('scrBase'); return 1; })()`,
   basearmed:`(function(){ for(var i=1;i<=30;i++)S.done[i]=true; S.coins=40; S.equip={weapon:"sword",cape:"red"}; paintBase(); show('scrBase'); return 1; })()`,
   basearmed2:`(function(){ S.act=2; for(var i=100;i<=127;i++)S.done[i]=true; S.equip={weapon:"mace",cape:"red"}; paintBase(); show('scrBase'); return 1; })()`,
   baseblue:`(function(){ S.act=1; S.stars=40; for(var i=1;i<=30;i++)S.done[i]=true; S.equip={weapon:"sword",cape:"blue"}; paintBase(); show('scrBase'); return 1; })()`,
