@@ -15,6 +15,23 @@ resolves before merge; this file keeps the durable before/after record. Shots li
 
 ---
 
+## 2026-06-16 · Premium UI — in-game controls (home button de-emoji)  ·  PASS
+**Branch:** `oracle/premium-controls` → PR for Neo. Premium UI Overhaul, batch: **in-game controls**.
+**Finding:** of the three in-game controls, **replay** (`.ear`) and **skip** (`#btnSkip`) were ALREADY
+crafted SVG — `.ear` draws a clean speaker via a CSS `::before` mask (the `🔊` was just hidden fallback
+text), and `#btnSkip` is an inline SVG. Only the **home** control still used emoji: `🏠 BACK TO BASE`
+on the Recharge / Scroll / Warm screens.
+**Fix:** the four BACK-TO-BASE buttons (Vault/Train/Scroll/Warm) now get the crafted shield (Base) icon
+via `navIcons()` (reusing `uiIcon`); `🏠` removed from the HTML. Also removed the now-redundant hidden
+`🔊` from every `.ear` div (CSS already draws the speaker) — full de-emoji of the replay markup.
+**Shots:** `vaultfull` — BACK TO BASE shows the gold shield, replay speaker still renders crisp after the
+`🔊` cleanup; `find` — replay speaker intact on a gameplay bubble. `node --check` clean, `ui-emoji.test`
+9/9. **PASS.**
+**Remaining (logged):** action rail (`🏋️`/`🛒`/`🔋`/`🎁`), HUD (`⚡`/coin + the `🔋 RECHARGE THE GEMS`
+heading), and a few sparkle/emoji inside narration LINES (content, separate from controls).
+
+---
+
 ## 2026-06-16 · REVERT the AI portal cutscene — restore the SVG interlude  ·  PASS
 **Branch:** `oracle/revert-portal-cutscene` → PR for Neo. Reverses the wiring from PR #41.
 **Why:** parent reviewed the AI cutscenes (portal + the extended Mom&Dad/friends/Vixen master) and
