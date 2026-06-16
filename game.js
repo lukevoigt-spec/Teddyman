@@ -1415,7 +1415,7 @@ function forgeWord(){
           lockRow(row);   /* #82: word done → lock so a double-tap can't re-fire during the async forge flow */
           if(me)record(me.unit,true);   /* credit the long-vowel rule */
           forgeHP--; paintPips("forgePips",forgeHP,forgeWords.length);
-          const fs=$("forgeSprite"); fs.classList.add("hitfx"); setTimeout(()=>fs.classList.remove("hitfx"),380);
+          const fs=$("forgeSprite"); if(fs){ fs.classList.add("hitfx"); setTimeout(()=>fs.classList.remove("hitfx"),380); }   /* #83: guard like every other sprite touch (gone on a fast Home-tap / re-render) */
           burstAt(fs,w.toUpperCase()+"!");
           flow(Aud.play([...snds,"word_"+w,"blast"]),()=>{forgeWordIx++;setTimeout(forgeWord,350);});
         } else Aud.play([snds[justIx],"forge_next"]); }
@@ -1436,6 +1436,7 @@ function startMagic(m){ show("scrMagic"); magicM=m; magicPairs=m.pairs.slice(); 
 function magicStep(){
   if(magicIx>=magicPairs.length){ record(magicM.unit,true); flow(Aud.play(["magic_done"]),missionComplete); return; }
   const pair=magicPairs[magicIx], sh=pair[0], lo=pair[1], me=magicE(lo);
+  if(!me){ magicIx++; return magicStep(); }   /* #83: a malformed pair (lo isn't a V-C-e word) would deref null below → skip it, never freeze */
   $("magicProg").textContent=magicIx+" / "+magicPairs.length;
   const wr=$("magicWord"); wr.innerHTML="";
   toGraphemes(sh).forEach((c,j)=>{ const t=document.createElement("div"); t.className="tile read magtile"+(j===me.v?" vowelt":"");

@@ -184,6 +184,9 @@ ok("soundReviewSet drops magic-e units (they route to startMagic, not startFind)
   soundReviewSet(["a_e","sh","i_e","ee"]).join()==="sh,ee", soundReviewSet(["a_e","sh","i_e","ee"]));
 ok("magicReviewSet keeps only the magic-e units",
   magicReviewSet(["a_e","sh","i_e","ee"]).join()==="a_e,i_e", magicReviewSet(["a_e","sh","i_e","ee"]));
+// #83 crash-guard: magicStep() reads magicE(pair[1]).v/.e — every magic-mission long-word must be a valid V-C-e word
+(function(){ var bad=[]; MISSIONS.filter(m=>m.type==="magic").forEach(m=>(m.pairs||[]).forEach(p=>{ if(!magicE(p[1]))bad.push(m.id+":"+p[1]); }));
+  ok("every magic-mission pair's long-word satisfies magicE() (magicStep never derefs null)", bad.length===0, bad); })();
 // teach EVERYTHING, then the find/boss foil pool must be magic-e-free and fully voiced
 S.done={}; MISSIONS.forEach(m=>{ S.done[m.id]=true; });
 ok("find/boss foils (taughtGraphemes) exclude magic-e units",
