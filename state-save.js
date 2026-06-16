@@ -156,13 +156,16 @@ function cloudPush(){ const u=cloudEndpoint(); if(!u)return; clearTimeout(__clou
       .then(r=>cloudStatus(r.ok?"Synced to cloud ✓":(r.status===401?"Wrong family code — saved on device":"Cloud error — saved on device")))
       .catch(()=>cloudStatus("Offline — saved on device")); },2500); }
 async function cloudPull(){ const u=cloudEndpoint(); if(!u)return false; __lastAuthFail=false;
-  try{ const r=await fetch(u,{headers:cloudAuth()});
+  /* CLOUD-2: an 8s abort so a hung network can never leave the boot pull (and __bootPull) pending forever. */
+  const ac=(typeof AbortController!=="undefined")?new AbortController():null;
+  const to=ac?setTimeout(()=>{try{ac.abort();}catch(e){}},8000):null;
+  try{ const r=await fetch(u,{headers:cloudAuth(), signal:ac?ac.signal:undefined});
     __lastAuthFail=(r.status===401);   /* exactly 401 = wrong code; an empty slot returns 200 "" (offline throws → stays false) */
     if(!r.ok)return false; const t=(await r.text()).trim(); if(!t)return false;
     const d=migrate(JSON.parse(t));
     if(d&&(d.ts||0)>(S.ts||0)){ S=d;
       try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} return true; } }
-  catch(e){} return false; }
+  catch(e){} finally{ if(to)clearTimeout(to); } return false; }
 /* parent enters the family code (Grown-Up Corner ▸ Sync). Cached per device, then silent forever. */
 function cloudConnect(secret){ cloudSecret=(secret||"").trim();
   try{ if(cloudSecret){ localStorage.setItem("teddyCloudSecret",cloudSecret); localStorage.removeItem("teddyCloudURL"); }
