@@ -67,7 +67,7 @@
     <button class="navcorner nc-lr" id="navMapBtn" aria-label="World Map"></button>
   </div>
 
-  <div class="roundbtn" id="btnSkip" title="Skip" style="position:absolute;right:16px;bottom:16px;display:none;z-index:8;width:64px;height:64px;"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M5 5l9 7-9 7V5zm11 0h3v14h-3V5z"/></svg></div>
+  <div class="roundbtn" id="btnSkip" title="Skip" style="position:absolute;right:16px;bottom:16px;display:none;z-index:8;"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M5 5l9 7-9 7V5zm11 0h3v14h-3V5z"/></svg></div>
   <!-- U3 P3: cognitive math-gate — confirms a grown-up after the 3s gear-hold -->
   <div id="parentGate">
     <div class="pg-card">
@@ -179,10 +179,12 @@
   <div class="screen" id="scrVault">
     <div class="hudtitle" style="margin-top:46px;font-family:'Bangers',cursive;font-size:clamp(26px,5vw,40px);color:var(--gold);">🔋 RECHARGE THE GEMS</div>
     <div class="baselbl" style="font-size:18px;">💎 <span id="vaultProg">0 / 0</span></div>
+    <!-- gem charge strip: one gem per due item; each lights up + reveals its sound as it's recharged
+         (the grapheme is revealed ONLY once charged — a find target is never shown before it's solved, #4) -->
+    <div id="vaultGems" class="vaultgems" aria-hidden="true"></div>
     <div class="bubble" id="vaultText"><span></span><div class="ear" data-ear="vault"></div></div>
     <div id="vaultWord" class="slotrow"></div>
     <div id="vaultChoices" class="tilerow"></div>
-    <button class="btn blue" id="btnVaultBack">BACK TO BASE</button>
   </div>
 
   <!-- TRAINING ROOM (daily practice — earns coins, no story gating) -->
@@ -194,7 +196,6 @@
     <div class="bubble" id="trainText"><span></span><div class="ear" data-ear="train"></div></div>
     <div id="trainWord" class="slotrow"></div>
     <div id="trainChoices" class="tilerow"></div>
-    <button class="btn blue" id="btnTrainBack">BACK TO BASE</button>
   </div>
 
   <!-- SPELL SCROLL (repeated-reading fluency — listen, then read aloud + tap in order) -->
@@ -203,7 +204,6 @@
     <div class="bubble" id="scrollText"><span></span><div class="ear" data-ear="scroll"></div></div>
     <div id="scrollWords" class="scrollwords"></div>
     <div id="scrollMeter" class="scrollmeter"></div>
-    <button class="btn blue" id="btnScrollBack">BACK TO BASE</button>
   </div>
 
   <!-- SOUND WARM-UP (oral phonemic-awareness: blend / segment / isolate — audio-only prompts) -->
@@ -213,7 +213,6 @@
     <div class="bubble" id="warmText"><span></span><div class="ear" data-ear="warm"></div></div>
     <div id="warmReveal" class="warmreveal"></div>
     <div id="warmChoices" class="tilerow"></div>
-    <button class="btn blue" id="btnWarmBack">BACK TO BASE</button>
   </div>
 
   <!-- MY SQUISHIES — inventory (owned first) + shop to get more, with coins + presents -->

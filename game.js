@@ -314,7 +314,10 @@ function heroOpts(){ /* muscle + gear come from THIS act's progress, so a new ac
            cape: S.equip.cape||"red",
            theme: actInfo(a).theme||"hero",
            belt2:gear.includes("Power Belt"), boots2:gear.includes("Rocket Boots") }; }
-function heroNow(w){ return heroSVG(w,heroOpts()); }
+/* heroNow = the hero anywhere he's shown (cutscenes/interludes/homecoming). Parent (2026-06-16):
+   characters must use the PAINTED RASTER, never the parametric SVG (only Kendall/JJ lack a raster).
+   So route through heroMarquee (raster teddyArt for hero/knight; SVG only as a never-hit fallback). */
+function heroNow(w){ return heroMarquee(w); }
 /* HERO POWER METER (comprehensible, pre-reader): which rank tier + how FULL the bar is toward the next.
    Bands match heroOpts's muscle thresholds (28%/60% of the act's missions) so the bar literally explains
    the hero's growth the child already watches. Rank = ADVENTURE progress (the reward layer is what's
@@ -329,8 +332,8 @@ function heroProgress(){ const a=currentAct(), am=actMissions(a), total=am.lengt
 /* PAINTED marquee hero: the generated per-muscle Teddy art on the title / win /
    rest / origin screens. theme "hero" -> Act-1 superhero, "knight" -> Act-2 knight
    (both have a painted m0/m1/m2 set). Any other theme falls back to parametric SVG.
-   heroOpts() supplies the muscle tier + theme. Hero Base keeps heroNow() so the
-   Loadout still shows the equipped weapon/cape in the parametric pose. */
+   heroOpts() supplies the muscle tier + theme. heroNow() delegates here too, so EVERY hero render
+   is the painted raster (parent #59) — including the equipped weapon/cape via armed/outfit variants. */
 function heroMarquee(w){ const o=heroOpts();
   if(o.theme!=="hero"&&o.theme!=="knight") return heroSVG(w,o);
   const m=Math.max(0,Math.min(2,o.muscle|0));
@@ -379,10 +382,13 @@ function applySceneTone(id){
   document.body.style.setProperty("--scene-key", t.key);
   document.body.style.setProperty("--scene-rim", t.rim); }
 const __bgCache={};
-const BG_EXTS=["jpg","jpeg","png","webp"];   /* drop any of these — no conversion needed */
+/* probe order matches what we actually ship (every painted scene is .jpeg; base-room is .png) so the
+   real file loads on the FIRST try — avoids a 404 (ERR_FILE_NOT_FOUND console-noise) on every scene
+   change while the loader fell through jpg→jpeg. Any other dropped format still resolves down-chain. */
+const BG_EXTS=["jpeg","png","jpg","webp"];   /* drop any of these — no conversion needed */
 /* Painted scene loader — ACT-AWARE + format-flexible. Act 2+ prefers its own scene
    (bg-<slot>-a2.*), falling back to the Act-1 scene (bg-<slot>.*), then to the
-   transparent default. Tries jpg → png → webp for each. Any missing file just
+   transparent default. Tries jpeg → png → jpg → webp for each. Any missing file just
    shows the original SVG/gradient look. */
 function setBG(id){ const layer=$("bgLayer"); if(!layer)return;
   const slot=BG_MAP[id];
@@ -518,6 +524,38 @@ function flyReward(fromEl,toEl,n,opts){ opts=opts||{}; if(!toEl||!n)return;
     ],{duration:520+Math.random()*120,delay:i*45,easing:"cubic-bezier(.45,0,.75,1)",fill:"forwards"})
       .finished.then(()=>{ sp.remove(); if(__flyPool.length<16)__flyPool.push(sp); }).catch(()=>{ try{sp.remove();}catch(e){} });
   } }
+/* REWARD SHOWER (parent 2026-06-16 — "more juice, animations flying around, addicting"): a celebratory
+   ERUPTION of faceted Letter Gems that arc up+out, spin, and fall. Fires on REWARD moments only
+   (win / unlock / milestone) — NEVER during a learning run (C13: nothing competes with the active prompt).
+   Pure WAAPI (transform/opacity → GPU, P14), pooled, detail-tier aware: Lite/reduced-motion skip it,
+   Calm uses fewer + slower + no spin. Quieter than the reading/mastery cue by design (§6.0). */
+let __showerPool=[];
+const SHOWER_COLORS=["#3b82f0","#ff8a3d","#3ec97e","#a06ae8","#7fd9ff","#ffc93c","#ff5e8a"];
+function rewardShower(n, opts){ opts=opts||{}; const s=stageEl(); if(!s)return;
+  if(REDUCE || (document.body&&document.body.classList.contains("lite")))return;   /* keep cheap confetti only on Lite/reduced-motion */
+  const calm=document.body&&document.body.classList.contains("calm");
+  if(typeof document.body.animate!=="function" && typeof Element.prototype.animate!=="function")return;
+  n=Math.max(1,Math.min(n||12, calm?8:18));
+  const sr=s.getBoundingClientRect();
+  let cx=sr.left+sr.width/2, cy=sr.top+sr.height*0.46;
+  if(opts.fromEl){ try{ const fr=opts.fromEl.getBoundingClientRect(); cx=fr.left+fr.width/2; cy=fr.top+fr.height*0.55; }catch(e){} }
+  if(opts.x!=null)cx=opts.x; if(opts.y!=null)cy=opts.y;
+  for(let i=0;i<n;i++){ const sp=__showerPool.pop()||document.createElement("div");
+    const col=SHOWER_COLORS[Math.floor(Math.random()*SHOWER_COLORS.length)];
+    sp.style.cssText="position:fixed;left:0;top:0;z-index:75;pointer-events:none;width:34px;height:34px;will-change:transform,opacity;";   /* >70 so it also shows over the unlock-card modal */
+    sp.innerHTML=gemSVG("",col,34); document.body.appendChild(sp);
+    const ang=-Math.PI/2+(Math.random()-0.5)*1.7, speed=130+Math.random()*150;   /* mostly up, ~±49° spread */
+    const vx=Math.cos(ang)*speed, vy=Math.sin(ang)*speed;
+    const peakX=cx+vx*0.55, peakY=cy+vy*0.62;                                     /* arc peak (vy<0 = up) */
+    const endX=cx+vx*1.1,  endY=cy+Math.abs(vy)*0.45+sr.height*0.55;              /* gravity fall below */
+    const spin=calm?0:(Math.random()<.5?1:-1)*(160+Math.random()*250);
+    sp.animate([
+      {transform:`translate(${cx-17}px,${cy-17}px) scale(.4) rotate(0deg)`,opacity:0},
+      {transform:`translate(${peakX-17}px,${peakY-17}px) scale(1) rotate(${spin*0.5}deg)`,opacity:1,offset:.4},
+      {transform:`translate(${endX-17}px,${endY-17}px) scale(.82) rotate(${spin}deg)`,opacity:0}
+    ],{duration:(calm?1100:900)+Math.random()*500,delay:i*(calm?64:34),easing:"cubic-bezier(.25,.7,.4,1)",fill:"forwards"})
+      .finished.then(()=>{ sp.remove(); if(__showerPool.length<24)__showerPool.push(sp); }).catch(()=>{ try{sp.remove();}catch(e){} });
+  } }
 
 /* ---------------- TITLE ---------------- */
 $("titleHero").innerHTML=heroMarquee(210);
@@ -543,12 +581,12 @@ document.body.classList.add("scene-ambient");     /* the boot title screen is am
    Must stay the FIRST user gesture so Aud.pick() unlocks iOS audio. */
 $("btnPlay").onclick=()=>{ Aud.pick(); if(!S.intro)startIntro(); else {Aud.play("welcome"); toMap();} };
 /* ---- player picker (select an existing player; add/remove is parent-only) ---- */
-const PC_CAPES=["red","gold","purple"];
 function openPicker(){ paintPicker(); $("playerPicker").classList.add("on"); }
 function closePicker(){ $("playerPicker").classList.remove("on"); }
 function paintPicker(){ const wrap=$("playerCards"); if(!wrap)return; wrap.innerHTML="";
-  profiles().forEach((p,i)=>{ const b=document.createElement("button"); b.className="playercard"+(p.id===ACTIVE?" cur":"");
-    const hero=heroSVG(96,{muscle:1,cape:PC_CAPES[i%PC_CAPES.length],theme:p.id===ACTIVE&&currentAct()===2?"knight":"hero"});
+  profiles().forEach((p)=>{ const b=document.createElement("button"); b.className="playercard"+(p.id===ACTIVE?" cur":"");
+    /* painted raster hero (parent: no parametric SVG characters); cards distinguished by name, not cape */
+    const hero=teddyArt(96,1,(p.id===ACTIVE&&currentAct()===2)?"knight":"hero");
     b.innerHTML=`<div class="pchero">${hero}</div><div class="pcname read"></div>`;
     b.querySelector(".pcname").textContent=p.name;
     b.onclick=()=>switchProfile(p.id); wrap.appendChild(b); }); }
@@ -775,9 +813,8 @@ function navGo(fn){ Aud.stop(); clearFlow(); fn(); }
   img("navMapBtn","nav-map.png","World Map");      /* lower-right → world map */
   img("navSettings","nav-settings.png","Grown-ups");/* upper-right → gated Grown-Up Corner */
   img("btnPlayNext","nav-play.png","Play");        /* Base ↙ → next uncompleted level (framed-tile, matches the nav corners) */
-  /* in-game "home" controls: the BACK TO BASE buttons (Recharge/Training/Scroll/Warm) — crafted shield glyph. */
-  if(typeof uiIcon==="function"){ const set=(id,key,sz)=>{ const el=$(id); if(el)el.innerHTML=uiIcon(key,sz||22)+el.textContent; };
-    ["btnVaultBack","btnTrainBack","btnScrollBack","btnWarmBack"].forEach(id=>set(id,"base",22)); } })();
+  /* the in-game "BACK TO BASE" buttons were REMOVED (#57) — the persistent HOME/MAP corners replace them on every sub-screen. */
+})();
 { const m=$("navMapBtn");  if(m)m.onclick=()=>navGo(toMap); }                          /* lower-right → world map */
 { const b=$("navBaseBtn"); if(b)b.onclick=()=>navGo(showBase); }                       /* lower-left → Hero Base ("home") */
 { const s=$("navSettings");if(s)s.onclick=()=>{ Aud.pick&&Aud.pick(); parentGate(); }; }  /* upper-right → gated Grown-Up Corner */
@@ -1445,7 +1482,7 @@ function showUnlock(artHTML, name, sub, done){
   const o=$("unlockCard"); if(!o){ if(done)done(); return; }
   $("ucArt").innerHTML=artHTML; $("ucName").textContent=name; $("ucSub").textContent=sub||"NEW!";
   o.classList.add("on");
-  try{ flashScreen("rgba(255,210,90,.42)"); confetti(48); if(typeof Sfx!=="undefined")Sfx.unlock(); else Aud.ding(); }catch(e){}
+  try{ flashScreen("rgba(255,210,90,.42)"); confetti(48); rewardShower(12,{fromEl:$("ucArt")}); if(typeof Sfx!=="undefined")Sfx.unlock(); else Aud.ding(); }catch(e){}
   const close=()=>{ o.classList.remove("on"); o.onclick=null; $("ucBtn").onclick=null; if(done)done(); };
   $("ucBtn").onclick=e=>{ if(e)e.stopPropagation(); close(); };
   o.onclick=close;
@@ -1454,8 +1491,11 @@ function showUnlock(artHTML, name, sub, done){
 /* ---------------- WIN / REST ---------------- */
 function showWin(firstTime){ show("scrWin");
   if(typeof Sfx!=="undefined")Sfx.win();
-  flashScreen("rgba(255,255,255,.5)"); confetti(CUR.finale||CUR.rescue||CUR.type==="fortress"?110:64);
-  if(CUR.finale||CUR.rescue||CUR.type==="fortress")setTimeout(()=>confetti(90),520);  /* extra pop on big milestones */
+  const big=CUR.finale||CUR.rescue||CUR.type==="fortress";
+  flashScreen("rgba(255,255,255,.5)"); confetti(big?110:64);
+  /* a fountain of Letter Gems erupts around the hero — the "collection" reward spectacle (parent: flying juice) */
+  setTimeout(()=>rewardShower(big?16:11,{fromEl:$("winHero")}), 200);
+  if(big){ setTimeout(()=>confetti(90),520); setTimeout(()=>rewardShower(14,{fromEl:$("winHero")}),640); }  /* extra pop on big milestones */
   /* who got freed this win — derive the rescued ally from the LEAGUE roster by mission id (generalized
      beyond the old hardcoded Amelia, so JJ/Cal/Nora rescues show the RIGHT face + name). */
   const rescuedKind = CUR.rescue ? (LEAGUE.find(t=>t.mid===CUR.id)||{}).kind : null;
@@ -1501,7 +1541,7 @@ function showWin(firstTime){ show("scrWin");
 function showRest(nextM){ show("scrRest");
   $("restHero").innerHTML=heroMarquee(160);
   narrate("rest",$("restText"),["rest1","rest2"]);
-  $("btnRestDone").onclick=()=>{Aud.stop();show("scrTitle");};
+  $("btnRestDone").onclick=()=>navGo(toMap);   /* Done resting → the MAP (home), not the bare Title (NAV-PLAN slice 4) */
   $("btnRestMore").onclick=()=>{ nextM?startMission(nextM):toMap(); }; }
 
 /* ---------------- HERO BASE ---------------- */
@@ -1758,7 +1798,7 @@ function openChest(tier,done){ const cfg=CHESTS[tier]; if(!cfg||!(S.chests&&S.ch
   const gain=coins+bonus, before=S.coins||0; S.coins=before+gain;
   if(item){ S.owned=S.owned||{}; S.owned[item.id]=true; }
   S.chests[tier]=Math.max(0,(S.chests[tier]||0)-1); save();
-  try{ flashScreen("rgba(255,210,90,.42)"); confetti(tier==="gold"?64:40); if(typeof Sfx!=="undefined")Sfx.unlock(); }catch(e){}
+  try{ flashScreen("rgba(255,210,90,.42)"); confetti(tier==="gold"?64:40); rewardShower(tier==="gold"?14:10,{fromEl:$("btnGifts")||$("stage")}); if(typeof Sfx!=="undefined")Sfx.unlock(); }catch(e){}
   const ctr=$("baseCoins"); if(ctr){ ctr.textContent=before; flyReward($("btnGifts")||$("stage"), ctr, gain); }
   const finish=()=>{ paintBase(); if(done)done(); };
   if(item)setTimeout(()=>showUnlock('<div style="line-height:1;">'+itemArt(item,120)+'</div>', item.nm, "NEW!", finish), 650);
@@ -1876,7 +1916,7 @@ function trainWin(el,w){ const bonus=combo>=3?2:1; trainReps++;
   updateTrainDaily();
   flow(Aud.play(["train_yes"].concat(wordAudio(w))),()=>setTimeout(()=>maybeTrainInterrupt(trainRound),260)); }
 { const bt=$("btnTrain"); if(bt)bt.onclick=()=>showTrain(); }   /* legacy btn (Base now launches Training by tapping the COINS chip) */
-$("btnTrainBack").onclick=()=>{ __inTraining=false; Aud.stop(); showBase(); };
+/* "BACK TO BASE" button removed (#57) — the HOME nav corner (→Base) replaces it. show() resets __inTraining on every screen change. */
 
 /* ---------------- SPELL SCROLL (rec #2 — repeated-reading fluency) ----------------
    A short DECODABLE passage. PHASE 1 listening preview: the mentor reads it, each word
@@ -1927,7 +1967,7 @@ function scrollFinish(){ const ms=Date.now()-scrollT0, best=scrollTouch(scrollCu
   $("scrollMeter").textContent = best ? "★ NEW BEST!" : "✓ Scroll read!";
   flow(Aud.play([best?"scroll_best":"scroll_done"]),()=>{ Aud.stop();
     if(scrollFromTrain){ scrollFromTrain=false; show("scrTrain"); updateTrainHUD(); trainRound(); } else showBase(); }); }
-$("btnScrollBack").onclick=()=>{ Aud.stop(); scrollFromTrain=false; showBase(); };
+/* "BACK TO BASE" button removed — the HOME nav corner (→Base) replaces it; natural completion still routes via scrollFromTrain. */
 
 /* ---------------- SOUND WARM-UP (rec #3A — oral phonemic-awareness drill) ----------------
    A short (<=5-item) ear warm-up: BLEND (hear the separated phonemes -> tap the picture, NO
@@ -1996,7 +2036,7 @@ function warmIsolate(w){ const first=toGraphemes(w)[0];
 function warmFinish(){ $("warmProg").textContent=""; $("warmReveal").innerHTML=""; warmChoices();
   S.coins=(S.coins||0)+1; save(); try{ confetti(24); }catch(e){}
   flow(Aud.play(["warmup_done"]),()=>{ Aud.stop(); if(warmFromTrain){ warmFromTrain=false; show("scrTrain"); updateTrainHUD(); trainRound(); } else showBase(); }); }
-$("btnWarmBack").onclick=()=>{ Aud.stop(); warmFromTrain=false; showBase(); };
+/* "BACK TO BASE" button removed — the HOME nav corner (→Base) replaces it; natural completion still routes via warmFromTrain. */
 
 /* ---------------- MEMORY VAULT — the dedicated recharge activity (rec #1, deterministic) ----------------
    The scheduler (vaultDue/vaultTouch, near line 200) decides WHAT is due; this is the gentle, capped
@@ -2024,13 +2064,26 @@ function vaultRoute(key){
 }
 /* the due items we can actually recharge today (vaultDue already caps + orders oldest-first) */
 function vaultDueRoutable(){ return vaultDue().map(vaultRoute).filter(Boolean); }
+/* GRAPHEME SURFACING: a strip of one gem per due item that charges up as each is recharged.
+   A gem's sound/word is revealed ONLY once it's charged (i<vaultPos) — so a not-yet-answered
+   find target is never shown on screen (anti-gaming #4). pending/current gems stay blank + grey. */
+function vaultPaintGems(){ const row=$("vaultGems"); if(!row)return; row.innerHTML="";
+  vaultPlan.forEach((it,i)=>{ const charged=i<vaultPos, cur=i===vaultPos;
+    const d=document.createElement("div");
+    d.className="vgem"+(charged?" charged":(cur?" cur":""))+(i===vaultPos-1?" justcharged":"");
+    const g=(it.mode==="find")?it.g:(toGraphemes(it.w||"")[0]||"");
+    const col=charged?(GEMCOLOR[g]||"#7bd1ff"):"#3a355c";
+    const lbl=charged?((it.mode==="find"?(it.g||""):(it.w||"")).toUpperCase()):"";
+    d.innerHTML=gemSVG("",col,40)+`<span class="vgem-lbl">${escHTML(lbl)}</span>`;
+    row.appendChild(d); }); }
 function startVault(){ clearFlow(); show("scrVault"); vaultPlan=vaultDueRoutable(); vaultPos=0;
   S.vaultNudge=dayKey(); save();                         /* opening the Vault counts as today's nudge */
-  $("vaultWord").innerHTML=""; $("vaultChoices").innerHTML="";
+  $("vaultWord").innerHTML=""; $("vaultChoices").innerHTML=""; vaultPaintGems();
   if(!vaultPlan.length){ $("vaultProg").textContent="✨";
     narrate("vault",$("vaultText"),["vault_full"],"Your gems are fully charged! ✨"); return; }
   flow(narrate("vault",$("vaultText"),["vault_intro"]),()=>vaultStep()); }
 function vaultStep(){
+  vaultPaintGems();                                      /* reflect the latest charge state (incl. all-charged when done) */
   if(vaultPos>=vaultPlan.length){ confetti(40);
     flow(narrate("vault",$("vaultText"),["vault_done"],"All charged up! ⚡"),()=>{ Aud.stop(); showBase(); }); return; }
   $("vaultProg").textContent=(vaultPos+1)+" / "+vaultPlan.length;
@@ -2069,7 +2122,7 @@ function vaultBuild(it){ const w=it.w, sight=!!it.sight, units=vaultUnits(w,sigh
         if(!sight)Aud.play(["snd_"+want]); setTimeout(()=>b.classList.remove("dim"),900); } };
     cr.appendChild(b); }); }
 { const bv=$("btnVault"); if(bv)bv.onclick=()=>{ Aud.pick(); startVault(); }; }   /* legacy btn (Base now recharges by tapping the GEMS panel) */
-$("btnVaultBack").onclick=()=>{ Aud.stop(); showBase(); };
+/* "BACK TO BASE" button removed (#57) — the HOME nav corner (→Base) replaces it. */
 /* open the next pending chest (gold → silver → wood) on tap */
 { const gb=$("btnGifts"); if(gb)gb.onclick=()=>{ const t=nextChestTier(); if(!t)return; Aud.pick&&Aud.pick(); openChest(t); }; }
 /* ---- shop ---- */

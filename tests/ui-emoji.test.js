@@ -42,6 +42,11 @@ const ZONES = [
   { name: "Nav corner buttons (Settings/Base/Map) — icon-only crafted uiIcon SVG, no emoji",
     file: "index.html",
     extract: src => between(src, /id="navSettings"/, "</div>") },
+  { name: "Hero Base layered-hub markup (#scrBase) — de-emoji'd by PR #52 (GEMS/GEAR/VILLAINS/FRIENDS text + SVG coin, no emoji)",
+    file: "index.html",
+    /* strip HTML comments first — the layout-description comment legitimately uses →/↙ arrows for prose,
+       which aren't child-facing UI. Only the rendered markup must be emoji-free. */
+    extract: src => (between(src, /id="scrBase"/, "<!-- MEMORY VAULT") || "").replace(/<!--[\s\S]*?-->/g, "") },
 ];
 
 const RESULT = { pass: 0, fail: 0, lines: [] };
@@ -67,9 +72,17 @@ ok("art.js defines the ITEMART registry", /const\s+ITEMART\s*=/.test(art));
 ok("shop render path uses itemArt() (shop grid / trophy shelf / chest + buy unlocks)",
   (game.match(/itemArt\s*\(/g) || []).length >= 4);
 ok("no shop/trophy/chest render site still injects an emoji `.ic` field", !/\$\{?\s*it\.ic\s*\}?/.test(game) && !/\+\s*item\.ic\b/.test(game));
-/* nav menu de-emoji (PR #43): icons come from the crafted UICONS registry via uiIcon(), not OS emoji */
+/* nav de-emoji: art.js still defines the crafted UICONS registry (used elsewhere / kept for reuse) */
 ok("art.js defines the uiIcon() resolver + UICONS registry (crafted nav glyphs)", /function\s+uiIcon\s*\(/.test(art) && /\bUICONS\s*=/.test(art));
-ok("game.js navChrome() builds the corner nav from uiIcon (not emoji)", /function\s+navChrome\s*\(/.test(game) && /uiIcon\s*\(/.test(game));
+/* NAV-2 + back-button removal: navChrome() builds the 3 corner buttons from the premium raster nav-*.png
+   images (the framed image IS the button), NOT emoji. (The old in-game BACK-TO-BASE buttons were removed —
+   the persistent HOME/MAP corners replace them — so navChrome no longer injects uiIcon glyphs.) */
+{ const nav = between(game, /function\s+navChrome\s*\(/, "})();") || "";
+  /* strip JS comments first — only the CODE (the innerHTML the buttons get) must be emoji-free;
+     comments legitimately use → arrows for prose, which aren't child-facing UI. */
+  const navCode = nav.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
+  ok("game.js navChrome() builds the corner nav from raster nav-*.png images (not emoji)",
+    /src="art\//.test(nav) && /nav-home\.png/.test(nav) && /nav-map\.png/.test(nav) && /nav-settings\.png/.test(nav) && emojiIn(navCode).length === 0); }
 /* in-game controls de-emoji (PR #45): home 🏠 replaced by the crafted shield; .ear replay buttons draw the speaker in CSS */
 const indexHtml = read("index.html");
 ok("home glyph 🏠 fully eliminated from index.html (crafted shield via uiIcon on BACK-TO-BASE)", !/\u{1F3E0}/u.test(indexHtml));
