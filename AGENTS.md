@@ -212,6 +212,12 @@ lightest): `git worktree add ../teddyman-neo <branch>` and run that agent's sess
 clone per agent.** Acceptance criterion: **Neo and The Oracle never operate in the same working tree.** Until isolated,
 **only ONE agent writes at a time** (the on-demand cadence makes this tolerable — stopgap, not the fix).
 
+**Guard (#25, SHIPPED):** `tools/check-isolation.mjs` + a non-blocking `.githooks/pre-commit` WARN (never block)
+when another worktree is modifying a file you're also committing (the real shared-dir clobber signal) and echo the
+branch you're committing to (catches wrong-branch commits). Enable once per clone: `git config core.hooksPath .githooks`
+(repo-level → all worktrees inherit it). Run anytime at session start: `node tools/check-isolation.mjs`. It's
+best-effort + always exits 0 — a guard must never stop a commit. Legit parallel work on *different* files stays silent.
+
 ## Branch protection
 **Leave it OFF for now.** GitHub branch protection is all-or-nothing per branch, so "require a PR"
 would also block Trinity's (and Neo's) direct commits. The guest-PR → squash-merge flow is enforced

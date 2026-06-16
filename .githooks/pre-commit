@@ -1,0 +1,7 @@
+#!/bin/sh
+# Worktree-isolation guard (#25) — non-blocking. Warns if another worktree is editing the same files
+# (shared-dir clobber risk) and echoes the target branch (catches wrong-branch commits). Never blocks:
+# any failure is swallowed so a guard can't stop a commit. Enable once: git config core.hooksPath .githooks
+top=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
+[ -n "$top" ] && node "$top/tools/check-isolation.mjs" 2>&1 || true
+exit 0
