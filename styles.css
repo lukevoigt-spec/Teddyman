@@ -500,6 +500,18 @@ body.calm .gembox>svg,body.calm .trophy,body.calm .gembox.mastered::after{animat
 .shopitem .buy.cant{opacity:.45;}
 .shopitem.owned{border-color:#3ec97e;}
 .shopitem .owned-tag{font-family:'Bangers',cursive;color:#9fe870;font-size:16px;}
+/* Memory Vault — gem charge strip (grapheme surfacing): each due gem lights up + reveals its sound/word as it recharges */
+.vaultgems{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:10px;margin:2px 0;min-height:60px;}
+.vgem{display:flex;flex-direction:column;align-items:center;gap:2px;opacity:.5;filter:grayscale(.7);transition:opacity .3s,filter .3s;}
+.vgem.cur{opacity:.92;filter:grayscale(.2);}
+.vgem.charged{opacity:1;filter:none;}
+.vgem-lbl{font-family:'Bangers',cursive;font-size:13px;letter-spacing:.03em;color:var(--gold);min-height:14px;-webkit-text-stroke:2px var(--ink);paint-order:stroke;}
+@media (prefers-reduced-motion:no-preference){
+  body:not(.calm) .vgem.cur svg{animation:vgempulse 1.3s ease-in-out infinite;transform-origin:50% 50%;}
+  .vgem.justcharged svg{animation:vgemcharge .5s ease;transform-origin:50% 50%;}   /* reward pop — kept in calm */
+}
+@keyframes vgempulse{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}
+@keyframes vgemcharge{0%{transform:scale(.55);}55%{transform:scale(1.28);}100%{transform:scale(1);}}
 .mcloudA{animation:mdrift 90s linear infinite;}
 .mcloudB{animation:mdrift 140s linear infinite;}
 @keyframes mdrift{from{transform:translateX(0)}to{transform:translateX(-180px)}}
