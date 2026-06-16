@@ -38,6 +38,38 @@ Base entry can remain as a secondary path; the lower-left HOME button is primary
 
 ---
 
+## ✅ PEDAGOGY REVIEW — BINDING GUARDRAILS (Trinity, 2026-06-16; parent-requested alignment check)
+The four-corner model is **approved for hubs** (Map / Base / Win / Rest) — fixed identical big corners is textbook
+kids-UX (5–8-yos fail at hidden nav; consistency is the biggest win, doubly so for a pre-reader with a language delay).
+The Title single-PLAY fix and Rest→map fix are clean wins. The model is bound by these rules so it can never compete
+with objective #1:
+
+- **G1 (HARD — confirms Neo flag #1's parent resolution). Four corners hidden on learning screens** (the `body.learning`
+  approach above is exactly right — the calm prompt is the focal point: CLAUDE.md "learning moment stays calm/
+  uncluttered"; PEDAGOGY.md seductive-details + cognitive-load guardrail). **Replay (`.ear`) + Skip stay** and must be
+  the most prominent interactive elements (the learning loop + audio-first lifeline). **⚠ ONE CATCH for the parent:
+  hard-constraint #8 reads "there is always a ⏭ skip *and a Home button*." Hiding ALL corners drops the Home escape —
+  so a kid who's overwhelmed mid-mission has no one-tap bail to safety, only Skip (which advances *within* the
+  mission).** Recommend: keep ONE small, calm HOME on learning screens (Replay + Skip + a low-key Home), OR make Skip
+  double as the escape. Cheap to honor; it's the explicit #8 safety net. *(Parent: confirm — full-zero corners, or keep
+  the small Home?)*
+- **G2. Status cluster goes coin-/ring-FREE on learning screens** (it's already hidden under G1's `body.learning`, so
+  this is automatically honored — flagged for whenever a slim status is shown). A coin tally or daily ring beside the
+  active word is an extrinsic-reward distractor (§6.0 — reward mastery AFTER the rep, never decorate the prompt with the
+  score).
+- **G3 (resolves Neo flag #2). Settings keeps the fixed upper-right POSITION but LOWER visual weight** than the three kid
+  buttons (principle #6 — parent area stays low-prominence). Stays math-gated. A big equal-weight gear invites an
+  ADHD/OCD child to fixate on / hammer a locked gate.
+- **G4. Two-destination split (Base vs Map) needs literal, unmistakable icons + a one-word label each** (house/castle vs
+  folded map). Model A's research basis was ONE obvious escape; re-splitting into Base+Map is fine ONLY if a pre-reader
+  can't confuse them and BOTH are genuinely "safe" rescue destinations. Do not rely on icon-alone.
+- **G5. Locked-node tap feedback stays gentle/encouraging, never a harsh-fail buzz** (constraint #2). "Not yet — finish
+  here first," a soft shake + the `locked_tip` cue — visible state (principle #7) without a punitive tone.
+- **G6. Control-count budget ≤3–5 per screen (principle #4).** On Base sub-screens the one-level BACK should REPLACE the
+  lower-left HOME corner (don't show Home + Back + Map + Settings + status all at once).
+
+---
+
 ## Principles (research-backed — sources at bottom)
 1. **One persistent nav element, same place every screen.** Kids 5–8 do worse with hidden nav; never make them hunt.
 2. **The World Map is HOME (the hub).** Everything radiates from it. Collapse today's three "homes" (Title / Hero Base / Map) into one.
