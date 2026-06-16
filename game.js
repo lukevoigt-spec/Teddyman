@@ -1461,8 +1461,16 @@ function showWin(firstTime){ show("scrWin");
   const rescuedKind = CUR.rescue ? (LEAGUE.find(t=>t.mid===CUR.id)||{}).kind : null;
   const ally = rescuedKind || (CUR.type==="fortress" ? (currentAct()===2?"kendall":"leighton") : null);
   const allyEnt = ally ? LEAGUE.find(t=>t.kind===ally) : null;
-  $("winHero").innerHTML=heroMarquee(170)+
-    (ally?`<svg viewBox="-32 -36 64 80" width="98" style="vertical-align:bottom;">${allyFace(ally)}<text y="42" text-anchor="middle" font-family="Bangers" font-size="12" fill="#ffc93c">${allyEnt?allyEnt.name:""}</text></svg>`:"");
+  /* On a RESCUE win it's the freed ALLY speaking ("...joined the league!"), so show JUST the ally —
+     their PAINTED raster (ally-<kind>.png) + name, no hero Teddy (also sidesteps the hero/ally size
+     mismatch). Every other win shows the celebrating hero. SVG face only as a no-png safety fallback. */
+  if(ally){
+    const allyArt = (typeof allyRasterImg==="function" && allyRasterImg(ally,200))
+        || `<svg viewBox="-32 -36 64 80" width="150">${allyFace(ally)}</svg>`;
+    $("winHero").innerHTML=`<span class="winally">${allyArt}<span class="winallyname">${allyEnt?allyEnt.name:""}</span></span>`;
+  } else {
+    $("winHero").innerHTML=heroMarquee(170);
+  }
   $("winHero").className="winpose"+(1+Math.floor(Math.random()*4));   /* random victory celebration */
   const gear=GEAR_AT[CUR.id];
   $("winGear").innerHTML=(firstTime&&gear)?`<div class="gearbadge">NEW GEAR: ${gear}</div>`:"";

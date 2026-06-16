@@ -174,7 +174,7 @@ const FRIEND_SIDE={
 };
 /* exact-placement overrides (act → node idx → [x,y] translate) when the side-fan would land a friend
    awkwardly. Cal's zone node sits right at the river crossing, so stand him ON the painted bridge deck. */
-const FRIEND_POS={ 2:{ 3:[852,726] } };
+const FRIEND_POS={ 2:{ 3:[872,702] } };
 function mapAlliesV2(a, zs, spots){
   /* derive from the LEAGUE roster (by act) so the rescue-pacing re-map lives in ONE place (allies.js) */
   const rescues = LEAGUE.filter(t=>Math.floor(t.mid/100)===(a-1)).map(t=>({mid:t.mid,kind:t.kind}));
