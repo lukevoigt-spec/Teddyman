@@ -23,13 +23,18 @@ and "Home" means the **Hero Base**. So drop Model A's single top-left Home→map
 per-screen-class "Home btn" column below becomes this fixed 4-corner set. Square buttons, ≥96px touch.
 
 **Neo flags (for parent + Oracle to resolve):**
-1. **Calm during learning — RESOLVED (parent 2026-06-16): HIDE all four corners entirely on learning screens.**
-   The four corners show on hub / Hero Base / Win / Rest; on **learning screens** (find/read/forge/trace/spell/
-   sentence/cloze/scramble/magic/syllable/fortress/scan/warmup) they are **hidden** so nothing competes with the
-   decoding prompt (seductive-details guardrail, objective #1). **EXCEPT — hard-constraint #8 keeps the audio-first
-   essentials on every prompt: the Replay button (`.ear`) + the Skip (`#btnSkip`, ≥96px), driven by flow()/watchdog
-   so the game can never hang.** (Those are learning controls, not nav chrome.) Implementation: `show()` adds a
-   `body.learning` flag on those screens → CSS hides the corner nav; Replay/Skip stay.
+1. **Calm during learning — RESOLVED (parent 2026-06-16, final): on learning screens HIDE the HUD/status cluster only;
+   KEEP the three nav buttons (Home→Base, Map, Settings) visible.** Parent's call: the static corner *buttons* don't
+   hurt learning, but the **HUD** (power/rank + coins + daily ring) is the dynamic, reward-signaling element that pulls
+   focus from the decoding prompt — so on **learning screens** (find/read/forge/trace/spell/sentence/cloze/scramble/
+   magic/syllable/fortress/scan/warmup) the **HUD is hidden** (honors the seductive-details guardrail + §6.0 "reward
+   AFTER the rep", and resolves G2). The **Home / Map / Settings** corners stay (Home satisfies hard-constraint #8's
+   always-a-Home-button escape). **Replay (`.ear`) + Skip (`#btnSkip`, ≥96px)** remain the most prominent interactive
+   elements (the learning loop + audio-first lifeline, flow()/watchdog-driven so it can never hang). **Refinement
+   (Trinity): render the three nav corners visually RECESSIVE on learning screens** (smaller / lower-contrast) so Replay
+   stays the focal control and the prompt keeps the eye — keeps the parent's "buttons stay" intent without letting 5
+   controls compete (principle #4 / G6). Implementation: `show()` adds `body.learning` → CSS hides the HUD cluster +
+   dims the nav corners; Replay/Skip stay full-strength.
 2. **Settings stays math-gated** even though it's now a prominent corner — the child must not wander into the parent area.
 
 Ownership unchanged: **Oracle** builds the corner-button chrome (render-gated §20); **Neo** wires the handlers
@@ -44,19 +49,14 @@ kids-UX (5–8-yos fail at hidden nav; consistency is the biggest win, doubly so
 The Title single-PLAY fix and Rest→map fix are clean wins. The model is bound by these rules so it can never compete
 with objective #1:
 
-- **G1 (HARD — confirms Neo flag #1's parent resolution). Four corners hidden on learning screens** (the `body.learning`
-  approach above is exactly right — the calm prompt is the focal point: CLAUDE.md "learning moment stays calm/
-  uncluttered"; PEDAGOGY.md seductive-details + cognitive-load guardrail). **Replay (`.ear`) + Skip stay** and must be
-  the most prominent interactive elements (the learning loop + audio-first lifeline). **⚠ ONE CATCH for the parent:
-  hard-constraint #8 reads "there is always a ⏭ skip *and a Home button*." Hiding ALL corners drops the Home escape —
-  so a kid who's overwhelmed mid-mission has no one-tap bail to safety, only Skip (which advances *within* the
-  mission).** Recommend: keep ONE small, calm HOME on learning screens (Replay + Skip + a low-key Home), OR make Skip
-  double as the escape. Cheap to honor; it's the explicit #8 safety net. *(Parent: confirm — full-zero corners, or keep
-  the small Home?)*
-- **G2. Status cluster goes coin-/ring-FREE on learning screens** (it's already hidden under G1's `body.learning`, so
-  this is automatically honored — flagged for whenever a slim status is shown). A coin tally or daily ring beside the
-  active word is an extrinsic-reward distractor (§6.0 — reward mastery AFTER the rep, never decorate the prompt with the
-  score).
+- **G1 (RESOLVED, parent final). On learning screens: hide the HUD/status; keep Home/Map/Settings + Replay/Skip; render
+  the nav corners recessive.** See the resolved flag #1 above. Rationale: the dynamic reward-signaling HUD is the real
+  cognitive-load/seductive-details risk on the prompt; static corner buttons are not (CLAUDE.md "learning moment stays
+  calm/uncluttered"; PEDAGOGY.md cognitive-load guardrail). Keeping Home also satisfies hard-constraint #8 (always a
+  Home escape). Replay stays the focal control.
+- **G2. RESOLVED by G1** — hiding the HUD removes the coin tally + daily ring from the prompt, which was the §6.0 point
+  (reward mastery AFTER the rep, never decorate the active word with the score). No separate work; just don't reintroduce
+  a coin/ring on learning screens.
 - **G3 (resolves Neo flag #2). Settings keeps the fixed upper-right POSITION but LOWER visual weight** than the three kid
   buttons (principle #6 — parent area stays low-prominence). Stays math-gated. A big equal-weight gear invites an
   ADHD/OCD child to fixate on / hammer a locked gate.
