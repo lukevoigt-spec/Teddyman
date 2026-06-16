@@ -755,7 +755,7 @@ function navGo(fn){ Aud.stop(); clearFlow(); fn(); }
    HOME→Hero Base = lower-left; Map = lower-right. Crafted uiIcon glyphs (house icon language, no emoji). */
 (function navChrome(){ if(typeof uiIcon!=="function")return;
   const set=(id,key,sz)=>{ const el=$(id); if(el)el.innerHTML=uiIcon(key,sz||36)+el.textContent; };
-  set("navMapBtn","map",36); set("navBaseBtn","base",36); set("navSettings","grown",36);
+  set("navMapBtn","map",36); set("navBaseBtn","home",36); set("navSettings","grown",36);   /* house=Home→Base, folded-map=Map, gear=Settings (G4) */
   /* in-game "home" controls: the BACK TO BASE buttons (Recharge/Training/Scroll/Warm) — crafted shield. */
   ["btnVaultBack","btnTrainBack","btnScrollBack","btnWarmBack"].forEach(id=>set(id,"base",22)); })();
 { const m=$("navMapBtn");  if(m)m.onclick=()=>navGo(toMap); }                          /* lower-right → world map */
