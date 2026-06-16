@@ -331,7 +331,12 @@ function heroProgress(){ const a=currentAct(), am=actMissions(a), total=am.lengt
    (both have a painted m0/m1/m2 set). Any other theme falls back to parametric SVG.
    heroOpts() supplies the muscle tier + theme. Hero Base keeps heroNow() so the
    Loadout still shows the equipped weapon/cape in the parametric pose. */
-function heroMarquee(w){ const o=heroOpts(); return (o.theme==="hero"||o.theme==="knight") ? teddyArt(w,o.muscle,o.theme) : heroSVG(w,o); }
+function heroMarquee(w){ const o=heroOpts();
+  if(o.theme!=="hero"&&o.theme!=="knight") return heroSVG(w,o);
+  const m=Math.max(0,Math.min(2,o.muscle|0)), base=(o.theme==="knight"?"teddy-knight-m":"teddy-m")+m;
+  /* armed variant (he holds the equipped weapon) when one is loaded out, else the plain tier */
+  const file=(o.weapon&&o.weapon!=="none")?base+"-"+o.weapon:base;
+  return rasterArt(file, w, o.theme==="knight"?"#ffba4a":"#ffce3a", o.theme==="knight"?"#c77a2a":"#3a7bff"); }
 /* ---------------- SCREEN MGMT ---------------- */
 const $=id=>document.getElementById(id);
 /* Painted-scene slots: screen -> art/bg-<name>.* . Add an image to swap a scene;
@@ -1502,10 +1507,13 @@ function showBase(){ clearFlow(); show("scrBase");
   else Aud.play("base1");
 }
 function paintBase(){
-  /* painted raster hero as a CLEAN cutout (no rasterArt aura/contact-shadow halo) — seated on the
-     painted pedestal with a soft CSS drop-shadow. teddy-m* (Act 1) / teddy-knight-m* (Act 2). */
-  { const o=heroOpts(), m=Math.max(0,Math.min(2,o.muscle|0)), file=(o.theme==="knight"?"teddy-knight-m":"teddy-m")+m;
-    $("baseHero").innerHTML='<img class="baseheroimg" src="art/'+file+'.png" alt="" draggable="false">'; }
+  /* painted raster hero as a CLEAN cutout (no aura/halo), seated on the pedestal. Per stage (m0-m2 ×
+     hero/knight) and, when a weapon is equipped, the ARMED variant teddy[-knight]-m<tier>-<weapon>
+     (he holds it). onerror falls back to the unarmed tier image so it can never break. */
+  { const o=heroOpts(), m=Math.max(0,Math.min(2,o.muscle|0)), base=(o.theme==="knight"?"teddy-knight-m":"teddy-m")+m;
+    const armed=!!(o.weapon&&o.weapon!=="none"), file=armed?base+"-"+o.weapon:base;
+    $("baseHero").innerHTML='<img class="baseheroimg" src="art/'+file+'.png" alt="" draggable="false"'
+      +(armed?' onerror="this.onerror=null;this.src=\'art/'+base+'.png\'"':'')+'>'; }
   const o=heroOpts();
   { const hp=heroProgress(); $("powerLbl").textContent=hp.name;
     const pf=$("powerFill"); if(pf){ pf.style.width=hp.pct+"%"; pf.classList.toggle("maxed",hp.max&&hp.pct>=100); } }
