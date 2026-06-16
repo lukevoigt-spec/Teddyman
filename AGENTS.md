@@ -121,6 +121,14 @@ The backlog moved from prose tickets in `QA.md` (which drifted — see Status di
   "done" *mechanical* (closed = shipped), killing the manual-reconcile burden.
 - `QA.md` now holds only: the Inbox, the open-Issues index, the resolved-ledger history, and durable analyses. It is **not**
   where new work is logged — open an Issue.
+- **TRIAGE GATE + KANBAN BOARD (Trinity-maintained, parent's model 2026-06-16):** a new Issue is a **CANDIDATE, not
+  committed work.** Agents propose; **the parent disposes.** The live board is **`KANBAN.md`** (columns: 📥 Triage · ✅
+  Approved · 🔨 Building · 🅿️ Deferred · ✓ Done) — **Trinity keeps it current every turn** (GitHub Projects can't be
+  created/driven via the API here, so this markdown file IS the board). **The parent steers ONLY by answering Trinity's
+  triage questions (`AskUserQuestion`)** — he doesn't touch the board. Flow: new candidate → 📥 Triage → Trinity batches a
+  **do-now / defer / drop** recommendation → parent decides → Trinity moves the card (✅ Approved / 🅿️ Deferred / closed
+  as "not planned") + comments the Issue. **Neo / The Oracle build only ✅ Approved Issues** (close via `Closes #N`, which
+  Trinity then moves to ✓ Done). The agents stop being the de-facto roadmap.
 
 ## Status discipline — keeping `QA.md` honest (added after a real stale-status miss, 2026-06-14)
 `QA.md`'s open/shipped status drifts because **Neo changes the code in his session while only Trinity edits `QA.md`** —
