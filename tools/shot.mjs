@@ -108,6 +108,8 @@ const SCENES = {
   brody_win: `(function(){ S.act=2; CUR={id:118,rescue:true,finale:true,lbl:"Iron Wyrm: Free Brody!"}; showWin(true); return 1; })()`,
   // Miss Kendall full-body raster (replaces the old placeholder SVG)
   kendall: `(function(){ document.body.innerHTML='<div id="cz" style="display:flex;align-items:flex-end;justify-content:center;background:#241a3e;padding:30px;height:100%;box-sizing:border-box;"></div>'; document.getElementById('cz').innerHTML='<div style="text-align:center;">'+allyBody('kendall',260)+'<div style="color:#fff;font-family:sans-serif;font-size:16px;margin-top:6px;">Miss Kendall</div></div>'; return 1; })()`,
+  // Act-2 villains — premium Vixen + dragon rasters (in their aura'd SVG wrappers)
+  villains: `(function(){ document.body.innerHTML='<div id="cz" style="display:flex;gap:40px;align-items:flex-end;justify-content:center;background:#241a3e;padding:40px;height:100%;box-sizing:border-box;"></div>'; document.getElementById('cz').innerHTML=vixenSVG(250)+dragonSVG(250); return 1; })()`,
 };
 
 const args = process.argv.slice(2);
