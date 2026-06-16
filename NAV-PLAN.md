@@ -23,9 +23,13 @@ and "Home" means the **Hero Base**. So drop Model A's single top-left Home→map
 per-screen-class "Home btn" column below becomes this fixed 4-corner set. Square buttons, ≥96px touch.
 
 **Neo flags (for parent + Oracle to resolve):**
-1. **Calm during learning (principle #5 / seductive-details guardrail — protects objective #1).** Four corners on an
-   active decoding prompt risks clutter. Recommend: keep all four on hub / Base / Win / Rest, but on **learning
-   screens** dim+shrink them (or drop to Home + Replay + slim status) so the prompt stays the focal point. *(Confirm.)*
+1. **Calm during learning — RESOLVED (parent 2026-06-16): HIDE all four corners entirely on learning screens.**
+   The four corners show on hub / Hero Base / Win / Rest; on **learning screens** (find/read/forge/trace/spell/
+   sentence/cloze/scramble/magic/syllable/fortress/scan/warmup) they are **hidden** so nothing competes with the
+   decoding prompt (seductive-details guardrail, objective #1). **EXCEPT — hard-constraint #8 keeps the audio-first
+   essentials on every prompt: the Replay button (`.ear`) + the Skip (`#btnSkip`, ≥96px), driven by flow()/watchdog
+   so the game can never hang.** (Those are learning controls, not nav chrome.) Implementation: `show()` adds a
+   `body.learning` flag on those screens → CSS hides the corner nav; Replay/Skip stay.
 2. **Settings stays math-gated** even though it's now a prominent corner — the child must not wander into the parent area.
 
 Ownership unchanged: **Oracle** builds the corner-button chrome (render-gated §20); **Neo** wires the handlers
