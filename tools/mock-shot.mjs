@@ -1,0 +1,12 @@
+import http from "node:http"; import fs from "node:fs"; import path from "node:path"; import { fileURLToPath } from "node:url";
+process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY="1";
+const ROOT=path.join(path.dirname(fileURLToPath(import.meta.url)),"..");
+const MIME={".html":"text/html",".css":"text/css",".js":"text/javascript",".png":"image/png",".jpg":"image/jpeg",".jpeg":"image/jpeg",".svg":"image/svg+xml",".woff2":"font/woff2",".ttf":"font/ttf"};
+const server=http.createServer((req,res)=>{let p=decodeURIComponent(req.url.split("?")[0]); if(p==="/")p="/index.html"; const f=path.join(ROOT,p); if(!f.startsWith(ROOT)||!fs.existsSync(f)||fs.statSync(f).isDirectory()){res.statusCode=404;return res.end("404");} res.setHeader("Content-Type",MIME[path.extname(f)]||"application/octet-stream"); fs.createReadStream(f).pipe(res);});
+const file=process.argv[2]||"base-mock.html"; const out=process.argv[3]||"tools/shots/base-mock.png";
+const pw=await import("playwright"); const browser=await (pw.chromium||pw.default.chromium).launch();
+await new Promise(r=>server.listen(0,r)); const port=server.address().port;
+const ctx=await browser.newContext({viewport:{width:1024,height:768},deviceScaleFactor:2}); const page=await ctx.newPage();
+await page.goto(`http://localhost:${port}/${file}`,{waitUntil:"domcontentloaded"}); await page.waitForTimeout(1500);
+await page.evaluate(()=>Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,2500))])).catch(()=>{});
+await page.screenshot({path:path.join(ROOT,out)}); await browser.close(); server.close(); console.log("wrote",out);

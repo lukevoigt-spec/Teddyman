@@ -1,0 +1,96 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1024px;height:768px;overflow:hidden;font-family:'Baloo 2',sans-serif}
+#stage{position:relative;width:1024px;height:768px;background:#1a1228}
+#bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#grade{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 35%,transparent 40%,rgba(10,6,24,.55));pointer-events:none}
+.ink{ -webkit-text-stroke:4px #1a1430; paint-order:stroke; }
+/* hero */
+#hero{position:absolute;left:50%;top:158px;transform:translateX(-50%);width:300px;filter:drop-shadow(0 10px 14px rgba(0,0,0,.45))}
+/* top status */
+#status{position:absolute;top:16px;left:50%;transform:translateX(-50%);display:flex;gap:12px;align-items:center}
+.chip{background:rgba(16,10,38,.62);border:3px solid #ffd75e;border-radius:16px;padding:7px 16px;color:#ffd75e;font-family:'Bangers';font-size:24px;letter-spacing:.04em;backdrop-filter:blur(8px);display:flex;align-items:center;gap:8px}
+.chip.rank{color:#fff;border-color:#fff}
+.dex{position:relative;width:140px;height:14px;background:rgba(0,0,0,.5);border:2px solid #1a1430;border-radius:9px;overflow:hidden}
+.dex>i{position:absolute;left:0;top:0;bottom:0;width:46%;background:linear-gradient(180deg,#9be7ff,#3a9bff)}
+/* side accomplishment panels */
+.panel{position:absolute;width:196px;background:rgba(18,11,38,.46);border:3px solid #4a3a86;border-radius:20px;padding:12px 12px 14px;backdrop-filter:blur(9px);box-shadow:0 8px 0 rgba(0,0,0,.28)}
+.panel .ph{font-family:'Bangers';font-size:21px;color:#ffd75e;letter-spacing:.04em;display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.panel .ph .cnt{font-size:14px;color:#cfc6f2}
+#left{left:22px;top:150px}
+#right{right:22px;top:150px}
+.gemgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.gem{height:46px;display:flex;align-items:center;justify-content:center}
+.gem svg{width:38px;height:46px;filter:drop-shadow(0 0 6px currentColor)}
+.cage{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.cagebox{height:62px;border-radius:12px;background:rgba(8,5,18,.6);border:2px solid #2a2440;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.cagebox img{width:54px;height:54px;object-fit:contain}
+.cagebox::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 13px,rgba(180,180,210,.5) 13px 16px)}
+/* friends row below hero */
+#friends{position:absolute;left:50%;bottom:118px;transform:translateX(-50%);display:flex;gap:14px;align-items:flex-end}
+.fr{width:84px;height:84px;border-radius:50%;border:4px solid #ffd75e;background:rgba(16,10,38,.6);overflow:hidden;box-shadow:0 6px 0 rgba(0,0,0,.3)}
+.fr img{width:100%;height:120%;object-fit:cover;object-position:top}
+.fr.empty{border-color:#5a4f86;border-style:dashed;background:rgba(16,10,38,.35)}
+.frlbl{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);font-family:'Bangers';color:#ffd75e;font-size:18px;letter-spacing:.05em}
+/* bottom corner buttons */
+.cta{position:absolute;bottom:20px;border:0;cursor:pointer;font-family:'Bangers';letter-spacing:.05em;color:#3a2a00;
+  background:linear-gradient(180deg,#ffe27a,#f3a52a);border-radius:20px;padding:16px 30px;font-size:34px;
+  box-shadow:0 7px 0 #b06a12, 0 9px 12px rgba(0,0,0,.4); -webkit-text-stroke:0;}
+#play{left:22px;display:flex;align-items:center;gap:10px}
+#map{right:22px;background:linear-gradient(180deg,#8fd0ff,#3a86d8);box-shadow:0 7px 0 #1d5a96,0 9px 12px rgba(0,0,0,.4);color:#06243f}
+/* secondary action row bottom-center */
+#acts{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:12px}
+.act{background:rgba(16,10,38,.7);border:3px solid #ffd75e;border-radius:15px;color:#ffd75e;font-family:'Bangers';font-size:18px;letter-spacing:.03em;padding:10px 16px;box-shadow:0 5px 0 rgba(0,0,0,.3)}
+</style></head>
+<body><div id="stage">
+  <img id="bg" src="art/bg-base-room.png">
+  <div id="grade"></div>
+
+  <div id="status">
+    <div class="chip rank">SUPER HERO</div>
+    <div class="chip">★ <span style="font-family:'Baloo 2';font-weight:800;font-size:18px">GEMS</span> <div class="dex"><i></i></div></div>
+    <div class="chip">◎ 128</div>
+  </div>
+
+  <img id="hero" src="art/teddy-m1.png">
+
+  <div class="panel" id="left">
+    <div class="ph">GEMS <span class="cnt">12 / 26</span></div>
+    <div class="gemgrid">
+      <div class="gem" style="color:#ff5e6c"><svg viewBox="0 0 40 50"><polygon points="20,2 38,18 20,48 2,18" fill="#ff5e6c" stroke="#1a1430" stroke-width="3"/></svg></div>
+      <div class="gem" style="color:#ffd23a"><svg viewBox="0 0 40 50"><polygon points="20,2 38,18 20,48 2,18" fill="#ffd23a" stroke="#1a1430" stroke-width="3"/></svg></div>
+      <div class="gem" style="color:#4ad6a0"><svg viewBox="0 0 40 50"><polygon points="20,2 38,18 20,48 2,18" fill="#4ad6a0" stroke="#1a1430" stroke-width="3"/></svg></div>
+      <div class="gem" style="color:#3a9bff"><svg viewBox="0 0 40 50"><polygon points="20,2 38,18 20,48 2,18" fill="#3a9bff" stroke="#1a1430" stroke-width="3"/></svg></div>
+      <div class="gem" style="color:#b06aff"><svg viewBox="0 0 40 50"><polygon points="20,2 38,18 20,48 2,18" fill="#b06aff" stroke="#1a1430" stroke-width="3"/></svg></div>
+      <div class="gem" style="color:#ff9a3a"><svg viewBox="0 0 40 50"><polygon points="20,2 38,18 20,48 2,18" fill="#ff9a3a" stroke="#1a1430" stroke-width="3"/></svg></div>
+    </div>
+  </div>
+
+  <div class="panel" id="right">
+    <div class="ph">VILLAINS <span class="cnt">2 / 7</span></div>
+    <div class="cage">
+      <div class="cagebox"><img src="art/vex.png"></div>
+      <div class="cagebox"><img src="art/vixen.png"></div>
+    </div>
+    <div class="ph" style="margin-top:12px">WEAPONS <span class="cnt">3</span></div>
+    <div class="cage">
+      <div class="cagebox" style="font-family:'Bangers';color:#ffd75e;font-size:26px">⚒</div>
+      <div class="cagebox" style="font-family:'Bangers';color:#ffd75e;font-size:26px">⚔</div>
+    </div>
+  </div>
+
+  <div class="frlbl">MY FRIENDS</div>
+  <div id="friends">
+    <div class="fr"><img src="art/ally-tank.png"></div>
+    <div class="fr"><img src="art/ally-flip.png"></div>
+    <div class="fr"><img src="art/ally-cal.png"></div>
+    <div class="fr"><img src="art/ally-nora.png"></div>
+    <div class="fr empty"></div>
+    <div class="fr empty"></div>
+  </div>
+
+  <button class="cta" id="play">▶ PLAY</button>
+  <button class="cta" id="map">MAP</button>
+</div></body></html>
