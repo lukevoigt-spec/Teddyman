@@ -1973,7 +1973,8 @@ function scrollFinish(){ const ms=Date.now()-scrollT0, best=scrollTouch(scrollCu
   S.coins=(S.coins||0)+2; save();                                     /* coins from LEARNING (§6.0) */
   $("scrollMeter").textContent = best ? "★ NEW BEST!" : "✓ Scroll read!";
   flow(Aud.play([best?"scroll_best":"scroll_done"]),()=>{ Aud.stop();
-    if(scrollFromTrain){ scrollFromTrain=false; show("scrTrain"); updateTrainHUD(); trainRound(); } else showBase(); }); }
+    if(scrollFromTrain){ scrollFromTrain=false; __trainNextAt=Math.max(__trainNextAt,trainReps+5); show("scrTrain"); updateTrainHUD(); trainRound(); } else showBase(); }); }
+    /* #71: buffer the next ally interrupt on the RETURN to training too (not just at serve), so a pop-in can't stack on the scroll's closure audio */
 /* "BACK TO BASE" button removed — the HOME nav corner (→Base) replaces it; natural completion still routes via scrollFromTrain. */
 
 /* ---------------- SOUND WARM-UP (rec #3A — oral phonemic-awareness drill) ----------------
@@ -2042,7 +2043,7 @@ function warmIsolate(w){ const first=toGraphemes(w)[0];
     c.appendChild(b); }); }
 function warmFinish(){ $("warmProg").textContent=""; $("warmReveal").innerHTML=""; warmChoices();
   S.coins=(S.coins||0)+1; save(); try{ confetti(24); }catch(e){}
-  flow(Aud.play(["warmup_done"]),()=>{ Aud.stop(); if(warmFromTrain){ warmFromTrain=false; show("scrTrain"); updateTrainHUD(); trainRound(); } else showBase(); }); }
+  flow(Aud.play(["warmup_done"]),()=>{ Aud.stop(); if(warmFromTrain){ warmFromTrain=false; __trainNextAt=Math.max(__trainNextAt,trainReps+5); show("scrTrain"); updateTrainHUD(); trainRound(); } else showBase(); }); }   /* #71: buffer the interrupt on return so it can't stack on the warm-up's closure audio */
 /* "BACK TO BASE" button removed — the HOME nav corner (→Base) replaces it; natural completion still routes via warmFromTrain. */
 
 /* ---------------- MEMORY VAULT — the dedicated recharge activity (rec #1, deterministic) ----------------
