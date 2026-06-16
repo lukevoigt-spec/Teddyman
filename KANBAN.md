@@ -27,7 +27,7 @@ Award Bar rubric **v1 synthesized** (14 criteria, 5-stream research review). Now
 - **#62 [O]** Ally face-tokens → painted raster (cheer pops, league thumbs, win mini-face) — last SVG characters left after PR #59 *(consistency, Award Bar A5)*
 
 ## 🔨 BUILDING — has an open PR
-- **PR #61 [N]** Remove dead dropdown-nav CSS — resolves Morpheus QA #58 NAV drift (pure dead-code, suites pass) — Neo to merge.
+*(none open — last batch merged)*
 
 ## 🅿️ DEFERRED — approved-someday, not active
 - **#28 [N]** Device-verify Base/Training/Shop/Vault overflow @1024×768 (WebKit) — apply sticky-footer/scroll where a sub-screen clips its primary action
@@ -46,4 +46,5 @@ app icon (PR #51) · Hero-Base build package (PR #50) · Voice-Studio file-uploa
 data-loss fix (#30) · working-tree isolation guard (#25) · RENDER-1 harness fix (#26) · de-emoji nav + in-game controls
 (PRs #43/#45) · squire fix · win-screen square fix · ARENA look + world maps · mouth-move driver. **Latest:** Hero-Base
 layered-hub shell (PR #52) + bleed hotfix (#56) · hero/cutscenes routed to painted raster, no SVG characters (PR #59) ·
-painted nav-corner icons + back-to-base removal (PRs #52/#57) · Rest→map + Skip≥96px (#53). *(history in git + QA.md)*
+painted nav-corner icons + back-to-base removal (PRs #52/#57) · Rest→map + Skip≥96px (#53) · dead dropdown-CSS removed
+(PR #61, Morpheus #58 resolved) · ui-emoji guard covers Hero Base (PR #63, advances #27). *(history in git + QA.md)*
