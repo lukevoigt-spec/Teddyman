@@ -1501,7 +1501,7 @@ function showBase(){ clearFlow(); show("scrBase");
   else Aud.play("base1");
 }
 function paintBase(){
-  $("baseHero").innerHTML=heroNow(Math.min(260,window.innerWidth*0.34));
+  $("baseHero").innerHTML=heroMarquee(Math.min(280,window.innerWidth*0.4));   /* painted raster hero (teddyArt), not the parametric SVG */
   const o=heroOpts();
   { const hp=heroProgress(); $("powerLbl").textContent=hp.name;
     const pf=$("powerFill"); if(pf){ pf.style.width=hp.pct+"%"; pf.classList.toggle("maxed",hp.max&&hp.pct>=100); } }
