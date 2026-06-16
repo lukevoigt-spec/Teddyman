@@ -222,3 +222,13 @@ calm open centers for the learning tiles.* **Title excluded** (parent's instruct
   bubble/tile panels), content is the focal point. `curriculum`/`save` green (art-only).
 - **Not touched (flagged):** the Hero-Room hub backdrop (`bg-base-room.png`, a parent-iterated interior) — offer to
   restyle to match as a follow-up. Legacy `bg-map(.jpeg)` is now dead (V2 maps render both acts) — Neo cleanup later.
+
+## 2026-06-16 · Hero Base backdrop → warm hero's-hall (parent: "restyle to match")
+Finding: the layered Hero-Room hub never merged to main — `bg-base-room.png` is an unused orphan (staged on the
+`hero-room` branch). The LIVE Base is the card-based hub whose backdrop is `bg-base.jpeg` (BG_MAP `scrBase`→base,
+also train/vault/scroll/warmup). PR #16 had restyled it to an outdoor camp; for a "Hero ROOM" feel I swapped it to a
+**cozy painterly hero's-hall interior** (hearth, heraldic banners, trophy shelves, treasure chests, sunset window,
+central pedestal) — matches the new map/bg style and reinforces the collection theme. Applied to `bg-base.jpeg` +
+`bg-base-a2.jpeg` (act-agnostic hall). Render-gated the Base hub (Act 1 + 2): backdrop reads as a hero room, cards/
+action-rail stay legible. `curriculum` green. (`bg-base-room.png` left untouched per the DESIGN-ALIGNMENT "don't
+delete the staged room" note — relevant only if the layered hub is revived.)
