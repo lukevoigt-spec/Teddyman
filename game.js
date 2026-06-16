@@ -1661,7 +1661,31 @@ function vaultMilestone(kind){ const dia=(kind==="diamond");
   const d=document.createElement("div"); d.className="vaultpop"+(dia?" dia":"");
   d.innerHTML=`<div class="vaultpopart">${dia?diamondIcon(120):barIcon(120)}</div><div class="vaultpoplbl read">${dia?"A DIAMOND!":"A GOLD BAR!"}</div>`;
   host.appendChild(d); setTimeout(()=>d.remove(),1700); }
-function showTrain(){ clearFlow(); trainReps=0; __scrollServed=false; __warmDone=false; show("scrTrain"); updateTrainHUD(); updateTrainDaily();
+/* ALLY INTERRUPTS (TRAINING-INTERRUPTS.md, parent-approved): between reps only, a freed/known friend
+   pops in to cheer or tell a joke — breaks monotony, fires BETWEEN reps (never on the active prompt).
+   Only UNLOCKED tellers; lines ROTATE via a shuffle bag (no repeat until the bank is exhausted). */
+const TRAIN_TELLERS=[
+  {kind:"tank", name:"ARCHIE",  prefix:"train_arch", n:20, unlocked:()=>allyFreed("tank")},
+  {kind:"sunny",name:"WILLIAM", prefix:"train_will", n:20, unlocked:()=>allyFreed("sunny")},
+  {kind:"jj",   name:"JJ",      prefix:"train_jj",   n:20, unlocked:()=>(S.act2intro||currentAct()>=2)},   /* met in the Act-2 interlude */
+  {kind:"nora", name:"NORA",    prefix:"train_nora", n:20, unlocked:()=>(S.act2intro||currentAct()>=2)},
+  {kind:"cal",  name:"CAL",     prefix:"train_cal",  n:20, unlocked:()=>(S.act2intro||currentAct()>=2)}
+];
+let __trainBags={}, __trainNextAt=0;
+function trainBagNext(t){ let bag=__trainBags[t.prefix]; if(!bag||!bag.length){ bag=shuf(Array.from({length:t.n},(_,i)=>i+1)); __trainBags[t.prefix]=bag; } return t.prefix+bag.pop(); }
+function trainPop(kind,name){ const st=$("stage"); if(!st)return;   /* like allyPop but name-driven (jj/nora/cal aren't in ALLY{}) */
+  const d=document.createElement("div"); d.className="allypop";
+  d.innerHTML=`<svg viewBox="-34 -40 68 84" width="76" aria-hidden="true">${allyFace(kind)}</svg><div class="allyname">${name}!</div>`;
+  st.appendChild(d); setTimeout(()=>d.remove(),2200); }
+function maybeTrainInterrupt(done){ const avail=TRAIN_TELLERS.filter(t=>t.unlocked());
+  if(!avail.length || trainReps<__trainNextAt){ done(); return; }
+  __trainNextAt = trainReps + 8 + Math.floor(Math.random()*5);   /* next pop-in in ~8–12 reps (jittered, not clockwork) */
+  const t=avail[Math.floor(Math.random()*avail.length)];
+  trainPop(t.kind,t.name);
+  flow(Aud.play([trainBagNext(t)]), done); }   /* skippable + watchdog'd; resumes the loop after the line */
+function showTrain(){ clearFlow(); trainReps=0; __scrollServed=false; __warmDone=false;
+  __trainNextAt = 8 + Math.floor(Math.random()*5);   /* first interrupt after ~8–12 reps */
+  show("scrTrain"); updateTrainHUD(); updateTrainDaily();
   flow(narrate("train",$("trainText"),["train_intro"]),()=>trainRound()); }
 function updateTrainHUD(){ const h=$("trainHoard"); if(h)h.innerHTML=trainHoardHTML(); const rp=$("trainReps"); if(rp)rp.textContent=trainReps; }
 /* gentle "today's practice" fill — grows as he practices toward the daily-split goal; NO countdown,
@@ -1719,7 +1743,7 @@ function trainWin(el,w){ const bonus=combo>=3?2:1; trainReps++;
   const cc=$("trainCoinN"); if(cc){ cc.classList.add("ctrpop"); void cc.offsetWidth; cc.classList.remove("ctrpop"); }
   if(at.diamonds>bt.diamonds) vaultMilestone("diamond");             /* the climax: a tier just converted up */
   else if(at.bars>bt.bars) vaultMilestone("bar");
-  flow(Aud.play(["train_yes"].concat(wordAudio(w))),()=>setTimeout(trainRound,260)); }
+  flow(Aud.play(["train_yes"].concat(wordAudio(w))),()=>setTimeout(()=>maybeTrainInterrupt(trainRound),260)); }
 function coinFloat(el,n){ const s=$("stage"); if(!s||!el)return; const r=el.getBoundingClientRect(),st=s.getBoundingClientRect();
   const c=document.createElement("div"); c.className="combochip"; c.style.color="#ffd75e";
   c.style.top=(r.top-st.top-20)+"px"; c.innerHTML="+"+n+" <span class='cfcoin'>"+coinIcon(20)+"</span>"; s.appendChild(c); setTimeout(()=>c.remove(),900); }

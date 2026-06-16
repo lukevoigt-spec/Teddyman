@@ -59,6 +59,7 @@ const SCENES = {
   coinfly: `(function(){ S.coins=5; S.hoard=37; showTrain(); return 1; })()`,
   // Treasure Vault: a near-full coin row, mid-stack — shows the diamond/bar/coin HUD
   vault_hud: `(function(){ S.hoard=149; ensureDaily(); S.daily.secs=380; showTrain(); return 1; })()`,
+  train_pop: `(function(){ S.act=2; S.hoard=63; ensureDaily(); S.daily.secs=300; show('scrTrain'); updateTrainHUD(); updateTrainDaily(); trainPop('jj','JJ'); return 1; })()`,
   // the milestone climax burst (crossing a tier on a rep)
   vault_bar: `(function(){ S.hoard=9; show('scrTrain'); updateTrainHUD(); vaultMilestone('bar'); return 1; })()`,
   vault_dia: `(function(){ S.hoard=99; show('scrTrain'); updateTrainHUD(); vaultMilestone('diamond'); return 1; })()`,

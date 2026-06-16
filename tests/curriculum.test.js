@@ -314,6 +314,20 @@ ok("varyLine() never repeats immediately (3-deep pools rotate)", (function(){ va
 ok("variant pools keep the SAME voice role as their base (no cross-voice drift)", Object.keys(LINE_VARIANTS).every(function(b){ var rv=(LINES[b]||{}).v; return LINE_VARIANTS[b].every(function(id){ return ((LINES[id]||{}).v||null)===(rv||null); }); }));
 ok("sound-ID prompt variants stay target-INDEPENDENT (#4 — never name a single letter)", ["find_prompt","find_prompt2","find_prompt3","scan_prompt","scan_prompt2","scan_prompt3"].every(function(id){ return LINES[id] && !/\b[A-Za-z]\b/.test(LINES[id].t); }));
 
+grp("Training-Room ally INTERRUPTS (between-rep pop-ins) are complete + well-roled");
+var tiErr=[];
+TRAIN_TELLERS.forEach(function(t){ for(var i=1;i<=t.n;i++){ var id=t.prefix+i; var L=LINES[id];
+  if(!L||!L.t) tiErr.push(id+" missing/empty"); } });
+ok("every teller's full bank (20 lines each) exists in LINES with TTS text", tiErr.length===0, tiErr);
+ok("each teller's lines carry ONE consistent voice role (T/W/J/R/X — no cross-voice drift)",
+  TRAIN_TELLERS.every(function(t){ var r=(LINES[t.prefix+1]||{}).v; return r && Array.from({length:t.n},function(_,i){return t.prefix+(i+1);}).every(function(id){ return (LINES[id]||{}).v===r; }); }),
+  TRAIN_TELLERS.map(function(t){ return t.kind+":"+((LINES[t.prefix+1]||{}).v||"?"); }));
+ok("the new friend roles J/R/X are actually used (JJ/Nora/Cal banks present)",
+  (LINES.train_jj1||{}).v==="J" && (LINES.train_nora1||{}).v==="R" && (LINES.train_cal1||{}).v==="X");
+ok("trainBagNext rotates a teller's bank with NO repeat until exhausted, then reshuffles", (function(){
+  __trainBags={}; var t=TRAIN_TELLERS[0], seen={}, ids=[]; for(var i=0;i<t.n;i++){ var id=trainBagNext(t); if(seen[id])return false; seen[id]=1; ids.push(id); }
+  return ids.length===t.n && trainBagNext(t).indexOf(t.prefix)===0; })());
+
 grp("Ally rescue PACING — one friend per zone, spread (parent 2026-06-15)");
 (function(){
   var a1=LEAGUE.filter(function(t){return Math.floor(t.mid/100)===0;});   // Act-1 allies
