@@ -635,7 +635,11 @@ function faceSpeak(artEl, key, textEl, ids, display){
    amplitude is a future upgrade once SHOT-1 lets us validate MediaElementSource on-device. */
 let __mouthRAF=0, __mouthEls=new Set(), __mouthV=0, __mouthPhase=0;
 function __mouthAnimating(){ return !(REDUCE || (document.body&&document.body.classList.contains("calm"))); }
-function mouthStart(el){ if(!el||!__mouthAnimating())return; __mouthEls.add(el); el.classList.add("speaking");
+function mouthStart(el){ if(!el||!__mouthAnimating())return;
+  /* #75: only the ACTIVE speaker animates — evict any prior portrait so the RAF set stays size 1
+     (a new beat's speaker supersedes the last; no idle flapping on long multi-portrait cutscenes). */
+  __mouthEls.forEach(o=>{ if(o!==el){ __mouthEls.delete(o); o.classList.remove("speaking"); o.style.setProperty("--mouth","0"); } });
+  __mouthEls.add(el); el.classList.add("speaking");
   if(!__mouthRAF)__mouthLoop(); }
 function __mouthLoop(){
   const step=()=>{ if(!__mouthEls.size){ __mouthRAF=0; return; }
@@ -1323,7 +1327,11 @@ function fortSpell(){ const pool=taughtSight().length?taughtSight():["the","a","
 /* finale reading proof = MIXED: the first round is picture-match (variety), the
    rest are Maze/Cloze (read the sentence, pick the word that fits) — the
    research-validated comprehension check, so the win = real reading. */
-function fortSentence(){ if(fRound===0) fortSentencePic(); else fortMaze(); }
+/* #75: first round of the sentence phase = a picture-match variety beat, the rest are maze/cloze.
+   Defensive (robust to phase-count/config changes): take the picture path only if its pool is actually
+   available for this act, else fall through to maze — so a config change can never strand the round. */
+function fortSentence(){ const pool=currentAct()===2?(typeof SENTENCES2!=="undefined"&&SENTENCES2):(typeof SENTENCES!=="undefined"&&SENTENCES);
+  if(fRound===0 && pool && pool.length) fortSentencePic(); else fortMaze(); }
 function fortMaze(){ const POOL=currentAct()===2?FORTMAZE2:FORTMAZE; const c=POOL[Math.floor(Math.random()*POOL.length)];
   narrate("fort",$("fortText"),["sent_prompt"],"Read it to free "+(currentAct()===2?"Miss Kendall":"Leighton")+"… tap the word that fits the blank!");
   const wr=$("fortWord"); wr.innerHTML="";
