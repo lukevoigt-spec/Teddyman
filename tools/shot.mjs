@@ -106,9 +106,6 @@ await new Promise(r => server.listen(0, r));
 const port = server.address().port;
 const base = `http://localhost:${port}/index.html`;
 
-// Block the service worker: the game's network-first SW intercepts fetches (incl. the Google-Fonts
-// request), which bypasses page.route() — so font interception never applied and fonts.ready hung.
-// A render harness wants the raw site anyway (no SW caching/staleness). (SHOT-1)
 // Block the service worker: the game's network-first SW intercepts fetches (incl. Google-Fonts), which
 // bypasses page.route() AND was the real source of the WebKit font-wait hang (the SW stalled the font
 // fetch). A render harness wants the raw site anyway. With the SW gone, WebKit loads the fonts directly
@@ -118,18 +115,34 @@ const page = await context.newPage();
 page.on("pageerror", e => console.log("  page error:", e.message));
 // domcontentloaded, NOT load/networkidle: the PWA never goes idle and `load`
 // can stall on the Google-Fonts CDN (esp. WebKit) past the timeout.
+// One warm-up boot to load the web fonts into the context cache (cold). Our OWN capped font-ready wait
+// (replaces Playwright's uncapped one): Chromium resolves fast + keeps real fonts; WebKit's never-settling
+// fonts.ready hits the cap and proceeds (system-font fallback).
 await page.goto(base, { waitUntil: "domcontentloaded" });
-await page.waitForTimeout(2000); // let boot, fonts + first paint settle
-// our OWN capped font-ready wait (replaces Playwright's uncapped one): Chromium resolves fast and keeps
-// real fonts; WebKit's never-resolving fonts.ready hits the cap and proceeds (system-font fallback).
+await page.waitForTimeout(2000);
 await page.evaluate(() => Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 3000))])).catch(() => {});
+
+// RENDER-1: an exclusive overlay must only be open for its own scene. With a fresh reload per scene this
+// shouldn't ever trip — it's a regression sentinel that also catches a scene wrongly opening an overlay.
+const OVERLAY_OWNER = { parentGate: "gate", shopPanel: "shop", navMenu: "menu" };
 
 for (const s of scenes) {
   const setup = SCENES[s];
   if (!setup) { console.log("  (unknown scene:", s, "- skipping)"); continue; }
   try {
+    // RENDER-1: reload to a clean page per scene so a prior scene's open overlay (gate/shop) or DOM-nuking
+    // setup (picons/cast do body.innerHTML=…) can't leak into this screenshot → no false pass/fail.
+    // Fonts are cached from the warm-up, so a short settle suffices.
+    await page.goto(base, { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(1200);
     await page.evaluate(setup);
     await page.waitForTimeout(700);
+    const leak = await page.evaluate(({ scene, owners }) => {
+      const bad = []; for (const id in owners) { const el = document.getElementById(id);
+        if (el && el.classList && el.classList.contains("on") && owners[id] !== scene) bad.push(id); }
+      return bad;
+    }, { scene: s, owners: OVERLAY_OWNER });
+    if (leak.length) console.log("  ⚠ RENDER-1 overlay leak in scene", s, "->", leak.join(", "));
     const out = path.join(OUT, `${engine}-${s}.png`);
     await page.screenshot({ path: out });
     console.log("wrote", out);
