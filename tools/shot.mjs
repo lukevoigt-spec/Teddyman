@@ -105,6 +105,8 @@ const SCENES = {
   a2freed: `(function(){ S.act=2; [118,127,137,159,172].forEach(function(i){S.done[i]=true;}); S.freed={brody:1,daisy:1,cal:1,bryce:1,nora:1}; S.coins=30; paintBase(); show('scrBase'); return 1; })()`,
   // Brody's rescue win screen (new freed line + raster)
   brody_win: `(function(){ S.act=2; CUR={id:118,rescue:true,finale:true,lbl:"Iron Wyrm: Free Brody!"}; showWin(true); return 1; })()`,
+  // Miss Kendall full-body raster (replaces the old placeholder SVG)
+  kendall: `(function(){ document.body.innerHTML='<div id="cz" style="display:flex;align-items:flex-end;justify-content:center;background:#241a3e;padding:30px;height:100%;box-sizing:border-box;"></div>'; document.getElementById('cz').innerHTML='<div style="text-align:center;">'+allyBody('kendall',260)+'<div style="color:#fff;font-family:sans-serif;font-size:16px;margin-top:6px;">Miss Kendall</div></div>'; return 1; })()`,
 };
 
 const args = process.argv.slice(2);
