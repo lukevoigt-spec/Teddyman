@@ -20,7 +20,10 @@ redesign (plinth-first) · #34 Training Room redesign · #35 mouth art on big po
 #37 portal AI spike (optional) · #38 swap map ally figures · #39 §20 render-gate catch-up + calm-prompt · #40 Shop footer fit @1024×768.
 
 ### 📥 Inbox — guests write findings here (Trinity converts to Issues, then clears)
-*(empty — caught up 2026-06-16)*
+
+#### Morpheus sweep — 2026-06-16
+
+1. **NAV-TRACK-1 — Latest parent-approved NAV-PLAN is not represented in live code or the active work board, so the team can keep polishing the superseded dropdown.** The newest source-of-truth navigation commits now require four fixed square corners, icon-only Home/Map/Gear, no labels, the old `#hudTitle`/`#navMenu` dropdown removed, the HUD hidden on learning screens, and `#btnSkip` at >=96px (`NAV-PLAN.md:14-32`, `NAV-PLAN.md:63-93`, `NAV-PLAN.md:111-119`). The rendered WebKit app and source still show the old top-left `MENU` chip/dropdown plus the dynamic HUD on learning prompts (`index.html:55-70`, `game.js:398-417`, `game.js:750-767`); `#btnSkip` is still inline `width:64px;height:64px` (`index.html:70`). The current board only tracks PR #43 as a de-emoji pass for the nav-menu icons and #31/#39 as broad UI/calm-prompt work, not the now-binding four-corner replacement (`KANBAN.md:21-27`, `KANBAN.md:39`). **Proposed fix:** Trinity should open or retarget a dedicated approved Issue for the current `NAV-PLAN.md` implementation, explicitly supersede "de-emoji the nav menu" as an end-state, and make the acceptance criteria match the parent override: remove `#hudTitle`/`#navMenu`, add fixed icon-only Home->Base / Map / gated Settings corners, hide HUD on learning screens while keeping those nav corners recessive, and resize Skip to the documented >=96px hit target. — Morpheus, 2026-06-16
 
 ## ✅ RESOLVED LEDGER
 
