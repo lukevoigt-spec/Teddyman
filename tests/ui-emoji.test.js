@@ -70,6 +70,11 @@ ok("no shop/trophy/chest render site still injects an emoji `.ic` field", !/\$\{
 /* nav menu de-emoji (PR #43): icons come from the crafted UICONS registry via uiIcon(), not OS emoji */
 ok("art.js defines the uiIcon() resolver + UICONS registry (crafted nav glyphs)", /function\s+uiIcon\s*\(/.test(art) && /\bUICONS\s*=/.test(art));
 ok("game.js navIcons() builds the nav chip/items from uiIcon (not emoji)", /function\s+navIcons\s*\(/.test(game) && /uiIcon\s*\(/.test(game));
+/* in-game controls de-emoji (PR #45): home 🏠 replaced by the crafted shield; .ear replay buttons draw the speaker in CSS */
+const indexHtml = read("index.html");
+ok("home glyph 🏠 fully eliminated from index.html (crafted shield via uiIcon on BACK-TO-BASE)", !/\u{1F3E0}/u.test(indexHtml));
+const ears = indexHtml.match(/<div class="ear"[^>]*>[\s\S]*?<\/div>/g) || [];
+ok("every .ear replay button is emoji-free (CSS draws the speaker — no 🔊 text)", ears.length > 0 && ears.every(d => emojiIn(d).length === 0));
 
 console.log(RESULT.lines.join("\n"));
 console.log("\n" + (RESULT.fail === 0 ? "ALL PASS" : RESULT.fail + " FAILED") + " (" + RESULT.pass + " passed, " + RESULT.fail + " failed)");
