@@ -1163,33 +1163,41 @@ body.calm .scrollword{transition:none;} body.calm .scrollword.lit{transform:none
 .bchip.rank .powerbar{ width:96px; height:11px; }
 .bchip.tap{ cursor:pointer; } .bchip.tap:active{ transform:translateY(2px); }
 /* hero on the painted pedestal */
-#scrBase .basehero{ position:absolute; left:50%; bottom:25%; transform:translateX(-50%); width:clamp(200px,30vw,300px);
-  z-index:4; filter:drop-shadow(0 12px 14px rgba(0,0,0,.45)); pointer-events:none; }
-/* side accomplishment panels */
-#scrBase .bpanel{ position:absolute; top:108px; width:clamp(168px,21vw,210px); z-index:5; text-align:left;
-  background:rgba(18,11,38,.42); border:3px solid #4a3a86; border-radius:20px; padding:11px 12px 13px;
-  -webkit-backdrop-filter:blur(9px); backdrop-filter:blur(9px); box-shadow:0 8px 0 rgba(0,0,0,.26); color:var(--txt); }
-#scrBase .bp-left{ left:16px; } #scrBase .bp-right{ right:16px; }
+/* hero: a CLEAN painted-raster cutout seated on the painted pedestal (no aura/halo) */
+#scrBase .basehero{ position:absolute; left:50%; bottom:18%; transform:translateX(-50%); width:clamp(180px,28vw,260px);
+  z-index:4; pointer-events:none; text-align:center; }
+#scrBase .baseheroimg{ width:100%; height:auto; display:block; filter:drop-shadow(0 9px 6px rgba(0,0,0,.5)); }
+/* side accomplishment panels — content-sized, capped so they NEVER overrun the ↙ PLAY / ↘ MAP corner tiles */
+#scrBase .bpanel{ position:absolute; top:96px; width:clamp(156px,20vw,194px); max-height:calc(100% - 244px); z-index:5;
+  text-align:left; background:rgba(18,11,38,.46); border:3px solid #4a3a86; border-radius:20px; padding:11px 12px 13px;
+  -webkit-backdrop-filter:blur(9px); backdrop-filter:blur(9px); box-shadow:0 8px 0 rgba(0,0,0,.26); color:var(--txt); overflow-y:auto; }
+#scrBase .bp-left{ left:14px; } #scrBase .bp-right{ right:14px; }
 #scrBase .bpanel.tap{ cursor:pointer; } #scrBase .bpanel.tap:active{ transform:translateY(2px); }
-.bp-h{ font-family:'Bangers',cursive; font-size:19px; color:var(--gold); letter-spacing:.04em; display:flex;
+.bp-h{ font-family:'Bangers',cursive; font-size:18px; color:var(--gold); letter-spacing:.04em; display:flex;
   justify-content:space-between; align-items:center; margin-bottom:8px; }
-.bp-h.gearh{ margin-top:11px; }
+.bp-h.gearh{ margin-top:12px; }
 #scrBase .bpanel .gemshelf{ display:flex; flex-wrap:wrap; gap:7px; justify-content:flex-start; }
-#scrBase .bpanel .gembox svg,#scrBase .bpanel .bossfig svg{ width:38px; height:auto; }
-.gearbtns{ display:flex; gap:8px; margin-top:10px; }
-.btn.sm{ font-size:16px; padding:8px 14px; }
-/* friends row below the hero */
-#scrBase .bfriends{ position:absolute; left:50%; bottom:118px; transform:translateX(-50%); z-index:5;
-  display:flex; flex-direction:column; align-items:center; gap:4px; max-width:62vw; }
-#scrBase .friendrow{ display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; justify-content:center; }
-#scrBase .frlbl{ font-family:'Bangers',cursive; color:var(--gold); font-size:16px; letter-spacing:.05em; }
-/* PLAY corner (↙) — the loud primary; sits where the (hidden-on-Base) Hero-Base nav corner was */
-.basecta{ position:absolute; left:16px; bottom:16px; z-index:7; border:0; cursor:pointer;
-  font-family:'Bangers',cursive; letter-spacing:.05em; color:#3a2a00; font-size:clamp(26px,4.4vw,38px);
-  background:linear-gradient(180deg,#ffe27a,#f3a52a); border-radius:20px; padding:14px 28px;
-  display:flex; align-items:center; gap:10px; box-shadow:0 7px 0 #b06a12, 0 10px 14px rgba(0,0,0,.42); }
-.basecta:active{ transform:translateY(3px); box-shadow:0 4px 0 #b06a12,0 6px 10px rgba(0,0,0,.4); }
-.basecta .ptri{ width:0;height:0;border-left:20px solid #3a2a00;border-top:13px solid transparent;border-bottom:13px solid transparent; }
+#scrBase .bpanel .gembox svg,#scrBase .bpanel .bossfig svg{ width:36px; height:auto; }
+/* GEAR chips — premium pills (best-standard, no SVG): clear selected + locked states */
+#scrBase .loadout-row{ display:flex; flex-direction:column; gap:4px; margin-top:7px; }
+#scrBase .loadout-lbl{ font-size:11px; letter-spacing:.09em; color:#b9aee6; text-transform:uppercase; }
+#scrBase .equiprow{ display:flex; flex-wrap:wrap; gap:6px; }
+#scrBase .echip{ font-family:'Baloo 2',sans-serif; font-weight:800; font-size:13.5px; color:#2a1c08; cursor:pointer;
+  background:linear-gradient(180deg,#ffe488,#f0ad33); border:2px solid #7a4a10; border-radius:11px; padding:6px 11px; box-shadow:0 3px 0 #7a4a10; }
+#scrBase .echip:active{ transform:translateY(2px); box-shadow:0 1px 0 #7a4a10; }
+#scrBase .echip.onsel{ box-shadow:0 3px 0 #7a4a10, 0 0 0 3px #fff; }
+#scrBase .echip.lockd{ filter:grayscale(.55) brightness(.82); cursor:default; }
+.gearbtns{ display:flex; gap:8px; margin-top:11px; }
+.btn.sm{ font-size:15px; padding:7px 12px; }
+/* friends row below the hero — PAINTED RASTER portraits in round gold frames */
+#scrBase .bfriends{ position:absolute; left:50%; bottom:110px; transform:translateX(-50%); z-index:5;
+  display:flex; flex-direction:column; align-items:center; gap:3px; max-width:54vw; }
+#scrBase .friendrow{ display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; justify-content:center; }
+#scrBase .friendrow .frbtn{ width:62px; height:62px; border-radius:50%; overflow:hidden; border:3px solid var(--gold);
+  background:rgba(16,10,38,.55); padding:0; cursor:pointer; box-shadow:0 4px 0 rgba(0,0,0,.3); }
+#scrBase .friendrow .frbtn img{ width:100%; height:130%; object-fit:cover; object-position:top center; display:block; }
+#scrBase .friendrow .frbtn svg{ width:100%; height:100%; }
+#scrBase .frlbl{ font-family:'Bangers',cursive; color:var(--gold); font-size:15px; letter-spacing:.05em; }
 /* Act-2 medieval skin parity */
 body[data-act="2"] #scrBase .bpanel{ border-color:#6a5436; background:rgba(40,30,16,.5); }
 body[data-act="2"] .bchip{ border-color:#caa15a; }

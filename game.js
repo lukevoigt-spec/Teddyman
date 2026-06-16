@@ -295,12 +295,12 @@ function vaultCount(){ return Object.keys(S.mastery).filter(k=>{ const m=S.maste
    per world. hammer/sword stay; lasso/bow are Act-1 flavour (he loves cowboy +
    archery); mace/lance re-arm the Act-2 knight. */
 const WEAPONS=[
-  {k:"hammer",lbl:"WORD HAMMER 🔨",gear:"Word Hammer"},
-  {k:"sword", lbl:"GEM SWORD ⚔️",  gear:"Gem Sword"},
-  {k:"lasso", lbl:"LASSO 🤠",       gear:"Gem Gauntlet", act:1},
-  {k:"bow",   lbl:"GEM BOW 🏹",     gear:"Reading Crown", act:1},
-  {k:"mace",  lbl:"WAR MACE 🔨",    gear:"Power Belt",    act:2},
-  {k:"lance", lbl:"JOUST LANCE 🛡️", gear:"Rocket Boots",  act:2}
+  {k:"hammer",lbl:"WORD HAMMER",gear:"Word Hammer"},
+  {k:"sword", lbl:"GEM SWORD",  gear:"Gem Sword"},
+  {k:"lasso", lbl:"LASSO",      gear:"Gem Gauntlet", act:1},
+  {k:"bow",   lbl:"GEM BOW",    gear:"Reading Crown", act:1},
+  {k:"mace",  lbl:"WAR MACE",   gear:"Power Belt",    act:2},
+  {k:"lance", lbl:"JOUST LANCE",gear:"Rocket Boots",  act:2}
 ];
 function ownedWeapons(){ const a=currentAct(), g=actGearList(a);
   return WEAPONS.filter(w=>(!w.act||w.act===a)&&g.includes(w.gear)); }
@@ -761,6 +761,7 @@ function navGo(fn){ Aud.stop(); clearFlow(); fn(); }
   img("navBaseBtn","nav-home.png","Hero Base");   /* lower-left → Hero Base ("home") */
   img("navMapBtn","nav-map.png","World Map");      /* lower-right → world map */
   img("navSettings","nav-settings.png","Grown-ups");/* upper-right → gated Grown-Up Corner */
+  img("btnPlayNext","nav-play.png","Play");        /* Base ↙ → next uncompleted level (framed-tile, matches the nav corners) */
   /* in-game "home" controls: the BACK TO BASE buttons (Recharge/Training/Scroll/Warm) — crafted shield glyph. */
   if(typeof uiIcon==="function"){ const set=(id,key,sz)=>{ const el=$(id); if(el)el.innerHTML=uiIcon(key,sz||22)+el.textContent; };
     ["btnVaultBack","btnTrainBack","btnScrollBack","btnWarmBack"].forEach(id=>set(id,"base",22)); } })();
@@ -1501,7 +1502,10 @@ function showBase(){ clearFlow(); show("scrBase");
   else Aud.play("base1");
 }
 function paintBase(){
-  $("baseHero").innerHTML=heroMarquee(Math.min(280,window.innerWidth*0.4));   /* painted raster hero (teddyArt), not the parametric SVG */
+  /* painted raster hero as a CLEAN cutout (no rasterArt aura/contact-shadow halo) — seated on the
+     painted pedestal with a soft CSS drop-shadow. teddy-m* (Act 1) / teddy-knight-m* (Act 2). */
+  { const o=heroOpts(), m=Math.max(0,Math.min(2,o.muscle|0)), file=(o.theme==="knight"?"teddy-knight-m":"teddy-m")+m;
+    $("baseHero").innerHTML='<img class="baseheroimg" src="art/'+file+'.png" alt="" draggable="false">'; }
   const o=heroOpts();
   { const hp=heroProgress(); $("powerLbl").textContent=hp.name;
     const pf=$("powerFill"); if(pf){ pf.style.width=hp.pct+"%"; pf.classList.toggle("maxed",hp.max&&hp.pct>=100); } }
@@ -1520,7 +1524,7 @@ function paintBase(){
   capes.forEach(([k,lbl,need])=>{ const locked=S.stars<need;
     const b=document.createElement("button");
     b.className="echip"+(S.equip.cape===k?" onsel":"")+(locked?" lockd":"");
-    b.textContent=locked?(lbl+" · ⚡"+need):lbl;
+    b.textContent=locked?(lbl+" · "+need):lbl;
     b.onclick=()=>{S.equip.cape=k;save();Aud.ding();paintBase();};
     crow.appendChild(b); });
   /* gem shelf: earned letters only */
@@ -1536,12 +1540,12 @@ function paintBase(){
   const lg=$("leagueShelf"); lg.innerHTML="";
   let anyL=false;
   LEAGUE.forEach(t=>{ if(allyFreed(t.kind)){ anyL=true;   /* durable freed-state (grandfathered) */
-    const b=document.createElement("button"); b.className="leaguebtn"; b.title="See "+t.real+"\u2019s hero card";
-    /* U13: squish only LONG names to the 60-wide band (textLength) so e.g. "MISS KENDALL" fits
-       instead of clipping to "SS KENDA"; short names render naturally. Distortion is fine here
-       (a name label), never on learning letters. */
-    const fit=s=>s.length>7?' textLength="60" lengthAdjust="spacingAndGlyphs"':'';
-    b.innerHTML=`<svg viewBox="-32 -36 64 86" width="54"><g>${allyFace(t.kind)}</g><text y="42" text-anchor="middle" font-family="Bangers" font-size="13" fill="#ffc93c"${fit(t.real)}>${t.real}</text><text y="55" text-anchor="middle" font-family="Bangers" font-size="9.5" fill="#9b94c9" letter-spacing=".5"${fit('"'+t.name+'"')}>"${t.name}"</text></svg>`;
+    const b=document.createElement("button"); b.className="frbtn"; b.title="See "+t.real+"\u2019s hero card";
+    /* PAINTED RASTER portrait (ally-<kind>.png) where it exists; SVG likeness only as a fallback
+       for kinds without a raster yet (JJ / Miss Kendall). Names live on the flip card (tap). */
+    const hasR=(typeof RASTER!=="undefined")&&RASTER["ally-"+t.kind];
+    b.innerHTML = hasR ? '<img src="art/ally-'+t.kind+'.png" alt="'+t.real+'" draggable="false">'
+                       : '<svg viewBox="-34 -38 68 84" aria-hidden="true">'+allyFace(t.kind)+'</svg>';
     b.onclick=()=>openHeroCard(t.kind); lg.appendChild(b); } });
   if(!anyL)lg.innerHTML='<div class="baselbl" style="font-size:15px;">Smash Vex\u2019s cages to free your friends!</div>';
   { const freed=LEAGUE.filter(t=>allyFreed(t.kind)).length, lc=$("leagueCount"); if(lc)lc.textContent=freed+" / "+LEAGUE.length; }
