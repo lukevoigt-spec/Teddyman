@@ -129,9 +129,9 @@ if("speechSynthesis" in window){speechSynthesis.onvoiceschanged=()=>Aud.pick();
 let lastSeq={};
 let __cont=null,__skipT=null;
 function flow(p,fn){ __cont=fn; clearTimeout(__skipT);
-  const sk=$("btnSkip"); sk.style.display="none";
-  __skipT=setTimeout(()=>{ if(__cont)sk.style.display="flex"; },2600);
-  p.then(()=>{ if(__cont===fn){ __cont=null; sk.style.display="none"; fn(); } });
+  const sk=$("btnSkip"); if(sk)sk.style.display="none";   /* #83: guard — flow() is every transition's backbone; a missing #btnSkip must never throw + freeze the game */
+  __skipT=setTimeout(()=>{ if(__cont&&sk)sk.style.display="flex"; },2600);
+  p.then(()=>{ if(__cont===fn){ __cont=null; if(sk)sk.style.display="none"; fn(); } });
 }
 function clearFlow(){ __cont=null; clearTimeout(__skipT); const sk=$("btnSkip"); if(sk)sk.style.display="none"; }
 function narrate(key,el,ids,display){ lastSeq[key]=ids;
