@@ -15,7 +15,22 @@ resolves before merge; this file keeps the durable before/after record. Shots li
 
 ---
 
-## 2026-06-16 · Portal cutscene (AI video) wired into the Act1→Act2 interlude  ·  PASS
+## 2026-06-16 · REVERT the AI portal cutscene — restore the SVG interlude  ·  PASS
+**Branch:** `oracle/revert-portal-cutscene` → PR for Neo. Reverses the wiring from PR #41.
+**Why:** parent reviewed the AI cutscenes (portal + the extended Mom&Dad/friends/Vixen master) and
+judged them not good enough to ship — *"these aren't great… I may generate them myself."* So the
+game returns to the original hand-crafted SVG handoff beats.
+**Files:** `game.js` (restore the 5 SVG INTERLUDE beats + original paintInter; remove `playInterVideo`),
+`tools/shot.mjs` (drop the `interludevid` scene). `art/cutscene-portal.mp4` is **kept** in the repo so a
+future, better cutscene can be dropped back in (restore a `{video:"..."}` beat + the player from PR #41
+git history). Tests: curriculum 110, save 112, boot clean. **PASS.**
+**Pipeline note:** the working AI-video pipeline (gen.mjs --bg → composite raster → Kling i2v → ffmpeg
+xfade → fal sync-lipsync) is documented in memory for if/when we revisit. The cousin-cast work (Cal/Nora,
+merged separately) is unaffected.
+
+---
+
+## 2026-06-16 · Portal cutscene (AI video) wired into the Act1→Act2 interlude  ·  PASS  ·  (REVERTED — see above)
 **Branch:** `oracle/portal-cutscene` → PR for Neo.
 **Files:** `art/cutscene-portal.mp4` (2.9MB, 1280×854, 18.6s), `game.js` (INTERLUDE video beat +
 `playInterVideo`), `tools/shot.mjs` (`interludevid` scene).
