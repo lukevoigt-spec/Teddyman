@@ -99,6 +99,12 @@ const SCENES = {
   basegold:`(function(){ S.act=1; S.stars=40; for(var i=1;i<=45;i++)S.done[i]=true; S.equip={weapon:"hammer",cape:"gold"}; paintBase(); show('scrBase'); return 1; })()`,
   // cast cohesion check: full-body rasters of existing allies next to the cousins (Cal/Nora)
   cast: `(function(){ document.body.innerHTML='<div id="cz" style="display:flex;gap:18px;align-items:flex-end;justify-content:center;background:#241a3e;padding:48px 24px;height:100%;box-sizing:border-box;"></div>'; var k=[['tank','Archie'],['flip','Ellie'],['cal','Cal'],['nora','Nora']]; document.getElementById('cz').innerHTML=k.map(function(p){return '<div style="text-align:center;">'+allyBody(p[0],210)+'<div style="color:#fff;font-family:sans-serif;font-size:15px;margin-top:6px;">'+p[1]+'</div></div>';}).join(''); return 1; })()`,
+  // NEW friends (Brody/Daisy/Bryce) full-body next to the cousins (Cal/Nora) — cohesion check
+  friends3: `(function(){ document.body.innerHTML='<div id="cz" style="display:flex;gap:14px;align-items:flex-end;justify-content:center;background:#241a3e;padding:40px 18px;height:100%;box-sizing:border-box;"></div>'; var k=[['brody','Brody'],['daisy','Daisy'],['bryce','Bryce'],['cal','Cal'],['nora','Nora']]; document.getElementById('cz').innerHTML=k.map(function(p){return '<div style="text-align:center;">'+allyBody(p[0],190)+'<div style="color:#fff;font-family:sans-serif;font-size:15px;margin-top:6px;">'+p[1]+'</div></div>';}).join(''); return 1; })()`,
+  // Act-2 Base with Brody/Daisy/Cal/Bryce/Nora freed — friends row uses the new rasters
+  a2freed: `(function(){ S.act=2; [118,127,137,159,172].forEach(function(i){S.done[i]=true;}); S.freed={brody:1,daisy:1,cal:1,bryce:1,nora:1}; S.coins=30; paintBase(); show('scrBase'); return 1; })()`,
+  // Brody's rescue win screen (new freed line + raster)
+  brody_win: `(function(){ S.act=2; CUR={id:118,rescue:true,finale:true,lbl:"Iron Wyrm: Free Brody!"}; showWin(true); return 1; })()`,
 };
 
 const args = process.argv.slice(2);

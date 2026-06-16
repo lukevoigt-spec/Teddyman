@@ -1470,7 +1470,7 @@ function showWin(firstTime){ show("scrWin");
   if(firstTime&&gear)setTimeout(()=>showUnlock(rewardGemArt(), gear.toUpperCase(), "NEW GEAR!"), 420);
   let ids;
   if(CUR.type==="fortress") ids=currentAct()===2?["kendall1","kendall2","kendall3"]:["leighton1","leighton2","leighton3"];
-  else if(CUR.rescue) ids=({heart:["free_heart1","free_heart2","m2_done"],jj:["jj_freed"],cal:["cal_freed"],nora:["nora_freed"]}[rescuedKind])||["free_heart1","free_heart2","m2_done"];
+  else if(CUR.rescue) ids=({heart:["free_heart1","free_heart2","m2_done"],jj:["jj_freed"],cal:["cal_freed"],nora:["nora_freed"],brody:["brody_freed"],daisy:["daisy_freed"],bryce:["bryce_freed"]}[rescuedKind])||["free_heart1","free_heart2","m2_done"];
   else if(CUR.finale) ids = currentAct()===2 ? ["act2_win"] : (CUR.z===4 ? ["m4_letters"] : (CUR.z===3 ? ["m3_done"] : ["finale1","finale2","finale3"]));
   else if(firstTime&&gear) ids=[currentAct()===2?"win_grow2":"win_grow","win_gear",GEARLINE[gear]];
   else ids=[currentAct()===2?"win_grow2":"win_grow"];
@@ -1618,6 +1618,9 @@ const HERO_BIO={
   jj:"JJ — small, wild, and bursting with energy.",
   cal:"Cal — a mischievous grin and always scheming something fun.",
   nora:"Nora — tiny but mighty, with a heart of gold.",
+  brody:"Brody — Teddy’s buddy with a big smile and an even bigger high-five.",
+  daisy:"Daisy — sweet, sunny, and brave — freed from the Enchanter’s Tower.",
+  bryce:"Bryce — cool, calm, and always up for an adventure.",
   mom:"Mom — Teddy’s real-life hero, cheering from the sidelines.",
   dad:"Dad — strong, steady, and always ready to defend the family."
 };

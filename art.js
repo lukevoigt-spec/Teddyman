@@ -199,6 +199,7 @@ const RASTER={ "teddy-m0":true,"teddy-m1":true,"teddy-m2":true,
   "teddy-knight-m0":true,"teddy-knight-m1":true,"teddy-knight-m2":true,
   "ally-tank":true, "ally-sunny":true, "ally-heart":true, "ally-flip":true, "ally-leighton":true,
   "ally-cal":true, "ally-nora":true,      /* cousins Cal + Nora — flat-2D house-style rasters (Oracle 2026-06-15) */
+  "ally-brody":true, "ally-daisy":true, "ally-bryce":true,   /* friends Brody, Daisy, Bryce — flat-2D house-style rasters from their photos (Oracle 2026-06-16) */
   "mom":true, "dad":true,                 /* parents have raster art (mom.png/dad.png) */
   "vex":true, "vixen":true, "dragon":true, "noah":true };   /* villains + mentor (already used directly by their SVG fns; flagged here for the resolver) */
 function rasterArt(file,w=210,a0="#ffce3a",a1="#3a7bff"){
@@ -361,6 +362,9 @@ const BODY_CFG={
   jj:      {col:"#ff8a3a", pose:"flex",  init:"J"},
   cal:     {col:"#2bb5a6", pose:"hips",  init:"C"},
   nora:    {col:"#b79be0", pose:"stand", init:"N"},
+  brody:   {col:"#4f9e4f", pose:"stand", init:"B"},
+  daisy:   {col:"#f2b6c6", pose:"stand", init:"D"},
+  bryce:   {col:"#3a7bd6", pose:"stand", init:"B"},
   mom:     {col:"#ff7a6b", pose:"stand", init:"M"},
   dad:     {col:"#2c5fb0", pose:"flex",  init:"D"}
 };

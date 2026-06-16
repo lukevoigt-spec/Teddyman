@@ -17,7 +17,8 @@
     ["T","Archie"],["F","Ellie"],["W","William"],
     ["V","The Vixen (Act 2 villain)"],["N","Noah the Red (Act 2 wizard)"],["P","Mom & Dad"],
     ["L","Leighton"],["K","Miss Kendall"],
-    ["J","JJ"],["R","Nora"],["X","Cal"]];
+    ["J","JJ"],["R","Nora"],["X","Cal"],
+    ["D","Brody"],["E","Daisy"],["G","Bryce"]];
 
   /* ---- letter-sound order + research-based articulation coaching ----
      Coaching emphasises CLEAN phonemes: continuous sounds are held, STOP sounds

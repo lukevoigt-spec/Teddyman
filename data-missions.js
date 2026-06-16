@@ -91,7 +91,7 @@ const MISSIONS=[
   {id:115,type:"read", words:["hand","jump","lamp","tent","mask"],lbl:"Blend Reading II",z:102},
   {id:116,type:"forge",words:["sled","gift","trap","belt"],lbl:"Blend Smith: Master Blades",z:102},
   {id:117,type:"read", words:["sled","gift","trap","frog","jump","milk"],lbl:"Blend Reading Rally",z:102},
-  {id:118,type:"forge",words:["stomp","blend","crust","drink"],lbl:"Iron Wyrm: Free JJ!",finale:true,rescue:true,z:102},
+  {id:118,type:"forge",words:["stomp","blend","crust","drink"],lbl:"Iron Wyrm: Free Brody!",finale:true,rescue:true,z:102},
   /* === ACT 2 · ZONE 3 · THE SPELLERY — LONG VOWELS / magic-e (the Magic-E Spell) === */
   {id:119,type:"magic",vowel:"a",unit:"a_e",pairs:[["cap","cape"],["tap","tape"]],lbl:"Magic-E Spell: Long A",z:103},
   {id:120,type:"magic",vowel:"i",unit:"i_e",pairs:[["kit","kite"],["pin","pine"]],lbl:"Magic-E Spell: Long I",z:103},
@@ -101,7 +101,7 @@ const MISSIONS=[
   {id:124,type:"magic",vowel:"u",unit:"u_e",pairs:[["cub","cube"],["tub","tube"]],lbl:"Magic-E Spell: Long U",z:103},
   {id:125,type:"forge",words:["home","rope","cube","tube"],lbl:"Spell Forge: O & U",z:103},
   {id:126,type:"read", words:["home","cube","nose","rose","bike","cake"],lbl:"Spellery Reading Rally",z:103},
-  {id:127,type:"forge",words:["cape","kite","rose","cute"],lbl:"Dragon Duel: The Vowel Wyrm!",finale:true,z:103},
+  {id:127,type:"forge",words:["cape","kite","rose","cute"],lbl:"Vowel Wyrm: Free Daisy!",finale:true,rescue:true,z:103},
   /* === ACT 2 · ZONE 4 · THE SINGING GLADE — VOWEL TEAMS (ai/ee/oa: two vowels, one long sound;
      "two vowels go walking, the first does the talking"). One gem = one team (longest-match). === */
   {id:129,type:"learn",letter:"ai",lbl:"Quest: the AI Team",z:104},
@@ -138,7 +138,7 @@ const MISSIONS=[
   {id:156,type:"learn",letter:"ur",lbl:"Quest: another /er/ — UR",z:107},
   {id:157,type:"forge",words:["her","bird","fur","girl"],lbl:"Cove Forge: the /er/ Family",z:107},
   {id:158,type:"read", words:["bird","girl","fur","surf"],lbl:"Cove Reading: the /er/ Family",z:107},
-  {id:159,type:"forge",words:["car","corn","bird","fur","star","turn"],lbl:"Bossy R Showdown",finale:true,z:107},
+  {id:159,type:"forge",words:["car","corn","bird","fur","star","turn"],lbl:"Bossy R Showdown: Free Bryce!",finale:true,rescue:true,z:107},
   /* === ACT 2 · ZONE 8 · THE GIANT'S BRIDGE — MULTISYLLABIC + AFFIXES ("Big Words"). The skill is a
      PROCEDURE (chop → read chunks → push → check), built on every prior pattern. New type "syllable"
      (split a long word) + "affix" (peel an ending/prefix) via startSyllable; forge/read are chunk-aware.
