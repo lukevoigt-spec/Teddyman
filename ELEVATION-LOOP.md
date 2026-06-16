@@ -90,6 +90,33 @@ deceptive.design, Drummond&Sauer 2018 loot-boxes); character/SDT (Ryan&Deci 2000
 Calvert et al. 2020 parasocial learning, Birk et al. 2016 avatar identification, Naul&Liu 2020 narrative). Full URLs in
 the research task outputs.*
 
+## Asset pipeline — EXPLORE raster painted UI art (parent directive, 2026-06-16)
+**The Oracle should actively explore RASTER PAINTED images (via API image generation — `fal.ai` / `FAL_KEY`, the access
+path already in `AGENTS.md`) for decorative CHROME — buttons, icons, weapons, gear, collectibles, frames, plinths —
+instead of (or alongside) parametric SVG, where painted art elevates the premium feel.** SVG stays where *she* judges it
+ideal; this is "use the best tool per asset," not a mandate to rip out SVG. Painted assets are the likely jump to the
+"absolutely beautiful, real-studio" bar (rubric A2/A3/A5). Each candidate is **render-gated** like everything else.
+
+Trinity's guardrails on the exploration (so it elevates without breaking constraints or the deploy):
+- **HARD CARVE-OUT — never raster the learning content.** Letters, the decoding tiles, and anything the child *reads*
+  stay crisp **Andika / vector**, high-contrast (non-negotiable #6 + C13). Painted art is for chrome/decoration ONLY,
+  never the prompt the child is decoding.
+- **NO EMOJI still holds (#6).** Painted icons are fine (crafted art); they must replace, not reintroduce, OS glyphs.
+- **Consistency is the risk** (same drift that ruled out AI-video for characters, `STORY.md §A`): a set of painted
+  icons must share ONE art-direction (one prompt-style/lighting/palette) so 30 icons read as a family, not a grab-bag.
+  Generate as a cohesive set, render-gate the set together.
+- **Theming/recolor:** SVG retints for free under the scene-harmonizer (`--scene-rim`) + per-act skin; a painted PNG
+  can't. So either bake per-act variants, or reserve painted art for elements that don't need live recoloring (keep
+  scene-reactive bits vector). Oracle's judgment per asset.
+- **Deploy hygiene:** ship optimized **WebP/PNG at @2x** for iPad retina crispness; mind git-history bloat (binaries
+  don't diff — `STORY.md` serving notes) and keep the no-build GitHub-Pages deploy fast. Big sets → consider an
+  atlas/sprite or lazy-load.
+- **Perf (P14):** painted assets are cheap to *paint* (no GPU filters) — often LIGHTER than specular-lit SVG on old
+  iPads — but watch total image weight + decode. Provide Lite-tier sizing if needed.
+
+Action: fold this into the Wave-1 eval (#55) — when scoring buttons/icons/weapons, Oracle pilots a painted variant of a
+few (e.g. a button, a weapon, a collectible) against the SVG, render-gates both, and picks the winner per the Award Bar.
+
 ## Cadence + control
 Trinity runs the coordinating loop (status sweep → review any new render-gated PRs against the bar → update board →
 batch + escalate decisions → nudge the next round). The parent can **pause/stop anytime** ("stop the loop"). Decisions
