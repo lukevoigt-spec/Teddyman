@@ -375,10 +375,13 @@ function applySceneTone(id){
   document.body.style.setProperty("--scene-key", t.key);
   document.body.style.setProperty("--scene-rim", t.rim); }
 const __bgCache={};
-const BG_EXTS=["jpg","jpeg","png","webp"];   /* drop any of these — no conversion needed */
+/* probe order matches what we actually ship (every painted scene is .jpeg; base-room is .png) so the
+   real file loads on the FIRST try — avoids a 404 (ERR_FILE_NOT_FOUND console-noise) on every scene
+   change while the loader fell through jpg→jpeg. Any other dropped format still resolves down-chain. */
+const BG_EXTS=["jpeg","png","jpg","webp"];   /* drop any of these — no conversion needed */
 /* Painted scene loader — ACT-AWARE + format-flexible. Act 2+ prefers its own scene
    (bg-<slot>-a2.*), falling back to the Act-1 scene (bg-<slot>.*), then to the
-   transparent default. Tries jpg → png → webp for each. Any missing file just
+   transparent default. Tries jpeg → png → jpg → webp for each. Any missing file just
    shows the original SVG/gradient look. */
 function setBG(id){ const layer=$("bgLayer"); if(!layer)return;
   const slot=BG_MAP[id];
