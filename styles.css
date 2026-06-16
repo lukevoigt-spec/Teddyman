@@ -482,9 +482,13 @@ body.calm .masterpop{animation-duration:.5s;}
 body.calm .gembox>svg,body.calm .trophy,body.calm .gembox.mastered::after{animation:none!important;}
 /* Shop overlay */
 #shopPanel{position:absolute;inset:0;background-color:#0b051f;background-image:linear-gradient(rgba(11,5,31,.66),rgba(11,5,31,.80)),url("art/bg-base.jpeg");background-size:cover;background-position:center;z-index:20;display:none;flex-direction:column;
-  align-items:center;justify-content:flex-start;gap:14px;padding:24px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  align-items:center;justify-content:flex-start;gap:14px;padding:24px 18px;overflow:hidden;}
 #shopPanel.on{display:flex;}
-#shopGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;width:min(680px,94vw);}
+/* #40 fit: the panel header + DONE stay pinned; only the item GRID scrolls, so the kid's exit (DONE)
+   is always visible @1024×768 instead of pushed below the fold. min-height:0 unlocks flex-child scroll. */
+#shopGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;width:min(680px,94vw);
+  flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;align-content:start;padding:2px;}
+#btnShopClose{flex:none;}
 .shopitem{background:rgba(21,15,46,.7);border:3px solid #3a2d72;border-radius:16px;padding:12px 8px;
   display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;}
 .shopitem .ic{display:flex;align-items:center;justify-content:center;height:72px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.45));}
