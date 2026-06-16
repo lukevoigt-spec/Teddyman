@@ -563,6 +563,10 @@ body.calm .gembox>svg,body.calm .trophy,body.calm .gembox.mastered::after{animat
 @keyframes ctaFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 .btn.cta:active{animation:none;}
 body.calm .btn.cta{animation:none;}
+/* the Victory screen's single CONTINUE = the one obvious primary action: big, with a forward chevron.
+   Per-act skin (Act-1 glossy gold / Act-2 wood-and-bronze) already themes it medieval vs superhero. */
+#scrWin .btn.cta{ font-size:clamp(24px,3.6vw,34px); padding:16px 44px; min-width:248px; letter-spacing:.02em; }
+#scrWin .btn.cta svg{ margin-left:6px; }
 
 /* glass HUD chips + round buttons */
 .chip,.roundbtn{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(16,10,38,.5);

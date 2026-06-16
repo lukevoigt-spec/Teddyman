@@ -1483,21 +1483,19 @@ function showWin(firstTime){ show("scrWin");
   if(__rankedUp){ ids.unshift("rankup"); setTimeout(()=>{ confetti(80); flashScreen("rgba(255,210,90,.4)"); if(typeof Sfx!=="undefined"&&Sfx.rankup)Sfx.rankup(); },340);
     $("winGear").innerHTML='<div class="gearbadge">⭐ RANK UP — '+heroProgress().name+'!</div>'+$("winGear").innerHTML; __rankedUp=false; }
   narrate("win",$("winText"),ids);
-  const ix=MISSIONS.findIndex(x=>x.id===CUR.id);
+  /* ONE button: CONTINUE (parent 2026-06-16 — the old CITY MAP button was redundant; the map is reachable
+     from the nav). Crafted chevron, never an emoji. The press carries the adventure forward. */
+  const setContinue=(fn)=>{ const b=$("btnWinMap"); if(!b)return;
+    b.innerHTML='CONTINUE '+(typeof uiIcon==="function"?uiIcon("chevron",26):""); b.className="btn cta"; b.onclick=fn; };
   if(CUR.type==="fortress"){
-    $("btnWinNext").style.display="none";
-    if(currentAct()===2){   /* Act-2 finale = the END → the beat-7 homecoming ending (STORY.md §F) */
-      $("btnWinMap").textContent="CONTINUE ➜";
-      $("btnWinMap").onclick=()=>startHomecoming();
-    } else {                /* Act-1 finale → the Act-1→Act-2 handoff cutscene */
-      $("btnWinMap").textContent="CONTINUE ➜";
-      $("btnWinMap").onclick=()=>startInterlude();
-    }
+    /* finale → the story cutscene (Act-1 handoff / Act-2 homecoming ending) */
+    setContinue(currentAct()===2 ? startHomecoming : startInterlude);
     return; }
-  $("btnWinMap").textContent="CITY MAP";
-  $("btnWinNext").style.display=(ix<MISSIONS.length-1)?"inline-block":"none";
-  $("btnWinNext").onclick=()=>{ if(S.session.count>=3&&!S.session.rest){S.session.rest=true;save();showRest(MISSIONS[ix+1]);} else startMission(MISSIONS[ix+1]); };
-  $("btnWinMap").onclick=()=>{ if(S.session.count>=3&&!S.session.rest){S.session.rest=true;save();showRest(null);} else toMap(); }; }
+  /* normal win → straight to the next uncompleted level in PLAY order (max momentum / reps), honouring
+     the gentle rest gate; playNextMission falls back to the map when the act is fully cleared. */
+  setContinue(()=>{ if(S.session.count>=3 && !S.session.rest){ S.session.rest=true; save();
+      const ms=playMissions(currentAct()); showRest(ms.find(x=>!S.done[x.id])||null); }
+    else playNextMission(); }); }
 function showRest(nextM){ show("scrRest");
   $("restHero").innerHTML=heroMarquee(160);
   narrate("rest",$("restText"),["rest1","rest2"]);
