@@ -1164,7 +1164,7 @@ body.calm .scrollword{transition:none;} body.calm .scrollword.lit{transform:none
 .bchip.tap{ cursor:pointer; } .bchip.tap:active{ transform:translateY(2px); }
 /* hero on the painted pedestal */
 /* hero: a CLEAN painted-raster cutout seated on the painted pedestal (no aura/halo) */
-#scrBase .basehero{ position:absolute; left:50%; bottom:30%; transform:translateX(-50%); width:clamp(180px,28vw,260px);
+#scrBase .basehero{ position:absolute; left:50%; bottom:34%; transform:translateX(-50%); width:clamp(180px,28vw,260px);
   z-index:4; pointer-events:none; text-align:center; }
 #scrBase .baseheroimg{ width:100%; height:auto; display:block; filter:drop-shadow(0 9px 6px rgba(0,0,0,.5)); }
 /* side accomplishment panels — content-sized, capped so they NEVER overrun the ↙ PLAY / ↘ MAP corner tiles */
