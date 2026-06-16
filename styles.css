@@ -1163,24 +1163,23 @@ body.calm .scrollword{transition:none;} body.calm .scrollword.lit{transform:none
 .bchip.rank{ color:#fff; border-color:#fff; }
 .bchip.rank .powerbar{ width:96px; height:11px; }
 .bchip.tap{ cursor:pointer; } .bchip.tap:active{ transform:translateY(2px); }
-/* ONE status bar: rank title + two inline meters (Gem Charge = spaced-review readiness; Today = practice) */
-.bchip.statusbar{ gap:13px; padding:7px 17px; }
-.statusbar .rankname{ font-family:'Bangers',cursive; font-size:clamp(15px,2.3vw,21px); color:#fff; letter-spacing:.04em; white-space:nowrap; }
-.bmeter{ display:flex; align-items:center; gap:6px; background:none; border:0; box-shadow:none; padding:0; margin:0; cursor:pointer; font:inherit; }
-.bmeter::before{ content:""; width:2px; height:20px; background:rgba(255,255,255,.18); border-radius:2px; margin-right:3px; }
-.bmeter:active{ transform:translateY(1px); }
-.bmlbl{ font-family:'Bangers',cursive; font-size:11px; letter-spacing:.05em; line-height:1; }
-.bmeter.charge .bmlbl{ color:#aef0ff; } .bmeter.daily .bmlbl{ color:#b8f0c8; }
-.bmbar{ display:inline-block; width:72px; max-width:20vw; height:9px; border-radius:6px; background:rgba(10,5,24,.7);
-  overflow:hidden; border:1.5px solid rgba(0,0,0,.45); vertical-align:middle; }
+/* status bar: rank title + TWO STACKED meter rows, each [icon][bar] — clock=today, bolt=Gem Charge */
+.bchip.statusbar{ flex-direction:column; align-items:stretch; gap:6px; padding:8px 15px; }
+.statusbar .rankname{ font-family:'Bangers',cursive; font-size:14px; color:#fff; letter-spacing:.05em; line-height:1; text-align:center; white-space:nowrap; }
+.srow{ display:flex; align-items:center; gap:8px; background:none; border:0; box-shadow:none; padding:0; margin:0; cursor:pointer; font:inherit; }
+.srow:active{ transform:translateY(1px); }
+.sicon{ display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; flex:0 0 auto; }
+.sicon svg{ display:block; }
+.srow .bmbar{ display:inline-block; flex:1 1 auto; width:128px; max-width:36vw; height:11px; border-radius:6px;
+  background:rgba(10,5,24,.7); overflow:hidden; border:1.5px solid rgba(0,0,0,.45); }
 .bmfill{ display:block; height:100%; width:0; border-radius:6px; transition:width .5s ease; }
-.bmeter.charge .bmfill{ background:linear-gradient(90deg,#7fe3ff,#5f8bff); }
-.bmeter.charge .bmfill.low{ background:linear-gradient(90deg,#ffd23a,#ff9e1f); }
-.bmeter.daily .bmfill{ background:linear-gradient(90deg,#9be8b0,#3ec97e); }
-.bmeter.daily.hit .bmbar{ box-shadow:0 0 0 2px #fff; }
-.bmeter.charge.due .bmbar{ animation:bmpulse 1.9s ease-in-out infinite; }
+.srow.charge .bmfill{ background:linear-gradient(90deg,#7fe3ff,#5f8bff); }
+.srow.charge .bmfill.low{ background:linear-gradient(90deg,#ffd23a,#ff9e1f); }
+.srow.daily .bmfill{ background:linear-gradient(90deg,#9be8b0,#3ec97e); }
+.srow.daily.hit .bmbar{ box-shadow:0 0 0 2px #fff; }
+.srow.charge.due .bmbar{ animation:bmpulse 1.9s ease-in-out infinite; }
 @keyframes bmpulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(127,227,255,0); } 50%{ box-shadow:0 0 10px 2px rgba(127,227,255,.7); } }
-body.calm .bmeter.charge.due .bmbar{ animation:none; }
+body.calm .srow.charge.due .bmbar{ animation:none; }
 /* hero on the painted pedestal */
 /* hero: a CLEAN painted-raster cutout seated on the painted pedestal (no aura/halo) */
 #scrBase .basehero{ position:absolute; left:50%; bottom:34%; transform:translateX(-50%); width:clamp(180px,28vw,260px);
@@ -1216,11 +1215,13 @@ body.calm .bmeter.charge.due .bmbar{ animation:none; }
 #scrBase .echip.lockd{ filter:grayscale(.55) brightness(.82); cursor:default; }
 .gearbtns{ display:flex; gap:8px; margin-top:11px; }
 .btn.sm{ font-size:15px; padding:7px 12px; }
-/* friends row below the hero — PAINTED RASTER portraits in round gold frames */
+/* friends row below the hero — PAINTED RASTER portraits in round gold frames.
+   SINGLE row, centred, growing OUTWARD from the middle as friends are freed; spans between the
+   ↙ PLAY and ↘ MAP corner tiles (max-width clears them). Sizes clamp down so all 11 fit on one line. */
 #scrBase .bfriends{ position:absolute; left:50%; bottom:18px; transform:translateX(-50%); z-index:5;
-  display:flex; flex-direction:column; align-items:center; gap:3px; max-width:54vw; }
-#scrBase .friendrow{ display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; justify-content:center; }
-#scrBase .friendrow .frbtn{ width:62px; height:62px; border-radius:50%; overflow:hidden; border:3px solid var(--gold);
+  display:flex; flex-direction:column; align-items:center; gap:3px; width:max-content; max-width:calc(100% - 230px); }
+#scrBase .friendrow{ display:flex; gap:clamp(4px,1.1vw,10px); align-items:flex-end; flex-wrap:nowrap; justify-content:center; }
+#scrBase .friendrow .frbtn{ flex:0 0 auto; width:clamp(42px,5.6vw,60px); height:clamp(42px,5.6vw,60px); border-radius:50%; overflow:hidden; border:3px solid var(--gold);
   background:rgba(16,10,38,.55); padding:0; cursor:pointer; box-shadow:0 4px 0 rgba(0,0,0,.3); }
 #scrBase .friendrow .frbtn img{ width:100%; height:130%; object-fit:cover; object-position:top center; display:block; }
 #scrBase .friendrow .frbtn svg{ width:100%; height:100%; }

@@ -1528,6 +1528,9 @@ function paintBase(){
       +(armed?' onerror="this.onerror=null;this.src=\'art/'+base+'.png\'"':'')+'>'; }
   const o=heroOpts();
   { const hp=heroProgress(); const pl=$("powerLbl"); if(pl)pl.textContent=hp.name; }
+  /* status-meter icons: clock = today's practice, lightning = Gem Charge (crafted SVG, no emoji) */
+  { const di=$("dailyIcon"); if(di&&!di.firstChild) di.innerHTML=uiIcon("clock",22);
+    const ci=$("chargeIcon"); if(ci&&!ci.firstChild) ci.innerHTML=uiIcon("bolt",22); }
   /* GEM CHARGE meter — spaced-review readiness (full when nothing's due; recharged by the Recharge
      activity). Framed as "power UP," NEVER a punishing drain (North Star: no loss-aversion). Mastery
      itself never drops — this only reflects which mastered gems are due for a review today. */

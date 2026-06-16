@@ -126,16 +126,16 @@
        Tap-the-thing for actions (gems→recharge, coins→train, weapon→equip, friend/villain→card);
        PLAY (↙ corner) → next level; the 4-corner nav supplies MAP (↘) + Settings (↗) + status (↖). -->
   <div class="screen" id="scrBase">
-    <!-- top-centre status: ONE bar holding the rank title + two meters (Gem Charge = spaced-review
-         readiness; Today = the gentle 15-min practice meter) -->
+    <!-- top-centre status: rank title + TWO STACKED meters, each with a small icon —
+         clock = today's practice time, lightning = Gem Charge (spaced-review readiness) -->
     <div class="bstatus">
       <div class="bchip statusbar">
         <span class="rankname" id="powerLbl"></span>
-        <button class="bmeter charge tap" id="chargeMeter" title="Gem Charge — tap to recharge your gems">
-          <span class="bmlbl">CHARGE</span><span class="bmbar"><span class="bmfill" id="chargeFill"></span></span>
+        <button class="srow daily tap" id="dailyMeter" title="Today's practice — tap to train">
+          <span class="sicon" id="dailyIcon"></span><span class="bmbar"><span class="bmfill" id="dailyFill"></span></span>
         </button>
-        <button class="bmeter daily tap" id="dailyMeter" title="Today's practice — tap to train">
-          <span class="bmlbl">TODAY</span><span class="bmbar"><span class="bmfill" id="dailyFill"></span></span>
+        <button class="srow charge tap" id="chargeMeter" title="Gem Charge — tap to recharge your gems">
+          <span class="sicon" id="chargeIcon"></span><span class="bmbar"><span class="bmfill" id="chargeFill"></span></span>
         </button>
       </div>
     </div>
