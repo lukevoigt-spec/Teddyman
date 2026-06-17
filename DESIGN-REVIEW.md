@@ -28,6 +28,29 @@ raster — no SVG character tokens left in child-facing UI.)
 
 ---
 
+## 2026-06-17 · #145 squishy economy v2 — the +50 painted squishies + rarity treatment (& #152 counter gate)  ·  PASS
+**Branch:** `oracle/squish-art` → PR. Neo shipped the economy (#160: BASE_ITEMS unlockZone/rarity + store
+unlock-filter + zone-clear card); the squishies were INERT until art shipped (`squishVisible = squishShipped`).
+**Built (the unblocker):**
+- **50 painted kawaii squishies** (`art/squish-<id>.png`, gen.mjs gpt-image-1 → de-halo) matching the
+  existing set's style (clean dark-navy outline, glossy candy palette, simple cute face). Added all 50 ids
+  to `SQUISH_SHIPPED` so they go live in the store/collection. Spot-checked ~13 across tiers — cohesive,
+  premium, on-roster (Strawberry Kitty, Lava Lizard, Wizard Cat, Pirate Parrot, Dragon Queen Plush…).
+- **`de-halo` hardened** — added a 2px edge-erosion pass; gpt-image-1's white sticker fringe is fully gone
+  (the bulk flood-fill left a thin anti-aliased rim). Reusable for all future OpenAI cutouts.
+- **Rarity treatment** (`game.js` adds `r-rare`/`r-epic` to the slot; `styles.css`): rare = cool-blue aura +
+  blue corner gem, epic = purple aura + purple gem, common = plain. On the squishy IMAGE so it layers over
+  the owned/buyable/zlocked slot states (which own the border/box-shadow).
+**Shots:** `storenew` (the new rares live with art + prices + blue rarity gem/aura), spot-checks
+(heroteddyplu/wizardcat/dragonqueenp/pirateparrot — clean, no halo). Tests: ui-emoji 44/44, curriculum
+116/116, save 129/129.
+**#152 mastery counter — §20 PASS (no change).** Neo's `.gemdex` reads premium: `mastercount` shows
+"14 / 26 gems mastered" + the ghosted next-to-master gem (Zeigarnik gap) above PLAY; placed on title + map.
+**Follow-up (Trinity, optional):** per-squishy `SQUISH_BLURB` one-liners for the 50 new (detail card falls
+back to a generic line until then — fine, not blocking).
+
+---
+
 ## 2026-06-17 · #126 whole-set collection cards (gem-dex + villains) — §20 styling  ·  PASS
 **Branch:** `oracle/collcard` → PR. Neo shipped the card DOM in #146 ("Oracle owns the painted case look,
 shared with #124"). **CSS-only.** Applied the SAME display-case language as the #124 squishy case to

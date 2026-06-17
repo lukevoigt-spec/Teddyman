@@ -2133,7 +2133,13 @@ const BASE_ITEMS=[
 /* #145: which squishies have SHIPPED art (art/squish-<id>.png exists). The original 15 always; Oracle appends a
    new id here the moment its painted PNG lands — until then the entry is INERT (hidden everywhere), so the
    50-strong v2 catalog ships now and lights up zone-by-zone as the art batch rolls out (#103-style). */
-const SQUISH_SHIPPED=new Set(["banner","plant","poster","trophy","medal","lamp","vexbot","dragon","crown","rocket","ndglob","ndcube","ndring","ndgalaxy","ndglow"]);
+const SQUISH_SHIPPED=new Set(["banner","plant","poster","trophy","medal","lamp","vexbot","dragon","crown","rocket","ndglob","ndcube","ndring","ndgalaxy","ndglow",
+  /* #145: the 50 zone-unlocked squishies — art shipped (art/squish-<id>.png, Oracle 2026-06-17) */
+  "strawberryki","cloudpup","bobabunny","sushicat","marshmallowc","pumpkinpup","lavalizard","stormcloudli","thunderbun","rainbowsnail",
+  "prismfrog","starotter","bookwormbudd","cozyowl","pencilpengui","magicmushroo","spellslime","wizardcat","storydragonl","quillquokka",
+  "tinybard","ninjabun","dojopanda","focusfox","heroteddyplu","gemgolem","castlekitten","knighthammy","moatduck","forgeember",
+  "anvilaxolotl","sparksprite","potionpup","runerabbit","starwizard","songbirdspri","gladedeer","melodymouse","pirateparrot","treasurecrab",
+  "captaincat","giantgummy","bridgetroll","bigfootbuddy","librarylynx","tometurtle","scrollsquirr","mapmole","dragonqueenp","crownwyrm"]);
 function squishShipped(id){ return SQUISH_SHIPPED.has((id&&id.id)||id); }
 /* UNLOCKED (buyable) = no gate, or its zone is cleared — DERIVED from zoneDone, no save field (#7 backward-compat). */
 function squishUnlocked(it){ if(!it.unlockZone) return true;
@@ -2605,7 +2611,7 @@ function paintCollection(){ const g=$("shopGrid"); g.innerHTML=""; g.className="
      unlocked-not-owned (faint, tap → store to buy), zone-locked (fainter + "beat Zone X", not yet buyable). */
   BASE_ITEMS.filter(squishVisible).forEach(it=>{ const n=ownedCount(it.id), owned=n>0, unlocked=squishUnlocked(it);
     const state = owned ? "owned" : (unlocked ? "buyable" : "zlocked");
-    const d=document.createElement("button"); d.className="shopitem slotitem "+state;
+    const d=document.createElement("button"); d.className="shopitem slotitem "+state+(it.rarity&&it.rarity!=="common"?" r-"+it.rarity:"");   /* #145 rarity aura */
     if(owned) d.innerHTML=`<div class="ic">${itemArt(it,72)}</div><div class="nm">${it.nm}</div>`+(n>1?`<span class="dupbadge">×${n}</span>`:"");
     else if(unlocked) d.innerHTML=`<div class="ic faint">${itemArt(it,72)}</div><div class="nm slot-q">?</div>`;
     else { const z=ZONES.find(zz=>zz.id===it.unlockZone); d.innerHTML=`<div class="ic faint zlock">${itemArt(it,72)}</div><div class="nm zhint">${z?("Zone "+(ZONES.filter(zz=>zz.act===(z.act||1)).findIndex(zz=>zz.id===z.id)+1)):"?"}</div>`; }
@@ -2616,7 +2622,7 @@ function paintStore(){ const g=$("shopGrid"); g.innerHTML=""; g.className="shopg
   const buyable=BASE_ITEMS.filter(it=>squishAvail(it) && ownedCount(it.id)===0);
   if(!buyable.length){ g.innerHTML='<div class="baselbl shop-alldone" style="font-size:16px;">You collected them ALL! New squishies come from treasure chests now.</div>'; return; }
   buyable.forEach(it=>{ const can=(S.coins||0)>=it.cost;
-    const d=document.createElement("button"); d.className="shopitem"+(can?"":" cant");
+    const d=document.createElement("button"); d.className="shopitem"+(can?"":" cant")+(it.rarity&&it.rarity!=="common"?" r-"+it.rarity:"");   /* #145 rarity aura */
     d.innerHTML=`<div class="ic">${itemArt(it,72)}</div><div class="nm">${it.nm}</div><div class="price">${gicon("coin",18)}<span>${it.cost}</span></div>`;
     d.onclick=()=>openSquishCard(it);
     g.appendChild(d); }); }

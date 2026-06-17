@@ -42,6 +42,8 @@ const server = http.createServer((req, res) => {
 // scene = how to get there, evaluated in the page after boot
 const SCENES = {
   title: `1`,                                  // shown at boot
+  mastercount: `(function(){ S.mastery={}; ORDER.slice(0,14).forEach(function(g){ S.mastery[g]={seen:6,ok:6,str:5,box:2}; try{S.done[LETTER_MISSION[g]]=true;}catch(e){} }); show('scrTitle'); if(window.gemDexFill)gemDexFill(document.getElementById('gemDexTitle')); return 1; })()`,
+  mastermap: `(function(){ S.mastery={}; ORDER.slice(0,14).forEach(function(g){ S.mastery[g]={seen:6,ok:6,str:5,box:2}; try{S.done[LETTER_MISSION[g]]=true;}catch(e){} }); S.intro=true; toMap(); if(window.gemDexFill)gemDexFill(document.getElementById('gemDexMap')); return 1; })()`,
   map:   `(window.toMap && toMap(), 1)`,
   base:  `(window.paintBase && paintBase(), show('scrBase'), 1)`,
   settings: `(window.openSettings && openSettings(), 1)`,
@@ -79,6 +81,8 @@ const SCENES = {
   gemdex: `(function(){ for(var i=0;i<=18;i++)S.done[i]=true; paintBase(); show("scrBase"); openCollectionCard("gems"); return 1; })()`,
   villdex: `(function(){ S.done={26:true,48:true,110:true}; show("scrBase"); openCollectionCard("villains"); return 1; })()`,
   store: `(function(){ S.coins=120; S.owned={banner:1}; openShop(); setShopMode("store"); return 1; })()`,
+  storenew: `(function(){ for(var i=0;i<=180;i++)S.done[i]=true; S.coins=999; S.owned={banner:1,plant:1,poster:1,trophy:1,medal:1,lamp:1,vexbot:1,dragon:1,crown:1,rocket:1,ndglob:1,ndcube:1,ndring:1,ndgalaxy:1,ndglow:1,strawberryki:1,cloudpup:1,bobabunny:1,sushicat:1,marshmallowc:1,pumpkinpup:1,lavalizard:1,stormcloudli:1,thunderbun:1,rainbowsnail:1,prismfrog:1,starotter:1}; openShop(); setShopMode('store'); return 1; })()`,
+  collnew: `(function(){ for(var i=0;i<=180;i++)S.done[i]=true; S.coins=999; S.owned={wizardcat:3,heroteddyplu:1,dragonqueenp:1,pirateparrot:1,gemgolem:1,bookwormbudd:1}; openShop(); return 1; })()`,
   shopcard:`(function(){ S.coins=300; openShop(); openSquishCard(BASE_ITEMS.find(function(x){return x.id==='ndglob';})); return 1; })()`,
   win:     `(function(){ CUR=(typeof MISSIONS!=="undefined"&&MISSIONS.find(function(x){return x.type==="learn";}))||{id:1,lbl:"Letter S"}; showWin(false); return 1; })()`,
   rest: `(function(){ showRest({id:2,lbl:"Letter A"}); return 1; })()`,

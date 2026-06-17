@@ -549,6 +549,16 @@ body.calm .gembox>svg,body.calm .trophy,body.calm .gembox.mastered::after{animat
 .slotitem.zlocked{border-color:#2c2356;opacity:.82;}
 .slotitem .ic.faint.zlock{opacity:.28;filter:grayscale(.85) drop-shadow(0 2px 3px rgba(0,0,0,.4));}
 .slotitem .nm.zhint{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:12px;color:#b9a7ff;letter-spacing:.02em;}
+/* #145 RARITY accent — rare = cool-blue aura, epic = purple aura (common = plain). On the squishy IMAGE
+   so it layers cleanly over the owned/buyable/zlocked slot states (which own the border/box-shadow). The
+   faint/zlock states dim their own icon, so the aura only reads on revealed/owned slots — by design. */
+.r-rare .ic img,.r-rare .ic .shopart{ filter:drop-shadow(0 0 8px rgba(96,156,255,.62)); }
+.r-epic .ic img,.r-epic .ic .shopart{ filter:drop-shadow(0 0 7px rgba(184,104,255,.5)) drop-shadow(0 0 13px rgba(184,104,255,.5)); }
+/* a tiny rarity gem in the slot corner (crafted, no emoji) — blue rare / purple epic */
+.r-rare .ic::after,.r-epic .ic::after{ content:""; position:absolute; top:4px; left:5px; width:11px; height:11px; border-radius:50%; border:2px solid var(--ink); z-index:3; }
+.shopitem .ic{ position:relative; }
+.r-rare .ic::after{ background:radial-gradient(circle at 34% 30%,#d6e9ff,#3a7bd6); }
+.r-epic .ic::after{ background:radial-gradient(circle at 34% 30%,#efcbff,#9a4ad6); box-shadow:0 0 7px rgba(184,104,255,.8); }
 .slotitem .dupbadge{position:absolute;top:6px;right:8px;font-family:'Bangers',cursive;font-size:14px;color:#9fe870;}
 .slotitem{position:relative;}
 .shopitem .nm{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:14px;color:var(--txt);}
