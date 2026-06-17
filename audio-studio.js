@@ -345,6 +345,10 @@
     fr.readAsText(file);
   }
   const GH={ owner:"lukevoigt-spec", repo:"Teddyman", branch:"main" };
+  /* #87: clear the remembered publish token on THIS device (mirrors elForget for the ElevenLabs key) */
+  function ghForget(){ try{ localStorage.removeItem(LS_GH); }catch(e){}
+    if($("ghToken"))$("ghToken").value=""; const fg=$("btnGhForget"); if(fg)fg.style.display="none";
+    setMsg("Forgot the publish token on this iPad."); }
   async function ghApi(token,path,opts){
     const r=await fetch("https://api.github.com/repos/"+GH.owner+"/"+GH.repo+path,
       Object.assign({headers:{Authorization:"Bearer "+token,Accept:"application/vnd.github+json","Content-Type":"application/json"}},opts||{}));
@@ -367,6 +371,7 @@
       const commit=await ghApi(token,"/git/commits",{method:"POST",body:JSON.stringify({message:"Update voicepack.js from in-app studio ("+n+" voices)",tree:tree.sha,parents:[head]})});
       await ghApi(token,"/git/refs/heads/"+GH.branch,{method:"PATCH",body:JSON.stringify({sha:commit.sha})});
       try{ localStorage.setItem(LS_GH, token); }catch(e){}   /* remember the token on THIS device for next time */
+      { const fg=$("btnGhForget"); if(fg)fg.style.display="inline-block"; }   /* #87: a remembered token can now be forgotten */
       setMsg("Published ✓ — voicepack.js is on main ("+n+" voices). Token remembered on this iPad. Live on every device in a minute.");
     }catch(e){ const m=String(e.message||e);
       setMsg("Publish failed: "+(/^401/.test(m)?"token not accepted":/^403/.test(m)?"token lacks Contents: write on this repo":/^404/.test(m)?"repo/branch not found for this token":m),1);
@@ -409,10 +414,11 @@
     on("recUpload",()=>{ const p=recList[recIx]; if(p)pickFile(p.id); });   /* #46: upload a pre-recorded file for THIS phoneme (not just mic) */
     on("btnElLoad",elLoad); on("btnElForget",elForget); on("btnGenAll",genAll);
     on("btnExportVP",exportVP); on("btnImportVP",()=>$("vpFile").click()); on("btnPublish",publish);
+    on("btnGhForget",ghForget);
     on("btnRecrisp",recrispAll);
     const vf=$("vpFile"); if(vf)vf.onchange=()=>{ if(vf.files[0]){ importVP(vf.files[0]); vf.value=""; } };
     const ek=$("elKey"); if(ek&&elKey){ ek.value=elKey; const fg=$("btnElForget"); if(fg)fg.style.display="inline-block"; }
-    const gt=$("ghToken"); if(gt){ try{ const s=localStorage.getItem(LS_GH); if(s)gt.value=s; }catch(e){} }   /* restore remembered publish token */
+    const gt=$("ghToken"); if(gt){ try{ const s=localStorage.getItem(LS_GH); if(s){ gt.value=s; const fg=$("btnGhForget"); if(fg)fg.style.display="inline-block"; } }catch(e){} }   /* restore remembered publish token (+ offer Forget) */
     const gear=$("btnGear"); if(gear)gear.addEventListener("click",()=>setTimeout(refreshAll,0));
   }
   if(document.readyState!=="loading")wire(); else document.addEventListener("DOMContentLoaded",wire);
