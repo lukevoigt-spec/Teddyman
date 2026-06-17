@@ -70,7 +70,7 @@ let S=load();
    saves start with them present so grandfather() (game.js) no-ops; OLD saves lack them, so grandfather
    seeds them ONCE from the current mission mapping. migrate() deliberately does NOT add them (the
    absence is the seed trigger). */
-function fresh(){return {v:1,act:1,ts:0,intro:false,scan:false,done:{},mastery:{},stars:0,coins:0,owned:{},gear:[],gearByAct:{},freed:{},equip:{weapon:"none",cape:"red"},session:{count:0,day:"",rest:false},chests:{wood:0,silver:0,gold:0},repTick:0,chestDay:"",scrolls:{},hoard:0};}
+function fresh(){return {v:1,act:1,ts:0,intro:false,scan:false,done:{},mastery:{},stars:0,coins:0,owned:{},gear:[],gearByAct:{},freed:{},equip:{weapon:"none",cape:"red"},session:{count:0,day:"",rest:false},chests:{wood:0,silver:0,gold:0},repTick:0,chestDay:"",scrolls:{},hoard:0,xp:0,xpShown:1};}
 /* normalize ANY (old / partial / slightly broken) save object — never throws */
 function migrate(d){ if(!d||typeof d!=="object"||d.v!==1) return null;
   d.act=(typeof d.act==="number")?d.act:1; d.ts=d.ts||0;
@@ -90,6 +90,13 @@ function migrate(d){ if(!d||typeof d!=="object"||d.v!==1) return null;
     if(c===true) d.owned[id]=1;
     else if(typeof c==="number" && c>0) d.owned[id]=Math.floor(c);
     else delete d.owned[id]; }
+  /* #131 Hero-Rank XP: a continuous level layer on top of the 3 muscle tiers. MONOTONIC (never
+     decreases — no loss-aversion, #1). Seed an existing save from lifetime CORRECT answers (sum of
+     mastery.ok = exactly "XP from correct work") so the meter reflects work already done; seed xpShown
+     to the current level so an old save doesn't dump a burst of retro level-ups on the next win.
+     (Level size literal 20 MIRRORS game.js XP_PER_LEVEL — game.js isn't loaded yet at migrate time.) */
+  if(typeof d.xp!=="number"||d.xp<0){ let s=0; for(const k in d.mastery){ const m=d.mastery[k]; if(m&&typeof m.ok==="number"&&m.ok>0)s+=m.ok; } d.xp=s; }
+  if(typeof d.xpShown!=="number"||d.xpShown<1) d.xpShown=Math.floor(d.xp/20)+1;
   /* TREASURE CHESTS (additive, save-safe): pending unopened counts + a training-rep counter + the last
      daily-gift dayKey. Never wipes an existing save. */
   d.chests=(d.chests&&typeof d.chests==="object")?d.chests:{wood:0,silver:0,gold:0};

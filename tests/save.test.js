@@ -67,6 +67,14 @@ ok("#124 owned->count migration is idempotent (re-run keeps counts)", (function(
   var m1=migrate({v:1, owned:{a:true, b:2}, done:{}, mastery:{}});
   var m2=migrate({v:1, owned:m1.owned, done:{}, mastery:{}});
   return m2.owned.a===1 && m2.owned.b===2; })());
+/* #131 Hero-Rank XP: seed from lifetime correct (sum mastery.ok), xpShown=current level; existing xp kept (monotonic). */
+ok("#131 fresh() seeds xp:0 xpShown:1", (function(){ var f=fresh(); return f.xp===0 && f.xpShown===1; })());
+ok("#131 migrate() seeds xp from sum of mastery.ok + xpShown to current level", (function(){
+  var m=migrate({v:1, mastery:{a:{seen:5,ok:5,str:4}, b:{seen:3,ok:2,str:2}}, done:{}});
+  return m.xp===7 && m.xpShown===Math.floor(7/20)+1; })());
+ok("#131 migrate() keeps an existing xp (monotonic, not reseeded from mastery)", (function(){
+  var m=migrate({v:1, xp:55, mastery:{a:{seen:9,ok:9,str:5}}, done:{}});
+  return m.xp===55 && m.xpShown===Math.floor(55/20)+1; })());
 var partial = migrate({v:1, done:{0:true}, equip:{weapon:"sword"}});
 ok("partial keeps real progress", partial.done[0]===true && partial.equip.weapon==="sword");
 ok("fresh() seeds scrolls:{} (Spell Scroll spaced-review state)", (function(){ var f=fresh(); return f.scrolls && typeof f.scrolls==="object" && Object.keys(f.scrolls).length===0; })());
