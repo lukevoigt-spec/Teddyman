@@ -1564,7 +1564,7 @@ function showWin(firstTime){ show("scrWin");
   /* ONE button: CONTINUE (parent — the old CITY MAP button was redundant; the map is on the nav).
      Crafted chevron, never an emoji. Carries the adventure forward. */
   const setContinue=(fn)=>{ const b=$("btnWinMap"); if(!b)return;
-    b.innerHTML='CONTINUE '+(typeof uiIcon==="function"?uiIcon("chevron",26):""); b.className="btn cta"; b.onclick=fn; };
+    b.textContent="CONTINUE"; b.className="btn cta"; b.onclick=fn; };
   { const bn=$("btnWinNext"); if(bn)bn.style.display="none"; }   /* legacy 2nd button removed from the win screen */
   if(CUR.type==="fortress"){   /* finale → the story cutscene (Act-1 handoff / Act-2 homecoming ending) */
     setContinue(currentAct()===2 ? startHomecoming : startInterlude);
