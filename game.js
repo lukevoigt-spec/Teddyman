@@ -342,6 +342,7 @@ function heroNow(w){ return heroMarquee(w); }
    the hero's growth the child already watches. Rank = ADVENTURE progress (the reward layer is what's
    mastery-gated, §6.0). At top tier the bar fills toward "MAX POWER". */
 let __rankedUp=false;
+let __earnedChest=null;   /* #127: the chest tier earned THIS mission, surfaced on the win screen */
 function heroProgress(){ const a=currentAct(), am=actMissions(a), total=am.length||1;
   const done=am.filter(m=>S.done[m.id]).length, r=done/total, tier=heroOpts().muscle;
   const bands=[[0,.28],[.28,.6],[.6,1]], lo=bands[tier][0], hi=bands[tier][1];
@@ -920,6 +921,7 @@ function missionComplete(){
     if(weak.length){ masteryReview(weak); return; }
   }
   const firstTime=!S.done[CUR.id];
+  __earnedChest=null;   /* #127: reset; set below only when a chest is actually granted this clear */
   const oldTier=heroOpts().muscle;   /* for the RANK-UP fanfare detection */
   S.done[CUR.id]=true;
   ensureDaily();
@@ -937,7 +939,7 @@ function missionComplete(){
        milestone (mastery-gated finale/rescue) → GOLD; a clean no-miss mission → SILVER; else WOOD. */
     S.chests=S.chests||{wood:0,silver:0,gold:0};
     const ctier=(CUR.finale||CUR.rescue||CUR.type==="fortress")?"gold":(curMiss===0?"silver":"wood");
-    S.chests[ctier]=(S.chests[ctier]||0)+1; }
+    S.chests[ctier]=(S.chests[ctier]||0)+1; __earnedChest=ctier; }   /* #127: pop this on the win screen */
   __rankedUp = firstTime && (heroOpts().muscle>oldTier);   /* the hero just leveled up → celebrate in showWin */
   save();
   if(firstTime && (CUR.finale||CUR.rescue||CUR.type==="fortress")) snapshot(CUR.lbl||("Mission "+CUR.id));  /* safety roll-back point */
@@ -1572,6 +1574,7 @@ function showWin(firstTime){ show("scrWin");
   if(__rankedUp){ ids.unshift("rankup"); setTimeout(()=>{ confetti(80); flashScreen("rgba(255,210,90,.4)"); if(typeof Sfx!=="undefined"&&Sfx.rankup)Sfx.rankup(); },340);
     $("winGear").innerHTML='<div class="gearbadge">'+uiIcon("spark",22)+' RANK UP — '+heroProgress().name+'!</div>'+$("winGear").innerHTML; __rankedUp=false; }
   narrate("win",$("winText"),ids);
+  winChestPop(__earnedChest); __earnedChest=null;   /* #127: the chest just earned pops here, tap-to-open (runs for ALL win types, incl. the fortress early-return below) */
   /* ONE button: CONTINUE (parent — the old CITY MAP button was redundant; the map is on the nav).
      Crafted chevron, never an emoji. Carries the adventure forward. */
   const setContinue=(fn)=>{ const b=$("btnWinMap"); if(!b)return;
@@ -1896,7 +1899,7 @@ function nextChestTier(){ const c=S.chests||{}; return c.gold>0?"gold":c.silver>
 /* open ONE earned chest (parent 2026-06-16: a painted treasure box you TAP). Roll coins (always) + maybe
    an un-owned squishy (all owned → bonus coins, never a dud); the painted box opens (closed→open image),
    the loot bursts out (rewardShower), then a CARD reveals what was earned. Decrement + done→repaint. */
-function openChest(tier,done){ const cfg=CHESTS[tier]; if(!cfg||!(S.chests&&S.chests[tier]>0)){ if(done)done(); return; }
+function openChest(tier,done,originEl){ const cfg=CHESTS[tier]; if(!cfg||!(S.chests&&S.chests[tier]>0)){ if(done)done(); return; }
   const coins=cfg.coinMin+Math.floor(Math.random()*(cfg.coinMax-cfg.coinMin+1));
   let item=null;
   if(Math.random()<cfg.cosmeticChance){ const un=BASE_ITEMS.filter(it=>!(S.owned&&S.owned[it.id]));
@@ -1908,7 +1911,7 @@ function openChest(tier,done){ const cfg=CHESTS[tier]; if(!cfg||!(S.chests&&S.ch
   /* the box pops OPEN + treasure bursts out of it */
   const img=$("chestImg"); if(img)img.src="art/chest-open.png";
   try{ flashScreen("rgba(255,210,90,.42)"); if(typeof Sfx!=="undefined")Sfx.unlock(); }catch(e){}
-  rewardShower(tier==="gold"?16:11, {fromEl:$("chestBtn")||$("stage")});
+  rewardShower(tier==="gold"?16:11, {fromEl:originEl||$("chestBtn")||$("stage")});   /* #127: burst from the win-screen box when opened there */
   /* …then a reward CARD shows what he earned (coins + any squishy) */
   setTimeout(()=>{
     const art = item ? itemArt(item,124) : gicon("coin",120);
@@ -1916,6 +1919,20 @@ function openChest(tier,done){ const cfg=CHESTS[tier]; if(!cfg||!(S.chests&&S.ch
     const sub  = item ? ("YOURS! +"+gain+" COINS") : "TREASURE!";
     showUnlock('<div style="line-height:1;">'+art+'</div>', name, sub, ()=>{ if(img)img.src="art/chest-closed.png"; if(done)done(); });
   }, 560); }
+/* #127: surface a chest EARNED this mission on the WIN screen as a tap-to-open box (instant reward for the
+   effort that earned it), reusing openChest(). The painted closed->open box look is Oracle's §20 follow-up;
+   this is the functional placeholder (chestSVG + a gentle attention bob). Any chest left unopened still
+   waits at the Base #chestBtn. Training-earned chests have no win screen → they stay at the Base. */
+function winChestPop(tier){
+  const box=$("winChest"); if(!box) return;
+  if(!tier || !(S.chests && S.chests[tier]>0)){ box.style.display="none"; box.innerHTML=""; return; }
+  box.style.display=""; box.classList.remove("opened");
+  box.innerHTML='<button type="button" class="winchest" aria-label="Open your treasure">'+chestSVG(tier,116)+'<span class="winchest-cap comic">TAP TO OPEN!</span></button>';
+  let opening=false;
+  const btn=box.querySelector(".winchest");
+  if(btn) btn.onclick=()=>{ if(opening)return; opening=true; box.classList.add("opened");
+    openChest(tier, ()=>{ box.style.display="none"; box.innerHTML=""; }, btn); };
+}
 let trainReps=0,trainSlot=0,trainCur,trainMiss=0;
 /* #88: Training-Room word pool now FOLLOWS THE ACT. trainBuild/trainDecode segment + sound a word
    LETTER-by-letter (w.split("")), which is correct only for single-letter graphemes — so in Act 2 we
