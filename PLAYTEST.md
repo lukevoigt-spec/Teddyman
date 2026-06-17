@@ -5,8 +5,9 @@ render-gate, and any "shipped/✅" status in another doc (see `AGENTS.md` ▸ *T
 contradicts another doc, **the note wins** — reconcile the doc to reality.
 
 ## How the parent submits (frictionless, by design)
-- **In-app (once Neo ships it — spec in `QA.md`):** Grown-Up Corner ▸ **"Playtest notes"** → type free text → **Send**.
-  It commits a timestamped entry to this file (reusing the studio's GitHub token) and can open a trigger Issue.
+- **In-app (shipped):** Grown-Up Corner ▸ **"Playtest notes"** → type free text → **Send**. It commits the note as its
+  OWN file **`playtest/<ISO>.md`** (reusing the studio's GitHub token; race-free — no two notes ever clobber) and can open
+  a **"Playtest:"** trigger Issue. Trinity reviews those raw notes and curates them into the log below.
 - **Right now / fallback:** the parent just pastes notes to **Trinity** (chief of staff), who logs + routes them.
 - No structure required from the parent. Brain-dump is fine: *"the shop looked like emoji, he tapped the wrong gem on
   mission 12, he loved the chest sound, couldn't find the back button on the map."* Triage is Trinity's job, not yours.
@@ -24,7 +25,8 @@ contradicts another doc, **the note wins** — reconcile the doc to reality.
 
 ## Log (newest first)
 > Format per entry: `### <ISO timestamp> — <NEW|triaged|done>` then the raw note, then `→ routed:` / `→ done:` lines.
-> The in-app box prepends new entries here automatically; Trinity curates status.
+> Raw notes arrive as `playtest/<ISO>.md` files (+ a `Playtest:` Issue); Trinity reviews those and curates the triaged
+> entries into this log (newest first).
 
 ### 2026-06-15 09:42 — triaged (parent watching Teddy play the Training Room)
 RAW: Training Room has **no climax / monotony → becomes a chore**. Wants: a coin **STACK** that converts to **gold bars →
