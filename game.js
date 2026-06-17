@@ -2222,14 +2222,16 @@ function openChest(tier,done,originEl){ const cfg=CHESTS[tier]; if(!cfg||!(S.che
    this is the functional placeholder (chestSVG + a gentle attention bob). Any chest left unopened still
    waits at the Base #chestBtn. Training-earned chests have no win screen → they stay at the Base. */
 function winChestPop(tier){
-  const box=$("winChest"); if(!box) return;
-  if(!tier || !(S.chests && S.chests[tier]>0)){ box.style.display="none"; box.innerHTML=""; return; }
-  box.style.display="block"; box.classList.remove("opened");   /* explicit (NOT "") — the CSS default is #winChest{display:none}, so clearing the inline style re-hid the chest (Morpheus regression). The .winchest flex-column centers its own content. */
+  const box=$("winChest"), sw=$("scrWin"); if(!box) return;
+  /* #163: tighten the win column ONLY when the chest is present (#scrWin.haschest) so VICTORY! never
+     clips at 1024x768 with the extra reward card in the centered stack. */
+  if(!tier || !(S.chests && S.chests[tier]>0)){ box.style.display="none"; box.innerHTML=""; if(sw)sw.classList.remove("haschest"); return; }
+  box.style.display="block"; box.classList.remove("opened"); if(sw)sw.classList.add("haschest");   /* explicit (NOT "") — the CSS default is #winChest{display:none}, so clearing the inline style re-hid the chest (Morpheus regression). The .winchest flex-column centers its own content. */
   box.innerHTML='<button type="button" class="winchest" aria-label="Open your treasure">'+chestSVG(tier,116)+'<span class="winchest-cap comic">TAP TO OPEN!</span></button>';
   let opening=false;
   const btn=box.querySelector(".winchest");
   if(btn) btn.onclick=()=>{ if(opening)return; opening=true; box.classList.add("opened");
-    openChest(tier, ()=>{ box.style.display="none"; box.innerHTML=""; }, btn); };
+    openChest(tier, ()=>{ box.style.display="none"; box.innerHTML=""; if(sw)sw.classList.remove("haschest"); }, btn); };
 }
 let trainReps=0,trainSlot=0,trainCur,trainMiss=0;
 /* #88: Training-Room word pool now FOLLOWS THE ACT. trainBuild/trainDecode segment + sound a word

@@ -15,6 +15,26 @@ resolves before merge; this file keeps the durable before/after record. Shots li
 
 ---
 
+## 2026-06-17 · #163 render-fixes — Gem-Dex CTA clip + win-screen chest overflow (1024×768)  ·  PASS
+**Branch:** `oracle/163-layout` → PR. Morpheus flagged two layout misses; **render-confirmed BOTH still
+present at 1024×768**, then fixed:
+1. **Gem-Dex card CTA clipped** — `.coll-card` (26 gems + Recharge) was `overflow:auto` so the `#collAction`
+   CTA fell below the fold (and scrolling pushed the close button off). **Fix:** `.coll-card` is now a flex
+   COLUMN — pinned title + scrollable `.coll-grid` (`flex:1; overflow-y:auto`) + **pinned Recharge CTA**;
+   close button is absolute to the (no-longer-scrolling) card. Confirmed: "RECHARGE GEMS" visible at rest.
+2. **Win screen overflowed with the earned chest** — with `#winChest` in the centered stack (VICTORY +
+   hero + chest + bubble + gear + XP + CONTINUE), VICTORY! clipped off-top (measured `top=-18`). **Fix:**
+   `winChestPop` toggles `#scrWin.haschest` (only when a chest shows) → CSS reclaims height (gap 14→8 +
+   hero capped 22vh). Confirmed: VICTORY! fully visible with the chest present.
+**Shots:** `gemdex` (Recharge CTA pinned + visible), `winchest` (S.chests gold → chest shows + VICTORY
+not clipped). Render-gated at the exact 1024×768 viewport. Tests: ui-emoji 44/44, curriculum 116/116,
+save 129/129.
+**Sibling issues:** #152 (mastery counter) = DONE (title `game.js:661` + map `map.js:275` + the #126 gem-dex
+card) — PASS, no change. #162 (map node touch targets in portrait) = Neo's #164 fixed the current/play-next
+node; locked-node sizing is Neo's remaining call (map.js hit-rect, not Oracle).
+
+---
+
 ## 2026-06-17 · #60 Ally cheer-pops → painted raster (last SVG character tokens)  ·  PASS
 **Branch:** `oracle/ally-raster` → PR. The league shelf + win mini-face already used the painted
 `ally-<kind>.png` rasters; the CHEER POPS (`allyPop` in allies.js, `trainPop` in game.js) were the last

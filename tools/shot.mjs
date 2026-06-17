@@ -105,7 +105,7 @@ const SCENES = {
   // #131 XP meter on the win screen + the small LEVEL-UP pop; #127 win-chest card; #130 FTUE demo + we-do pulse
   xpwin: `(function(){ S.xp=138; for(var i=1;i<=10;i++)S.done[i]=true; CUR={id:1,lbl:"Letter S"}; showWin(false); xpLevelPop(heroLevel()); return 1; })()`,
   basexp: `(function(){ S.xp=52; for(var i=1;i<=14;i++)S.done[i]=true; paintBase(); show('scrBase'); return 1; })()`,
-  winchest: `(function(){ __earnedChest="gold"; CUR={id:1,lbl:"Letter S"}; showWin(false); return 1; })()`,
+  winchest: `(function(){ S.chests={gold:1}; CUR={id:1,lbl:"Letter S"}; showWin(false); if(window.winChestPop)winChestPop("gold"); return 1; })()`,
   ftueforge: `(function(){ S.ftue={}; forgeWords=["sat"]; CUR={id:1,type:"forge",words:["sat"]}; startForge({id:1,type:"forge",words:["sat"]}); return 1; })()`,
   wedoforge: `(function(){ S.ftue={forge:true}; CUR={id:1,type:"forge",words:["sat"]}; startForge({id:1,type:"forge",words:["sat"]}); __wedo.forge=2; forgeWord(); return 1; })()`,
   basefull:`(function(){ [1,3,4,6,8].forEach(function(i){S.done[i]=true;}); S.coins=40; S.owned={banner:1}; paintBase(); show('scrBase'); return 1; })()`,
