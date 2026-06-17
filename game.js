@@ -1546,7 +1546,6 @@ function showWin(firstTime){ show("scrWin");
   if(__rankedUp){ ids.unshift("rankup"); setTimeout(()=>{ confetti(80); flashScreen("rgba(255,210,90,.4)"); if(typeof Sfx!=="undefined"&&Sfx.rankup)Sfx.rankup(); },340);
     $("winGear").innerHTML='<div class="gearbadge">⭐ RANK UP — '+heroProgress().name+'!</div>'+$("winGear").innerHTML; __rankedUp=false; }
   narrate("win",$("winText"),ids);
-  const ix=MISSIONS.findIndex(x=>x.id===CUR.id);
   if(CUR.type==="fortress"){
     $("btnWinNext").style.display="none";
     if(currentAct()===2){   /* Act-2 finale = the END → the beat-7 homecoming ending (STORY.md §F) */
@@ -1558,8 +1557,11 @@ function showWin(firstTime){ show("scrWin");
     }
     return; }
   $("btnWinMap").textContent="CITY MAP";
-  $("btnWinNext").style.display=(ix<MISSIONS.length-1)?"inline-block":"none";
-  $("btnWinNext").onclick=()=>{ if(S.session.count>=3&&!S.session.rest){S.session.rest=true;save();showRest(MISSIONS[ix+1]);} else startMission(MISSIONS[ix+1]); };
+  /* #84: NEXT follows PLAY ORDER (zones 107/108 append in the 100-range but play AFTER 104), not flat id
+     order — else NEXT could drop the child into an out-of-sequence / locked mission. Mirrors playNextMission(). */
+  const pm=playMissions(currentAct()), pix=pm.findIndex(x=>x.id===CUR.id), nextM=(pix>=0)?pm[pix+1]:null;
+  $("btnWinNext").style.display=nextM?"inline-block":"none";
+  $("btnWinNext").onclick=()=>{ if(!nextM)return; if(S.session.count>=3&&!S.session.rest){S.session.rest=true;save();showRest(nextM);} else startMission(nextM); };
   $("btnWinMap").onclick=()=>{ if(S.session.count>=3&&!S.session.rest){S.session.rest=true;save();showRest(null);} else toMap(); }; }
 function showRest(nextM){ show("scrRest");
   $("restHero").innerHTML=heroMarquee(160);
