@@ -1113,7 +1113,16 @@ let findTarget,findRep,findGoal,findMiss,patrolSet=null,afterFind=null;
    processing. ZERO loss / zero "wrong" (#2). Flow-safe: a 4.5s watchdog can't hang it, and ⏭/Home stay live (#8). */
 let __sidAt=0, __sidLock=false, __sidWatch=null;
 const SID_MIN_MS=450;   /* a tap sooner than this after the gems go live = rapid-guessing (tunable) */
-function sidStart(){ __sidAt=Date.now(); }                 /* the gems are live — start the response clock */
+function sidStart(){ __sidAt=Date.now(); }                 /* the gems are live — start the response clock (legacy; sidArm preferred) */
+/* #153 FIX (Morpheus QA 2026-06-17): ARM the answer rows only AFTER the target-sound prompt actually finishes
+   (or a 4.5s watchdog), so a fast tap can't beat the SID_MIN_MS floor WHILE the sound is still playing — the
+   response clock (__sidAt) now starts at the real unlock, not at render. Rows stay .sidwait/pointer-events:none
+   until then (audio-first, constraint #8; the watchdog can't hang it). `pr` falsy = a round re-entered AFTER its
+   prompt audio already settled (e.g. recursive bossRound) → arm immediately. */
+function sidArm(pr,row){ __sidLock=true; if(row)row.classList.add("sidwait");
+  const go=()=>{ __sidLock=false; if(row)row.classList.remove("sidwait"); __sidAt=Date.now(); clearTimeout(__sidWatch); };
+  clearTimeout(__sidWatch); __sidWatch=setTimeout(go,4500);   /* watchdog — never stay locked */
+  if(pr&&pr.then){ pr.then(go).catch(go); } else { go(); } }
 function sidLockReplay(ids,row){ __sidLock=true; if(row)row.classList.add("sidwait");
   const done=()=>{ __sidLock=false; if(row)row.classList.remove("sidwait"); __sidAt=Date.now(); clearTimeout(__sidWatch); };
   clearTimeout(__sidWatch); __sidWatch=setTimeout(done,4500);   /* watchdog — never stay locked */
@@ -1131,7 +1140,7 @@ function nextFind(){
   const g = patrolSet? (pickWeak(patrolSet)||patrolSet[0]) : findTarget;
   findTarget=g; findMiss=0;
   $("findProg").textContent=findRep+" / "+findGoal;
-  narrate("find",$("findText"),["find_prompt","snd_"+g],"Find the gem that makes the sound\u2026");
+  const _pr=narrate("find",$("findText"),["find_prompt","snd_"+g],"Find the gem that makes the sound\u2026");
   /* patrol foils come only from letters already taught; learn-mission foils from the zone */
   const foilPool=patrolSet||taughtGraphemes();   /* only already-taught graphemes (incl. digraphs) as distractors */
   const foils=pickFoils(g, foilPool, 3);       /* biases toward the confusable twin (b/d…) */
@@ -1148,7 +1157,7 @@ function nextFind(){
         if(findMiss>=2){ row.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===g)x.classList.add("hint");}); }
         sidLockReplay(["almost","snd_"+g],row); } };   /* #153: a wrong tap replays the target with taps LOCKED until it ends (no rapid retry) */
     row.appendChild(t); });
-  sidStart(); }   /* #153: gems are live — start the response clock */
+  sidArm(_pr,row); }   /* #153 FIX: arm only after the prompt sound settles (no early-tap credit) */
 
 /* ---------------- BOSS ---------------- */
 let bossHP;
@@ -1156,13 +1165,13 @@ function bossSprite(w){ return currentAct()===2 ? dragonSVG(w) : inkblotSVG(w); 
 function startBoss(g){ show("scrBoss"); bossHP=3;
   $("bossArt").innerHTML=`<div class="boss" id="bossSprite">${bossSprite(240)}</div>`;
   paintPips("bossPips",bossHP,3);
-  { const a2=currentAct()===2;
-    narrate("boss",$("bossText"), a2?["drag_intro","snd_"+g]:["boss_taunt","boss_intro","snd_"+g],
+  let _bpr; { const a2=currentAct()===2;
+    _bpr=narrate("boss",$("bossText"), a2?["drag_intro","snd_"+g]:["boss_taunt","boss_intro","snd_"+g],
       (a2?"Blast the dragon! ":"Blast the Vexbot! ")+"Tap the gem that makes the sound\u2026"); }
-  bossRound(g); }
+  bossRound(g,_bpr); }
 function paintPips(id,hp,max){ const p=$(id); p.innerHTML="";
   for(let i=0;i<max;i++){const d=document.createElement("div");d.className="pip"+(i<hp?"":" off");p.appendChild(d);} }
-function bossRound(g){
+function bossRound(g,pr){   /* pr = the first round's prompt-audio promise (from startBoss); recursive rounds pass none (audio already settled) */
   const foils=pickFoils(g, taughtGraphemes(), 2);   /* boss: include the confusable twin */
   const opts=[g,...foils].sort(()=>Math.random()-.5);
   const row=$("bossTiles"); row.innerHTML="";
@@ -1180,7 +1189,7 @@ function bossRound(g){
           flow(Aud.play([lead,"snd_"+g]),()=>bossRound(g)); } }
       else { record(g,false); t.classList.add("dim"); sidLockReplay(["dodge","snd_"+g],row); } };   /* #153: wrong → replay locked (no rapid retry) */
     row.appendChild(t); });
-  sidStart(); }
+  sidArm(pr,row); }   /* #153 FIX: first round waits on the prompt sound; recursive rounds (pr undefined) arm at once */
 
 /* ---------------- READ IT (DECODE) ----------------
    The reading direction: see the word -> sound it out -> tap the picture it
@@ -1391,24 +1400,29 @@ function fortHit(label){ fHP--; fortHPset();
   const bs=$("fortVexSprite"); if(bs){ bs.classList.add("hitfx"); setTimeout(()=>bs.classList.remove("hitfx"),360); burstAt(bs,label||"ZAP!"); }
   Aud.ding(); if(allyFreed("tank")&&Math.random()<0.4)allyPop("tank");
   fRound++; flow(Aud.play(["fort_hit"]),()=>fortRound()); }
-function fortRound(){ const ph=FCONF[fPhase];
+/* #2 FIX (Morpheus QA 2026-06-17): one-shot guard so a rapid double-tap on a fortress CORRECT answer can't
+   fire twice (double HP drained + double rep credited from one prompt). Reset at the top of every new round;
+   the correct branch locks the row immediately so a second tap before fortRound() rebuilds is inert. */
+let __fortLock=false;
+function fortAccept(row,fn){ if(__fortLock)return; __fortLock=true; if(row)lockRow(row); fn(); }
+function fortRound(){ const ph=FCONF[fPhase]; __fortLock=false;   /* new round → accept the next correct tap */
   if(fRound>=ph.n){ fortPhase(fPhase+1); return; }
   fMiss=0;
   ({sound:fortSound,read:fortRead,spell:fortSpell,sentence:fortSentence})[ph.kind](); }
 function fortMissHint(){ fMiss++; }
 function fortSound(){ const pool=currentAct()===2?taughtGraphemes():taughtLetters(); const g=pickWeak(pool)||pool[0];
-  narrate("fort",$("fortText"),["snd_"+g],"Blast the shield! Tap the gem that makes the sound…");
+  const _pr=narrate("fort",$("fortText"),["snd_"+g],"Blast the shield! Tap the gem that makes the sound…");
   $("fortWord").innerHTML="";
   const foils=pickFoils(g, pool, 3);   /* fortress shield: include the confusable twin */
   const row=$("fortChoices"); row.innerHTML="";
   [g,...foils].sort(()=>Math.random()-.5).forEach(o=>{ const t=document.createElement("button"); t.className="tile read"; t.dataset.g=o;
     t.textContent=(fRound%3===2)?o.toUpperCase():o;
     t.onclick=()=>{ if(sidReject(["snd_"+g],row)) return;   /* #153 */
-      if(o===g){ record(g,true); t.classList.add("win"); fortHit("ZAP!"); }
+      if(o===g){ fortAccept(row,()=>{ record(g,true); t.classList.add("win"); fortHit("ZAP!"); }); }   /* #2 FIX: one-shot — no double-HP from a rapid double-tap */
       else { record(g,false); fortMissHint(); t.classList.add("dim");
         if(fMiss>=2)row.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===g)x.classList.add("hint");}); sidLockReplay(["snd_"+g],row); } };
     row.appendChild(t); });
-  sidStart(); }
+  sidArm(_pr,row); }   /* #153 FIX: arm only after the shield-sound settles */
 function fortRead(){ const RW=readPool(); const ws=Object.keys(RW); const w=ws[Math.floor(Math.random()*ws.length)];
   narrate("fort",$("fortText"),["read_prompt"],"Read the word-lock… tap what it means!");
   const wr=$("fortWord"); wr.innerHTML="";
@@ -1416,7 +1430,7 @@ function fortRead(){ const RW=readPool(); const ws=Object.keys(RW); const w=ws[M
   const foils=ws.filter(x=>x!==w).sort(()=>Math.random()-.5).slice(0,2);
   const row=$("fortChoices"); row.innerHTML="";
   [w,...foils].sort(()=>Math.random()-.5).forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.innerHTML=picIcon(o, RW[o]); b.dataset.w=o;
-    b.onclick=()=>{ if(o===w){ record("w_"+w,true); b.classList.add("win"); fortHit(w.toUpperCase()+"!"); }
+    b.onclick=()=>{ if(o===w){ fortAccept(row,()=>{ record("w_"+w,true); b.classList.add("win"); fortHit(w.toUpperCase()+"!"); }); }   /* #2 FIX */
       else { record("w_"+w,false); fortMissHint(); b.classList.add("dim");
         if(fMiss>=2)row.querySelectorAll(".picktile").forEach(x=>{if(x.dataset.w===w)x.classList.add("hint");}); readSoundOut(w); } };
     row.appendChild(b); }); }
@@ -1436,7 +1450,7 @@ function fortSpell(){ const pool=taughtSight().length?taughtSight():["the","a","
     b.onclick=()=>{ const want=w[fortSpellSlot];
       if(c===want){ const slot=wr.children[fortSpellSlot]; slot.textContent=c; slot.classList.add("filled");
         const heart=isHeart(w,fortSpellSlot); Aud.ding(); fortSpellSlot++;
-        if(fortSpellSlot>=w.length){ record("sw_"+w,true); fortHit("SPELL!"); }
+        if(fortSpellSlot>=w.length){ fortAccept(row,()=>{ record("sw_"+w,true); fortHit("SPELL!"); }); }   /* #2 FIX: guard the completion (can't double-fire the spell) */
         else Aud.play(heart?["spell_heart"]:["snd_"+c]); }
       else { record("sw_"+w,false); fortMissHint(); b.classList.add("dim");
         if(fMiss>=2)row.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===want)x.classList.add("hint");}); Aud.play(["almost","sw_"+w]);
@@ -1458,8 +1472,8 @@ function fortMaze(){ const POOL=currentAct()===2?FORTMAZE2:FORTMAZE; const c=POO
     else { const t=document.createElement("button"); t.className="tile wordtile read"+(SIGHT[w]?" heartword":""); t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>Aud.play(wordAudio(w)); wr.appendChild(t); } });
   const row=$("fortChoices"); row.innerHTML="";
   [c.ans,...c.foils].sort(()=>Math.random()-.5).forEach(o=>{ const b=document.createElement("button"); b.className="tile wordtile read"; b.dataset.w=o; b.innerHTML=o;
-    b.onclick=()=>{ if(o===c.ans){ record("sent_fort",true); const bl=$("fortBlank"); if(bl){bl.textContent=o;bl.classList.add("filled");} b.classList.add("win");
-        flow(Aud.play([...done.flatMap(wordAudio)]),()=>fortHit("READ!")); }
+    b.onclick=()=>{ if(o===c.ans){ fortAccept(row,()=>{ record("sent_fort",true); const bl=$("fortBlank"); if(bl){bl.textContent=o;bl.classList.add("filled");} b.classList.add("win");
+        flow(Aud.play([...done.flatMap(wordAudio)]),()=>fortHit("READ!")); }); }   /* #2 FIX: lock before the async read-back so a double-tap can't double-credit */
       else { record("sent_fort",false); fortMissHint(); b.classList.add("dim");
         if(fMiss>=2)row.querySelectorAll(".wordtile").forEach(x=>{if(x.dataset.w===c.ans)x.classList.add("hint");}); Aud.play(["almost",...done.flatMap(wordAudio)]); } };
     row.appendChild(b); }); }
@@ -1469,7 +1483,7 @@ function fortSentencePic(){ const POOL=currentAct()===2?SENTENCES2:SENTENCES; co
   s.t.forEach(w=>{ const t=document.createElement("button"); t.className="tile wordtile read"+(SIGHT[w]?" heartword":""); t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>Aud.play(wordAudio(w)); wr.appendChild(t); });
   const row=$("fortChoices"); row.innerHTML="";
   [{e:s.pic,ok:1},{e:s.foil,ok:0}].sort(()=>Math.random()-.5).forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.dataset.pic=o.e; b.innerHTML=emojiArt(o.e);
-    b.onclick=()=>{ if(o.ok){ record("sent_fort",true); b.classList.add("win"); fortHit("READ!"); }
+    b.onclick=()=>{ if(o.ok){ fortAccept(row,()=>{ record("sent_fort",true); b.classList.add("win"); fortHit("READ!"); }); }   /* #2 FIX */
       else { record("sent_fort",false); fortMissHint(); b.classList.add("dim");
         if(fMiss>=2)row.querySelectorAll(".picktile").forEach(x=>{if(x.dataset.pic===s.pic)x.classList.add("hint");}); Aud.play(sentenceAudio(s)); } };
     row.appendChild(b); }); }
@@ -2528,7 +2542,7 @@ function vaultStep(){
   (it.mode==="find") ? vaultFind(it) : vaultBuild(it); }
 function vaultFind(it){ const g=it.g;
   $("vaultWord").innerHTML="";
-  narrate("vault",$("vaultText"),["find_prompt","snd_"+g],"Find the gem that makes the sound…");
+  const _pr=narrate("vault",$("vaultText"),["find_prompt","snd_"+g],"Find the gem that makes the sound…");
   const opts=[g,...pickFoils(g, taughtGraphemes(), 3)].sort(()=>Math.random()-.5);
   const row=$("vaultChoices"); row.innerHTML="";
   opts.forEach(o=>{ const t=document.createElement("button"); t.className="tile read"; t.textContent=o; t.dataset.g=o;
@@ -2539,7 +2553,7 @@ function vaultFind(it){ const g=it.g;
         if(vaultMiss>=2)row.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===g)x.classList.add("hint");});
         sidLockReplay(["almost","snd_"+g],row); } };
     row.appendChild(t); });
-  sidStart(); }
+  sidArm(_pr,row); }   /* #153 FIX: arm only after the prompt sound settles */
 function vaultBuild(it){ const w=it.w, sight=!!it.sight, units=vaultUnits(w,sight); let slot=0;
   narrate("vault",$("vaultText"),["vault_build"].concat(wordAudio(w)),"Recharge it — build the word you hear!");
   const wr=$("vaultWord"); wr.innerHTML="";
