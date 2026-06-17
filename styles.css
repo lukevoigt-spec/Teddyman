@@ -1474,3 +1474,15 @@ body[data-act="2"] #scrBase #baseXp{ bottom:13.5%; }
 @keyframes wedoPulse{ 0%,100%{box-shadow:0 0 0 0 rgba(127,208,255,0)} 50%{box-shadow:0 0 0 5px rgba(127,208,255,.6)} }
 body.calm .tile.wedo,body.calm .picktile.wedo,body.lite .tile.wedo,body.lite .picktile.wedo{ animation:none; box-shadow:0 0 0 4px rgba(127,208,255,.55); }
 @media (prefers-reduced-motion: reduce){ .tile.wedo,.picktile.wedo{ animation:none; box-shadow:0 0 0 4px rgba(127,208,255,.55); } .demo-hi{ transition:none; } }
+
+/* #124 Squishy COLLECTION-case + STORE split (FUNCTIONAL placeholder — Oracle owns the painted case / slot
+   frame / faint-empty treatment / ×N badge / cart §20). Slots reuse the .shopitem tile layout. */
+#shopTabs{ display:flex; gap:10px; justify-content:center; margin:4px 0 8px; flex-wrap:wrap; }
+.shoptab{ font-family:'Baloo 2',sans-serif; font-weight:800; font-size:16px; padding:6px 16px; border-radius:14px; border:3px solid var(--ink); background:rgba(0,0,0,.3); color:#cfc6f2; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
+.shoptab.on{ background:var(--gold); color:var(--ink); }
+.cartic{ width:24px; height:24px; object-fit:contain; }
+.slotitem{ position:relative; }
+.slotitem.locked .ic.faint{ filter:grayscale(1) brightness(.5); opacity:.45; }   /* un-owned = faint placeholder (Oracle may swap to a true silhouette) */
+.slotitem.locked .slot-q{ color:#8a82b5; }
+.dupbadge{ position:absolute; top:4px; right:6px; background:var(--blue); color:#fff; border:2px solid var(--ink); border-radius:11px; font-family:'Bangers',cursive; font-size:14px; padding:0 7px; line-height:1.55; }
+.shop-alldone{ max-width:420px; margin:18px auto; text-align:center; color:#cfc6f2; }
