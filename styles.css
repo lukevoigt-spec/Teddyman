@@ -388,8 +388,9 @@ body.calm .masterpop{animation-duration:.5s;}
 .hub-dim{color:#a99fd6;font-size:14px;}
 .hubcards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;width:min(720px,94vw);}
 .hubcard{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:108px;cursor:pointer;color:var(--gold);
-  background:linear-gradient(165deg,rgba(49,35,104,.72),rgba(24,17,58,.72));border:2.5px solid #4a3a86;border-radius:18px;
-  box-shadow:0 6px 16px rgba(0,0,0,.32);transition:transform .12s,box-shadow .12s;}
+  background:linear-gradient(165deg,rgba(58,42,124,.78),rgba(26,18,64,.78));border:2.5px solid #5a47a6;border-radius:18px;
+  box-shadow:0 7px 18px rgba(0,0,0,.36), 0 0 20px rgba(124,92,210,.16), inset 0 1px 0 rgba(255,255,255,.08);transition:transform .12s,box-shadow .12s;}
+.hubcard:hover{transform:translateY(-2px);box-shadow:0 11px 24px rgba(0,0,0,.42), 0 0 26px rgba(124,92,210,.3), inset 0 1px 0 rgba(255,255,255,.1);}
 .hubcard:active{transform:translateY(2px);box-shadow:0 3px 8px rgba(0,0,0,.4);}
 .hubcard .hc-ic{font-size:40px;line-height:1;}
 .hubcard .hc-t{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:17px;text-align:center;}
@@ -784,11 +785,14 @@ body.lite .chip,body.lite .roundbtn,body.lite .bchip{background-color:rgba(14,9,
 @keyframes recpulse{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* ===================== GROWN-UP CORNER — settings cards ===================== */
-.setcard{width:min(640px,94vw);background:linear-gradient(165deg,rgba(38,26,76,.62),rgba(18,11,40,.62));
-  border:1.5px solid #3a2d72;border-radius:18px;padding:15px 17px;display:flex;flex-direction:column;gap:11px;margin:2px 0;
-  box-shadow:0 6px 20px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.05);}
-.setcard.danger{background:linear-gradient(165deg,rgba(70,20,42,.5),rgba(30,10,22,.55));}
-.setcard-h{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:17px;color:var(--gold);display:flex;align-items:center;gap:8px;}
+/* Grown-Up Corner cards — premium gem panels (game-feel pass 2026-06-17, §4/#7): a defined gem-purple
+   border + soft outer glow + top sheen, so each section reads as a crafted panel, not a flat rectangle. */
+.setcard{width:min(640px,94vw);background:linear-gradient(165deg,rgba(46,32,92,.72),rgba(20,13,46,.74));
+  border:2px solid #5a47a6;border-radius:18px;padding:15px 17px;display:flex;flex-direction:column;gap:11px;margin:3px 0;
+  box-shadow:0 8px 22px rgba(0,0,0,.4), 0 0 22px rgba(124,92,210,.18), inset 0 1px 0 rgba(255,255,255,.09);}
+.setcard.danger{background:linear-gradient(165deg,rgba(74,22,46,.56),rgba(32,11,24,.6));border-color:#9a4a66;box-shadow:0 8px 22px rgba(0,0,0,.4), 0 0 22px rgba(210,80,120,.18), inset 0 1px 0 rgba(255,255,255,.08);}
+.setcard-h{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:17px;color:var(--gold);display:flex;align-items:center;gap:8px;
+  border-bottom:1.5px solid rgba(124,92,210,.28);padding-bottom:8px;}
 .sc-ic{font-size:19px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4));}
 .setcard-sub{font-family:'Andika',sans-serif;font-size:14px;line-height:1.45;color:#bcb2e4;}   /* U3: parent-readable */
 .setrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
@@ -1144,6 +1148,11 @@ body[data-act="2"] #hudStars{border-color:#d3aa5e;box-shadow:0 4px 14px rgba(0,0
 body[data-act="2"] .panelart,body[data-act="2"] .setcard,body[data-act="2"] .basecard,
 body[data-act="2"] .vsec,body[data-act="2"] .basehero,body[data-act="2"] .basecoins,body[data-act="2"] .vbar{
   border-color:#6a5436;background:rgba(40,30,16,.52);}
+/* Act-2 parity for the premium card glow: warm bronze instead of the Act-1 gem-purple */
+body[data-act="2"] .setcard,body[data-act="2"] .hubcard{
+  box-shadow:0 8px 22px rgba(0,0,0,.42), 0 0 22px rgba(200,160,80,.18), inset 0 1px 0 rgba(255,240,200,.08);}
+body[data-act="2"] .hubcard{background:linear-gradient(165deg,rgba(58,44,22,.78),rgba(28,20,10,.8));border-color:#8a6f3e;}
+body[data-act="2"] .setcard-h{border-bottom-color:rgba(200,160,80,.28);}
 body[data-act="2"] .basecard-h,body[data-act="2"] .vsec-h,body[data-act="2"] .baserank #powerLbl,
 body[data-act="2"] .basetitle,body[data-act="2"] .basecoins{color:#e6c576;}
 /* MAGIC KINGDOM display font — medieval lettering on Act-2 CHROME only (titles,
