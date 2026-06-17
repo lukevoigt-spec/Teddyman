@@ -1509,3 +1509,20 @@ body.calm .tile.wedo,body.calm .picktile.wedo,body.lite .tile.wedo,body.lite .pi
   border:2px solid var(--ink); border-radius:11px; font-family:'Bangers',cursive; font-size:14px; padding:0 7px;
   line-height:1.6; box-shadow:0 2px 4px rgba(0,0,0,.4); }
 .shop-alldone{ max-width:420px; margin:18px auto; text-align:center; color:#cfc6f2; }
+
+/* #126 whole-set COLLECTION CARD (gem-dex / villains) — FUNCTIONAL placeholder; Oracle owns the painted
+   case look + faint-slot treatment (§20), shared with the #124 squishy case. Modal modeled on #squishCard. */
+#collCard{ position:fixed; inset:0; z-index:73; display:none; align-items:center; justify-content:center; background:rgba(8,5,20,.66); }
+#collCard.on{ display:flex; }
+.coll-card{ position:relative; width:min(92vw,560px); max-height:88vh; overflow:auto; background:linear-gradient(180deg,#241a44,#160e30); border:4px solid var(--gold); border-radius:26px; padding:22px 22px 24px; text-align:center; box-shadow:0 16px 0 rgba(0,0,0,.4),0 22px 40px rgba(0,0,0,.5); }
+.coll-title{ font-size:30px; color:var(--gold); -webkit-text-stroke:3px var(--ink); paint-order:stroke; }
+.coll-sub{ font-size:15px; color:#cfc6f2; margin:2px 0 12px; }
+.coll-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(78px,1fr)); gap:10px; }
+.coll-grid.villains{ grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); }
+.collslot{ position:relative; background:rgba(0,0,0,.28); border:3px solid var(--ink); border-radius:14px; padding:6px 4px; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:default; }
+.collslot.owned[onclick],.coll-grid button.collslot{ cursor:pointer; }
+.collslot .cl-n{ font-family:'Baloo 2',sans-serif; font-weight:800; font-size:13px; color:#e9e3ff; }
+.collslot.locked .cl-n{ color:#8a82b5; }
+.collslot.locked .ic.faint{ filter:grayscale(1) brightness(.5); opacity:.4; }   /* not-yet = faint placeholder (Oracle may swap to a silhouette) */
+.collslot.mastered{ border-color:var(--gold); box-shadow:0 0 12px rgba(255,206,58,.5); }
+.collslot .ic.cage{ position:relative; }

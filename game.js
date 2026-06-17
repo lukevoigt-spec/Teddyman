@@ -1810,7 +1810,8 @@ function paintBase(){
 /* Base layered-hub actions (tap-the-thing): PLAY → next uncompleted level; GEMS → recharge; COINS → train. */
 function playNextMission(){ const ms=playMissions(currentAct()); const m=ms.find(x=>!S.done[x.id])||ms[ms.length-1]; if(m)startMission(m); else toMap(); }
 { const pb=$("btnPlayNext"); if(pb)pb.onclick=()=>{ Aud.pick&&Aud.pick(); playNextMission(); }; }
-{ const gp=$("gemsPanel");   if(gp)gp.onclick=()=>{ Aud.pick&&Aud.pick(); startVault(); }; }      /* GEMS → recharge */
+{ const gp=$("gemsPanel");   if(gp)gp.onclick=()=>{ Aud.pick&&Aud.pick(); openCollectionCard("gems"); }; }   /* #126: GEMS → gem-dex card (recharge reachable from inside it) */
+{ const vb=$("villainsBlock"); if(vb)vb.onclick=()=>{ Aud.pick&&Aud.pick(); openCollectionCard("villains"); }; }   /* #126: VILLAINS shelf → whole-set card */
 { const cm=$("chargeMeter"); if(cm)cm.onclick=()=>{ Aud.pick&&Aud.pick(); startVault(); }; }      /* Gem Charge meter → recharge */
 { const sp=$("squishPanel"); if(sp)sp.onclick=()=>{ Aud.pick&&Aud.pick(); openShop(); }; }        /* SQUISHIES → inventory + shop */
 { const dm=$("baseDailyMeter");  if(dm)dm.onclick=()=>{ Aud.pick&&Aud.pick(); showTrain(); }; }   /* Today meter → train */
@@ -1914,7 +1915,7 @@ function paintBossShelf(){ const sh=$("bossShelf"); if(!sh)return; sh.innerHTML=
   BOSSES.forEach(b=>{ if(S.done[b.mid]){ any=true;
     const btn=document.createElement("button"); btn.className="bossfig"; btn.title="Tap "+b.name;
     btn.innerHTML=`<div class="bf-cage">${b.art(48)}<div class="cagebars"></div></div><div class="bf-name">${b.name}</div>`;
-    btn.onclick=()=>openBossCage(b); sh.appendChild(btn); } });
+    btn.onclick=e=>{ e.stopPropagation(); openCollectionCard("villains"); }; sh.appendChild(btn); } });   /* #126: any villains tap → the whole-set card (the quip lives inside it) */
   if(!any)sh.innerHTML='<div class="baselbl" style="font-size:15px;">Defeat villains to capture them here!</div>';
   const bc=$("bossCount"); if(bc)bc.textContent=BOSSES.filter(b=>S.done[b.mid]).length+" / "+BOSSES.length; }
 function openBossCage(b){ $("bcBoss").innerHTML=b.art(190); $("bcName").textContent=b.name;
@@ -1922,6 +1923,43 @@ function openBossCage(b){ $("bcBoss").innerHTML=b.art(190); $("bcName").textCont
 function closeBossCage(){ Aud.stop(); $("bossCage").classList.remove("on"); }
 $("bcClose").onclick=e=>{ e.stopPropagation(); closeBossCage(); };
 $("bossCage").onclick=e=>{ if(e.target.id==="bossCage")closeBossCage(); };
+
+/* #126: a whole-set COLLECTION CARD — the #124 display-case pattern applied to GEMS (a gem-dex of all 26
+   letter gems) and VILLAINS (all captured bosses). Tap a Base shelf → see EVERY item in the set: owned/
+   defeated filled, not-yet faint (the album/collection drive). Reuses existing data — no new save state.
+   Oracle owns the painted card look (§20); this is the functional DOM + the tap wiring. */
+function openCollectionCard(kind){
+  const grid=$("collGrid"); if(!grid)return; grid.innerHTML=""; grid.className="coll-grid "+kind;
+  const act=$("collAction"); if(act){ act.style.display="none"; act.onclick=null; }
+  if(kind==="gems"){
+    $("collTitle").textContent="GEM-DEX";
+    const got=ORDER.filter(g=>S.done[LETTER_MISSION[g]]).length;
+    $("collSub").textContent=got+" / "+ORDER.length+" gems"+(got?" · "+Math.round(100*got/ORDER.length)+"%":"");
+    ORDER.forEach(g=>{ const owned=!!S.done[LETTER_MISSION[g]], ret=owned&&retainedItem(g);
+      const d=document.createElement("div"); d.className="collslot"+(owned?(ret?" owned mastered":" owned"):" locked");
+      d.innerHTML = owned
+        ? `<div class="ic">${gemSVG(g, GEMCOLOR[g], 44)}</div><div class="cl-n">${g.toUpperCase()}</div>`
+        : `<div class="ic faint">${gemSVG(g, GEMCOLOR[g], 44)}</div><div class="cl-n">?</div>`;
+      grid.appendChild(d); });
+    /* keep the Memory-Vault recharge reachable from the card (the GEMS tap used to go straight to it) */
+    if(act){ act.style.display=""; act.textContent="Recharge gems"; act.onclick=()=>{ closeCollectionCard(); startVault(); }; }
+  } else if(kind==="villains"){
+    $("collTitle").textContent="CAPTURED VILLAINS";
+    const got=BOSSES.filter(b=>S.done[b.mid]).length;
+    $("collSub").textContent=got+" / "+BOSSES.length+" captured";
+    BOSSES.forEach(b=>{ const won=!!S.done[b.mid];
+      const d=document.createElement(won?"button":"div"); d.className="collslot"+(won?" owned":" locked");
+      d.innerHTML = won
+        ? `<div class="ic cage">${b.art(56)}<div class="cagebars"></div></div><div class="cl-n">${b.name}</div>`
+        : `<div class="ic faint">${b.art(56)}</div><div class="cl-n">?</div>`;
+      if(won)d.onclick=()=>openBossCage(b);   /* tap a captured villain → its quip popup */
+      grid.appendChild(d); });
+  }
+  $("collCard").classList.add("on");
+}
+function closeCollectionCard(){ Aud.stop&&Aud.stop(); $("collCard").classList.remove("on"); }
+{ const x=$("collClose"); if(x)x.onclick=e=>{ e.stopPropagation(); closeCollectionCard(); }; }
+{ const c=$("collCard"); if(c)c.onclick=e=>{ if(e.target.id==="collCard")closeCollectionCard(); }; }
 
 /* ---------------- TRAINING ROOM + HERO SHOP ----------------
    A supplementary DAILY practice loop, decoupled from story progression. It
