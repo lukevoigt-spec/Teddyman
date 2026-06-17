@@ -1903,7 +1903,7 @@ function openChest(tier,done){ const cfg=CHESTS[tier]; if(!cfg||!(S.chests&&S.ch
     if(un.length)item=un[Math.floor(Math.random()*un.length)]; }
   const bonus=item?0:Math.round(cfg.coinMin*0.5);   /* all squishies owned → small bonus coins so it's never a dud */
   const gain=coins+bonus; S.coins=(S.coins||0)+gain;
-  if(item){ S.owned=S.owned||{}; S.owned[item.id]=true; }
+  if(item){ S.owned=S.owned||{}; S.owned[item.id]=(S.owned[item.id]||0)+1; }   /* #124: count, not boolean (dup badge) */
   S.chests[tier]=Math.max(0,(S.chests[tier]||0)-1); save();
   /* the box pops OPEN + treasure bursts out of it */
   const img=$("chestImg"); if(img)img.src="art/chest-open.png";
@@ -2289,7 +2289,7 @@ function openSquishCard(it){ const owned=!!S.owned[it.id], can=(S.coins||0)>=it.
   const btn=$("sqBtn");
   if(owned){ btn.className="btn ghost"; btn.disabled=true; btn.textContent="IN YOUR COLLECTION"; btn.onclick=null; }
   else { btn.disabled=false; btn.className="btn"+(can?"":" cant"); btn.innerHTML=gicon("coin",24)+" <span>"+it.cost+"</span>";
-    btn.onclick=()=>{ if((S.coins||0)>=it.cost){ S.coins-=it.cost; S.owned[it.id]=true; save(); Aud.ding();
+    btn.onclick=()=>{ if((S.coins||0)>=it.cost){ S.coins-=it.cost; S.owned[it.id]=(S.owned[it.id]||0)+1; save(); Aud.ding();   /* #124: count, not boolean */
         $("squishCard").classList.remove("on");
         showUnlock(`<div style="line-height:1;">${itemArt(it,170)}</div>`, it.nm.toUpperCase(), "NEW SQUISHY!");
         paintShop(); }
