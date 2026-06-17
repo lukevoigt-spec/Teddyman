@@ -1532,3 +1532,16 @@ body.calm .tile.wedo,body.calm .picktile.wedo,body.lite .tile.wedo,body.lite .pi
 .collslot.locked .ic.faint{ filter:grayscale(1) brightness(.5); opacity:.4; }   /* not-yet = faint placeholder (Oracle may swap to a silhouette) */
 .collslot.mastered{ border-color:var(--gold); box-shadow:0 0 12px rgba(255,206,58,.5); }
 .collslot .ic.cage{ position:relative; }
+/* #126 §20 — match the #124 squishy display-case language so the gem-dex / villains card reads the same:
+   owned slots POP (gold frame + glow), not-yet = sunken DASHED empty sockets (faint silhouette + "?"),
+   a retained/mastered gem keeps a stronger gold glow. */
+.collslot.owned{ border-color:var(--gold); background:linear-gradient(180deg,rgba(44,32,78,.6),rgba(18,11,38,.6));
+  box-shadow:0 4px 0 rgba(0,0,0,.26), 0 0 13px rgba(255,206,58,.2); }
+.collslot.locked{ border-style:dashed; border-color:#352a5e; background:rgba(8,5,20,.5);
+  box-shadow:inset 0 3px 10px rgba(0,0,0,.5); }
+.collslot.locked .ic.faint{ filter:grayscale(1) brightness(.42); opacity:.3; }
+.collslot.locked .cl-n{ font-family:'Bangers',cursive; font-size:19px; color:#6a5fa0; }
+.collslot.mastered{ border-color:var(--gold); box-shadow:0 4px 0 rgba(0,0,0,.26), 0 0 16px rgba(255,206,58,.55); }
+/* Act-2: the villains-card cage bars go IRON (match the act-2 reward-modal cages), not Vex-blue */
+body[data-act="2"] .collslot .ic.cage .cagebars{ background:repeating-linear-gradient(90deg,rgba(172,172,184,.9) 0 2.5px,transparent 2.5px 12px);
+  box-shadow:inset 0 3px 0 rgba(120,120,134,.95), inset 0 -3px 0 rgba(120,120,134,.95); }

@@ -15,6 +15,21 @@ resolves before merge; this file keeps the durable before/after record. Shots li
 
 ---
 
+## 2026-06-17 · #126 whole-set collection cards (gem-dex + villains) — §20 styling  ·  PASS
+**Branch:** `oracle/collcard` → PR. Neo shipped the card DOM in #146 ("Oracle owns the painted case look,
+shared with #124"). **CSS-only.** Applied the SAME display-case language as the #124 squishy case to
+`.collslot`, so all four collection surfaces (squishy store/collection + gem-dex + villains) now read as
+ONE system: owned slots POP (gold frame + glow), retained/mastered gems get a stronger glow, not-yet =
+**sunken dashed empty SOCKETS** (faint silhouette + "?"). Plus an Act-2 override so the villains-card cage
+bars go IRON (matching the act2-modals cages), not Vex-blue.
+**Shots:** `gemdex` (26 letter gems — gold-framed owned + dashed empty sockets, "13/26 · 50%"), `villdex`
+(captured bosses in gold cages + dashed empty sockets). Consistent with the squishy case, premium, emoji-
+free. Tests: ui-emoji 44/44, curriculum 116/116, save 129/129.
+**This clears the last Oracle item in the #124/#126 batch** — squishy/gem/villain collections + the Hero
+Base now share one cohesive collection-case visual language.
+
+---
+
 ## 2026-06-17 · Button consistency — unify secondary (ghost) buttons into the plate family  ·  PASS
 **Branch:** `oracle/ghost-btn` → PR. Parent: "evaluate whether any buttons need to be render-painted — we
 want consistent buttons." **Evaluation:** primary actions (all 52 `.btn`) already use the painted 9-slice
