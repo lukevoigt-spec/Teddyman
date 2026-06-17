@@ -1123,7 +1123,7 @@ function bossRound(g){
 let readWords,readIx,readGoal,readMiss;
 function startRead(m){ show("scrRead");
   readWords=m.words.slice(); readIx=0; readGoal=readWords.length; readMiss=0;
-  flow(narrate("read",$("readText"),["read_intro"]),()=>nextRead()); }
+  flow(narrate("read",$("readText"),["read_intro"]),()=>introMechanic("read", nextRead)); }   /* #130: model the read once, then play */
 function readPool(){ return currentAct()===2 ? READWORDS2 : READWORDS; }   /* Act-2 decode uses digraph words */
 function readSoundOut(w){ return Aud.play([...graphemeSounds(w),"word_"+w]); }
 function nextRead(){
@@ -1139,11 +1139,13 @@ function nextRead(){
   toGraphemes(w).forEach((c,j)=>{ const t=document.createElement("button"); t.className="tile read rletter"; t.textContent=c;
     if(me&&j===me.e)t.classList.add("silente"); if(me&&j===me.v)t.classList.add("longv");
     const s=snds[j]; t.onclick=()=>Aud.play(s); wr.appendChild(t); });
-  /* three picture choices: the word + two other picture-words */
-  const foils=Object.keys(POOL).filter(x=>x!==w).sort(()=>Math.random()-.5).slice(0,2);
+  /* three picture choices (the word + two foils); #130 we-do: the first reps after the demo show ONE fewer
+     foil + pulse the right picture, then it fades to full difficulty. */
+  const wedo=__wedo.read>0; if(wedo)__wedo.read=Math.max(0,__wedo.read-1);
+  const foils=Object.keys(POOL).filter(x=>x!==w).sort(()=>Math.random()-.5).slice(0,wedo?1:2);
   const opts=[w,...foils].sort(()=>Math.random()-.5);
   const cr=$("readChoices"); cr.innerHTML="";
-  opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.innerHTML=picIcon(o, POOL[o]); b.dataset.w=o;
+  opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"+(wedo&&o===w?" wedo":""); b.innerHTML=picIcon(o, POOL[o]); b.dataset.w=o;
     b.onclick=()=>{ if(o===w){ lockRow(cr); record("w_"+w,true); b.classList.add("win"); burstAt(b); Aud.ding();   /* #82: lock so a fast double-tap can't re-fire record() during the async flow */
         if(magicE(w))record(magicE(w).unit,true);   /* credit the long-vowel rule */
         readIx++; flow(Aud.play(["read_yes",...graphemeSounds(w),"word_"+w]),()=>setTimeout(nextRead,200)); }
@@ -1416,12 +1418,69 @@ function startPatrol(set){ Aud.play("patrol_intro");
 
 /* ---------------- FORGE ---------------- */
 let forgeWords,forgeWordIx,forgeSlotIx,forgeHP;
+/* ============ #130 FTUE — I-do / we-do model-demos (gradual release; worked-examples effect, PEDAGOGY.md) ============
+   The FIRST time the child hits Forge / Read / Blend, model the procedure ONCE (I-do): the narrator builds or
+   reads ONE word slowly with NO input required, then the first reps are gently scaffolded (we-do = drop a foil
+   + pulse the right answer), then it's normal play (you-do). Gated per-mechanic on S.ftue[kind] (show once).
+   Audio-first, flow()-driven (skippable + the 45s watchdog → can never hang, #8), and CALM — no reward juice on
+   the teaching (seductive-details). The proven handlers are UNCHANGED once the flag is set (a no-op pass-through). */
+let __wedo={forge:0,read:0};   /* we-do scaffold reps left after a demo (transient — only set right after an I-do) */
+function clearDemoHi(){ document.querySelectorAll(".demo-hi").forEach(e=>e.classList.remove("demo-hi")); }
+function introMechanic(kind, doneCb){
+  S.ftue=S.ftue||{};
+  if(S.ftue[kind]){ doneCb(); return; }       /* already modelled → straight to play, zero change to the flow */
+  S.ftue[kind]=true; save();
+  if(kind==="read") readDemo(doneCb); else forgeDemo(doneCb);   /* forge + blend share the build demo */
+}
+/* I-do (build): auto-build the mission's first word — sound each grapheme, drop its gem into the slot. No input. */
+function forgeDemo(cb){
+  const w=(forgeWords&&forgeWords[0])||"sat", gs=toGraphemes(w), snds=graphemeSounds(w);
+  const slots=$("forgeSlots"); if(slots){ slots.innerHTML="";
+    gs.forEach(()=>{ const s=document.createElement("div"); s.className="slot read"; slots.appendChild(s); }); }
+  const row=$("forgeChoices"); const tiles={}; if(row){ row.innerHTML="";
+    [...new Set(gs)].forEach(g=>{ const t=document.createElement("button"); t.className="tile read demo-tile"; t.textContent=g;
+      t.style.width=t.style.height="clamp(80px,13vw,120px)"; t.style.fontSize="clamp(44px,7vw,66px)"; t.disabled=true;
+      tiles[g]=t; row.appendChild(t); }); }
+  __wedo.forge=2;   /* scaffold the first 2 real reps after the demo */
+  let i=0;
+  const step=()=>{
+    if(i>=gs.length){ flow(Aud.play([...snds,"word_"+w,"forge_demo2"]),()=>{ clearDemoHi(); cb(); }); return; }
+    const slot=slots&&slots.children[i], tile=tiles[gs[i]];
+    if(slot)slot.classList.add("demo-hi"); if(tile)tile.classList.add("demo-hi");
+    flow(Aud.play([snds[i]]),()=>{ if(slot){ slot.textContent=gs[i]; slot.classList.add("filled"); slot.classList.remove("demo-hi"); }
+      if(tile)tile.classList.remove("demo-hi"); i++; setTimeout(step,320); });
+  };
+  flow(narrate("forge",$("forgeText"),["forge_demo1"]), step);
+}
+/* I-do (read): read the mission's first word — sound each grapheme, then glow the picture it means. No input. */
+function readDemo(cb){
+  const w=(readWords&&readWords[0])||"sat", POOL=readPool(), me=magicE(w), snds=graphemeSounds(w);
+  const wr=$("readWord"); if(wr){ wr.innerHTML="";
+    toGraphemes(w).forEach((c,j)=>{ const t=document.createElement("button"); t.className="tile read rletter"; t.textContent=c;
+      if(me&&j===me.e)t.classList.add("silente"); if(me&&j===me.v)t.classList.add("longv"); wr.appendChild(t); }); }
+  const foils=Object.keys(POOL).filter(x=>x!==w).sort(()=>Math.random()-.5).slice(0,2);
+  const opts=[w,...foils].sort(()=>Math.random()-.5);
+  const cr=$("readChoices"); const pics={}; if(cr){ cr.innerHTML="";
+    opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.innerHTML=picIcon(o,POOL[o]);
+      b.dataset.w=o; b.disabled=true; pics[o]=b; cr.appendChild(b); }); }
+  __wedo.read=2;
+  const gtiles=wr?wr.querySelectorAll(".rletter"):[]; let i=0;
+  const step=()=>{
+    if(i>=snds.length){ flow(Aud.play(["word_"+w]),()=>{ const pic=pics[w]; if(pic)pic.classList.add("demo-hi");
+        flow(Aud.play(["read_demo2"]),()=>{ clearDemoHi(); cb(); }); }); return; }
+    const t=gtiles[i]; if(t)t.classList.add("demo-hi");
+    flow(Aud.play([snds[i]]),()=>{ if(t)t.classList.remove("demo-hi"); i++; setTimeout(step,300); });
+  };
+  flow(narrate("read",$("readText"),["read_demo1"]), step);
+}
 function startForge(m){ show("scrForge");
   forgeWords=m.words.slice(); forgeWordIx=0; forgeHP=forgeWords.length;
   $("forgeBoss").innerHTML=`<div class="boss" id="forgeSprite" style="width:clamp(130px,22vw,200px)">${bossSprite(200)}</div>`;
   paintPips("forgePips",forgeHP,forgeWords.length);
   const intro = m.id===111 ? ["blend_intro"] : ["forge_intro1","forge_intro2"];   /* first Blends mission gets Noah's blend explainer */
-  flow(narrate("forge",$("forgeText"),intro),()=>forgeWord()); }   /* autoplays; no tap-to-start gate */
+  /* #130: model the build ONCE before the first real rep (blend keeps its own FTUE flag so a forge-veteran
+     still sees the blend explainer + demo). After the flag is set this is a no-op straight to forgeWord. */
+  flow(narrate("forge",$("forgeText"),intro),()=>introMechanic(m.id===111?"blend":"forge", forgeWord)); }
 function forgeWord(){
   if(forgeWordIx>=forgeWords.length){
     const fs=$("forgeSprite"); if(fs)fs.classList.add("flee");
@@ -1444,10 +1503,14 @@ function forgeWord(){
     if(prefill.has(j)){ s.textContent=g; s.classList.add("filled","given"); }   /* /\u0259r/ gem given */
     slots.appendChild(s); });
   const pool=taughtGraphemes().filter(x=>!gs.includes(x)&&!RCTRL_SCHWA.includes(x));   /* distractor: taught graphemes, never an ambiguous /\u0259r/ */
-  const foil=pool[Math.floor(Math.random()*pool.length)];
+  const wedo=__wedo.forge>0;   /* #130 we-do: first reps after the demo are scaffolded \u2014 drop the foil + pulse the next gem */
+  const foil=wedo?null:pool[Math.floor(Math.random()*pool.length)];
   const buildGs=gs.filter((g,j)=>!prefill.has(j));   /* tiles the child actually places */
   const choices=[...new Set(buildGs)].concat(foil?[foil]:[]).sort(()=>Math.random()-.5);
   const row=$("forgeChoices"); row.innerHTML="";
+  /* #130 we-do: gently pulse the gem the child needs NEXT (re-applied as slots fill); inert once wedo is false */
+  const pulseNext=()=>{ const need=gs[forgeSlotIx];
+    row.querySelectorAll(".tile").forEach(t=>t.classList.toggle("wedo", wedo && t.textContent===need && !t.classList.contains("dim"))); };
   choices.forEach(c=>{ const t=document.createElement("button"); t.className="tile read"; t.textContent=c;
     t.style.width=t.style.height="clamp(80px,13vw,120px)"; t.style.fontSize="clamp(44px,7vw,66px)";
     t.onclick=()=>{ const need=gs[forgeSlotIx];
@@ -1457,15 +1520,17 @@ function forgeWord(){
         if(forgeSlotIx>=gs.length){
           lockRow(row);   /* #82: word done → lock so a double-tap can't re-fire during the async forge flow */
           if(me)record(me.unit,true);   /* credit the long-vowel rule */
+          if(wedo)__wedo.forge=Math.max(0,__wedo.forge-1);   /* #130: this rep was scaffolded — one fewer to go */
           forgeHP--; paintPips("forgePips",forgeHP,forgeWords.length);
           const fs=$("forgeSprite"); if(fs){ fs.classList.add("hitfx"); setTimeout(()=>fs.classList.remove("hitfx"),380); }   /* #83: guard like every other sprite touch (gone on a fast Home-tap / re-render) */
           burstAt(fs,w.toUpperCase()+"!");
           flow(Aud.play([...snds,"word_"+w,"blast"]),()=>{forgeWordIx++;setTimeout(forgeWord,350);});
-        } else Aud.play([snds[justIx],"forge_next"]); }
+        } else { pulseNext(); Aud.play([snds[justIx],"forge_next"]); } }
       else { record(need,false); t.classList.add("dim");
         Aud.play(["forge_listen","snd_"+need]);
         setTimeout(()=>t.classList.remove("dim"),2400); } };
-    row.appendChild(t); }); }
+    row.appendChild(t); });
+  pulseNext(); }
 
 /* ---------------- MAGIC-E SPELL (long vowels, type:"magic") ----------------
    Noah's signature teach: show a short word (cap), then CAST the silent E — it

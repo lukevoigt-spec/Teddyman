@@ -80,6 +80,10 @@ ok("partial keeps real progress", partial.done[0]===true && partial.equip.weapon
 ok("fresh() seeds scrolls:{} (Spell Scroll spaced-review state)", (function(){ var f=fresh(); return f.scrolls && typeof f.scrolls==="object" && Object.keys(f.scrolls).length===0; })());
 ok("migrate() adds scrolls to an old save without it (additive, save-safe)", typeof legacy.scrolls==="object" && legacy.scrolls!==null);
 ok("migrate() PRESERVES existing scroll progress", (function(){ var m=migrate({v:1, scrolls:{a1s1:{reps:3,bestMs:8000,box:2,due:"2026-07-01"}}}); return m.scrolls.a1s1 && m.scrolls.a1s1.reps===3 && m.scrolls.a1s1.box===2; })());
+/* #130 FTUE: per-mechanic model-demo flags (forge/read/blend) — additive + save-safe; existing flags preserved. */
+ok("#130 fresh() seeds ftue:{}", (function(){ var f=fresh(); return f.ftue && typeof f.ftue==="object" && Object.keys(f.ftue).length===0; })());
+ok("#130 migrate() adds ftue:{} to an old save (additive)", (function(){ var m=migrate({v:1,done:{},mastery:{}}); return m.ftue && typeof m.ftue==="object"; })());
+ok("#130 migrate() PRESERVES existing ftue flags (don't re-show a seen demo)", (function(){ var m=migrate({v:1,ftue:{forge:true,read:true},done:{},mastery:{}}); return m.ftue.forge===true && m.ftue.read===true; })());
 
 grp("load() recovers from a damaged primary via the backup");
 clearStore();
