@@ -400,6 +400,10 @@ const __bgCache={};
    real file loads on the FIRST try — avoids a 404 (ERR_FILE_NOT_FOUND console-noise) on every scene
    change while the loader fell through jpg→jpeg. Any other dropped format still resolves down-chain. */
 const BG_EXTS=["jpeg","png","jpg","webp"];   /* drop any of these — no conversion needed */
+/* base-room is the ONLY scene shipped as .png (every other painted scene is .jpeg). Probe png FIRST
+   for it so the Hero Base doesn't 404 on art/bg-base-room.jpeg on every entry (#113 — also covers the
+   act-2 bg-base-room-a2.png via the shared "base-room" slot). Other slots keep the jpeg-first order. */
+const BG_EXT_BY_SLOT={ "base-room":["png","jpeg","jpg","webp"] };
 /* Painted scene loader — ACT-AWARE + format-flexible. Act 2+ prefers its own scene
    (bg-<slot>-a2.*), falling back to the Act-1 scene (bg-<slot>.*), then to the
    transparent default. Tries jpeg → png → jpg → webp for each. Any missing file just
@@ -408,7 +412,8 @@ function setBG(id){ const layer=$("bgLayer"); if(!layer)return;
   const slot=BG_MAP[id];
   if(!slot){ layer.classList.remove("on"); return; }
   const a=currentAct(), names = a>1 ? [slot+"-a"+a, slot] : [slot];
-  const urls=[]; names.forEach(n=>BG_EXTS.forEach(e=>urls.push("art/bg-"+n+"."+e)));
+  const exts = BG_EXT_BY_SLOT[slot] || BG_EXTS;
+  const urls=[]; names.forEach(n=>exts.forEach(e=>urls.push("art/bg-"+n+"."+e)));
   tryBG(layer, urls, 0, id); }
 function tryBG(layer, urls, i, id){
   if(i>=urls.length){ layer.classList.remove("on"); return; }   /* none present → transparent default */
@@ -1624,7 +1629,10 @@ function paintBase(){
   const weapons=[["none","HANDS"],...ownedWeapons().map(w=>[w.k,w.lbl])];
   weapons.forEach(([k,lbl])=>{ const b=document.createElement("button");
     b.className="wtile"+(S.equip.weapon===k?" onsel":""); b.title=lbl;
-    b.innerHTML='<img src="art/'+(k!=="none"?"wpn-"+k:"fists")+'.png" alt="'+lbl+'" draggable="false"><span class="wname">'+lbl+'</span>';
+    /* loadout-picker thumbnails are big PNGs but NON-critical (the hero is a separate raster) — load them
+       lazily + low-priority so the Base paints (bg-base-room + hero) first (#113). Byte reduction of these
+       1.3–2.2MB PNGs into small thumb variants is an Oracle art follow-up. */
+    b.innerHTML='<img src="art/'+(k!=="none"?"wpn-"+k:"fists")+'.png" alt="'+lbl+'" draggable="false" loading="lazy" decoding="async" fetchpriority="low"><span class="wname">'+lbl+'</span>';
     b.onclick=()=>{S.equip.weapon=k;save();Aud.ding();paintBase();};
     wrow.appendChild(b); });
   if(weapons.length===1){ const hint=document.createElement("div"); hint.className="baselbl";
@@ -1638,7 +1646,7 @@ function paintBase(){
   capes.forEach(([k,lbl,img,need])=>{ const locked=S.stars<need;
     const b=document.createElement("button");
     b.className="wtile"+(S.equip.cape===k?" onsel":"")+(locked?" lockd":""); b.title=lbl;
-    b.innerHTML='<img src="art/cape-'+img+'.png" alt="'+lbl+'" draggable="false"><span class="wname">'+(locked?(lbl+" · "+need):lbl)+'</span>';
+    b.innerHTML='<img src="art/cape-'+img+'.png" alt="'+lbl+'" draggable="false" loading="lazy" decoding="async" fetchpriority="low"><span class="wname">'+(locked?(lbl+" · "+need):lbl)+'</span>';
     b.onclick=()=>{ if(locked){Aud.play&&Aud.play("shop_need");return;} S.equip.cape=k;save();Aud.ding();paintBase(); };
     crow.appendChild(b); });
   /* gem shelf: earned letters only */
