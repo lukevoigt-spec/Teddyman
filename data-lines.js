@@ -256,7 +256,7 @@ const LINES={
   leighton2:{t:"Super Teddy! You found me! I always knew you could read! You're my hero!", v:"L"},
   leighton3:{t:"LEIGHTON is FREE! Star Force City is SAVED! The main story is complete — you are a true READER and a true HERO!", v:"L"},
   interlude1:{t:"Wait, Super Teddy — an urgent message is coming in! It's your Mom and Dad!"},
-  interlude2:{t:"Hero, we are SO proud of you. But there's no time to rest. A cunning new villain has appeared — and she has kidnapped Miss Kendall... and your friends JJ, Nora, and Cal!", v:"P"},
+  interlude2:{t:"Hero, we are SO proud of you. But there's no time to rest. A cunning new villain has appeared — and she has kidnapped Miss Kendall... and your friends Cal, Nora, Brody, Daisy, and Bryce!", v:"P"},
   interlude3:{t:"Hello, little hero. Such a shame to spoil your party. I'm whisking your precious friends far, far away — to a time long, long ago. Do try to catch up... if you can. Ta-ta!", v:"V"},
   interlude4:{t:"She slipped through a shimmering time portal — to the age of KNIGHTS and DRAGONS! A mighty wizard named Noah the Red is already there, waiting to help you, hero."},
   interlude_knight:{t:"You leap into the portal! In a swirl of light your gems and gear are gone... and you rise again as SUPER TEDDY THE SQUIRE! Train hard, brave reader, and you will earn your knighthood."},
@@ -430,7 +430,7 @@ const LINES={
   home4:{t:"Teddy, you read your way through a whole castle of dragons to find me. You sounded out every word, and you never gave up on the hard ones.", v:"K"},
   home5:{t:"Oh Bud! Good boy… I mean good Teddy!", v:"P"},
   home6:{t:"You're ready now, Teddy. Ready for second grade — and you are going to do great.", v:"K"},
-  home7:{t:"Your whole team cheers your name — Archie, Ellie, William, Amelia, Leighton, JJ, Nora, and Cal: Super Teddy! Super Teddy!"},
+  home7:{t:"Your whole team cheers your name — Archie, Ellie, William, Amelia, Leighton, Cal, Nora, Brody, Daisy, and Bryce: Super Teddy! Super Teddy!"},
   home8:{t:"Way to go, buddy boy! I'm proud of how hard you worked. You never gave up and you gave it your best, and now look at you… you can actually read! Now let's go play some Minecraft.", v:"P"}
 };
 /* High-frequency lines that ROTATE to fight repetition fatigue (parent 2026-06-14): base id -> its

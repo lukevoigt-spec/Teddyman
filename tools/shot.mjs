@@ -87,7 +87,39 @@ const SCENES = {
   scanintro: `(function(){ show('scrScan'); narrate('scan',document.getElementById('scanText'),['scan_intro']); clearFlow(); return 1; })()`,
   intro: `(function(){ startIntro(); clearFlow(); return 1; })()`,
   cut_a2: `(function(){ S.act=2; startAct2Intro(); clearFlow(); return 1; })()`,   // Act-2 medieval storybook page
+  inter0: `(function(){ S.act=1; startInterlude(); clearFlow(); return 1; })()`,                 // mom&dad duo
+  inter1: `(function(){ S.act=1; startInterlude(); interIx=1; paintInter(); clearFlow(); return 1; })()`,  // captured friends
+  inter2: `(function(){ S.act=1; startInterlude(); interIx=2; paintInter(); clearFlow(); return 1; })()`,  // Vixen
+  inter3: `(function(){ S.act=1; startInterlude(); interIx=3; paintInter(); clearFlow(); return 1; })()`,  // portal (muscle Teddy)
+  interk: `(function(){ S.act=2; startInterlude(); interIx=4; paintInter(); clearFlow(); return 1; })()`,  // squire knight
+  cut_a2b: `(function(){ S.act=2; startAct2Intro(); a2Ix=1; paintA2(); clearFlow(); return 1; })()`,        // Noah + squire
+  home0: `(function(){ S.act=2; startHomecoming(); clearFlow(); return 1; })()`,                 // portal home
+  home2: `(function(){ S.act=2; startHomecoming(); homeIx=2; paintHome(); clearFlow(); return 1; })()`,    // cast
+  home7: `(function(){ S.act=2; startHomecoming(); homeIx=6; paintHome(); clearFlow(); return 1; })()`,    // cast lifts him
+  // PROOF: painted illustration full-bleed inside the comic page (Act 1) and the storybook page (Act 2)
+  proof1: `(function(){ S.act=1; document.body.dataset.act=1; startIntro(); document.getElementById('introArt').innerHTML='<img src="art/cut-city.png" style="width:100%;height:100%;object-fit:cover;display:block;">'; document.getElementById('introArt').classList.add('illo'); var t=document.querySelector('#introText span'); if(t)t.textContent='Look up there — Star Force City, the brightest city in the whole galaxy, powered by glowing Letter Gems.'; clearFlow(); return 1; })()`,
+  proof2: `(function(){ S.act=2; document.body.dataset.act=2; startAct2Intro(); document.getElementById('interArt').innerHTML='<img src="art/cut-hero.png" style="width:100%;height:100%;object-fit:cover;display:block;">'; document.getElementById('interArt').classList.add('illo'); var t=document.querySelector('#interText span'); if(t)t.textContent='And Super Teddy rose over the city, ready to read his way to victory.'; clearFlow(); return 1; })()`,
+  // PAINTED-BOOK proof (Act 2): book raster layered on the backdrop; left page = scene + canonical knight; right page = prose
+  bookproof: `(function(){ document.body.dataset.act=2;
+    document.body.innerHTML='<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 38%,#3b2a52,#130c1f);display:flex;align-items:center;justify-content:center;">'
+    +'<div style="position:relative;width:min(940px,95vw);aspect-ratio:3/2;filter:drop-shadow(0 26px 50px rgba(0,0,0,.6));">'
+    +'<img src="art/cut-book.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;">'
+    +'<div style="position:absolute;left:15%;top:20%;width:31%;height:60%;overflow:hidden;border-radius:4px;border:2px solid rgba(120,85,35,.5);box-shadow:0 3px 8px rgba(60,40,15,.4);">'
+    +'<img src="art/bg-kingdom.png" style="width:100%;height:100%;object-fit:cover;display:block;">'
+    +'<img src="art/teddy-knight-m0.png" style="position:absolute;left:50%;bottom:-2%;transform:translateX(-50%);height:74%;filter:drop-shadow(0 5px 5px rgba(0,0,0,.45));">'
+    +'</div>'
+    +'<div style="position:absolute;left:53%;top:24%;width:31%;height:52%;display:flex;flex-direction:column;justify-content:center;font-family:Georgia,serif;color:#3a2614;font-size:clamp(14px,1.9vw,20px);line-height:1.48;">'
+    +'<span><span style="float:left;font-family:MedievalSharp,serif;font-size:3em;line-height:.7;padding:4px 9px 0 0;color:#9a2a22;">S</span>ir Teddy stepped into the Magic Kingdom — a brave squire, ready to learn the runes of old and rescue his friends.</span>'
+    +'</div>'
+    +'</div></div>'; return 1; })()`,
+  // HERO comic, likeness-fixed: painted dawn bg + the CANONICAL blond teddy-m0 (regular muscles, Act-1 origin)
+  heroproof: `(function(){ S.act=1; document.body.dataset.act=1; startIntro();
+    document.getElementById('introArt').className='panelart illo';
+    document.getElementById('introArt').innerHTML='<img src="art/cut-hero.png" style="width:100%;height:100%;object-fit:cover;display:block;">';
+    var t=document.querySelector('#introText span'); if(t)t.textContent='And a brave little hero named Teddy put on his Gem Lenses — Super Teddy was born!'; clearFlow(); return 1; })()`,
   intro4: `(function(){ startIntro(); introIx=3; paintIntro(); clearFlow(); return 1; })()`,
+  intro3: `(function(){ startIntro(); introIx=2; paintIntro(); clearFlow(); return 1; })()`,
+  intro5: `(function(){ startIntro(); introIx=4; paintIntro(); clearFlow(); return 1; })()`,
   intro2: `(function(){ startIntro(); introIx=1; paintIntro(); return 1; })()`,
   nav: `(function(){ toMap(); return 1; })()`,   // 4-corner nav visible on the map hub (HUD UL, Settings UR, Base LL, Map LR)
   chests: `(function(){ S.chests={wood:2,silver:1,gold:1}; S.coins=40; [1,3].forEach(function(i){S.done[i]=true;}); paintBase(); show('scrBase'); return 1; })()`,

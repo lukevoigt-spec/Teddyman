@@ -627,14 +627,30 @@ function cutsceneFX(artEl, fx){
    aware via CSS. Also de-emoji the NEXT label: a crafted chevron, not the ➜ glyph. */
 function flipBook(id){ const b=$(id); if(!b)return; b.classList.remove("turning"); void b.offsetWidth; b.classList.add("turning"); setTimeout(()=>{ if(b)b.classList.remove("turning"); },460); }
 function nextLabel(btnId, text, last){ const b=$(btnId); if(!b)return; b.innerHTML=text+(last?"":(typeof uiIcon==="function"?uiIcon("chevron",22):"")); }
+/* cutscene illustration helpers (book LEFT page): a painted full scene, or a painted background with
+   canonical character raster(s) composited on top so the cast keeps its EXACT likeness + correct tier. */
+/* Each returns a 3:2 .illoframe (CSS feathers its edges into the parchment + fits full width, no crop). */
+function illo(file){ return `<div class="illoframe"><img src="art/${file}.png" alt="" draggable="false"></div>`; }
+function illoFig(bg, fig, h){ return `<div class="illoframe">`
+  +`<img class="ifbg" src="art/${bg}.png">`
+  +`<img class="iffig" src="art/${fig}.png" style="height:${h||86}%;">`
+  +`</div>`; }
+function illoDuo(bg, a, b, h){ return `<div class="illoframe">`
+  +`<img class="ifbg" src="art/${bg}.png">`
+  +`<div class="iffigrow" style="height:${h||76}%;"><img src="art/${a}.png"><img src="art/${b}.png"></div></div>`; }
+function illoCast(bg, files, h){ return `<div class="illoframe">`
+  +`<img class="ifbg" src="art/${bg}.png">`
+  +`<div class="iffigrow" style="height:${h||50}%;">`+files.map(f=>`<img src="art/${f}.png">`).join("")+`</div></div>`; }
 
 /* ---------------- INTRO ---------------- */
+/* PAINTED storybook illustrations (parent 2026-06-16). Generated full scenes for Teddy + scenery;
+   canonical rasters composited for the established cast (Vex, Mom & Dad) so likeness stays exact. */
 const INTRO=[
- {art:citySVG(), id:"panel1"},
- {art:inkblotSVG(300), id:"panel2", fx:"villain", taunt:"intro_vex_taunt"},   /* Vex gloats after the threat lands (role C) */
- {art:`<div style="display:flex;justify-content:center;padding:24px;">${mentorChips(280)}</div>`, id:"panel3"},
- {art:`<div style="display:flex;justify-content:center;padding:20px;"><svg viewBox="0 0 200 90" width="300"><g stroke="#1d4fb8" stroke-width="9" fill="#cfe6ff" fill-opacity=".4" stroke-linejoin="round"><rect x="20" y="20" width="62" height="50" rx="12"/><rect x="116" y="20" width="62" height="50" rx="12"/><line x1="82" y1="42" x2="116" y2="42"/></g></svg></div>`, id:"panel4"},
- {art:`<div style="display:flex;justify-content:center;">${teddyArt(220,1)}</div>`, id:"panel5", fx:"heroic"}  /* the Act-1 ORIGIN superhero (painted) — never the knight, even if he's reached Act 2 */
+ {art:illo("cut-city"), id:"panel1"},
+ {art:illoFig("cut-dark","vex",54), id:"panel2", fx:"villain", taunt:"intro_vex_taunt"},   /* Vex looms over the darkened city */
+ {art:illoDuo("cut-city","mom","dad",48), id:"panel3"},
+ {art:illo("cut-dark"), id:"panel4"},
+ {art:illo("cut-hero"), id:"panel5", fx:"heroic"}   /* Act-1 ORIGIN: blond Teddy, regular (not muscular) */
 ];
 let introIx=0;
 function startIntro(){ introIx=0; show("scrIntro"); paintIntro(); }
@@ -656,11 +672,11 @@ $("btnIntroNext").onclick=()=>{ introIx++;
    future, higher-quality cutscene can be dropped back in by restoring a {video:"..."} beat + the
    playInterVideo player (see git history of this file / PR #41). */
 const INTERLUDE=[
- {art:`<div style="display:flex;justify-content:center;padding:20px;">${mentorChips(260)}</div>`, id:"interlude1"},
- {art:`<div style="display:flex;justify-content:center;">${captiveSVG(260)}</div>`, id:"interlude2"},
- {art:`<div style="display:flex;justify-content:center;">${vixenSVG(220)}</div>`, id:"interlude3", fx:"villain"},
- {art:`<div style="display:flex;justify-content:center;">${portalSVG(220)}</div>`, id:"interlude4", fx:"portal"},
- {art:`<div style="display:flex;justify-content:center;">${teddyArt(220,0,"knight")}</div>`, id:"interlude_knight", fx:"transform"}  /* painted squire — powerless knight reveal */
+ {art:illoDuo("bg-dawn","mom","dad",48), id:"interlude1"},
+ {art:illoCast("cut-cage",["ally-cal","ally-nora","ally-kendall"],54), id:"interlude2"},
+ {art:illoFig("cut-cage","vixen",58), id:"interlude3", fx:"villain"},
+ {art:illoFig("cut-portal","teddy-m2",54), id:"interlude4", fx:"portal"},   /* MUSCLE Teddy at the portal (end of Act 1) */
+ {art:illoFig("bg-kingdom","teddy-knight-m0",56), id:"interlude_knight", fx:"transform"}  /* → SQUIRE Teddy (costume swap) */
 ];
 let interIx=0;
 function startInterlude(){ interIx=0; show("scrInter"); paintInter(); }
@@ -675,9 +691,9 @@ function finishInterlude(){ Aud.stop(); setAct(2); save();
 /* Act-2 onboarding: NOAH THE RED greets Sir Teddy and explains RUNES (digraphs),
    then opens the medieval map. Plays once (S.act2intro). */
 const ACT2_INTRO=[
- {art:()=>`<div style="display:flex;justify-content:center;">${noahSVG(240)}</div>`, id:"noah1"},
- {art:()=>`<div style="display:flex;justify-content:center;gap:8px;align-items:center;">${noahSVG(160)}<div style="display:flex;gap:8px;">${["sh","ch","th"].map(d=>`<span style="font-family:Andika;font-weight:700;font-size:46px;color:#ffd75e;-webkit-text-stroke:5px #150f2e;paint-order:stroke;">${d}</span>`).join("")}</div></div>`, id:"noah2"},
- {art:()=>`<div style="display:flex;justify-content:center;">${heroNow(220)}</div>`, id:"noah3", fx:"heroic"}
+ {art:illoFig("bg-kingdom","noah",58), id:"noah1"},
+ {art:illoDuo("bg-kingdom","noah","teddy-knight-m0",50), id:"noah2"},
+ {art:illoFig("bg-kingdom","teddy-knight-m0",56), id:"noah3", fx:"heroic"}
 ];
 let a2Ix=0;
 function startAct2Intro(){ a2Ix=0; show("scrInter"); paintA2(); }
@@ -689,7 +705,7 @@ function paintA2(){ const p=ACT2_INTRO[a2Ix];
     if(a2Ix<ACT2_INTRO.length)paintA2(); else { S.act2intro=true; save(); Aud.stop(); toMap(); } }; }
 /* Shown when the current act has no missions yet (safe fallback). */
 function actComingSoon(){ show("scrInter");
-  $("interArt").innerHTML=`<div style="display:flex;justify-content:center;">${heroNow(220)}</div>`;
+  $("interArt").innerHTML=illoFig("bg-kingdom", currentAct()===2?"teddy-knight-m0":"teddy-m1", 56);
   faceSpeak($("interArt"),"inter",$("interText"),["interlude5"]); flipBook("interBook");
   nextLabel("btnInterNext","BACK TO TITLE",true);
   $("btnInterNext").onclick=()=>{ Aud.stop(); show("scrTitle"); }; }
@@ -711,14 +727,14 @@ function hProof(){ const earned=ORDER.filter(g=>S.done[LETTER_MISSION[g]]);
     ? `<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:520px;">`+earned.map(g=>`<span class="gembox mastered">${gemSVG(g,GEMCOLOR[g],36)}</span>`).join("")+`</div>`
     : `<div style="font-family:Bangers,cursive;color:#ffd75e;font-size:26px;">★ A HERO READER ★</div>`; }
 const HOMECOMING=[
- {art:()=>`<div style="display:flex;justify-content:center;gap:8px;align-items:center;">${noahSVG(150)}${portalSVG(150)}</div>`, id:"home1", fx:"portal"},
- {art:()=>`<div style="display:flex;justify-content:center;">${typeof citySVG==="function"?citySVG(300):heroNow(220)}</div>`, id:"home2", fx:"heroic"},
- {art:()=>`<div style="display:flex;justify-content:center;">${hCast()}</div>`, id:"home3"},
- {art:()=>`<div style="display:flex;flex-direction:column;align-items:center;gap:10px;">${hFace("kendall",168)}${hProof()}</div>`, id:"home4"},
- {art:()=>`<div style="display:flex;justify-content:center;">${hFace("mom",200)}</div>`, id:"home5"},
- {art:()=>`<div style="display:flex;justify-content:center;">${hFace("kendall",200)}</div>`, id:"home6"},
- {art:()=>`<div style="display:flex;flex-direction:column;align-items:center;gap:8px;">${heroNow(190)}${hCast()}</div>`, id:"home7", fx:"heroic"},
- {art:()=>`<div style="display:flex;justify-content:center;">${hFace("dad",200)}</div>`, id:"home8"}
+ {art:illoFig("cut-portal","teddy-knight-m2",54), id:"home1", fx:"portal"},   /* the victorious knight steps home */
+ {art:illo("cut-city"), id:"home2", fx:"heroic"},
+ {art:illoCast("cut-celebrate",["ally-leighton","ally-heart","ally-kendall"],54), id:"home3"},
+ {art:illoFig("cut-celebrate","ally-kendall",56), id:"home4"},
+ {art:illoFig("cut-celebrate","mom",56), id:"home5"},
+ {art:illoFig("cut-celebrate","ally-kendall",56), id:"home6"},
+ {art:illoCast("cut-celebrate",["ally-tank","teddy-knight-m2","ally-flip"],56), id:"home7", fx:"heroic"},
+ {art:illoFig("cut-celebrate","dad",56), id:"home8"}
 ];
 let homeIx=0;
 function startHomecoming(){ homeIx=0; show("scrInter"); paintHome(); }
