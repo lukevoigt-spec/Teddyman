@@ -425,6 +425,21 @@ grp("#145 Squishy economy v2 — 50 zone-unlocked collectibles (save keys are AP
     tierMax.common<=tierMax.rare && tierMax.rare<=tierMax.epic,
     tierOrder.map(function(r){return r+":"+(tierMax[r]||0);}));
 })();
+
+grp("#162 Map node touch target — the CURRENT 'play next' node is >=96 CSS px in iPad portrait (hard constraint #6)");
+(function(){
+  if(typeof mapBanner!=="function"){ ok("mapBanner present in map.js", false); return; }
+  var cur=mapBanner(500,500,"current",0), lk=mapBanner(500,500,"locked",1), dn=mapBanner(500,500,"done",2);
+  function hitRect(s){ var m=s.match(/width="(\\d+)" height="(\\d+)" fill="transparent"/); return m?{w:+m[1],h:+m[2]}:null; }
+  var c=hitRect(cur), l=hitRect(lk), d=hitRect(dn);
+  ok("current node has an enlarged transparent hit rect (>=192 SVG units)", c && c.w>=192 && c.h>=192, c);
+  // iPad portrait: 768 CSS-px width over the 0 0 1536 1024 viewBox + meet = scale 0.5 → CSS px = units*0.5
+  var scale=768/1536;
+  ok("current hit area >= 96 CSS px at 768-portrait (constraint #6 — 'visible' != 'tappable')",
+    c && c.w*scale>=96 && c.h*scale>=96, c?{cssW:c.w*scale, cssH:c.h*scale}:null);
+  ok("only the current node is enlarged (locked/done keep the compact rect → no neighbour mis-tap)",
+    c && l && d && l.w<c.w && d.w<c.w, {current:c&&c.w, locked:l&&l.w, done:d&&d.w});
+})();
 `;
 vm.runInContext(fs.readFileSync(path.join(ROOT, "data-missions.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-content.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-lines.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "state-save.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "audio.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "allies.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "map.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "sfx.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "music.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 
