@@ -373,6 +373,20 @@
     } finally{ if(btn)btn.disabled=false; }
   }
 
+  /* one-tap: re-crisp EVERY already-saved clip (trim dead air + normalize) — fixes recordings made before
+     processClip existed, with no re-recording. Idempotent enough for a manual action; failures skip safely. */
+  async function recrispAll(){
+    const ids=Object.keys(CUSTOM); if(!ids.length){ setMsg("No recordings on this iPad to re-crisp yet."); return; }
+    const btn=$("btnRecrisp"); if(btn)btn.disabled=true;
+    let changed=0;
+    for(let i=0;i<ids.length;i++){ const id=ids[i]; setMsg("Re-crisping… "+(i+1)+" / "+ids.length);
+      try{ const blob=await (await fetch(CUSTOM[id])).blob(); const out=await processClip(blob);
+        if(out && out!==CUSTOM[id]){ await saveClip(id,out); changed++; } }catch(e){}
+    }
+    if(btn)btn.disabled=false; refreshAll();
+    setMsg("Re-crisped "+changed+" of "+ids.length+" recordings — trimmed + leveled. Tap ▶ to hear; Publish to push them everywhere.");
+  }
+
   /* ================= WIRING ================= */
   function refreshAll(){ buildDash(); buildPhonGrid(); buildTalkGrid();
     const m=$("audStatus"); if(m&&!m.textContent)m.textContent=(typeof vpMsg==="function")?vpMsg():""; }
@@ -395,6 +409,7 @@
     on("recUpload",()=>{ const p=recList[recIx]; if(p)pickFile(p.id); });   /* #46: upload a pre-recorded file for THIS phoneme (not just mic) */
     on("btnElLoad",elLoad); on("btnElForget",elForget); on("btnGenAll",genAll);
     on("btnExportVP",exportVP); on("btnImportVP",()=>$("vpFile").click()); on("btnPublish",publish);
+    on("btnRecrisp",recrispAll);
     const vf=$("vpFile"); if(vf)vf.onchange=()=>{ if(vf.files[0]){ importVP(vf.files[0]); vf.value=""; } };
     const ek=$("elKey"); if(ek&&elKey){ ek.value=elKey; const fg=$("btnElForget"); if(fg)fg.style.display="inline-block"; }
     const gt=$("ghToken"); if(gt){ try{ const s=localStorage.getItem(LS_GH); if(s)gt.value=s; }catch(e){} }   /* restore remembered publish token */
