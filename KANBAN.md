@@ -18,6 +18,13 @@ Award Bar rubric **v1 synthesized** (14 criteria, 5-stream research review). Wav
 - **#124 [O+N]** Squishy STORE/COLLECTION split — owned display-case with faint slots + duplicate count badge (needs `S.owned` boolean→count migration) + a painted shopping-cart button → buy view.
 - **#126 [O+N]** Gems + Villains COLLECTION CARDS — tap the gem/villain shelf → a card of the whole set, same pattern as #124 (one shared system). Gems folds into #33's gem-dex.
 - **#127 [N+O]** Treasure box POPS at the end of the level earned — surface the earned chest on the WIN screen as a tap-to-open card (reuses `openChest`), not buried in the Squishy menu. Mostly Neo surfacing + Oracle card art.
+- **#145 [O+N]** Squishy economy v2 — +50 zone-unlocked squishies that populate the store (instant reward + "rarer" items deep into the game). Unlock derived from `zoneDone`; end-of-zone "new in store!" card (reuses #127). Chest drops a squishy RARELY (~2–3/act, from the unlocked pool). Builds on #124.
+
+**Engagement research (parent-commissioned 2026-06-17 → `ENGAGEMENT-RESEARCH.md`; parent greenlit the top 3):**
+- **#151 [N]** Uncertain-BONUS reward (~50/50 extra, base always certain) — the dopamine + memory lever (Howard-Jones/Bristol). Highest learning-ROI, small change. *(build-now)*
+- **#152 [O+N]** Collection-as-mastery counter ("N/26 gems mastered" on home/map + Zeigarnik reachable-gap) — the #1 daily-return hook; mastery-gated. Overlaps #126/#33.
+- **#153 [N]** Anti-gaming WITHOUT punishment — response-time re-lock + reward-the-correct-path (the evidence-based replacement for the parent's "villain HP up on wrong"; that's a loss state we don't ship). *(build-now)*
+- *Research backlog (not yet filed — candidates for later): more autonomy/choice · within-mission micro-progress + endowed head-start · avatar/Base ownership · returning warm characters greet-by-name · anticipation juice + named praise · cumulative (never consecutive) day-count. Do-not-build list captured in the doc.*
 
 **The big redesigns (AGENTS rule 8: `[O]` designs+art+gates · `[N]` implements · `[O]` `§20 PASS` · `[N]` merges):**
 - **#104 [O+N]** De-emoji the REMAINING child chrome — #116 cleared the Vault/Scroll/Warm-Up titles + combo/vault glyphs (crafted icons); still open: win/rest buttons, map ✓, other rendered glyphs. (The #102 full-scan guard is now live to catch new ones.)
