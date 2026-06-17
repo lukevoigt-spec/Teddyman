@@ -602,8 +602,10 @@
   </div>
 </div>
 
-<!-- Optional studio-generated voicepack. Game works without it (TTS fallback). -->
-<script src="voicepack.js" onerror="void(0)"></script>
+<!-- Optional studio-generated voicepack (~28MB). DEFERRED so its download never blocks first paint /
+     core-module parse (issue #107). Safe: clipFor() guards `typeof VOICEPACK` and the first voice line
+     is gesture-gated, so it's always loaded before any clip plays (TTS is the fallback until then). -->
+<script defer src="voicepack.js" onerror="void(0)"></script>
 
 <script src="art.js"></script>
 <script src="data-missions.js"></script>
