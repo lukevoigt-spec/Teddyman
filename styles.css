@@ -1545,3 +1545,16 @@ body.calm .tile.wedo,body.calm .picktile.wedo,body.lite .tile.wedo,body.lite .pi
 /* Act-2: the villains-card cage bars go IRON (match the act-2 reward-modal cages), not Vex-blue */
 body[data-act="2"] .collslot .ic.cage .cagebars{ background:repeating-linear-gradient(90deg,rgba(172,172,184,.9) 0 2.5px,transparent 2.5px 12px);
   box-shadow:inset 0 3px 0 rgba(120,120,134,.95), inset 0 -3px 0 rgba(120,120,134,.95); }
+
+/* #151 uncertain-BONUS juice — the ~50% EXTRA on a correct answer (the base reward is always 100%). A gold
+   shimmer WIND-UP (dopamine is a pre-reward signal) then one of: extra gems / a +1 coin pop / confetti. */
+.bonuswind{ position:absolute; width:84px; height:84px; margin:-42px 0 0 -42px; border-radius:50%; pointer-events:none; z-index:55;
+  border:3px solid rgba(255,206,58,.9); box-shadow:inset 0 0 18px rgba(255,206,58,.6), 0 0 16px rgba(255,206,58,.5);
+  animation:bonusWind .46s ease-out forwards; }
+@keyframes bonusWind{ 0%{transform:scale(.3);opacity:0} 30%{opacity:1} 100%{transform:scale(1.5);opacity:0} }
+.coinpop{ position:absolute; pointer-events:none; z-index:56; display:flex; align-items:center; gap:3px;
+  font-family:'Bangers',cursive; font-size:24px; color:#ffd23a; -webkit-text-stroke:2px var(--ink); paint-order:stroke; }
+.coinpop img{ width:24px; height:24px; }
+.coinpop{ animation:coinPop 1s ease-out forwards; }
+@keyframes coinPop{ 0%{transform:translateY(0) scale(.6);opacity:0} 22%{transform:translateY(-6px) scale(1.1);opacity:1} 100%{transform:translateY(-42px) scale(1);opacity:0} }
+@media (prefers-reduced-motion: reduce){ .bonuswind{ animation-duration:.01s; } .coinpop{ animation-duration:.4s; } }
