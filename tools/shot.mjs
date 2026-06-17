@@ -101,6 +101,10 @@ const SCENES = {
   // tap-the-hero card (openTeddyCard): front = painted hero + rank; back = stats + cape picker
   teddycard:`(function(){ S.act=1; S.stars=40; for(var i=1;i<=20;i++)S.done[i]=true; S.equip={weapon:"sword",cape:"blue"}; paintBase(); show('scrBase'); openTeddyCard(); return 1; })()`,
   teddycardback:`(function(){ S.act=1; S.stars=40; for(var i=1;i<=20;i++)S.done[i]=true; S.equip={weapon:"sword",cape:"blue"}; paintBase(); show('scrBase'); openTeddyCard(); document.getElementById('hcFlip').classList.add('flip'); return 1; })()`,
+  // Act-2 MEDIEVAL reskin of the reward modals (#11): stone/bronze hero card, ember villain cage, gold unlock
+  a2herocard:`(function(){ S.act=2; for(var i=100;i<=120;i++)S.done[i]=true; S.equip={weapon:"mace",cape:"base"}; paintBase(); show('scrBase'); openTeddyCard(); return 1; })()`,
+  a2boss:`(function(){ S.act=2; S.done={110:true}; show('scrBase'); openBossCage(BOSSES.find(function(b){return b.mid===110;})); return 1; })()`,
+  a2unlock:`(function(){ S.act=2; show('scrBase'); showUnlock('<img src="art/wpn-mace.png" width="160" alt="">','WAR MACE','NEW GEAR!'); return 1; })()`,
   // cast cohesion check: full-body rasters of existing allies next to the cousins (Cal/Nora)
   cast: `(function(){ document.body.innerHTML='<div id="cz" style="display:flex;gap:18px;align-items:flex-end;justify-content:center;background:#241a3e;padding:48px 24px;height:100%;box-sizing:border-box;"></div>'; var k=[['tank','Archie'],['flip','Ellie'],['cal','Cal'],['nora','Nora']]; document.getElementById('cz').innerHTML=k.map(function(p){return '<div style="text-align:center;">'+allyBody(p[0],210)+'<div style="color:#fff;font-family:sans-serif;font-size:15px;margin-top:6px;">'+p[1]+'</div></div>';}).join(''); return 1; })()`,
   // NEW friends (Brody/Daisy/Bryce) full-body next to the cousins (Cal/Nora) — cohesion check
