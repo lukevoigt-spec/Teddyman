@@ -307,6 +307,19 @@ grp("Spell Scroll honours the sight-word gate at RUNTIME (SCROLL-1 — never sur
   S.done=saved; S.act=savedAct;
 })();
 
+grp("#88: Training-Room pool FOLLOWS THE ACT but only ever serves LETTER-decodable words (the builder is letter-by-letter)");
+(function(){ var saved=S.done, savedAct=S.act;
+  // teach EVERYTHING so the pool is at its widest in each act, then assert every served word is letter-decodable
+  S.done={}; MISSIONS.forEach(function(m){ S.done[m.id]=true; });
+  S.act=1; var p1=trainPool();
+  ok("Act-1 Training words are all letter-decodable (single-letter graphemes only)", p1.length>0 && p1.every(function(w){ return toGraphemes(w).every(function(g){return g.length===1;}); }), p1.filter(function(w){return toGraphemes(w).some(function(g){return g.length>1;});}));
+  S.act=2; var p2=trainPool();
+  ok("Act-2 Training words are all letter-decodable too (no digraph/magic-e/team/r-controlled gem reaches the letter-builder)", p2.length>0 && p2.every(function(w){ return toGraphemes(w).every(function(g){return g.length===1;}); }), p2.filter(function(w){return toGraphemes(w).some(function(g){return g.length>1;});}));
+  ok("Act 2 actually ADDS Act-2 blend/CVC reps (pool follows the act — it's not just the Act-1 list)", p2.some(function(w){ return READWORDS2[w] && !READWORDS[w]; }));
+  ok("Act-2 multi-grapheme words (ship/cake/rain/star) are DELIBERATELY excluded from Training (drilled by grapheme-aware Warm-Up/Vault/Scroll instead)", ["ship","cake","rain","star"].every(function(w){ return p2.indexOf(w)<0; }));
+  S.done=saved; S.act=savedAct;
+})();
+
 grp("Line variations (anti-fatigue, parent 2026-06-14) are well-formed + safe");
 var lv=[];
 Object.keys(LINE_VARIANTS).forEach(function(base){ LINE_VARIANTS[base].forEach(function(id){ if(!LINES[id]||!LINES[id].t) lv.push(base+" -> "+id+" missing from LINES"); }); });

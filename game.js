@@ -263,8 +263,15 @@ function hasSoundClip(g){ return !!(typeof LINES!=="undefined" && LINES["snd_"+g
 function addDays(key,n){ const p=String(key||"").split("-").map(Number);
   const d=new Date(p[0]||2026,(p[1]||1)-1,p[2]||1); d.setDate(d.getDate()+(n||0));
   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
-/* enroll a freshly-mastered item into box 0 (first review one interval out). No-op if already enrolled. */
-function vaultEnroll(key){ const m=S.mastery[key]; if(!m||m.box!=null)return;
+/* #88: a key belongs in the Vault ONLY if it's real reviewable content — a grapheme/word/sight key
+   that vaultRoute() can actually turn into a review. Synthetic progress keys (sentence/cloze/fortress
+   rounds: "sent_<i>" / "cz" / "sent_fort") get recorded into S.mastery but can never be reviewed
+   (vaultRoute returns null), so they must NOT enrol or inflate the Base Gem-Charge meter. (vaultRoute
+   is a hoisted declaration defined below — resolved at call time.) */
+function vaultReviewable(key){ return !!vaultRoute(key); }
+/* enroll a freshly-mastered item into box 0 (first review one interval out). No-op if already enrolled
+   or if it isn't real reviewable content (#88). */
+function vaultEnroll(key){ const m=S.mastery[key]; if(!m||m.box!=null||!vaultReviewable(key))return;
   m.box=0; m.due=addDays(dayKey(),VAULT_INTERVALS[0]); m.last=dayKey(); }
 /* a scheduled review happened: correct → promote (longer interval), miss → demote ONE step (gentler
    than a reset). Pure scheduler step — the caller decides WHEN an item is actually due (vaultTouch). */
@@ -277,6 +284,7 @@ function vaultReview(key,ok){ const m=S.mastery[key]; if(!m||m.box==null)return;
    rejoins the normal active pools and re-enrolls when re-mastered. */
 function vaultTouch(key,ok){ const m=S.mastery[key]; if(!m)return;
   if(m.box==null){ if(masteredItem(key))vaultEnroll(key); return; }
+  if(!vaultReviewable(key)){ delete m.box; delete m.due; delete m.last; return; }   /* #88: self-heal a synthetic key an OLD save enrolled (never reviewable) */
   if(!masteredItem(key)){ delete m.box; delete m.due; delete m.last; return; }   /* demote out of the Vault */
   if(m.due!=null && m.due<=dayKey()) vaultReview(key,ok);   /* a real spaced review advances the schedule */
   else m.last=dayKey();                                      /* early/casual touch: don't reschedule */
@@ -284,12 +292,12 @@ function vaultTouch(key,ok){ const m=S.mastery[key]; if(!m)return;
 /* keys due for review today (due<=today AND still mastered), oldest-due first, capped for ADHD focus. */
 function vaultDue(){ const t=dayKey();
   return Object.keys(S.mastery).filter(k=>{ const m=S.mastery[k];
-      return m && m.due!=null && m.due<=t && masteredItem(k); })
+      return m && m.due!=null && m.due<=t && masteredItem(k) && vaultReviewable(k); })   /* #88: skip a stale synthetic key (can't be reviewed) */
     .sort((a,b)=> S.mastery[a].due<S.mastery[b].due?-1:(S.mastery[a].due>S.mastery[b].due?1:0))
     .slice(0,VAULT_CAP); }
 /* how many items are enrolled + still mastered (for the parent's retention readout) */
 function vaultCount(){ return Object.keys(S.mastery).filter(k=>{ const m=S.mastery[k];
-  return m && m.box!=null && masteredItem(k); }).length; }
+  return m && m.box!=null && masteredItem(k) && vaultReviewable(k); }).length; }   /* #88: only real reviewable content counts (synthetic sent_/cz keys never inflate the meter) */
 
 /* AUDIO layer (CUSTOM clip store, VStore, clipFor, Aud engine, flow/clearFlow/
    narrate, ear-tap listener) moved to audio.js (loaded before game.js). */
@@ -1837,7 +1845,20 @@ function openChest(tier,done){ const cfg=CHESTS[tier]; if(!cfg||!(S.chests&&S.ch
     showUnlock('<div style="line-height:1;">'+art+'</div>', name, sub, ()=>{ if(img)img.src="art/chest-closed.png"; if(done)done(); });
   }, 560); }
 let trainReps=0,trainSlot=0,trainCur,trainMiss=0;
-function trainPool(){ const t=taughtLetters(); return Object.keys(READWORDS).filter(w=>w.split("").every(c=>t.includes(c))); }
+/* #88: Training-Room word pool now FOLLOWS THE ACT. trainBuild/trainDecode segment + sound a word
+   LETTER-by-letter (w.split("")), which is correct only for single-letter graphemes — so in Act 2 we
+   ADD the letter-decodable Act-2 words (CVC + BLENDS like stop/frog/hand: a blend is two letters said
+   quickly, NOT a new gem, so it builds correctly letter-by-letter) while DELIBERATELY excluding the
+   multi-letter graphemes (digraphs ship/fish, magic-e cake, vowel-teams rain, r-controlled star) that
+   the letter-builder would teach WRONG (sounding /h/ in "sh", voicing a silent e). Those Act-2 patterns
+   are still drilled — by the grapheme-aware Sound Warm-Up / Memory Vault / Spell Scroll — so this isn't
+   a silent gap; full grapheme-aware Training is a separate future task if ever wanted. */
+function trainPool(){ const t=taughtLetters();
+  const base=(currentAct()===2 && typeof READWORDS2!=="undefined") ? Object.assign({},READWORDS,READWORDS2) : READWORDS;
+  return Object.keys(base).filter(w=>
+    w.split("").every(c=>t.includes(c))                                                /* every letter taught */
+    && (typeof toGraphemes!=="function" || toGraphemes(w).every(g=>g.length===1))      /* no digraph/team/r-controlled gem (those are >1 char) */
+    && (typeof magicE!=="function" || !magicE(w)) ); }                                  /* and NO magic-e word (cake=c,a,k,e tokenises as letters but the builder would voice the silent e) */
 function pickTrainWord(){ const pool=trainPool(); if(!pool.length)return null;
   /* Memory Vault surfacing (MVP): strongly prefer a w_ word that's due for spaced review, so the
      Training Room doubles as the Vault's reviewer — still probabilistic + adaptive (never forced). */
