@@ -1681,7 +1681,7 @@ function showWin(firstTime){ show("scrWin");
     else if(nextM) startMission(nextM); else toMap(); }); }
 function showRest(nextM){ show("scrRest");
   $("restHero").innerHTML=heroMarquee(160);
-  narrate("rest",$("restText"),["rest1","rest2"]);
+  narrate("rest",$("restText"),[currentAct()===2?"rest1_a2":"rest1","rest2"]);   /* Act-2 names the Magic Kingdom, not Star Force City (parent/Oracle 2026-06-17) */
   { const bd=$("btnRestDone"); if(bd)bd.innerHTML=(typeof uiIcon==="function"?uiIcon("moon",22):"")+" REST"; }   /* crafted moon icon */
   $("btnRestDone").onclick=()=>navGo(toMap);   /* Done resting → the MAP (home), not the bare Title (NAV-PLAN slice 4) */
   { const bm=$("btnRestMore"); if(bm)bm.innerHTML=(typeof uiIcon==="function"?uiIcon("play",22):"")+" One more mission"; }   /* crafted play icon, not 🎯 */
