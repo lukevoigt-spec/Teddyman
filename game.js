@@ -224,6 +224,7 @@ if(typeof document!=="undefined"){
 function mast(g){ if(!S.mastery[g])S.mastery[g]={seen:0,ok:0,str:0}; return S.mastery[g]; }
 function record(g,ok){ const m=mast(g); const wasMastered=masteredItem(g); m.seen++;
   if(ok){m.ok++;m.str=Math.min(5,m.str+1); combo++; if(combo>=3)comboPop(combo);
+    S.xp=(S.xp||0)+XP_PER_CORRECT;   /* #131: Rank-XP from correct work only; the level-up POP fires later, on the win screen */
     /* #4 RETENTION: count CORRECT CALENDAR DAYS (once per day, never same-day repeats) — the
        "retained" signal (correct across >=2 days) layered on top of in-session "proficient". */
     if(dayKey()!==m.lastOkDay){ m.okDayCount=(m.okDayCount||0)+1; m.lastOkDay=dayKey(); }
@@ -349,6 +350,24 @@ function heroProgress(){ const a=currentAct(), am=actMissions(a), total=am.lengt
   const pct=Math.max(0,Math.min(100,Math.round((r-lo)/(hi-lo)*100)));
   const names=currentAct()===2?["SQUIRE","SOLDIER","KNIGHT"]:["HERO","SUPER HERO","MEGA HERO"];
   return { tier, name:names[tier], pct, max:tier>=2 }; }
+/* #131 Hero-Rank XP — a CONTINUOUS level layer on top of the 3 coarse muscle tiers (the tiers + gear
+   stay the big milestones; this adds the frequent small wins the mid-campaign cadence was missing).
+   XP from CORRECT work only (§6.0 mastery-not-participation), monotonic — never decreases (#1). */
+const XP_PER_CORRECT=1, XP_PER_MISSION=8, XP_PER_LEVEL=20;
+function heroLevel(xp){ return Math.floor((xp==null?(S.xp||0):xp)/XP_PER_LEVEL)+1; }
+function heroXp(){ const xp=S.xp||0, into=xp%XP_PER_LEVEL; return {xp, level:heroLevel(xp), into, need:XP_PER_LEVEL, pct:Math.round(into/XP_PER_LEVEL*100)}; }
+/* paint an XP meter (fill bar + RANK n) into an element — FUNCTIONAL placeholder; Oracle owns the look (§20). */
+function paintXpMeter(el){ if(!el)return; const x=heroXp();
+  el.innerHTML='<div class="xpbar"><div class="xpfill" style="width:'+x.pct+'%"></div></div><div class="xplbl">RANK '+x.level+'</div>'; }
+/* a SMALL, frequent level-up flair — fires only at SAFE moments (the win screen), NEVER on the decoding
+   prompt (seductive-details). Scaled down vs the muscle-tier rankup fanfare (reserved for the big beats).
+   Calm/Lite gate the pop; reduced-motion is handled by the .xppop CSS animation. */
+function xpLevelPop(level){
+  if(document.body.classList.contains("calm")||document.body.classList.contains("lite"))return;
+  const s=stageEl(); if(!s)return;
+  const d=document.createElement("div"); d.className="xppop"; d.textContent="LEVEL "+level+"!";
+  s.appendChild(d); setTimeout(()=>{ try{d.remove();}catch(e){} }, 1500);
+  if(typeof Sfx!=="undefined" && Sfx.coin) Sfx.coin(); }
 /* PAINTED marquee hero: the generated per-muscle Teddy art on the title / win /
    rest / origin screens. theme "hero" -> Act-1 superhero, "knight" -> Act-2 knight
    (both have a painted m0/m1/m2 set). Any other theme falls back to parametric SVG.
@@ -939,7 +958,8 @@ function missionComplete(){
        milestone (mastery-gated finale/rescue) → GOLD; a clean no-miss mission → SILVER; else WOOD. */
     S.chests=S.chests||{wood:0,silver:0,gold:0};
     const ctier=(CUR.finale||CUR.rescue||CUR.type==="fortress")?"gold":(curMiss===0?"silver":"wood");
-    S.chests[ctier]=(S.chests[ctier]||0)+1; __earnedChest=ctier; }   /* #127: pop this on the win screen */
+    S.chests[ctier]=(S.chests[ctier]||0)+1; __earnedChest=ctier;   /* #127: pop this on the win screen */
+    S.xp=(S.xp||0)+XP_PER_MISSION; }   /* #131: a mission-complete XP chunk (correct-work bonus) on top of per-rep XP */
   __rankedUp = firstTime && (heroOpts().muscle>oldTier);   /* the hero just leveled up → celebrate in showWin */
   save();
   if(firstTime && (CUR.finale||CUR.rescue||CUR.type==="fortress")) snapshot(CUR.lbl||("Mission "+CUR.id));  /* safety roll-back point */
@@ -1536,6 +1556,7 @@ function showUnlock(artHTML, name, sub, done){
 
 /* ---------------- WIN / REST ---------------- */
 function showWin(firstTime){ show("scrWin");
+  const __muscleUp=__rankedUp;   /* #131: capture before the rankup block below consumes it, so the small XP pop can defer to the big muscle-tier fanfare */
   if(typeof Sfx!=="undefined")Sfx.win();
   const big=CUR.finale||CUR.rescue||CUR.type==="fortress";
   flashScreen("rgba(255,255,255,.5)"); confetti(big?110:64);
@@ -1575,6 +1596,12 @@ function showWin(firstTime){ show("scrWin");
     $("winGear").innerHTML='<div class="gearbadge">'+uiIcon("spark",22)+' RANK UP — '+heroProgress().name+'!</div>'+$("winGear").innerHTML; __rankedUp=false; }
   narrate("win",$("winText"),ids);
   winChestPop(__earnedChest); __earnedChest=null;   /* #127: the chest just earned pops here, tap-to-open (runs for ALL win types, incl. the fortress early-return below) */
+  /* #131: a SMALL, frequent Rank-XP level-up — fires here (a safe moment, never on the prompt). Catches up to
+     the current level (a long mission can cross >1), shows ONE small pop, and defers to the big muscle-tier
+     fanfare when that also fired this win (no double-celebration). Monotonic xpShown so it never repeats. */
+  { paintXpMeter($("winXp")); const lvl=heroLevel();
+    if(lvl>(S.xpShown||1)){ S.xpShown=lvl; save();
+      if(!__muscleUp) setTimeout(()=>xpLevelPop(lvl), 380); } }
   /* ONE button: CONTINUE (parent — the old CITY MAP button was redundant; the map is on the nav).
      Crafted chevron, never an emoji. Carries the adventure forward. */
   const setContinue=(fn)=>{ const b=$("btnWinMap"); if(!b)return;
@@ -1622,6 +1649,7 @@ function paintBase(){
     const bh=$("baseHero"); if(bh){ bh.onclick=openTeddyCard; bh.classList.add("tappable"); bh.title="Tap Teddy"; } }
   const o=heroOpts();
   { const hp=heroProgress(); const pl=$("powerLbl"); if(pl)pl.textContent=hp.name; }
+  paintXpMeter($("baseXp"));   /* #131: continuous Rank-XP meter under the hero (Oracle places/styles) */
   /* status-meter icons: clock = today's practice, lightning = Gem Charge (crafted SVG, no emoji) */
   { const di=$("dailyIcon"); if(di&&!di.firstChild) di.innerHTML=uiIcon("clock",22);
     const ci=$("chargeIcon"); if(ci&&!ci.firstChild) ci.innerHTML=uiIcon("bolt",22); }
