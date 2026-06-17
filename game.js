@@ -1876,10 +1876,20 @@ function pickTrainWord(){ const pool=trainPool(); if(!pool.length)return null;
    from the one number: 10 coins = 1 gold bar, 10 bars = 1 diamond. Crossing a tier fires the milestone
    burst (the missing "peak"). Bound to §6.0: it advances ONLY off a correct rep, never a gamble. */
 function hoardTiers(h){ h=Math.max(0,Math.floor(h||0)); return {diamonds:Math.floor(h/100), bars:Math.floor((h%100)/10), coins:h%10}; }
+/* the treasure VAULT — a growing pile the child builds rep by rep (the "peak" to climb toward, PLAYTEST
+   2026-06-15). Each tier is a STACK of overlapping icons (capped for layout) + its true count; coins roll
+   up to a gold bar at 10, bars to a diamond at 10 (hoardTiers). Show-only-earned: empty tiers don't show.
+   #trainCoinN stays the live coin counter so flyReward keeps arcing coins into the stack. */
+function trainPile(iconHTML, n, cap){ const show=Math.max(1,Math.min(n,cap)); let p='<span class="trs-pile">';
+  for(let i=0;i<show;i++) p+='<span class="trs-coin">'+iconHTML+'</span>'; return p+'</span>'; }
 function trainHoardHTML(){ const t=hoardTiers(S.hoard);
-  return `<span class="trscell">${diamondIcon(28)}<b>${t.diamonds}</b></span>`
-       + `<span class="trscell">${barIcon(28)}<b>${t.bars}</b></span>`
-       + `<span class="trscell">${gicon("coin",28)}<b id="trainCoinN">${t.coins}</b></span>`; }
+  if(!t.diamonds && !t.bars && !t.coins)
+    return '<div class="trs-empty">Read words to fill your treasure vault!</div>';
+  let h="";
+  if(t.diamonds) h+=`<div class="trs-stack d">${trainPile(diamondIcon(36),t.diamonds,5)}<span class="trs-n">${t.diamonds}</span></div>`;
+  if(t.bars)     h+=`<div class="trs-stack b">${trainPile(barIcon(34),t.bars,6)}<span class="trs-n">${t.bars}</span></div>`;
+  h+=`<div class="trs-stack c">${trainPile(gicon("coin",32),Math.max(t.coins,1),9)}<span class="trs-n" id="trainCoinN">${t.coins}</span></div>`;
+  return h; }
 function vaultMilestone(kind){ const dia=(kind==="diamond");
   shakeStage(true); flashScreen(dia?"rgba(103,216,255,.5)":"rgba(255,210,58,.5)"); confetti(dia?72:48);
   if(typeof Sfx!=="undefined"){ if(dia&&Sfx.gem)Sfx.gem(); else if(Sfx.unlock)Sfx.unlock(); else Aud.ding(); }

@@ -154,16 +154,29 @@ body[data-act="2"] .btn:not(.ghost){ border-image-source:url("art/btn-wood.png")
 #sylWord.sylpush .sylgap{ opacity:0; }
 .slot.sylbreak{ margin-left:clamp(14px,3vw,30px); }    /* the scoop between two chunks in forge */
 .slot.given{ background:linear-gradient(180deg,#ffd75e,#f0a82b); opacity:.92; }   /* a pre-placed (given) gem, e.g. the /ər/ */
-/* ----- Training-Room TREASURE VAULT (coin -> gold bar -> diamond stack + milestone climax) ----- */
-.trshud{ display:flex; gap:clamp(14px,3vw,30px); justify-content:center; align-items:center; margin:6px 0 2px; }
-.trscell{ display:inline-flex; align-items:center; gap:5px; background:rgba(10,6,26,.42); border:2px solid rgba(255,210,58,.35);
-  border-radius:14px; padding:4px 12px 4px 7px; }
-.trscell b{ font-family:'Bangers',cursive; font-size:clamp(20px,4vw,30px); color:#ffe27a; min-width:.8em; text-align:center; }
-.trscell svg{ display:block; }
-.trsreps{ opacity:.85; margin-top:0; }
+/* ----- Training-Room TREASURE VAULT (coin -> gold bar -> diamond stacks + milestone climax) -----
+   Redesign 2026-06-17 (Oracle, PLAYTEST "needs a peak"): a framed gold VAULT panel holding a growing
+   pile of treasure — stacks of overlapping coins/bars/diamonds the child visibly builds rep by rep. */
+.trshud{ display:flex; gap:clamp(16px,3vw,34px); justify-content:center; align-items:flex-end;
+  width:max-content; max-width:92vw; margin:8px auto 2px; padding:14px clamp(18px,4vw,32px) 12px;
+  background:linear-gradient(180deg, rgba(58,40,16,.72), rgba(20,12,32,.72));
+  border:3px solid #caa15a; border-radius:20px;
+  box-shadow: inset 0 3px 22px rgba(0,0,0,.55), inset 0 0 0 2px rgba(255,230,150,.12), 0 7px 0 rgba(0,0,0,.3); }
+.trshud:empty{ display:none; }
+.trs-stack{ display:flex; flex-direction:column; align-items:center; }
+.trs-pile{ display:flex; flex-direction:column-reverse; align-items:center; }   /* icons stack UPWARD */
+.trs-pile .trs-coin{ display:block; line-height:0; margin-top:-15px; filter:drop-shadow(0 2px 2px rgba(0,0,0,.45)); }
+.trs-pile .trs-coin:last-child{ margin-top:0; }   /* bottom of the pile sits flat */
+.trs-pile .trs-coin svg,.trs-pile .trs-coin img{ display:block; }
+.trs-n{ font-family:'Bangers',cursive; font-size:clamp(20px,3.6vw,28px); color:#ffe27a; margin-top:7px;
+  -webkit-text-stroke:2px var(--ink); paint-order:stroke; }
+.trs-empty{ font-family:'Baloo 2',sans-serif; font-weight:700; color:#efe6ff; font-size:15px; padding:8px 6px; opacity:.9; }
+.trsreps{ opacity:.85; margin-top:6px; }
 .traindaily{ width:min(300px,62vw); margin:6px auto 0; }   /* in-flow practice bar (reuses .dailybar/.dailylabel) */
 .traindaily .dailylabel{ margin-top:4px; }
 .cfcoin{ display:inline-block; vertical-align:-4px; }
+body[data-act="2"] .trshud{ border-color:#8a6f3e; background:linear-gradient(180deg, rgba(46,34,16,.74), rgba(18,12,26,.74)); }
+body.lite .trshud{ box-shadow:inset 0 0 0 2px rgba(255,230,150,.12), 0 7px 0 rgba(0,0,0,.3); }
 .vaultpop{ position:absolute; left:50%; top:42%; transform:translate(-50%,-50%); z-index:40; pointer-events:none;
   display:flex; flex-direction:column; align-items:center; gap:6px; animation:vaultpop 1.7s cubic-bezier(.2,1.4,.4,1) both; }
 .vaultpopart{ filter:drop-shadow(0 0 26px rgba(255,210,58,.85)); }

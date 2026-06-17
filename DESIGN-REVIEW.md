@@ -15,6 +15,25 @@ resolves before merge; this file keeps the durable before/after record. Shots li
 
 ---
 
+## 2026-06-17 · Training Room — treasure-vault visual redesign  ·  PASS
+**Branch:** `oracle/training-room` → PR for Neo. Addresses the parent PLAYTEST (2026-06-15): the room
+"has no climax / becomes a chore." The Training LOGIC was already solid (hoard tiers, `vaultMilestone`
+climax burst, `flyReward` coin arc, ally interrupts wired) — this is the **visual half** (Oracle-owned).
+Already emoji-free (crafted `diamondIcon`/`barIcon`/`gicon` — the playtest "emoji" note predated the sweeps).
+**Built:** the flat 3-cell counter → a framed gold **TREASURE VAULT** holding a *growing pile* — vertical
+STACKS of overlapping coins → gold bars → diamonds the child visibly builds rep by rep (the "peak" to climb
+toward; the `vaultMilestone` burst is the climax when a tier converts up). Show-only-earned (empty tiers
+hidden; a friendly zero-state line). `#trainCoinN` kept as the live coin counter so `flyReward` still arcs
+coins into the stack. `game.js` (`trainHoardHTML`/`trainPile`) + `styles.css` only — no index.html (avoids
+Neo's active files). Act-2 skin variant + Calm/Lite aware.
+**Shots:** `coinfly` (hoard 37 → 3 bars / 7 coins), `vault_hud` (149 → 1 diamond / 4 bars / 9 coins),
+`vault_dia` (the "A DIAMOND!" climax burst + confetti over the vault). Premium, emoji-free, UI lives in the
+painting, clear focal point. Tests: ui-emoji 44/44, curriculum 115/115, save 121/121.
+**Still Neo's (game logic, not art):** sync the 4 approved no-streak interrupt lines to `data-lines.js`
+(QA #2), gate JJ/Nora/Cal interrupts on rescue + the Act-2 roster reconcile (QA #1).
+
+---
+
 ## 2026-06-16 · Premium UI — in-game controls (home button de-emoji)  ·  PASS
 **Branch:** `oracle/premium-controls` → PR for Neo. Premium UI Overhaul, batch: **in-game controls**.
 **Finding:** of the three in-game controls, **replay** (`.ear`) and **skip** (`#btnSkip`) were ALREADY
