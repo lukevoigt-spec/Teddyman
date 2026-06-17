@@ -1996,8 +1996,10 @@ function openChest(tier,done,originEl){ const cfg=CHESTS[tier]; if(!cfg||!(S.che
   const coins=cfg.coinMin+Math.floor(Math.random()*(cfg.coinMax-cfg.coinMin+1));
   let item=null;
   if(Math.random()<cfg.cosmeticChance){ const un=BASE_ITEMS.filter(it=>!(S.owned&&S.owned[it.id]));
-    if(un.length)item=un[Math.floor(Math.random()*un.length)]; }
-  const bonus=item?0:Math.round(cfg.coinMin*0.5);   /* all squishies owned → small bonus coins so it's never a dud */
+    /* #124: prefer a NEW kind; once everything's owned, grant a DUPLICATE (the count climbs → the ×N badge)
+       instead of falling back to bonus coins, so the collection case keeps rewarding. */
+    item = un.length ? un[Math.floor(Math.random()*un.length)] : BASE_ITEMS[Math.floor(Math.random()*BASE_ITEMS.length)]; }
+  const bonus=item?0:Math.round(cfg.coinMin*0.5);   /* only when the cosmetic roll missed entirely → small bonus coins so it's never a dud */
   const gain=coins+bonus; S.coins=(S.coins||0)+gain;
   if(item){ S.owned=S.owned||{}; S.owned[item.id]=(S.owned[item.id]||0)+1; }   /* #124: count, not boolean (dup badge) */
   S.chests[tier]=Math.max(0,(S.chests[tier]||0)-1); save();
@@ -2378,18 +2380,38 @@ function vaultBuild(it){ const w=it.w, sight=!!it.sight, units=vaultUnits(w,sigh
 /* open the next pending chest (gold → silver → wood) on tap */
 { const gb=$("btnGifts"); if(gb)gb.onclick=()=>{ const t=nextChestTier(); if(!t)return; Aud.pick&&Aud.pick(); openChest(t); }; }
 /* ---- shop ---- */
-function openShop(){ paintShop(); $("shopPanel").classList.add("on"); }
+/* #124: the Squishy experience is split — a COLLECTION display case (what he OWNS: every kind has a slot,
+   un-owned faint, a ×N badge for duplicates) and a STORE (what he can BUY). The painted cart toggles them.
+   ownedCount() reads S.owned as a COUNT (the #133 migration). Oracle owns the case/slot/badge/cart LOOK (§20);
+   this builds the view-split DOM + the toggle + the dup-grant that lets counts climb. */
+let shopMode="collection";
+function ownedCount(id){ return (S.owned&&S.owned[id])||0; }
+function setShopMode(m){ shopMode=m; paintShop(); }
+function openShop(){ shopMode="collection"; paintShop(); $("shopPanel").classList.add("on"); }
 function paintShop(){ $("shopCoins").textContent=S.coins||0;
   /* earned treasure chest (training reps / finishing missions; NO daily gift) → tap the painted box to
      open it (parent 2026-06-16). Shown only when one is waiting; reset to the closed image. */
   { const cb=$("chestBtn"), ci=$("chestImg"); if(cb)cb.style.display=pendingChests()>0?"flex":"none"; if(ci)ci.src="art/chest-closed.png"; }
-  const g=$("shopGrid"); g.innerHTML="";
-  /* OWNED first = his collection (inventory), then the rest = the shop to get more */
-  const items=BASE_ITEMS.slice().sort((a,b)=> (S.owned[b.id]?1:0)-(S.owned[a.id]?1:0));
-  items.forEach(it=>{ const owned=!!S.owned[it.id];
-    const d=document.createElement("button"); d.className="shopitem"+(owned?" owned":"");
-    d.innerHTML=`<div class="ic">${itemArt(it,72)}</div><div class="nm">${it.nm}</div>`
-      +(owned?`<div class="owned-tag">OWNED ${gicon("check",16)}</div>`:`<div class="price">${gicon("coin",18)}<span>${it.cost}</span></div>`);
+  { const tc=$("shopTabColl"), ts=$("shopTabStore"); if(tc)tc.classList.toggle("on",shopMode==="collection"); if(ts)ts.classList.toggle("on",shopMode==="store"); }
+  if(shopMode==="store") paintStore(); else paintCollection(); }
+/* COLLECTION = a display CASE: every squishy has a slot. Owned = the painted squishy fills it (+×N badge for
+   dups); un-owned = a faint placeholder (the album/Pokédex collection drive — this case intentionally departs
+   from "show only earned", per the #124 spec; the Base #squishShelf stays owned-only so the Base never looks empty). */
+function paintCollection(){ const g=$("shopGrid"); g.innerHTML=""; g.className="shopgrid collection";
+  BASE_ITEMS.forEach(it=>{ const n=ownedCount(it.id), owned=n>0;
+    const d=document.createElement("button"); d.className="shopitem slotitem"+(owned?" owned":" locked");
+    d.innerHTML = owned
+      ? `<div class="ic">${itemArt(it,72)}</div><div class="nm">${it.nm}</div>`+(n>1?`<span class="dupbadge">×${n}</span>`:"")
+      : `<div class="ic faint">${itemArt(it,72)}</div><div class="nm slot-q">?</div>`;
+    d.onclick=()=> owned ? openSquishCard(it) : setShopMode("store");   /* tap an empty slot → go get it in the store */
+    g.appendChild(d); }); }
+/* STORE = only what he can BUY (un-owned), with coin prices. All collected → a friendly all-done line. */
+function paintStore(){ const g=$("shopGrid"); g.innerHTML=""; g.className="shopgrid store";
+  const buyable=BASE_ITEMS.filter(it=>ownedCount(it.id)===0);
+  if(!buyable.length){ g.innerHTML='<div class="baselbl shop-alldone" style="font-size:16px;">You collected them ALL! New squishies come from treasure chests now.</div>'; return; }
+  buyable.forEach(it=>{ const can=(S.coins||0)>=it.cost;
+    const d=document.createElement("button"); d.className="shopitem"+(can?"":" cant");
+    d.innerHTML=`<div class="ic">${itemArt(it,72)}</div><div class="nm">${it.nm}</div><div class="price">${gicon("coin",18)}<span>${it.cost}</span></div>`;
     d.onclick=()=>openSquishCard(it);
     g.appendChild(d); }); }
 /* tap a squishy → a collectible CARD: full image + name + blurb + buy/owned (parent 2026-06-16) */
@@ -2411,6 +2433,9 @@ function openSquishCard(it){ const owned=!!S.owned[it.id], can=(S.coins||0)>=it.
 { const cb=$("chestBtn"); if(cb)cb.onclick=()=>{ if(cb.disabled)return; const t=(typeof nextChestTier==="function")&&nextChestTier(); if(!t)return;
     cb.disabled=true; Aud.pick&&Aud.pick(); openChest(t, ()=>{ cb.disabled=false; paintShop(); }); }; }
 $("btnShopClose").onclick=()=>{ $("shopPanel").classList.remove("on"); paintBase(); };
+/* #124: Collection ⇄ Store toggle (the painted cart switches to the store) */
+{ const tc=$("shopTabColl"); if(tc)tc.onclick=()=>{ Aud.pick&&Aud.pick(); setShopMode("collection"); }; }
+{ const ts=$("shopTabStore"); if(ts)ts.onclick=()=>{ Aud.pick&&Aud.pick(); setShopMode("store"); }; }
 { const x=$("sqClose"); if(x)x.onclick=()=>$("squishCard").classList.remove("on"); }
 
 /* ---------------- SETTINGS ---------------- */
