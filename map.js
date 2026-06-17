@@ -81,7 +81,7 @@ function mapPaintLegacy(){
         <ellipse cx="${x-9}" cy="${y-14}" rx="13" ry="8" fill="#fff" opacity=".5" transform="rotate(-28 ${x-9} ${y-14})"/>
         <circle cx="${x-13}" cy="${y-13}" r="4.5" fill="#fff" opacity=".9"/>
       </g>
-      ${ st==="done" ? `<text x="${x}" y="${y+13}" text-anchor="middle" font-family="Bangers" font-size="36" fill="#0c3f28">✓</text>`
+      ${ st==="done" ? `<path d="M${x-13} ${y+1} L${x-3} ${y+12} L${x+14} ${y-12}" fill="none" stroke="#0c3f28" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>`
         : st==="locked" ? `<g transform="translate(${x} ${y})" stroke="#150f2e" stroke-width="2.4"><path d="M-6 -1 v-4 a6 6 0 0 1 12 0 v4" fill="none" stroke="#d7d0ee"/><rect x="-10" y="-1" width="20" height="15" rx="3.5" fill="#d7d0ee"/></g>`
         : `<circle cx="${x}" cy="${y}" r="7" fill="#fff" opacity=".95"/>` }
       <g transform="translate(${x},${y+R+22})" filter="url(#mpill)">
