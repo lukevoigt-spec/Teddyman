@@ -160,7 +160,14 @@ function mapBanner(x,y,st,zi){
       <rect x="${x-23}" y="${y-68}" width="46" height="14" fill="${band}" stroke="#7a5a2a" stroke-width="2.4"/>
     </g>
     ${icon}
-    <rect x="${x-34}" y="${y-76}" width="68" height="96" fill="transparent"/>
+    ${st==="current"
+      /* #162 (Morpheus QA / constraint #6): the CURRENT node is the child's main "play next" tap. A 68×96
+         SVG-unit rect scales to ≈34×48 CSS px at iPad-portrait (768w → meet scale 0.5) — under the 96px floor.
+         Give the current node a 208×208 hit area (≈104 CSS px at 768-portrait, more on wider iPads / landscape).
+         It's drawn LAST (mapPaintV2) so any overlap with a neighbour resolves to "play next", never a
+         locked-tip mis-tap. The painted parchment visual is untouched. */
+      ? `<rect x="${x-104}" y="${y-132}" width="208" height="208" fill="transparent"/>`
+      : `<rect x="${x-34}" y="${y-76}" width="68" height="96" fill="transparent"/>`}
   </g>`;
 }
 /* which side of each node is WALKABLE GRASS (away from the river), so a captive friend is grounded on
@@ -205,8 +212,10 @@ function mapPaintV2(a){
   const lblFont = a===2 ? "MedievalSharp, Bangers" : "Bangers";
   const road = spots.length>1 ? mapSmooth(spots) : "";
   const trav = spots.length>1 ? mapSmooth(spots.slice(0, Math.min(cur+1, spots.length))) : "";
-  let markers=""; zs.forEach((z,zi)=>{ const [x,y]=spots[zi]||[768,512];
-    markers+=mapBanner(x,y, zoneDone(z)?"done":(zi===cur?"current":"locked"), zi); });
+  let markers="", curMark=""; zs.forEach((z,zi)=>{ const [x,y]=spots[zi]||[768,512];
+    const st = zoneDone(z)?"done":(zi===cur?"current":"locked"); const m=mapBanner(x,y,st,zi);
+    if(st==="current") curMark=m; else markers+=m; });
+  markers+=curMark;   /* #162: draw the CURRENT node LAST so its enlarged hit area is on top of any neighbour overlap */
   let hero="";
   if(spots[cur]){ const [cx,cy]=spots[cur]; const s=.82, hx=(cx-60)-s*120, hy=(cy+12)-s*226;
     hero=`<g pointer-events="none"><ellipse cx="${cx-60}" cy="${cy+14}" rx="46" ry="13" fill="#0a0414" opacity=".5"/>`
