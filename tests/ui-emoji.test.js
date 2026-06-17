@@ -34,6 +34,14 @@ function between(src, startRe, endLiteral){
   return end < 0 ? src.slice(from) : src.slice(from, end + endLiteral.length);
 }
 
+/* a whole child-facing SCREEN's markup, from its id to the next screen's section comment.
+   HTML comments are stripped (layout-prose comments legitimately use →/↙ arrows). */
+const screenZone = (id, endMarker, label) => ({
+  name: `#${id} ${label} — child-facing markup, no emoji`,
+  file: "index.html",
+  extract: src => (between(src, new RegExp('id="' + id + '"'), endMarker) || "").replace(/<!--[\s\S]*?-->/g, ""),
+});
+
 /* ---- CLEAN ZONES: child-facing surfaces that are DE-EMOJI'D and must stay so ---- */
 const ZONES = [
   { name: "Hero Shop catalog (BASE_ITEMS) — crafted SVG via itemArt(), no emoji",
@@ -47,6 +55,17 @@ const ZONES = [
     /* strip HTML comments first — the layout-description comment legitimately uses →/↙ arrows for prose,
        which aren't child-facing UI. Only the rendered markup must be emoji-free. */
     extract: src => (between(src, /id="scrBase"/, "<!-- MEMORY VAULT") || "").replace(/<!--[\s\S]*?-->/g, "") },
+  /* Oracle de-emoji pass (PR oracle/de-emoji): screen titles, cutscene/learn NEXT buttons, CHOP,
+     win/rest buttons. Static labels here are clean; the runtime crafted-icon injection is asserted below. */
+  screenZone("scrIntro",   "<!-- SCAN",            "intro cutscene NEXT button"),
+  screenZone("scrVault",   "<!-- TRAINING ROOM",   "RECHARGE THE GEMS title"),
+  screenZone("scrScroll",  "<!-- SOUND WARM-UP",   "SPELL SCROLL title"),
+  screenZone("scrWarmup",  "<!-- MY SQUISHIES",    "SOUND WARM-UP title"),
+  screenZone("scrLetter",  "<!-- TRACE",           "LEARN go button"),
+  screenZone("scrMagic",   "<!-- BIG WORDS",       "magic-e NEXT button"),
+  screenZone("scrSyllable","<!-- INSTANT SPELLS",  "CHOP / big-words NEXT buttons"),
+  screenZone("scrWin",     "<!-- REST",            "win-screen buttons"),
+  screenZone("scrRest",    "<!-- SETTINGS",        "rest-screen buttons"),
 ];
 
 const RESULT = { pass: 0, fail: 0, lines: [] };
@@ -98,6 +117,41 @@ const indexHtml = read("index.html");
 ok("home glyph 🏠 fully eliminated from index.html (crafted shield via uiIcon on BACK-TO-BASE)", !/\u{1F3E0}/u.test(indexHtml));
 const ears = indexHtml.match(/<div class="ear"[^>]*>[\s\S]*?<\/div>/g) || [];
 ok("every .ear replay button is emoji-free (CSS draws the speaker — no 🔊 text)", ears.length > 0 && ears.every(d => emojiIn(d).length === 0));
+
+/* 3) Oracle de-emoji pass — the new crafted glyphs exist + the RUNTIME injects them (the dynamic
+   labels/pops are set in game.js, so static markup alone can't guard them). */
+for (const key of ["scroll","flame","moon","spark","scissors","chevron"]) {
+  ok("art.js UICONS defines the crafted '" + key + "' glyph", new RegExp("\\b" + key + "\\s*:").test(art));
+}
+/* helper: balanced-brace body of a named function (robust to nested braces), comments stripped */
+function fnBody(src, name){
+  const m = src.match(new RegExp("function\\s+" + name + "\\s*\\(")); if (!m) return null;
+  let i = src.indexOf("{", m.index); if (i < 0) return null;
+  let depth = 0, start = i;
+  for (; i < src.length; i++){ const c = src[i]; if (c === "{") depth++; else if (c === "}"){ depth--; if (!depth){ i++; break; } } }
+  return src.slice(start, i).replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
+}
+const injects = [
+  ["comboPop",   /uiIcon\(["']flame["']/,    "combo chip uses the crafted flame (not 🔥)"],
+  ["masteryFlash",/uiIcon\(["']spark["']/,   "MASTERED pop uses the crafted spark (not ✦)"],
+  ["paintInter", /uiIcon\(["']chevron["']/,  "interlude NEXT uses the crafted chevron (not ➜)"],
+  ["paintHome",  /uiIcon\(["']chevron["']/,  "homecoming NEXT uses the crafted chevron / check (not ✅)"],
+  ["showRest",   /uiIcon\(["']moon["']/,     "REST button uses the crafted moon (not 😴)"],
+  ["startScroll",/uiIcon\(["']scroll["']/,   "Spell Scroll title uses the crafted scroll (not 📜)"],
+  ["startWarmup",/uiIcon\(["']flame["']/,    "Sound Warm-Up title uses the crafted flame (not 🔥)"],
+  ["startVault", /uiIcon\(["']bolt["']/,     "Recharge title uses the crafted bolt (not 🔋)"],
+];
+for (const [fn, re, label] of injects){
+  const body = fnBody(game, fn);
+  ok("game.js " + fn + "(): " + label, body != null && re.test(body) && emojiIn(body).length === 0);
+  if (body != null && emojiIn(body).length) RESULT.lines.push("        ↳ stray emoji in game.js " + fn + "(): " + emojiIn(body).join(" "));
+}
+/* the magic-e + big-words NEXT and CHOP labels are built inline (not in a single named fn body) — assert
+   the crafted glyphs are wired and the old emoji are gone from those exact spots. */
+ok("game.js big-words CHOP uses the crafted scissors (not ✂️)", /sylChop"\)\.innerHTML="CHOP! "\+uiIcon\("scissors"/.test(game));
+ok("game.js syllable gap uses the crafted scissors (not ✂)", /class="sylgap">\$\{uiIcon\("scissors"/.test(game));
+ok("game.js RANK-UP badge uses the crafted spark (not ⭐)", /gearbadge">'\+uiIcon\("spark"/.test(game));
+ok("game.js LEARN go button uses the crafted chevron (not ➜)", /btnLetterGo"\)\.innerHTML=.*uiIcon\("chevron"/.test(game));
 
 console.log(RESULT.lines.join("\n"));
 console.log("\n" + (RESULT.fail === 0 ? "ALL PASS" : RESULT.fail + " FAILED") + " (" + RESULT.pass + " passed, " + RESULT.fail + " failed)");

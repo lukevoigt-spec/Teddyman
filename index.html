@@ -100,14 +100,14 @@
   <div class="screen" id="scrIntro">
     <div class="panelart" id="introArt"></div>
     <div class="bubble" id="introText"><span></span><div class="ear" data-ear="intro"></div></div>
-    <button class="btn blue" id="btnIntroNext">NEXT ➜</button>
+    <button class="btn blue" id="btnIntroNext">NEXT</button>
   </div>
 
   <!-- ACT-1 → ACT-2 INTERLUDE (handoff cutscene) -->
   <div class="screen" id="scrInter">
     <div class="panelart" id="interArt"></div>
     <div class="bubble" id="interText"><span></span><div class="ear" data-ear="inter"></div></div>
-    <button class="btn blue" id="btnInterNext">NEXT ➜</button>
+    <button class="btn blue" id="btnInterNext">NEXT</button>
   </div>
 
   <!-- SCAN -->
@@ -177,7 +177,7 @@
 
   <!-- MEMORY VAULT (spaced review — recharge mastered gems on their due day; no story gating) -->
   <div class="screen" id="scrVault">
-    <div class="hudtitle" style="margin-top:46px;font-family:'Bangers',cursive;font-size:clamp(26px,5vw,40px);color:var(--gold);">🔋 RECHARGE THE GEMS</div>
+    <div class="hudtitle" id="vaultTitle" style="margin-top:46px;font-family:'Bangers',cursive;font-size:clamp(26px,5vw,40px);color:var(--gold);">RECHARGE THE GEMS</div>
     <div class="baselbl" style="font-size:18px;"><img class="gicon" src="art/ui-gem.png" width="22" height="22" alt="" aria-hidden="true" draggable="false"> <span id="vaultProg">0 / 0</span></div>
     <!-- gem charge strip: one gem per due item; each lights up + reveals its sound as it's recharged
          (the grapheme is revealed ONLY once charged — a find target is never shown before it's solved, #4) -->
@@ -200,7 +200,7 @@
 
   <!-- SPELL SCROLL (repeated-reading fluency — listen, then read aloud + tap in order) -->
   <div class="screen" id="scrScroll">
-    <div class="hudtitle" style="margin-top:46px;font-family:'Bangers',cursive;font-size:clamp(26px,5vw,40px);color:var(--gold);">📜 SPELL SCROLL</div>
+    <div class="hudtitle" id="scrollTitle" style="margin-top:46px;font-family:'Bangers',cursive;font-size:clamp(26px,5vw,40px);color:var(--gold);">SPELL SCROLL</div>
     <div class="bubble" id="scrollText"><span></span><div class="ear" data-ear="scroll"></div></div>
     <div id="scrollWords" class="scrollwords"></div>
     <div id="scrollMeter" class="scrollmeter"></div>
@@ -208,7 +208,7 @@
 
   <!-- SOUND WARM-UP (oral phonemic-awareness: blend / segment / isolate — audio-only prompts) -->
   <div class="screen" id="scrWarmup">
-    <div class="hudtitle" style="margin-top:46px;font-family:'Bangers',cursive;font-size:clamp(26px,5vw,40px);color:var(--gold);">🔥 SOUND WARM-UP</div>
+    <div class="hudtitle" id="warmTitle" style="margin-top:46px;font-family:'Bangers',cursive;font-size:clamp(26px,5vw,40px);color:var(--gold);">SOUND WARM-UP</div>
     <div class="baselbl" style="font-size:18px;" id="warmProg"></div>
     <div class="bubble" id="warmText"><span></span><div class="ear" data-ear="warm"></div></div>
     <div id="warmReveal" class="warmreveal"></div>
@@ -244,7 +244,7 @@
     <div id="letterCue" style="display:none;"></div>
     <div id="mouthCue" style="display:none;"></div>
     <div class="bubble" id="letterText"><span></span><div class="ear" data-ear="letter"></div></div>
-    <button class="btn blue" id="btnLetterGo">TRACE IT! ➜</button>
+    <button class="btn blue" id="btnLetterGo">TRACE IT!</button>
   </div>
 
   <!-- TRACE -->
@@ -274,7 +274,7 @@
     <div class="bubble" id="magicText"><span></span><div class="ear" data-ear="magic"></div></div>
     <div class="tilerow" id="magicWord"></div>
     <button class="btn" id="magicCast" style="display:none;">CAST MAGIC-E</button>
-    <button class="btn blue" id="magicNext" style="display:none;">NEXT ➜</button>
+    <button class="btn blue" id="magicNext" style="display:none;">NEXT</button>
     <div class="starsrow" id="magicProg"></div>
   </div>
 
@@ -282,8 +282,8 @@
   <div class="screen" id="scrSyllable">
     <div class="bubble" id="sylText"><span></span><div class="ear" data-ear="syll"></div></div>
     <div class="tilerow" id="sylWord" style="gap:6px;"></div>
-    <button class="btn" id="sylChop" style="display:none;">CHOP! ✂️</button>
-    <button class="btn blue" id="sylNext" style="display:none;">NEXT ➜</button>
+    <button class="btn" id="sylChop" style="display:none;">CHOP!</button>
+    <button class="btn blue" id="sylNext" style="display:none;">NEXT</button>
     <div class="starsrow" id="sylProg"></div>
   </div>
 
@@ -356,8 +356,8 @@
     <div class="bubble" id="winText"><span></span><div class="ear" data-ear="win"></div></div>
     <div class="gearlist" id="winGear"></div>
     <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;">
-      <button class="btn blue" id="btnWinMap">🗺️ CITY MAP</button>
-      <button class="btn" id="btnWinNext">🎯 NEXT MISSION</button>
+      <button class="btn blue" id="btnWinMap">CONTINUE</button>
+      <button class="btn" id="btnWinNext">NEXT MISSION</button>
     </div>
   </div>
 
@@ -367,7 +367,7 @@
     <div id="restHero"></div>
     <div class="bubble" id="restText"><span></span><div class="ear" data-ear="rest"></div></div>
     <div style="display:flex;gap:14px;">
-      <button class="btn" id="btnRestDone">😴 REST</button>
+      <button class="btn" id="btnRestDone">REST</button>
       <button class="btn ghost" id="btnRestMore">One more mission</button>
     </div>
   </div>

@@ -484,14 +484,14 @@ function lockRow(row){ if(row)row.querySelectorAll("button").forEach(b=>{ b.styl
 function comboPop(n){ if(typeof Sfx!=="undefined")Sfx.combo(n);   /* sound plays even in reduced-motion */
   const s=stageEl(); if(!s||REDUCE)return; const big=n>=5; const c=document.createElement("div");
   c.className="combochip"+(big?" big":"");
-  c.textContent=(n>=8?"UNSTOPPABLE ×"+n+" 🔥":n>=5?"ON FIRE ×"+n+" 🔥":"COMBO ×"+n+" 🔥");
+  c.innerHTML=(n>=8?"UNSTOPPABLE ×"+n:n>=5?"ON FIRE ×"+n:"COMBO ×"+n)+" "+uiIcon("flame",big?26:22);   /* crafted flame icon */
   s.appendChild(c); setTimeout(()=>c.remove(),big?1200:950);
   if(n>=8)confetti(18); }   /* a real high-accuracy streak earns a confetti pop (no timer — pure correctness) */
 /* MASTERY flourish — the loudest, most rewarding micro-moment (fires from record() on a fresh master).
    Short + fire-and-forget so it never blocks flow()/the next prompt; Calm/reduced-motion soften it. */
 function masteryFlash(){ if(typeof Sfx!=="undefined")Sfx.mastery();
   const s=stageEl(); if(!s)return;
-  const c=document.createElement("div"); c.className="masterpop"; c.innerHTML='<span class="mp-star">✦</span> MASTERED!';
+  const c=document.createElement("div"); c.className="masterpop"; c.innerHTML='<span class="mp-star">'+uiIcon("spark",26)+'</span> MASTERED!';   /* crafted spark icon */
   s.appendChild(c); setTimeout(()=>c.remove(),1100);
   if(!REDUCE)confetti(22); }
 function burstAt(el,word){ const r=el.getBoundingClientRect(),st=$("stage").getBoundingClientRect();
@@ -701,7 +701,7 @@ function startIntro(){ introIx=0; show("scrIntro"); paintIntro(); }
 function paintIntro(){ const p=INTRO[introIx]; $("introArt").innerHTML=p.art;
   const ids = p.taunt ? [p.id, p.taunt] : [p.id];   /* optional villain taunt after the panel's narration */
   faceSpeak($("introArt"),"intro",$("introText"),ids); cutsceneFX($("introArt"),p.fx);
-  $("btnIntroNext").textContent = introIx<INTRO.length-1?"NEXT ➜":"I'M READY!"; }
+  $("btnIntroNext").innerHTML = introIx<INTRO.length-1?("NEXT "+uiIcon("chevron",22)):"I'M READY!"; }
 $("btnIntroNext").onclick=()=>{ introIx++;
   if(introIx<INTRO.length)paintIntro();
   else { S.intro=true; save(); startScan(); } };
@@ -727,7 +727,7 @@ function startInterlude(){ interIx=0; show("scrInter"); paintInter(); }
 function paintInter(){ const p=INTERLUDE[interIx];
   $("interArt").innerHTML=(typeof p.art==="function")?p.art():p.art;
   faceSpeak($("interArt"),"inter",$("interText"),[p.id]); cutsceneFX($("interArt"),p.fx);
-  $("btnInterNext").textContent = interIx<INTERLUDE.length-1?"NEXT ➜":"INTO THE PORTAL! ➜";
+  $("btnInterNext").innerHTML = (interIx<INTERLUDE.length-1?"NEXT ":"INTO THE PORTAL! ")+uiIcon("chevron",22);
   $("btnInterNext").onclick=()=>{ interIx++;
     if(interIx<INTERLUDE.length)paintInter(); else finishInterlude(); }; }
 function finishInterlude(){ Aud.stop(); setAct(2); save();
@@ -744,7 +744,7 @@ function startAct2Intro(){ a2Ix=0; show("scrInter"); paintA2(); }
 function paintA2(){ const p=ACT2_INTRO[a2Ix];
   $("interArt").innerHTML=(typeof p.art==="function")?p.art():p.art;
   faceSpeak($("interArt"),"inter",$("interText"),[p.id]); cutsceneFX($("interArt"),p.fx);
-  $("btnInterNext").textContent = a2Ix<ACT2_INTRO.length-1?"NEXT ➜":"ENTER THE REALM! ➜";
+  $("btnInterNext").innerHTML = (a2Ix<ACT2_INTRO.length-1?"NEXT ":"ENTER THE REALM! ")+uiIcon("chevron",22);
   $("btnInterNext").onclick=()=>{ a2Ix++;
     if(a2Ix<ACT2_INTRO.length)paintA2(); else { S.act2intro=true; save(); Aud.stop(); toMap(); } }; }
 /* Shown when the current act has no missions yet (safe fallback). */
@@ -786,7 +786,7 @@ function paintHome(){ const p=HOMECOMING[homeIx];
   $("interArt").innerHTML=(typeof p.art==="function")?p.art():p.art;
   faceSpeak($("interArt"),"inter",$("interText"),[p.id]); cutsceneFX($("interArt"),p.fx);
   if(homeIx===6){ try{ confetti(72); }catch(e){} }   /* home7 — the cast lifts him up: big celebratory burst */
-  $("btnInterNext").textContent = homeIx<HOMECOMING.length-1?"NEXT ➜":"✅ THE END";
+  $("btnInterNext").innerHTML = homeIx<HOMECOMING.length-1?("NEXT "+uiIcon("chevron",22)):(gicon("check",22)+" THE END");
   $("btnInterNext").onclick=()=>{ homeIx++;
     if(homeIx<HOMECOMING.length)paintHome(); else finishHomecoming(); }; }
 function finishHomecoming(){ Aud.stop(); paintTitle(); show("scrTitle"); }
@@ -957,7 +957,7 @@ function startLearn(m){ learnLetter=m.letter; const L=LETTERS[learnLetter];
   show("scrLetter");
   $("bigGlyph").textContent=learnLetter+" "+learnLetter.toUpperCase();
   $("kwIcon").innerHTML=emojiArt(L.icon);
-  $("btnLetterGo").textContent=(learnLetter.length>1)?"FIND IT! ➜":"TRACE IT! ➜";   /* digraphs/teams skip the trace */
+  $("btnLetterGo").innerHTML=((learnLetter.length>1)?"FIND IT! ":"TRACE IT! ")+uiIcon("chevron",22);   /* digraphs/teams skip the trace */
   /* confusable twins already taught? show a side-by-side contrast cue */
   const cue=$("letterCue"); if(cue){
     const twin=(CONFUSE[learnLetter]||[]).find(t=>S.done[LETTER_MISSION[t]]);
@@ -1332,7 +1332,7 @@ function fortSpell(){ const pool=taughtSight().length?taughtSight():["the","a","
     b.onclick=()=>{ const want=w[fortSpellSlot];
       if(c===want){ const slot=wr.children[fortSpellSlot]; slot.textContent=c; slot.classList.add("filled");
         const heart=isHeart(w,fortSpellSlot); Aud.ding(); fortSpellSlot++;
-        if(fortSpellSlot>=w.length){ record("sw_"+w,true); fortHit("✨"); }
+        if(fortSpellSlot>=w.length){ record("sw_"+w,true); fortHit("SPELL!"); }
         else Aud.play(heart?["spell_heart"]:["snd_"+c]); }
       else { record("sw_"+w,false); fortMissHint(); b.classList.add("dim");
         if(fMiss>=2)row.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===want)x.classList.add("hint");}); Aud.play(["almost","sw_"+w]);
@@ -1464,7 +1464,7 @@ function castMagicE(sh,lo){ const wr=$("magicWord");
   record(magicM.unit,true);
   flow(Aud.play(["magic_cast","snd_"+magicM.vowel+"_long","word_"+lo]),()=>{
     $("magicNext").style.display="inline-block";
-    $("magicNext").innerHTML=(magicIx>=magicPairs.length-1)?'DONE '+gicon("check",20):"NEXT ➜";
+    $("magicNext").innerHTML=(magicIx>=magicPairs.length-1)?('DONE '+gicon("check",20)):("NEXT "+uiIcon("chevron",22));
     $("magicNext").onclick=()=>{ magicIx++; magicStep(); }; });
 }
 
@@ -1485,19 +1485,19 @@ function sylStep(){
   $("sylProg").textContent=sylIx+" / "+sylWords.length;
   const wr=$("sylWord"); wr.innerHTML=`<div class="sylchunk">${sylChunkTiles(w)}</div>`; wr.classList.remove("sylpush");
   $("sylNext").style.display="none";
-  $("sylChop").style.display="inline-block"; $("sylChop").textContent="CHOP! ✂️"; $("sylChop").onclick=()=>chopWord(w);
+  $("sylChop").style.display="inline-block"; $("sylChop").innerHTML="CHOP! "+uiIcon("scissors",24); $("sylChop").onclick=()=>chopWord(w);
   narrate("syll",$("sylText"),["syll_look",...graphemeSounds(w)],"A BIG word! Tap CHOP to split it into chunks."); }
 function chopWord(w){ const parts=sylM._parts||[w]; $("sylChop").style.display="none";
   const wr=$("sylWord"); const a=parts[0], b=parts.length>1?parts[1]:"";
   wr.innerHTML=`<div class="sylchunk ca">${sylChunkTiles(a)}</div>`
-    + (b?`<div class="sylgap">✂</div><div class="sylchunk cb">${sylChunkTiles(b)}</div>`:"");
+    + (b?`<div class="sylgap">${uiIcon("scissors",34)}</div><div class="sylchunk cb">${sylChunkTiles(b)}</div>`:"");
   shakeStage();
   record("w_"+w,true);
   const seq = b ? [...graphemeSounds(a),"syll_and",...graphemeSounds(b),"syll_push","word_"+w]
                 : [...graphemeSounds(w),"word_"+w];
   flow(Aud.play(seq),()=>{ wr.classList.add("sylpush"); confetti(22); burstAt(wr,w.toUpperCase()+"!"); if(typeof Sfx!=="undefined")Sfx.combo&&Sfx.combo();
     $("sylNext").style.display="inline-block";
-    $("sylNext").innerHTML=(sylIx>=sylWords.length-1)?'DONE '+gicon("check",20):"NEXT ➜";
+    $("sylNext").innerHTML=(sylIx>=sylWords.length-1)?('DONE '+gicon("check",20)):("NEXT "+uiIcon("chevron",22));
     $("sylNext").onclick=()=>{ sylIx++; sylStep(); }; }); }
 
 /* ---------------- UNLOCK CARD (reward reveal) ---------------- */
@@ -1559,7 +1559,7 @@ function showWin(firstTime){ show("scrWin");
   if(allyFreed("heart")&&!CUR.rescue)ids.push("heart_cheer"+(1+(S.stars%3)));
   /* RANK-UP fanfare — the comprehensible "you leveled up": mentor announces it + a badge + extra pop */
   if(__rankedUp){ ids.unshift("rankup"); setTimeout(()=>{ confetti(80); flashScreen("rgba(255,210,90,.4)"); if(typeof Sfx!=="undefined"&&Sfx.rankup)Sfx.rankup(); },340);
-    $("winGear").innerHTML='<div class="gearbadge">⭐ RANK UP — '+heroProgress().name+'!</div>'+$("winGear").innerHTML; __rankedUp=false; }
+    $("winGear").innerHTML='<div class="gearbadge">'+uiIcon("spark",22)+' RANK UP — '+heroProgress().name+'!</div>'+$("winGear").innerHTML; __rankedUp=false; }
   narrate("win",$("winText"),ids);
   /* ONE button: CONTINUE (parent — the old CITY MAP button was redundant; the map is on the nav).
      Crafted chevron, never an emoji. Carries the adventure forward. */
@@ -1577,6 +1577,7 @@ function showWin(firstTime){ show("scrWin");
 function showRest(nextM){ show("scrRest");
   $("restHero").innerHTML=heroMarquee(160);
   narrate("rest",$("restText"),["rest1","rest2"]);
+  { const bd=$("btnRestDone"); if(bd)bd.innerHTML=(typeof uiIcon==="function"?uiIcon("moon",22):"")+" REST"; }   /* crafted moon icon */
   $("btnRestDone").onclick=()=>navGo(toMap);   /* Done resting → the MAP (home), not the bare Title (NAV-PLAN slice 4) */
   { const bm=$("btnRestMore"); if(bm)bm.innerHTML=(typeof uiIcon==="function"?uiIcon("play",22):"")+" One more mission"; }   /* crafted play icon, not 🎯 */
   $("btnRestMore").onclick=()=>{ nextM?startMission(nextM):toMap(); }; }
@@ -1998,6 +1999,7 @@ function scrollTouch(id,ms){ S.scrolls=(S.scrolls&&typeof S.scrolls==="object")?
   r.box=Math.min(VAULT_MAXBOX,(r.box==null?-1:r.box)+1); r.due=addDays(dayKey(),VAULT_INTERVALS[r.box]); r.last=dayKey();
   S.scrolls[id]=r; save(); return best; }
 function startScroll(s,fromTrain){ clearFlow(); scrollCur=s; scrollPos=0; scrollFromTrain=!!fromTrain; show("scrScroll");
+  { const t=$("scrollTitle"); if(t)t.innerHTML=uiIcon("scroll",34)+" SPELL SCROLL"; }   /* crafted scroll icon */
   $("scrollMeter").textContent=""; renderScrollWords(false);
   flow(narrate("scroll",$("scrollText"),["scroll_intro"]),()=>scrollPreview(0)); }
 function renderScrollWords(tappable){ const wr=$("scrollWords"); wr.innerHTML="";
@@ -2047,6 +2049,7 @@ function pickWarmItems(){ const pool=shuf(warmPool().slice()), plan=["blend","se
     items.push({type:t, w}); });
   return items; }
 function startWarmup(fromTrain){ clearFlow(); warmFromTrain=!!fromTrain; warmItems=pickWarmItems(); warmIx=0; show("scrWarmup");
+  { const t=$("warmTitle"); if(t)t.innerHTML=uiIcon("flame",34)+" SOUND WARM-UP"; }   /* crafted flame icon */
   $("warmReveal").innerHTML=""; flow(narrate("warm",$("warmText"),["warmup_intro"]),()=>warmStep()); }
 function warmStep(){ warmMiss=0; $("warmReveal").innerHTML="";
   if(warmIx>=warmItems.length){ warmFinish(); return; }
@@ -2135,15 +2138,16 @@ function vaultPaintGems(){ const row=$("vaultGems"); if(!row)return; row.innerHT
     d.innerHTML=gemSVG("",col,40)+`<span class="vgem-lbl">${escHTML(lbl)}</span>`;
     row.appendChild(d); }); }
 function startVault(){ clearFlow(); show("scrVault"); vaultPlan=vaultDueRoutable(); vaultPos=0;
+  { const t=$("vaultTitle"); if(t)t.innerHTML=uiIcon("bolt",32)+" RECHARGE THE GEMS"; }   /* crafted bolt icon */
   S.vaultNudge=dayKey(); save();                         /* opening the Vault counts as today's nudge */
   $("vaultWord").innerHTML=""; $("vaultChoices").innerHTML=""; vaultPaintGems();
-  if(!vaultPlan.length){ $("vaultProg").textContent="✨";
-    narrate("vault",$("vaultText"),["vault_full"],"Your gems are fully charged! ✨"); return; }
+  if(!vaultPlan.length){ $("vaultProg").innerHTML=uiIcon("spark",26);
+    narrate("vault",$("vaultText"),["vault_full"],"Your gems are fully charged!"); return; }
   flow(narrate("vault",$("vaultText"),["vault_intro"]),()=>vaultStep()); }
 function vaultStep(){
   vaultPaintGems();                                      /* reflect the latest charge state (incl. all-charged when done) */
   if(vaultPos>=vaultPlan.length){ confetti(40);
-    flow(narrate("vault",$("vaultText"),["vault_done"],"All charged up! ⚡"),()=>{ Aud.stop(); showBase(); }); return; }
+    flow(narrate("vault",$("vaultText"),["vault_done"],"All charged up!"),()=>{ Aud.stop(); showBase(); }); return; }
   $("vaultProg").textContent=(vaultPos+1)+" / "+vaultPlan.length;
   const it=vaultPlan[vaultPos]; vaultMiss=0;
   (it.mode==="find") ? vaultFind(it) : vaultBuild(it); }
