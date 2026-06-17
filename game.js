@@ -538,7 +538,29 @@ function burstAt(el,word){ const r=el.getBoundingClientRect(),st=$("stage").getB
       $("stage").appendChild(sp); setTimeout(()=>sp.remove(),520); } }
   if(word){ const z=document.createElement("div"); z.className="zapword"; z.textContent=word;
     z.style.left=(cx-60)+"px"; z.style.top=(r.top-st.top-40)+"px";
-    $("stage").appendChild(z); setTimeout(()=>z.remove(),900); shakeStage(); flashScreen(); } }
+    $("stage").appendChild(z); setTimeout(()=>z.remove(),900); shakeStage(); flashScreen(); }
+  maybeBonus(cx,cy,el); }   /* #151: the base burst above is ALWAYS shown; this adds a ~50% surprise EXTRA on top */
+/* #151 UNCERTAIN BONUS — research (Howard-Jones & Jay): a reward on a ~50% chance spikes dopamine AND memory
+   retention more than a certain OR a fully-random one. The BASE "you got it!" (the burst + ding) is ALWAYS 100%
+   (protects ADHD immediate/frequent reinforcement); on top, ~half the correct answers get a small EXTRA — and
+   the surprise is in WHICH good thing, NEVER whether (the §6.0 line: never "you got nothing"). Wind-up first
+   (dopamine is a pre-reward signal), then the reveal. Fires on the ANSWER reveal (off the prompt); Lite-gated. */
+function maybeBonus(cx,cy,el){ try{
+  if(typeof detailLevel==="function" && detailLevel()==="lite") return;   /* Lite keeps the base, drops the bonus juice */
+  if(Math.random()>=0.5) return;             /* lands ~half the time — the uncertainty is on the EXTRA, never on existence */
+  const s=$("stage"); if(!s) return;
+  const w=document.createElement("div"); w.className="bonuswind"; w.style.left=cx+"px"; w.style.top=cy+"px";
+  s.appendChild(w); setTimeout(()=>{try{w.remove();}catch(e){}},460);   /* anticipation wind-up BEFORE the reveal */
+  setTimeout(()=>{ const pick=Math.floor(Math.random()*3);              /* WHICH good thing (never WHETHER): */
+    if(pick===0){ rewardShower(8,{fromEl:el}); }                         /* a) an extra gem shower */
+    else if(pick===1){ S.coins=(S.coins||0)+1; save(); coinPop(cx,cy); if(typeof refreshHUD==="function")refreshHUD(); }  /* b) +1 surprise coin */
+    else { confetti(18); }                                              /* c) a little confetti pop */
+    try{ if(typeof Sfx!=="undefined" && Sfx.gem) Sfx.gem(); }catch(e){}  /* a soft extra ting */
+  }, 240);
+}catch(e){} }
+function coinPop(cx,cy){ const s=$("stage"); if(!s)return;
+  const c=document.createElement("div"); c.className="coinpop"; c.innerHTML=gicon("coin",26)+"<span>+1</span>";
+  c.style.left=(cx-18)+"px"; c.style.top=(cy-30)+"px"; s.appendChild(c); setTimeout(()=>{try{c.remove();}catch(e){}},1000); }
 /* count a counter UP to a value (never just set) + a scale-bounce — the satisfying "destination
    reaction" (engagement §8 #6). easeOutQuad; instant on reduced-motion / no rAF. */
 function countUp(el,to,dur){ if(!el)return; const from=parseInt(el.textContent,10)||0;
