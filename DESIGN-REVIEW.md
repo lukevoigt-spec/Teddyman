@@ -15,6 +15,28 @@ resolves before merge; this file keeps the durable before/after record. Shots li
 
 ---
 
+## 2026-06-17 · Hero Base — aliveness & growth (gem-dex % · lair grows · tap-hero card)  ·  PASS
+**Branch:** `oracle/lair-growth` → PR for Neo. The lair's last slice (parent picked **glow + staged reveals**
+and **tap-hero → hero card** via AskUserQuestion). `game.js` + `styles.css` only (no index.html — avoids
+Neo's active #102/#107 files).
+**Built:**
+- **Gem-dex %** — the GEMS panel + the hero card show `got / total · NN%`.
+- **Lair grows with mastery** — `#lairFx` overlay (injected into `#scrBase`, pointer-events:none, behind
+  hero/panels). A cool "dormant" dim is strongest at 0% and lifts to nothing at 100% (somewhere to grow
+  FROM), while a warm bloom + STAGED reveals fire at 25/50/75% (pedestal halo → hearth-side warmth →
+  shelf-side glint). Calm dims + stops the hearth flicker; Lite drops it (GPU). Driven by `--lair` =
+  this act's mission-completion fraction.
+- **Tap Teddy → his flip card** — reuses `#heroCard`: front = painted hero + rank; back = Rank / Gem-dex /
+  Weapon + an Act-1 cape picker (stopPropagation so picking a cape doesn't flip the card). Weapon label
+  reads the HELD weapon from `S.equip` (the art's source) so it can never contradict the picture.
+**Shots:** `base` (0% — cool dormant, hero spotlit, still inviting), `basedaily` (~50% — warmer, gem-dex
+"13/26·50%"), `basearmed2` (Act-2 100% — bright/alive), `teddycard` + `teddycardback` (front/back/cape
+picker; weapon "GEM SWORD" matches the art). All premium, emoji-free, UI lives in the painting.
+**Tests:** ui-emoji 44/44, curriculum 115/115, save 121/121. Added `teddycard`/`teddycardback` scenes to
+`tools/shot.mjs`.
+
+---
+
 ## 2026-06-16 · Premium UI — in-game controls (home button de-emoji)  ·  PASS
 **Branch:** `oracle/premium-controls` → PR for Neo. Premium UI Overhaul, batch: **in-game controls**.
 **Finding:** of the three in-game controls, **replay** (`.ear`) and **skip** (`#btnSkip`) were ALREADY
