@@ -1,56 +1,65 @@
 # KANBAN.md — the live work board (Trinity-maintained)
 
 > The single view of **what's being built and what's queued.** **Trinity keeps this current every turn.** The parent does
-> NOT edit it — he steers by answering Trinity's triage questions (`AskUserQuestion`); Trinity moves the cards. Each card =
-> a GitHub Issue (`#N`); specs live in the linked docs. Owner: **[N]** = Neo · **[O]** = The Oracle.
-> *(GitHub Projects can't be API-driven from here, so this markdown file is the canonical board.)* — **reconciled to live Issues after the 2026-06-17 merge train (Trinity).**
+> NOT edit it — he steers by answering Trinity's triage questions; Trinity moves the cards. Each card = a GitHub Issue
+> (`#N`); specs live in the linked docs. Owner: **[N]** = Neo · **[O]** = The Oracle.
+> *(GitHub Projects can't be API-driven here, so this file IS the board.)* — **reconciled + sequenced 2026-06-17 (Trinity);
+> parent: "tackle the rest of the backlog, explicit handoffs, infer my answers, babysit to done."**
+
+## 🎯 BUILD ORDER — the wrap-it-up sequence (7 open issues; all enhancement/polish/ergonomics, no blockers)
+**Decisions are pre-made below (Trinity inferred them from the parent's established preferences) so Neo/Oracle never stall.
+Trinity babysits every PR → gates/coordinates → merged.** The core app (reading ladder, Act 1+2) is DONE + live.
+
+1. **#153 [N] — Anti-gaming re-lock — ✅ SHIPPED 2026-06-17** (`sidArm` arms sound-ID rows only after the target audio
+   settles + `SID_MIN_MS=450` floor; `fortAccept` one-shot guard kills fortress double-fire). The parent's "stop
+   button-mashing" ask, landed and verified against current `main`.
+2. **#151 [N] — Uncertain-BONUS reward — ✅ SHIPPED 2026-06-17** (closed mid-session; the crew is actively burning the
+   list). Oracle can still polish the "bonus!" visual + Neo tune the rate as a follow-up if it doesn't feel right on device.
+3. **#152 [O+N] — Collection-as-mastery counter** ("N/26 gems mastered" on home/map + the Zeigarnik reachable-gap). #1
+   daily-return hook. Oracle owns the look/placement (§20); Neo wires it to the existing `letterMastered` data. Overlaps
+   the merged gem-card #126 — reuse, don't duplicate.
+4. **#145 [O+N] — Squishy economy v2** (+50 zone-unlocked squishies → store). The big engagement feature; depends on the
+   merged #124 split. **Inferred decisions (Trinity, see the issue comment):** cadence ~3/zone early → ~4 later (rarity
+   climbs deep in, ~50 across ~15 zones); rarity = common/rare/epic with the cost ladder extended 10→~400 (always
+   achievable, always something to want); **buy-only** (the unlock + "new in store!" card IS the instant reward — no free
+   drop); chest still drops a squishy **rarely (~2–3/act, unlocked pool only)**. Oracle stages the 50 PNGs (logic can ship
+   with the gate inert until art lands); Neo builds the catalog + unlock-gating + the end-of-zone card.
+5. **#60 [O] — Ally face-tokens → painted raster** (cheer pops / league shelf / win mini-face). Cosmetic consistency.
+6. **#36 / #37 [O] — Cinematic cutscene pass / portal AI-video spike. DEFERRED — the parent is doing the portal VIDEO
+   himself,** so these stay low/optional (ship only if Oracle has spare cycles + it clears §20; SVG fallback stays).
+7. **#162 [N+O] — Map node touch targets <96px in portrait** (hard-constraint #6; current "play next" node measured
+   ~57×59 CSS px). Enlarge the interactive hit geometry only — keep the painted parchment-sign size — + a portrait
+   geometry assertion in the render gate. From the reconciled Morpheus sweep; VERIFIED against current `main`.
+8. **#163 [O] — Render-verify + fix Gem-Dex CTA clip + earned-chest win overflow** (1024×768). Render-dependent, so
+   Oracle confirms at the cited viewports first (the fast crew may already have compacted the win layout) and fixes only
+   what still reproduces. Also seed `S.chests` in the `winchest` harness scene so the gate can see the chest.
+
+> **The one "finish v1" item that's the PARENT's, not the crew's:** record the **letter-sound phonemes + the new friends'
+> voices** in the Voice Studio (TTS can't make a clean schwa-free phoneme — the most pedagogically critical audio). This is
+> the main gap between "works great" and "fully finished." Engineering can't close it; recording can.
 
 ## 📥 TRIAGE — candidates awaiting the parent's call
-*(empty)*
+*(empty — the 06-17 batch is dispositioned; the research backlog below is parked, not yet filed.)*
 
-## 🏆 ELEVATION LOOP — "make it award-winning & beautiful" (`ELEVATION-LOOP.md`, active)
-Award Bar rubric **v1 synthesized** (14 criteria, 5-stream research review). Wave-by-wave:
-- **#54 [O]** Ratify the Award Bar into `STYLE.md §20` (Oracle adjusts + owns).
-- **#55 [O+N]** **Wave 1 eval** — score Title · World Map · a learning prompt · Win against the bar → gap lists in `DESIGN-REVIEW.md` → per-fix slices. *(Wave 2 = Base/Training/Shop · Wave 3 = cutscenes/settings/transitions.)*
-
-## ✅ APPROVED — build now (open GitHub Issues, all Oracle-led)
-**Parent-requested 2026-06-17 (the collection-card system — build #124 first, it's the shared pattern):**
-- **#124 [O+N]** Squishy STORE/COLLECTION split — owned display-case with faint slots + duplicate count badge (needs `S.owned` boolean→count migration) + a painted shopping-cart button → buy view.
-- **#126 [O+N]** Gems + Villains COLLECTION CARDS — tap the gem/villain shelf → a card of the whole set, same pattern as #124 (one shared system). Gems folds into #33's gem-dex.
-- **#127 [N+O]** Treasure box POPS at the end of the level earned — surface the earned chest on the WIN screen as a tap-to-open card (reuses `openChest`), not buried in the Squishy menu. Mostly Neo surfacing + Oracle card art.
-- **#145 [O+N]** Squishy economy v2 — +50 zone-unlocked squishies that populate the store (instant reward + "rarer" items deep into the game). Unlock derived from `zoneDone`; end-of-zone "new in store!" card (reuses #127). Chest drops a squishy RARELY (~2–3/act, from the unlocked pool). Builds on #124.
-
-**Engagement research (parent-commissioned 2026-06-17 → `ENGAGEMENT-RESEARCH.md`; parent greenlit the top 3):**
-- **#151 [N]** Uncertain-BONUS reward (~50/50 extra, base always certain) — the dopamine + memory lever (Howard-Jones/Bristol). Highest learning-ROI, small change. *(build-now)*
-- **#152 [O+N]** Collection-as-mastery counter ("N/26 gems mastered" on home/map + Zeigarnik reachable-gap) — the #1 daily-return hook; mastery-gated. Overlaps #126/#33.
-- **#153 [N]** Anti-gaming WITHOUT punishment — response-time re-lock + reward-the-correct-path (the evidence-based replacement for the parent's "villain HP up on wrong"; that's a loss state we don't ship). *(build-now)*
-- *Research backlog (not yet filed — candidates for later): more autonomy/choice · within-mission micro-progress + endowed head-start · avatar/Base ownership · returning warm characters greet-by-name · anticipation juice + named praise · cumulative (never consecutive) day-count. Do-not-build list captured in the doc.*
-
-**The big redesigns (AGENTS rule 8: `[O]` designs+art+gates · `[N]` implements · `[O]` `§20 PASS` · `[N]` merges):**
-- **#104 [O+N]** De-emoji the REMAINING child chrome — #116 cleared the Vault/Scroll/Warm-Up titles + combo/vault glyphs (crafted icons); still open: win/rest buttons, map ✓, other rendered glyphs. (The #102 full-scan guard is now live to catch new ones.)
-- **#33 [O+N]** Hero Room plinth-first redesign — *shell (#52) + lair-growth/aliveness (#123) shipped*; remaining = tap→card overlays, gem-dex %, room-grows-with-mastery (overlaps #126).
-- **#34 [O+N]** Training Room VISUAL redesign — *treasure-vault redesign (#125) shipped*; remaining = the full Premium-Bar visual pass.
-- **#31 [O+N]** UI theme coherence — standardize every screen to the painted backgrounds. *(Title stays as-is.)*
-- **#44 [O]** Title-screen hero box on iPad — nudge down + kill the clipped-glow rect *(WebKit-verify).*
-- **#60 [O]** Ally FACE-tokens → painted raster (cheer pops, league thumbs, win mini-face).
+## 🅿️ PARKED — research-derived ideas, not yet filed (candidates for after the 7 land)
+More autonomy/choice · within-mission micro-progress + endowed head-start · avatar/Base ownership · returning warm
+characters greet-by-name · anticipation juice + named praise · cumulative (never consecutive) day-count. Do-not-build list
++ full evidence in `ENGAGEMENT-RESEARCH.md`.
 
 ## 🔨 BUILDING — has an open PR
-*(none open. Monitoring posture: Trinity gates any guest/Oracle PR the moment it opens.)*
+*(none open right now. Babysit posture: Trinity watches the `morpheus/*` + `oracle/*` + `fix/*` + `feat/*` branches and
+gates/coordinates any PR the moment it opens, drives it to merged.)*
 
-## 🅿️ DEFERRED — approved-someday, not active
-- **#38 [O]** Map allies — grounding partly done (#105); remaining = new `allyBody` art + contact shadow on the legacy layout.
-- **#39 [O]** §20 render-gate catch-up on new Act-2 systems + the calm-prompt check.
-- **#35 [O]** Mouth art on the big cutscene portraits (driver already shipped).
-- **#36 [O]** Cinematic SVG cutscene pass (beats 2–6). *(Tension with parent doing portal video — revisit.)*
-- **#37 [O]** Portal AI-video spike *(optional, render-gated, SVG fallback).*
+## ✓ DONE (today's merge train — verified against live Issues, 2026-06-17)
+**The app is content-complete + stable + live.** Objective #1 (Teddy learns to read) — full TEKS Grade-2 ladder, Act 1+2 —
+is **DONE**. Today merged: collection cards #124/#126 · Hero-Base lair-growth #123 · Training-Room redesign #125 · XP rank
+meter #131/#137/#140 · FTUE first-time flow #130/#138 + beatIn transitions #132 · de-emoji pass #116 + full-scan guard
+#117 + remaining chrome #104 · WebKit card-flip #136 · ghost-button unify #148 · boot-perf #107 + Aud.pick #106 ·
+playtest-docs #112 + Base-perf #113 · UI theme #31 · Hero-box #44 (de-halo) · Hero-Room redesign #33 · Training visual
+#34 · the Elevation-Loop close-out (#54 Award Bar ratified · #55 Wave-1 eval) · #35 mouth-art · #38 map-allies-grounded ·
+#39 §20 render-gate catch-up · #151 uncertain-bonus reward · the engagement research #154 + Trinity's friend-voices/learn-declutter #147.
+*(Disposition recorded for everything dropped from the active board — all CLOSED/merged 2026-06-17, verified against live Issues; Codex #157 catch. ⚠ `ELEVATION-LOOP.md` + `QA.md` still reference some of these as active → a prose drift-reconcile is queued, low priority.)*
+**Earlier:** the full code sweep #81–88 · parent deep-dive #71–75 · roster #110 + training-lines #111 · painted icon set
+#103/#109 · nav overhaul · #105 re-apply. *(History in git + `QA.md`.)*
 
-## ✓ DONE (recent — verified against live Issues + git, 2026-06-17)
-**Today's merge train (all live on `main`):**
-- **#118** — #110 Act-2 roster reconcile + #111 training-line process-praise fix + the playtest fixes (fortMaze reads the sentence on autoplay; daily-goal deferred out of missions to a calm hub). *(Trinity, rebased.)*
-- **#117** — #102 ui-emoji guard ratchet → full child-facing scan. · **#116** — de-emoji pass (crafted flame/spark icons + title ids).
-- **#125** — Training Room treasure-vault redesign (advances #34). · **#123** — Hero Base lair-growth & aliveness (advances #33).
-- **#114/#115** — #107 boot-perf (voicepack defer + BGM metadata) + #106 Aud.pick guard. · **#121** — #112 playtest-docs align. · **#122** — #113 Hero Base art-burst/404.
-**Reading (objective #1): full TEKS Grade-2 ladder complete, Act 1 + Act 2 content-complete.**
-**Earlier 06-16/17:** painted icon set #103/#109 · premium 9-slice buttons #108 · code sweep #81–#88 · deep-dive bugs #71–#75 · treasure chest #90 · nav overhaul (4-corner, single-PLAY, HUD-hide) · #105 re-apply (map grounding, villain repaints, Cal) · closed #96 (superseded).
-
-> History in git + `QA.md`. **Caught this session:** #23 was closed-but-never-shipped → re-filed #111 (now live).
+— Trinity, 2026-06-17
