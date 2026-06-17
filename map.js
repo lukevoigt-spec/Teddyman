@@ -160,14 +160,13 @@ function mapBanner(x,y,st,zi){
       <rect x="${x-23}" y="${y-68}" width="46" height="14" fill="${band}" stroke="#7a5a2a" stroke-width="2.4"/>
     </g>
     ${icon}
-    ${st==="current"
-      /* #162 (Morpheus QA / constraint #6): the CURRENT node is the child's main "play next" tap. A 68×96
-         SVG-unit rect scales to ≈34×48 CSS px at iPad-portrait (768w → meet scale 0.5) — under the 96px floor.
-         Give the current node a 208×208 hit area (≈104 CSS px at 768-portrait, more on wider iPads / landscape).
-         It's drawn LAST (mapPaintV2) so any overlap with a neighbour resolves to "play next", never a
-         locked-tip mis-tap. The painted parchment visual is untouched. */
-      ? `<rect x="${x-104}" y="${y-132}" width="208" height="208" fill="transparent"/>`
-      : `<rect x="${x-34}" y="${y-76}" width="68" height="96" fill="transparent"/>`}
+    <rect x="${x-104}" y="${y-132}" width="208" height="208" fill="transparent"/>
+    ${"" /* #162 (Morpheus QA / constraint #6): EVERY map node is interactive — current = "play next",
+         done = replay, locked = gentle locked_tip cue — so all need a >=96px touch target. The 68×96 SVG-unit
+         rect scaled to ≈34×48 CSS px at iPad-portrait (768w → meet scale 0.5), under the floor. A uniform
+         208×208 hit area = ≈104 CSS px at 768-portrait (more on wider iPads / landscape). Overlap is harmless:
+         the CURRENT node is drawn LAST (mapPaintV2) so it wins any tie (a near-miss launches play-next, never a
+         locked-tip mis-tap), and same-state neighbours give the same cue either way. Painted visual untouched. */}
   </g>`;
 }
 /* which side of each node is WALKABLE GRASS (away from the river), so a captive friend is grounded on
