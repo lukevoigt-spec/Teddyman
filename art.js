@@ -817,4 +817,37 @@ Object.assign(PICONS,{
   coat:()=>`<svg class="picicon" viewBox="0 0 100 100"><path d="M38 22 L26 30 L20 50 L30 54 L33 45 V82 H67 V45 L70 54 L80 50 L74 30 L62 22 Q50 32 38 22Z" fill="#4a8fe0" stroke="${PI_INK}" stroke-width="4" stroke-linejoin="round"/><line x1="50" y1="30" x2="50" y2="82" stroke="${PI_INK}" stroke-width="3"/><g fill="#ffce3a"><circle cx="44" cy="52" r="2.6"/><circle cx="44" cy="64" r="2.6"/><circle cx="44" cy="76" r="2.6"/></g></svg>`,
   seed:()=>`<svg class="picicon" viewBox="0 0 100 100"><path d="M20 80 q30 -10 60 0Z" fill="#8a5a2b" stroke="${PI_INK}" stroke-width="3.5" stroke-linejoin="round"/><line x1="50" y1="82" x2="50" y2="44" stroke="#3a8a3a" stroke-width="5" stroke-linecap="round"/><path d="M50 56 q-18 -2 -22 -18 q18 0 22 14Z" fill="#5fb85f" stroke="${PI_INK}" stroke-width="3" stroke-linejoin="round"/><path d="M50 50 q18 -2 22 -16 q-18 0 -22 12Z" fill="#7ed957" stroke="${PI_INK}" stroke-width="3" stroke-linejoin="round"/></svg>`
 });
-function picIcon(word, fallbackEmoji){ const f=PICONS[word]; return f ? f() : (fallbackEmoji!=null ? String(fallbackEmoji) : ""); }
+/* PAINTED CONTENT ICONS (#103 — parent-directed: a PAINTED image for EVERY inventory/content emoji).
+   One cohesive raster set (art/pic-<slug>.png, the parent-approved clean dark-outline style) replaces
+   the OS emoji on the learn-screen keyword, the picture-match answer tiles, cloze/scramble/sentence
+   pics, and the Warm-Up pics. RESOLVER keyed by the EMOJI glyph (every render site already has it):
+   EMOJI_IMG maps glyph -> concept slug; emojiArt(glyph,size) returns an <img> ONLY when that slug is
+   in PICIMG_SET (the slugs whose art is actually shipped), else it returns the emoji string unchanged.
+   So this rolls out one painted file at a time with ZERO risk to the rest (same pattern as PICONS).
+   Matching always stays on dataset.w (the picture is cosmetic) so swapping art never affects answers. */
+const EMOJI_IMG={
+  "☀️":"sun","🍎":"apple","🐯":"tiger","🐷":"pig","🐜":"ant","🪺":"nest","🐵":"monkey","🐶":"dog",
+  "🐐":"goat","🐙":"octopus","🐱":"cat","🪁":"kite","🥚":"egg","☂️":"umbrella","🚀":"rocket","🎩":"hat",
+  "⚽":"ball","🐟":"fish","🦁":"lion","🫙":"jar","🚐":"van","🕸️":"web","🦊":"fox","🪀":"yoyo",
+  "🦓":"zebra","👑":"crown","🚢":"ship","🧀":"cheese","👍":"thumb","🐳":"whale","🦆":"duck","💍":"ring",
+  "🌧️":"rain","🐝":"bee","⛵":"boat","🚗":"car","🌽":"corn","🌿":"fern","🐦":"bird","🏄":"surf",
+  "🐸":"frog","🚂":"train","😴":"sleep","🏃":"run","🐔":"hen","🐛":"bug","🚲":"bike","🐰":"rabbit",
+  "🌹":"rose","🦴":"bone","🛏️":"bed","🤴":"prince","🌳":"tree",
+  /* READWORDS / READWORDS2 / Warm-Up picture pool (the second wave that completes #103) */
+  "🥤":"cup","🚌":"bus","🎒":"bag","🧢":"cap","🍳":"pan","🥜":"nut","🪭":"fan","☕":"mug",
+  "🍲":"pot","🤗":"hug","🥅":"net","🍞":"bun","🍟":"chip","🧦":"sock","🏪":"shop","🛁":"bath",
+  "🧔":"chin","🪽":"wing","🍽️":"dish","🥁":"drum","🚩":"flag","🦀":"crab","⭐":"star","✋":"hand",
+  "🦘":"jump","💡":"lamp","⛺":"tent","😷":"mask","🛷":"sled","🎁":"gift","🪤":"trap","🥛":"milk",
+  "🎂":"cake","🚪":"gate","🏠":"home","🧊":"cube","👃":"nose","🦶":"feet","🧥":"coat","🌱":"seed",
+  "🍴":"fork","👧":"girl","🧣":"fur","⛪":"church","🌅":"sunset","🌭":"hotdog","💻":"laptop","🧲":"magnet",
+  "🧺":"basket","⛑️":"helmet","🐅":"tiger","🤖":"robot","🍋":"lemon","🐤":"robin"
+};
+/* slugs whose painted art is SHIPPED in art/ — the full cohesive set (106) is shipped (#103). Add a slug
+   here only when its pic-<slug>.png lands; until then that emoji renders unchanged (zero-risk rollout). */
+const PICIMG_SET=new Set(["ant","apple","bag","ball","basket","bath","bed","bee","bike","bird","boat","bone","bug","bun","bus","cake","cap","car","cat","cheese","chin","chip","church","coat","corn","crab","crown","cube","cup","dish","dog","drum","duck","egg","fan","feet","fern","fish","flag","fork","fox","frog","fur","gate","gift","girl","goat","hand","hat","helmet","hen","home","hotdog","hug","jar","jump","kite","lamp","laptop","lemon","lion","magnet","mask","milk","monkey","mug","nest","net","nose","nut","octopus","pan","pig","pot","prince","rabbit","rain","ring","robin","robot","rocket","rose","run","seed","ship","shop","sled","sleep","sock","star","sun","sunset","surf","tent","thumb","tiger","train","trap","tree","umbrella","van","web","whale","wing","yoyo","zebra"]);
+function emojiArt(glyph,size){ const slug=EMOJI_IMG[glyph];
+  if(slug&&PICIMG_SET.has(slug)) return `<img class="picimg" src="art/pic-${slug}.png" alt="" draggable="false"${size?` style="width:${size}px;height:${size}px"`:""}>`;
+  return glyph==null?"":String(glyph); }
+function picIcon(word, fallbackEmoji){
+  if(fallbackEmoji!=null&&EMOJI_IMG[fallbackEmoji]&&PICIMG_SET.has(EMOJI_IMG[fallbackEmoji])) return emojiArt(fallbackEmoji);
+  const f=PICONS[word]; return f ? f() : (fallbackEmoji!=null ? String(fallbackEmoji) : ""); }
