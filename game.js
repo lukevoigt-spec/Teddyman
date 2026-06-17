@@ -1926,7 +1926,7 @@ function openChest(tier,done,originEl){ const cfg=CHESTS[tier]; if(!cfg||!(S.che
 function winChestPop(tier){
   const box=$("winChest"); if(!box) return;
   if(!tier || !(S.chests && S.chests[tier]>0)){ box.style.display="none"; box.innerHTML=""; return; }
-  box.style.display=""; box.classList.remove("opened");
+  box.style.display="block"; box.classList.remove("opened");   /* explicit (NOT "") — the CSS default is #winChest{display:none}, so clearing the inline style re-hid the chest (Morpheus regression). The .winchest flex-column centers its own content. */
   box.innerHTML='<button type="button" class="winchest" aria-label="Open your treasure">'+chestSVG(tier,116)+'<span class="winchest-cap comic">TAP TO OPEN!</span></button>';
   let opening=false;
   const btn=box.querySelector(".winchest");
