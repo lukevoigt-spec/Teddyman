@@ -956,7 +956,7 @@ let learnLetter=null;
 function startLearn(m){ learnLetter=m.letter; const L=LETTERS[learnLetter];
   show("scrLetter");
   $("bigGlyph").textContent=learnLetter+" "+learnLetter.toUpperCase();
-  $("kwIcon").textContent=L.icon;
+  $("kwIcon").innerHTML=emojiArt(L.icon);
   $("btnLetterGo").textContent=(learnLetter.length>1)?"FIND IT! ➜":"TRACE IT! ➜";   /* digraphs/teams skip the trace */
   /* confusable twins already taught? show a side-by-side contrast cue */
   const cue=$("letterCue"); if(cue){
@@ -1195,11 +1195,11 @@ function nextSentence(){
     t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>Aud.play(wordAudio(w)); wr.appendChild(t); });
   const opts=[{e:s.pic,ok:true},{e:s.foil,ok:false}].sort(()=>Math.random()-.5);
   const cr=$("sentChoices"); cr.innerHTML="";
-  opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.textContent=o.e;
+  opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.dataset.pic=o.e; b.innerHTML=emojiArt(o.e);
     b.onclick=()=>{ if(o.ok){ lockRow(cr); record("sent_"+sentIx,true); b.classList.add("win"); burstAt(b); Aud.ding(); sentIx++;   /* #82: lock so a double-tap can't re-fire record() during the async flow */
         flow(Aud.play([...sentenceAudio(s),"sent_yes"]),()=>setTimeout(nextSentence,200)); }
       else { record("sent_"+sentIx,false); sentMiss++; b.classList.add("dim");
-        if(sentMiss>=2)cr.querySelectorAll(".picktile").forEach(x=>{ if(x.textContent===s.pic)x.classList.add("hint"); });
+        if(sentMiss>=2)cr.querySelectorAll(".picktile").forEach(x=>{ if(x.dataset.pic===s.pic)x.classList.add("hint"); });
         Aud.play(sentenceAudio(s)); } };
     cr.appendChild(b); }); }
 
@@ -1211,7 +1211,7 @@ function startCloze(m){ show("scrCloze"); clozeList=m.items.slice(); clozeIx=0; 
   $("clozeChoices").innerHTML=""; flow(narrate("cloze",$("clozeText"),["cloze_intro"]),()=>nextCloze()); }
 function nextCloze(){ if(clozeIx>=clozeGoal){ flow(Aud.play(["dojo_yes"]),missionComplete); return; }
   const c=(currentAct()===2?CLOZE2:CLOZE)[clozeList[clozeIx]]; clozeMiss=0;
-  $("clozeProg").textContent=clozeIx+" / "+clozeGoal; $("clozePic").textContent=c.pic;
+  $("clozeProg").textContent=clozeIx+" / "+clozeGoal; $("clozePic").innerHTML=emojiArt(c.pic);
   narrate("cloze",$("clozeText"),["cloze_prompt"],"Read it… tap the word that fits the blank!");
   const sw=$("clozeSent"); sw.innerHTML="";
   c.t.forEach(w=>{ if(w==="_"){ const s=document.createElement("div"); s.className="wordslot read"; s.id="clozeBlank"; s.textContent="?"; sw.appendChild(s); }
@@ -1234,7 +1234,7 @@ function startScramble(m){ show("scrScramble"); scramList=m.items.slice(); scram
   $("scramTiles").innerHTML=""; $("scramSlots").innerHTML=""; flow(narrate("scram",$("scramText"),["scram_intro"]),()=>nextScramble()); }
 function nextScramble(){ if(scramIx>=scramGoal){ flow(Aud.play(["dojo_yes"]),missionComplete); return; }
   const s=SCRAMBLE[scramList[scramIx]]; scramCur=s; scramPos=0; scramMiss=0;
-  $("scramProg").textContent=scramIx+" / "+scramGoal; $("scramPic").textContent=s.pic;
+  $("scramProg").textContent=scramIx+" / "+scramGoal; $("scramPic").innerHTML=emojiArt(s.pic);
   narrate("scram",$("scramText"),["scram_prompt",...scramAudio(s)],"Build the sentence! Tap the words in order.");
   const sl=$("scramSlots"); sl.innerHTML="";
   s.words.forEach(()=>{ const d=document.createElement("div"); d.className="wordslot read"; sl.appendChild(d); });
@@ -1364,10 +1364,10 @@ function fortSentencePic(){ const POOL=currentAct()===2?SENTENCES2:SENTENCES; co
   const wr=$("fortWord"); wr.innerHTML="";
   s.t.forEach(w=>{ const t=document.createElement("button"); t.className="tile wordtile read"+(SIGHT[w]?" heartword":""); t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>Aud.play(wordAudio(w)); wr.appendChild(t); });
   const row=$("fortChoices"); row.innerHTML="";
-  [{e:s.pic,ok:1},{e:s.foil,ok:0}].sort(()=>Math.random()-.5).forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.textContent=o.e;
+  [{e:s.pic,ok:1},{e:s.foil,ok:0}].sort(()=>Math.random()-.5).forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.dataset.pic=o.e; b.innerHTML=emojiArt(o.e);
     b.onclick=()=>{ if(o.ok){ record("sent_fort",true); b.classList.add("win"); fortHit("READ!"); }
       else { record("sent_fort",false); fortMissHint(); b.classList.add("dim");
-        if(fMiss>=2)row.querySelectorAll(".picktile").forEach(x=>{if(x.textContent===s.pic)x.classList.add("hint");}); Aud.play(sentenceAudio(s)); } };
+        if(fMiss>=2)row.querySelectorAll(".picktile").forEach(x=>{if(x.dataset.pic===s.pic)x.classList.add("hint");}); Aud.play(sentenceAudio(s)); } };
     row.appendChild(b); }); }
 function fortWin(){ const bs=$("fortVexSprite"); if(bs)bs.classList.add("flee");
   $("fortBanner").textContent="VICTORY!";

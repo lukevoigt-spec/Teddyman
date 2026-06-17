@@ -1,0 +1,17 @@
+import fs from "node:fs"; import path from "node:path"; import http from "node:http";
+const pw = await import("playwright");
+const ROOT = process.cwd();
+const dir = path.join(ROOT,"art/incoming");
+const slugs = fs.readdirSync(dir).filter(f=>/^pic-.*\.png$/.test(f)).map(f=>f.replace(/^pic-|\.png$/g,"")).sort();
+const srcDir = process.argv[2]||"art/incoming";
+const cell = s => `<div style="text-align:center"><div style="width:104px;height:104px;border-radius:18px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#fff6e3,#e7dcc0);box-shadow:inset 0 0 0 2px rgba(255,255,255,.6),0 4px 10px rgba(0,0,0,.4)"><img src="/${srcDir}/pic-${s}.png" style="width:84px;height:84px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))"></div><div style="color:#cdbfe0;font:12px sans-serif;margin-top:3px">${s}</div></div>`;
+const html = `<body style="margin:0;background:#1a1430"><div style="padding:20px;display:flex;flex-wrap:wrap;gap:14px;align-content:flex-start">${slugs.map(cell).join("")}</div></body>`;
+const server = http.createServer((req,res)=>{ if(req.url==="/"){res.end(html);return;} const f=path.join(ROOT,decodeURIComponent(req.url.split("?")[0])); fs.readFile(f,(e,d)=>{ if(e){res.statusCode=404;res.end();return;} res.setHeader("Content-Type","image/png"); res.end(d); }); });
+await new Promise(r=>server.listen(0,r)); const port=server.address().port;
+const b = await pw.chromium.launch();
+const ctx = await b.newContext({viewport:{width:1000,height:1100},deviceScaleFactor:2});
+const p = await ctx.newPage();
+await p.goto(`http://localhost:${port}/`,{waitUntil:"networkidle"});
+await p.waitForTimeout(400);
+await p.screenshot({path:"tools/shots/contact-all.png",fullPage:true});
+await b.close(); server.close(); console.log("wrote tools/shots/contact-all.png ("+slugs.length+" icons)");
