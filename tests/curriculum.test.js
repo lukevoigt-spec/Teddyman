@@ -398,6 +398,33 @@ ok("Mom & Dad lines (home5/home8) carry the single combined role P (verbatim, pa
 ok("Noah=N, Leighton=L, Miss Kendall=K on their homecoming lines", LINES.home1.v==="N" && LINES.home3.v==="L" && LINES.home4.v==="K" && LINES.home6.v==="K");
 ok("the two narrator beats (home2/home7) use the default narrator voice (no override role)", !LINES.home2.v && !LINES.home7.v);
 ok("HOMECOMING has 8 beats mapped to home1..home8 in order", typeof HOMECOMING!=="undefined" && HOMECOMING.length===8 && HOMECOMING.every(function(b,i){ return b.id==="home"+(i+1); }));
+
+grp("#145 Squishy economy v2 — 50 zone-unlocked collectibles (save keys are APPEND-ONLY; unlock DERIVED)");
+(function(){
+  var ids=BASE_ITEMS.map(function(it){return it.id;});
+  ok("every squishy id is unique (save keys never collide — #145 append-only rule)", new Set(ids).size===ids.length,
+    ids.filter(function(id,i){return ids.indexOf(id)!==i;}));
+  ok("every squishy has a name + a positive coin cost", BASE_ITEMS.every(function(it){return it.nm && typeof it.cost==="number" && it.cost>0;}),
+    BASE_ITEMS.filter(function(it){return !(it.nm && it.cost>0);}).map(function(it){return it.id;}));
+  ok("every unlockZone points at a REAL zone id (no orphan unlocks)",
+    BASE_ITEMS.filter(function(it){return it.unlockZone;}).every(function(it){return zoneIds.has(it.unlockZone);}),
+    BASE_ITEMS.filter(function(it){return it.unlockZone && !zoneIds.has(it.unlockZone);}).map(function(it){return it.id+"->"+it.unlockZone;}));
+  ok("the collection grew to 50+ squishies (engagement issue #145)", BASE_ITEMS.length>=50, BASE_ITEMS.length);
+  ok("SQUISH_SHIPPED is a subset of real squishy ids (no gate on a non-existent item)",
+    Array.from(SQUISH_SHIPPED).every(function(id){return ids.indexOf(id)>=0;}),
+    Array.from(SQUISH_SHIPPED).filter(function(id){return ids.indexOf(id)<0;}));
+  ok("only SHIPPED-art squishies are VISIBLE (no broken-image slots until art lands)",
+    BASE_ITEMS.every(function(it){return squishVisible(it)===SQUISH_SHIPPED.has(it.id);}));
+  ok("newlyUnlockedSquishies returns only visible items for a zone (inert until art ships)",
+    ZONES.every(function(z){return newlyUnlockedSquishies(z.id).every(squishVisible);}));
+  // costs ascend within each rarity tier (no cheaper epic than a common, gentle progression)
+  var byR={}; BASE_ITEMS.forEach(function(it){ if(it.rarity){ (byR[it.rarity]=byR[it.rarity]||[]).push(it.cost); } });
+  var tierOrder=["common","rare","epic"], tierMax={};
+  tierOrder.forEach(function(r){ tierMax[r]=Math.max.apply(null,(byR[r]||[0])); });
+  ok("rarity tiers cost-ascend (common <= rare <= epic)",
+    tierMax.common<=tierMax.rare && tierMax.rare<=tierMax.epic,
+    tierOrder.map(function(r){return r+":"+(tierMax[r]||0);}));
+})();
 `;
 vm.runInContext(fs.readFileSync(path.join(ROOT, "data-missions.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-content.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-lines.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "state-save.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "audio.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "allies.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "map.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "sfx.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "music.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 

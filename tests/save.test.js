@@ -84,6 +84,10 @@ ok("migrate() PRESERVES existing scroll progress", (function(){ var m=migrate({v
 ok("#130 fresh() seeds ftue:{}", (function(){ var f=fresh(); return f.ftue && typeof f.ftue==="object" && Object.keys(f.ftue).length===0; })());
 ok("#130 migrate() adds ftue:{} to an old save (additive)", (function(){ var m=migrate({v:1,done:{},mastery:{}}); return m.ftue && typeof m.ftue==="object"; })());
 ok("#130 migrate() PRESERVES existing ftue flags (don't re-show a seen demo)", (function(){ var m=migrate({v:1,ftue:{forge:true,read:true},done:{},mastery:{}}); return m.ftue.forge===true && m.ftue.read===true; })());
+/* #145 zoneNewShown: once-flags for the "NEW IN THE STORE!" zone-unlock card — additive + save-safe. */
+ok("#145 fresh() seeds zoneNewShown:{}", (function(){ var f=fresh(); return f.zoneNewShown && typeof f.zoneNewShown==="object" && Object.keys(f.zoneNewShown).length===0; })());
+ok("#145 migrate() adds zoneNewShown:{} to an old save (additive)", (function(){ var m=migrate({v:1,done:{},mastery:{}}); return m.zoneNewShown && typeof m.zoneNewShown==="object"; })());
+ok("#145 migrate() PRESERVES shown zone-unlock flags (don't re-announce a seen card)", (function(){ var m=migrate({v:1,zoneNewShown:{1:true,2:true},done:{},mastery:{}}); return m.zoneNewShown["1"]===true && m.zoneNewShown["2"]===true; })());
 
 grp("load() recovers from a damaged primary via the backup");
 clearStore();
