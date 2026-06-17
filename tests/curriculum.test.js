@@ -376,6 +376,9 @@ grp("Act-2 friend rescues (Brody/Daisy/Cal/Bryce/Nora spread across zones + Miss
     ["brody","daisy","bryce","cal","nora"].every(function(k){ return typeof allyFace==="function" && allyFace(k) && ALLY_COL[k]; }));
   ok("each Act-2 freed friend has a rescue voice line in its own role (Brody=D, Daisy=E, Bryce=G, Cal=X, Nora=R)",
     (LINES.brody_freed||{}).v==="D" && (LINES.daisy_freed||{}).v==="E" && (LINES.bryce_freed||{}).v==="G" && (LINES.cal_freed||{}).v==="X" && (LINES.nora_freed||{}).v==="R");
+ok("every league friend has a hero-CARD signature line (tap-the-card voice — no silent cards)",
+  LEAGUE.every(function(m){ return !!((LINES["card_"+m.kind]||{}).t); }),
+  LEAGUE.filter(function(m){ return !((LINES["card_"+m.kind]||{}).t); }).map(function(m){ return m.kind; }));
 })();
 
 grp("Gear PACING (P2-A) — power gear spread across zones, not front-loaded in zone 1");

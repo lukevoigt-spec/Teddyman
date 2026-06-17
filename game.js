@@ -990,18 +990,17 @@ function startLearn(m){ learnLetter=m.letter; const L=LETTERS[learnLetter];
   show("scrLetter");
   $("bigGlyph").textContent=learnLetter+" "+learnLetter.toUpperCase();
   $("kwIcon").innerHTML=emojiArt(L.icon);
-  $("btnLetterGo").innerHTML=((learnLetter.length>1)?"FIND IT! ":"TRACE IT! ")+uiIcon("chevron",22);   /* digraphs/teams skip the trace */
+  $("btnLetterGo").textContent=(learnLetter.length>1)?"FIND IT!":"TRACE IT!";   /* digraphs/teams skip the trace. Plain label — chevron dropped (parent 2026-06-17). */
   /* confusable twins already taught? show a side-by-side contrast cue */
   const cue=$("letterCue"); if(cue){
     const twin=(CONFUSE[learnLetter]||[]).find(t=>S.done[LETTER_MISSION[t]]);
     if(twin){ cue.innerHTML=`<span class="cueok read">${learnLetter}</span><span class="cuevs">not</span><span class="cuex read">${twin}</span>`; cue.style.display="flex"; }
     else cue.style.display="none";
   }
-  /* #3 articulatory cue: show HOW the mouth makes this sound (a friendly mouth shape + a kid line).
-     Phonemic-awareness -> orthographic-mapping support; graphemes without an entry just show nothing. */
-  const mcEl=$("mouthCue"); if(mcEl){ const mc=(typeof MOUTHCUE!=="undefined")&&MOUTHCUE[learnLetter];
-    if(mc){ mcEl.innerHTML=`<div class="mouthart">${mouthCue(mc.shape,104)}</div><div class="mouthcap">${mc.say}</div>`; mcEl.style.display="flex"; }
-    else mcEl.style.display="none"; }
+  /* #3 articulatory cue: the on-screen mouth-shape chip was REMOVED from the Learn screen (parent
+     2026-06-17 — declutters the calm learning moment). MOUTHCUE data + mouthCue() are kept (the
+     articulation coaching still rides in the audio, and it's a one-line restore if ever wanted). */
+  const mcEl=$("mouthCue"); if(mcEl)mcEl.style.display="none";
   const ids=["intro_"+learnLetter,"snd_"+learnLetter,"like_"+learnLetter];
   if(LINES["cue_"+learnLetter] && (CONFUSE[learnLetter]||[]).some(t=>S.done[LETTER_MISSION[t]])) ids.push("cue_"+learnLetter);
   narrate("letter",$("letterText"),ids); }
