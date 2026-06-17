@@ -325,7 +325,7 @@ beautiful are the **amplifiers** that make the learning happen — they get him 
 - ACT 2 LORE (now CONTENT-COMPLETE — see the content bullets above; this is the cast/story canon):
   villain = a smooth-talking
   evil VIXEN (Scarlett-Overkill-coded) who can morph into a DRAGON; her dragon army = Act-2 bosses.
-  She kidnaps Miss Kendall + friends JJ, Nora, Cal and escapes through a TIME PORTAL to the MEDIEVAL
+  She kidnaps Miss Kendall + friends Brody, Daisy, Cal, Bryce and Nora and escapes through a TIME PORTAL to the MEDIEVAL
   age — Teddy follows and becomes a KNIGHT (new theme/outfit/weapons; the villain steals his powers
   so muscle/gear reset — keeps it fresh, fights repetition). New adult hero ally = NOAH THE RED: a
   powerful wizard companion (Gandalf / Lord-of-the-Rings-coded; tall, red hair + red beard). He is
@@ -397,8 +397,14 @@ beautiful are the **amplifiers** that make the learning happen — they get him 
   Vex's Fortress). Mentors = Mom & Dad. NO hero aliases — they're shown by their REAL names (parent
   2026-06-16: aliases like Tank/Sunny/Heartguard confused Teddy). The internal `kind` keys stay
   (tank/flip/sunny/heart/leighton) for save compatibility; only the display `name` is the real name.
-  Act-2 friends rescued the same way, spread across zones: JJ (Iron Forge), Cal (Singing Glade),
-  Nora (Giant's Bridge), Miss Kendall (Dragon Keep finale).
+  Act-2 friends rescued the same way, spread across zones (CANON = the shipped `allies.js` LEAGUE,
+  reconciled to code — Trinity, 2026-06-17): Brody (Iron Forge, m118), Daisy (Enchanter's Tower, m127),
+  Cal (Singing Glade, m137), Bryce (Pirate Cove, m159), Nora (Giant's Bridge, m172), Miss Kendall
+  (Dragon Keep finale, m128). JJ is DEFERRED ("no photo yet" — parent 2026-06-16): his `kind:"jj"` role
+  + 20-line bank stay DORMANT so re-adding him later is a one-liner. ⚠ KNOWN DRIFT (filed for Neo): the
+  story audio (`data-lines.js` kidnap/cast lines), the homecoming cast art (`game.js`), and `TRAIN_TELLERS`
+  still reference the OLD JJ/Nora/Cal trio — reconcile them to this roster (the dormant JJ teller is
+  currently unreachable).
 - Show only EARNED items in collections (gems, gear, league members) — never empty slots.
 
 ## Curriculum state
@@ -459,8 +465,9 @@ beautiful are the **amplifiers** that make the learning happen — they get him 
 - Voice roles (line `v` field → a voice the parent assigns per role in the Studio): A = Mentor/Narrator,
   B = Amelia, C = Vexbots/Lord Vex (robotic), T = Archie, F = Ellie,
   W = William, V = THE VIXEN (Act-2 villain), N = NOAH THE RED (Act-2 wizard mentor),
-  P = MOM & DAD, L = LEIGHTON, K = MISS KENDALL, J = JJ, R = NORA, X = CAL
-  (the three Act-2 captured friends; their Training-Room jokes/cheers best recorded in the real kids' voices). NOTE: Vixen + Noah used
+  P = MOM & DAD, L = LEIGHTON, K = MISS KENDALL, R = NORA, X = CAL (+ J = JJ, kept but DORMANT — see the
+  Act-2 roster note above; Brody/Daisy/Bryce still need their own role letters assigned when their banks land)
+  (the Act-2 captured friends; their Training-Room jokes/cheers best recorded in the real kids' voices). NOTE: Vixen + Noah used
   to SHARE role "V" (a bug — Vixen spoke in Noah's voice); now split, and Noah's Act-2 lines (rune/blend/
   magic intros, noah1-3, act2_win, f2_intro) carry v:"N", the Mom&Dad message carries v:"P". The two
   RESCUED heroines also used to be mis-voiced (leighton1/3 + kendall1/3 fell to the narrator, leighton2/

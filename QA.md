@@ -11,18 +11,15 @@ PRs Trinity gates); **Trinity converts each into an assigned Issue** (`[Neo]` / 
 the Inbox. Neo/Oracle reference `Closes #N` in their PRs → the Issue auto-closes. **This Inbox should usually be empty.**
 *(CLAUDE.md = product truth · AGENTS.md = workflow · STORY/PEDAGOGY/STYLE/DESIGN-* = specs the Issues link to.)*
 
-### 📋 Open work → GitHub Issues (opened 2026-06-16)
-**Neo:** #21 DAILY-1 (goalMin 30→15) · #22 intro-hook panel texts · #23 interrupts sync + gate JJ/Nora/Cal · #24 standardize
-flyReward · #25 working-tree guard · #26 render-harness scene isolation (RENDER-1) · #27 expand ui-emoji guard · #28 M-#2
-Training/Shop/Vault @1024×768 · #29 interrupt timing · #30 CLOUD-2.
-**The Oracle:** #31 UI theme coherence + secondary-control sheen · #32 de-emoji Shop/base glyphs · #33 Hero Room diegetic
-redesign (plinth-first) · #34 Training Room redesign · #35 mouth art on big portraits · #36 cinematic SVG cutscene pass ·
-#37 portal AI spike (optional) · #38 swap map ally figures · #39 §20 render-gate catch-up + calm-prompt · #40 Shop footer fit @1024×768.
+### 📋 Open work → GitHub Issues (reconciled to live Issues 2026-06-17)
+*The board is `KANBAN.md`. Currently **17 open Issues, 0 open PRs.** #21–#30, #32, #40, #46, #62, #69, #73–#75, #81–#88, #103 all CLOSED/shipped (verified against git — see ledger + commits #89/#90/#105/#108/#109).*
+**Neo:** #102 ui-emoji guard→full scan · #104 de-emoji remaining child chrome · #106 Aud.pick guard (LOW) · #107 voicepack/BGM boot weight (MED). **NEW (Triage, Morpheus 2026-06-17):** #110 Act-2 roster reconcile · #111 training-line sync (re-filed from false-closed #23) · #112 playtest capture path · #113 Hero Base art-burst perf.
+**The Oracle:** #31 UI theme coherence · #33 Hero Room diegetic redesign (shell shipped; overlays remain) · #34 Training Room visual redesign · #35 mouth art on big portraits · #36 cinematic cutscene pass · #37 portal AI spike (optional) · #38 map allies (grounding partly done in #105; art swap remains) · #39 §20 render-gate catch-up · #44 title hero box (iPad) · #54 ratify Award Bar · #55 Wave-1 eval · #60 ally face-tokens→raster · #96 oracle/base-build rebase (mostly superseded by #105).
 
 ### 📥 Inbox — guests write findings here (Trinity converts to Issues, then clears)
-*(empty — caught up 2026-06-16; Morpheus's production sweep converted to #106/#107 — see ledger)*
+*(empty — caught up 2026-06-17; Morpheus's production sweep → #106/#107; his 2026-06-17 go-live sweep → **converted to Issues #110–#113** by Trinity, detail retained below as the analysis. All four were VERIFIED against code before filing.)*
 
-#### Morpheus go-live deep sweep — 2026-06-17
+#### Morpheus go-live deep sweep — 2026-06-17 — ✅ CONVERTED → Issues #110 (roster), #111 (training lines / re-filed from false-closed #23), #112 (playtest path), #113 (Base perf). Trinity verified each, 2026-06-17.
 **Verdict:** latest `main` is playable and the core reading/progression spine is in good shape, but I would not call it go-live clean until the open emoji/perf items plus the roster/training drift below are reconciled. I pulled to `c73c337`, verified live GitHub open issues, ran `save`, `curriculum`, `ui-emoji`, full JS syntax, Worker syntax, `tools/check-isolation.mjs`, WebKit render scenes, a WebKit start sweep across all 122 missions, and targeted browser probes for buttons/assets. No new crash blocker surfaced beyond known #106; the new findings are content/process/perf readiness issues.
 
 1. **MED — Act-2 friend roster is mixed between two different casts, which makes some shipped content unreachable and the finale inconsistent.** The active roster in `allies.js` is Brody/Daisy/Cal/Bryce/Nora/Kendall (`allies.js:45-56`) and explicitly says JJ is dormant (`allies.js:49-50`). But `TRAIN_TELLERS` still includes `{kind:"jj", prefix:"train_jj", unlocked:()=>allyFreed("jj")}` (`game.js:1893-1898`). `allyFreed(kind)` resolves through `LEAGUE` (`allies.js:27-32`), so JJ has no rescue mission and his 20-line bank can never unlock. The story audio still says the kidnapped/cast list is JJ/Nora/Cal (`data-lines.js:259`, `data-lines.js:433`), while the shipped rescue lines include Brody/Daisy/Bryce (`data-lines.js:289-291`). Homecoming art also hard-codes only Act-1 friends plus Kendall (`game.js:764-780`), omitting the active Act-2 rescued friends. **Proposed fix:** choose the canonical Act-2 cast in one place, then reconcile `CLAUDE.md`/`STORY.md`, `LEAGUE`, `TRAIN_TELLERS`, homecoming cast/audio, and the curriculum test labels. If Brody/Daisy/Bryce replace JJ, swap the unreachable JJ teller to a real rescued friend or remove the dormant teller from the runtime until JJ returns. — Morpheus, 2026-06-17
@@ -45,6 +42,8 @@ redesign (plinth-first) · #34 Training Room redesign · #35 mouth art on big po
 ## ✅ RESOLVED LEDGER
 
 One line each; long detail/spec blocks were removed on consolidation.
+
+- ✅ **Status reconcile (Trinity, 2026-06-17):** swept git (`23031c6`..`f06068c`) + live Issues vs the docs. Confirmed shipped & moved to ✓ Done: #81–#88, #71–#75, #90 chest, #108 painted buttons, #103/#109 painted icon set, #105 re-apply (map grounding/villains/Cal). Corrected the stale QA index + `KANBAN.md`. **Caught a false-close:** #23 (training-line no-streak/process-praise sync) is CLOSED but the edits never reached `data-lines.js` (still "streak"/"SMART"/"smarter" — regressed in the #69/#96/#105 rebase churn) → re-filed as **#111**. Reconciled the Act-2 roster in `CLAUDE.md` to the shipped `allies.js` cast (Brody/Daisy/Cal/Bryce/Nora/Kendall; JJ dormant) → code-side reconcile filed as **#110**.
 
 - ✅ **Morpheus production-readiness sweep (2026-06-16) — converted to Issues by Trinity:** (1) `Aud.pick()` no-TTS
   guard → **#106** (verified LOW — headless-only; real iPad always has speechSynthesis). (2) no-emoji not end-to-end →
