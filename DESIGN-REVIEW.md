@@ -15,6 +15,28 @@ resolves before merge; this file keeps the durable before/after record. Shots li
 
 ---
 
+## 2026-06-17 · §20 render-gate of Neo's batch + Hero-Rank XP styling  ·  PASS (+1 finding)
+Rule-#8 render-gate of the merged batch (#137/#131 XP, #138/#130 FTUE, #136 hero-flip, #135/#139 win-chest).
+Added scenes: `basexp`, `xpwin`, `winchest`, `ftueforge`, `wedoforge`.
+- **#131/#137 Hero-Rank XP — was a FUNCTIONAL placeholder (Neo: "Oracle owns the look"); STYLED + PASS.**
+  Two issues found on main: (a) `#baseXp` is normal-flow but the base hero is `position:absolute`, so the
+  meter drifted off-screen (invisible); (b) the bar was a thin flat-blue placeholder. Fix (`oracle/xp-style`,
+  styles.css): premium GOLD rank bar (glossy amber fill, dark rim, "RANK n") + seat `#baseXp` absolutely
+  under the hero pedestal (Act-1 + Act-2 placement), and the `.xppop` "LEVEL n!" recolored gold to match.
+  Shots: `basexp` (Act-1 "RANK 3" under hero), `base2` (Act-2 "RANK 5" under knight), `xpwin` (gold "RANK 7"
+  bar + gold "LEVEL 7!" pop). PASS.
+- **#130/#138 FTUE demos — PASS.** `ftueforge` (I-do intro reads clean), `wedoforge` (we-do scaffold). The
+  `.demo-hi` gold highlight + `.wedo` pulse are CSS animations (not statically capturable) — reviewed the
+  CSS + logic; calm/lite/reduced-motion gated. PASS.
+- **#136 hero-card flip — PASS** on Chromium (`teddycard` renders correctly). The fix is WebKit-specific;
+  trusting Neo's engine fix (I can't drive WebKit headless reliably — SHOT-1).
+- **#127 win-chest — box look PASS** (`.winchest` chest + "TAP TO OPEN!" + bob is on-style). **FINDING:**
+  `#winChest` sits AFTER the CONTINUE button in the win flex column, so it renders below the fold in a
+  1024×768 shot — which undercuts the "instant reward pop" intent. Recommend Neo reorder it ABOVE the
+  button row (or make it a brief pre-CONTINUE beat). Flagged on #127; not a blocker.
+
+---
+
 ## 2026-06-17 · Grown-Up Corner — settings game-feel pass (premium cards)  ·  PASS
 **Branch:** `oracle/settings` → PR for Neo (off fresh main after #128/#118). DESIGN-ENGAGEMENT §9 /
 DESIGN-ALIGNMENT #7 (modal gem-glow). **CSS-only** (`styles.css`) + 1 render scene — parent-requested

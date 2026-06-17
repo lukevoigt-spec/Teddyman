@@ -91,6 +91,12 @@ const SCENES = {
   nav: `(function(){ toMap(); return 1; })()`,   // 4-corner nav visible on the map hub (HUD UL, Settings UR, Base LL, Map LR)
   chests: `(function(){ S.chests={wood:2,silver:1,gold:1}; S.coins=40; [1,3].forEach(function(i){S.done[i]=true;}); paintBase(); show('scrBase'); return 1; })()`,
   rankbar: `(function(){ show('scrBase'); paintBase(); var pf=document.getElementById('powerFill'); if(pf)pf.style.width='62%'; document.getElementById('powerLbl').textContent='SUPER HERO'; return 1; })()`,
+  // #131 XP meter on the win screen + the small LEVEL-UP pop; #127 win-chest card; #130 FTUE demo + we-do pulse
+  xpwin: `(function(){ S.xp=138; for(var i=1;i<=10;i++)S.done[i]=true; CUR={id:1,lbl:"Letter S"}; showWin(false); xpLevelPop(heroLevel()); return 1; })()`,
+  basexp: `(function(){ S.xp=52; for(var i=1;i<=14;i++)S.done[i]=true; paintBase(); show('scrBase'); return 1; })()`,
+  winchest: `(function(){ __earnedChest="gold"; CUR={id:1,lbl:"Letter S"}; showWin(false); return 1; })()`,
+  ftueforge: `(function(){ S.ftue={}; forgeWords=["sat"]; CUR={id:1,type:"forge",words:["sat"]}; startForge({id:1,type:"forge",words:["sat"]}); return 1; })()`,
+  wedoforge: `(function(){ S.ftue={forge:true}; CUR={id:1,type:"forge",words:["sat"]}; startForge({id:1,type:"forge",words:["sat"]}); __wedo.forge=2; forgeWord(); return 1; })()`,
   basefull:`(function(){ [1,3,4,6,8].forEach(function(i){S.done[i]=true;}); S.coins=40; S.owned={banner:1}; paintBase(); show('scrBase'); return 1; })()`,
   base2:`(function(){ S.act=2; [100,101,118].forEach(function(i){S.done[i]=true;}); S.coins=30; paintBase(); show('scrBase'); return 1; })()`,
   basedaily:`(function(){ for(var i=1;i<=20;i++)S.done[i]=true; ensureDaily(true); S.daily.secs=Math.round(0.6*dailyGoalSecs()); S.equip={weapon:"sword",cape:"red"}; paintBase(); show('scrBase'); return 1; })()`,
