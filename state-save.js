@@ -70,7 +70,7 @@ let S=load();
    saves start with them present so grandfather() (game.js) no-ops; OLD saves lack them, so grandfather
    seeds them ONCE from the current mission mapping. migrate() deliberately does NOT add them (the
    absence is the seed trigger). */
-function fresh(){return {v:1,act:1,ts:0,intro:false,scan:false,done:{},mastery:{},stars:0,coins:0,owned:{},gear:[],gearByAct:{},freed:{},equip:{weapon:"none",cape:"red"},session:{count:0,day:"",rest:false},chests:{wood:0,silver:0,gold:0},repTick:0,chestDay:"",scrolls:{},hoard:0,xp:0,xpShown:1,ftue:{}};}
+function fresh(){return {v:1,act:1,ts:0,intro:false,scan:false,done:{},mastery:{},stars:0,coins:0,owned:{},gear:[],gearByAct:{},freed:{},equip:{weapon:"none",cape:"red"},session:{count:0,day:"",rest:false},chests:{wood:0,silver:0,gold:0},repTick:0,chestDay:"",scrolls:{},hoard:0,xp:0,xpShown:1,ftue:{},zoneNewShown:{}};}
 /* normalize ANY (old / partial / slightly broken) save object — never throws */
 function migrate(d){ if(!d||typeof d!=="object"||d.v!==1) return null;
   d.act=(typeof d.act==="number")?d.act:1; d.ts=d.ts||0;
@@ -107,6 +107,8 @@ function migrate(d){ if(!d||typeof d!=="object"||d.v!==1) return null;
      a missing flag means "show the demo once" — for an existing player that's at most ONE gentle, skippable
      worked-example the first time they next hit the mechanic (acceptable per spec; no harm, never a fail). */
   if(!d.ftue||typeof d.ftue!=="object")d.ftue={};
+  /* #145: zones whose "NEW IN THE STORE!" unlock card has already been shown (fire-once). Additive, save-safe. */
+  if(!d.zoneNewShown||typeof d.zoneNewShown!=="object")d.zoneNewShown={};
   /* Treasure Vault: lifetime coins EARNED (monotonic, never spent → the Training-Room stack/tier climax).
      Decoupled from spendable d.coins (Shop). Seed an existing save from its current coins as a baseline. */
   if(typeof d.hoard!=="number"||d.hoard<0)d.hoard=Math.max(0,d.coins||0);

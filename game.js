@@ -359,6 +359,7 @@ function heroNow(w){ return heroMarquee(w); }
    mastery-gated, §6.0). At top tier the bar fills toward "MAX POWER". */
 let __rankedUp=false;
 let __earnedChest=null;   /* #127: the chest tier earned THIS mission, surfaced on the win screen */
+let __newStoreItems=[];   /* #145: squishies a just-cleared zone newly revealed, for the win-screen "NEW IN STORE" card */
 function heroProgress(){ const a=currentAct(), am=actMissions(a), total=am.length||1;
   const done=am.filter(m=>S.done[m.id]).length, r=done/total, tier=heroOpts().muscle;
   const bands=[[0,.28],[.28,.6],[.6,1]], lo=bands[tier][0], hi=bands[tier][1];
@@ -981,6 +982,12 @@ function missionComplete(){
   __earnedChest=null;   /* #127: reset; set below only when a chest is actually granted this clear */
   const oldTier=heroOpts().muscle;   /* for the RANK-UP fanfare detection */
   S.done[CUR.id]=true;
+  /* #145: did THIS clear finish a zone that reveals new store squishies (shipped + not yet celebrated)? Stash
+     them for a one-time "NEW IN THE STORE!" card on the win screen. Inert until a new squishy's art ships. */
+  __newStoreItems=[];
+  try{ const z=ZONES.find(zz=>zz.id===CUR.z);
+    if(z && zoneDone(z) && !(S.zoneNewShown&&S.zoneNewShown[z.id])){ const ns=newlyUnlockedSquishies(z.id);
+      if(ns.length){ __newStoreItems=ns; S.zoneNewShown=S.zoneNewShown||{}; S.zoneNewShown[z.id]=true; } } }catch(e){}
   ensureDaily();
   if(firstTime){ S.daily.missions=(S.daily.missions||0)+1;   /* count NEW missions today, not replays (QA P0) */
     S.stars+=3; S.session.count++;
@@ -1723,6 +1730,8 @@ function showWin(firstTime){ show("scrWin");
     $("winGear").innerHTML='<div class="gearbadge">'+uiIcon("spark",22)+' RANK UP — '+heroProgress().name+'!</div>'+$("winGear").innerHTML; __rankedUp=false; }
   narrate("win",$("winText"),ids);
   winChestPop(__earnedChest); __earnedChest=null;   /* #127: the chest just earned pops here, tap-to-open (runs for ALL win types, incl. the fortress early-return below) */
+  if(__newStoreItems&&__newStoreItems.length){ const ns=__newStoreItems; __newStoreItems=[];   /* #145: zone cleared → announce new store squishies (after the win settles) */
+    setTimeout(()=>showNewStoreCard(ns), 1100); }
   /* #131: a SMALL, frequent Rank-XP level-up — fires here (a safe moment, never on the prompt). Catches up to
      the current level (a long mission can cross >1), shows ONE small pop, and defers to the big muscle-tier
      fanfare when that also fired this win (no double-celebration). Monotonic xpShown so it never repeats. */
@@ -2051,8 +2060,79 @@ const BASE_ITEMS=[
   {id:"ndcube",   nm:"Squish Cube",    cost:135},
   {id:"ndring",   nm:"Doh Ring",       cost:160},
   {id:"ndgalaxy", nm:"Galaxy Glob",    cost:190},
-  {id:"ndglow",   nm:"Glow Glob",      cost:230}
+  {id:"ndglow",   nm:"Glow Glob",      cost:230},
+  /* #145 SQUISHY ECONOMY v2 (parent 2026-06-17): +50 squishies that UNLOCK as you clear zones (unlock is
+     DERIVED from zoneDone — no save field) and then populate the STORE to buy. APPEND-ONLY ids (#7). They are
+     INERT until their art ships: visibility is gated on SQUISH_SHIPPED (below), so the existing 15 are unchanged
+     and Oracle lights each up by dropping art/squish-<id>.png + adding the id to SQUISH_SHIPPED. */
+  {id:"strawberryki", nm:"Strawberry Kitty",    cost:30,  unlockZone:1,   rarity:"common"},
+  {id:"cloudpup",     nm:"Cloud Pup",           cost:45,  unlockZone:1,   rarity:"common"},
+  {id:"bobabunny",    nm:"Boba Bunny",          cost:60,  unlockZone:1,   rarity:"common"},
+  {id:"sushicat",     nm:"Sushi Cat",           cost:75,  unlockZone:2,   rarity:"common"},
+  {id:"marshmallowc", nm:"Marshmallow Chick",   cost:90,  unlockZone:2,   rarity:"common"},
+  {id:"pumpkinpup",   nm:"Pumpkin Pup",         cost:90,  unlockZone:2,   rarity:"common"},
+  {id:"lavalizard",   nm:"Lava Lizard",         cost:90,  unlockZone:3,   rarity:"common"},
+  {id:"stormcloudli", nm:"Storm Cloudling",     cost:90,  unlockZone:3,   rarity:"common"},
+  {id:"thunderbun",   nm:"Thunder Bun",         cost:90,  unlockZone:3,   rarity:"common"},
+  {id:"rainbowsnail", nm:"Rainbow Snail",       cost:90,  unlockZone:4,   rarity:"common"},
+  {id:"prismfrog",    nm:"Prism Frog",          cost:90,  unlockZone:4,   rarity:"common"},
+  {id:"starotter",    nm:"Star Otter",          cost:90,  unlockZone:4,   rarity:"common"},
+  {id:"bookwormbudd", nm:"Bookworm Buddy",      cost:110, unlockZone:5,   rarity:"rare"},
+  {id:"cozyowl",      nm:"Cozy Owl",            cost:130, unlockZone:5,   rarity:"rare"},
+  {id:"pencilpengui", nm:"Pencil Penguin",      cost:150, unlockZone:5,   rarity:"rare"},
+  {id:"magicmushroo", nm:"Magic Mushroom",      cost:170, unlockZone:6,   rarity:"rare"},
+  {id:"spellslime",   nm:"Spell Slime",         cost:170, unlockZone:6,   rarity:"rare"},
+  {id:"wizardcat",    nm:"Wizard Cat",          cost:170, unlockZone:6,   rarity:"rare"},
+  {id:"storydragonl", nm:"Story Dragonling",    cost:170, unlockZone:7,   rarity:"rare"},
+  {id:"quillquokka",  nm:"Quill Quokka",        cost:170, unlockZone:7,   rarity:"rare"},
+  {id:"tinybard",     nm:"Tiny Bard",           cost:170, unlockZone:7,   rarity:"rare"},
+  {id:"ninjabun",     nm:"Ninja Bun",           cost:170, unlockZone:9,   rarity:"rare"},
+  {id:"dojopanda",    nm:"Dojo Panda",          cost:170, unlockZone:9,   rarity:"rare"},
+  {id:"focusfox",     nm:"Focus Fox",           cost:170, unlockZone:9,   rarity:"rare"},
+  {id:"heroteddyplu", nm:"Hero Teddy Plush",    cost:200, unlockZone:8,   rarity:"epic"},
+  {id:"gemgolem",     nm:"Gem Golem",           cost:230, unlockZone:8,   rarity:"epic"},
+  {id:"castlekitten", nm:"Castle Kitten",       cost:170, unlockZone:101, rarity:"rare"},
+  {id:"knighthammy",  nm:"Knight Hammy",        cost:170, unlockZone:101, rarity:"rare"},
+  {id:"moatduck",     nm:"Moat Duck",           cost:170, unlockZone:101, rarity:"rare"},
+  {id:"forgeember",   nm:"Forge Ember",         cost:170, unlockZone:102, rarity:"rare"},
+  {id:"anvilaxolotl", nm:"Anvil Axolotl",       cost:170, unlockZone:102, rarity:"rare"},
+  {id:"sparksprite",  nm:"Spark Sprite",        cost:170, unlockZone:102, rarity:"rare"},
+  {id:"potionpup",    nm:"Potion Pup",          cost:260, unlockZone:103, rarity:"epic"},
+  {id:"runerabbit",   nm:"Rune Rabbit",         cost:290, unlockZone:103, rarity:"epic"},
+  {id:"starwizard",   nm:"Star Wizard",         cost:320, unlockZone:103, rarity:"epic"},
+  {id:"songbirdspri", nm:"Songbird Sprite",     cost:320, unlockZone:104, rarity:"epic"},
+  {id:"gladedeer",    nm:"Glade Deer",          cost:320, unlockZone:104, rarity:"epic"},
+  {id:"melodymouse",  nm:"Melody Mouse",        cost:320, unlockZone:104, rarity:"epic"},
+  {id:"pirateparrot", nm:"Pirate Parrot",       cost:400, unlockZone:107, rarity:"epic"},
+  {id:"treasurecrab", nm:"Treasure Crab",       cost:400, unlockZone:107, rarity:"epic"},
+  {id:"captaincat",   nm:"Captain Cat",         cost:400, unlockZone:107, rarity:"epic"},
+  {id:"giantgummy",   nm:"Giant Gummy",         cost:400, unlockZone:108, rarity:"epic"},
+  {id:"bridgetroll",  nm:"Bridge Troll",        cost:400, unlockZone:108, rarity:"epic"},
+  {id:"bigfootbuddy", nm:"Bigfoot Buddy",       cost:400, unlockZone:108, rarity:"epic"},
+  {id:"librarylynx",  nm:"Library Lynx",        cost:320, unlockZone:105, rarity:"epic"},
+  {id:"tometurtle",   nm:"Tome Turtle",         cost:320, unlockZone:105, rarity:"epic"},
+  {id:"scrollsquirr", nm:"Scroll Squirrel",     cost:320, unlockZone:105, rarity:"epic"},
+  {id:"mapmole",      nm:"Map Mole",            cost:320, unlockZone:105, rarity:"epic"},
+  {id:"dragonqueenp", nm:"Dragon Queen Plush",  cost:400, unlockZone:106, rarity:"epic"},
+  {id:"crownwyrm",    nm:"Crown Wyrm",          cost:400, unlockZone:106, rarity:"epic"},
 ];
+/* #145: which squishies have SHIPPED art (art/squish-<id>.png exists). The original 15 always; Oracle appends a
+   new id here the moment its painted PNG lands — until then the entry is INERT (hidden everywhere), so the
+   50-strong v2 catalog ships now and lights up zone-by-zone as the art batch rolls out (#103-style). */
+const SQUISH_SHIPPED=new Set(["banner","plant","poster","trophy","medal","lamp","vexbot","dragon","crown","rocket","ndglob","ndcube","ndring","ndgalaxy","ndglow"]);
+function squishShipped(id){ return SQUISH_SHIPPED.has((id&&id.id)||id); }
+/* UNLOCKED (buyable) = no gate, or its zone is cleared — DERIVED from zoneDone, no save field (#7 backward-compat). */
+function squishUnlocked(it){ if(!it.unlockZone) return true;
+  try{ const z=ZONES.find(zz=>zz.id===it.unlockZone); return !!(z && zoneDone(z)); }catch(e){ return false; } }
+function squishVisible(it){ return squishShipped(it.id); }                 /* hidden until its art ships */
+function squishAvail(it){ return squishVisible(it) && squishUnlocked(it); }/* buyable in the store (+ not owned) */
+function newlyUnlockedSquishies(zid){ return BASE_ITEMS.filter(it=>it.unlockZone===zid && squishVisible(it)); }
+/* #145: a one-time "NEW IN THE STORE!" reveal when a cleared zone unlocks new squishies (reuses the unlock
+   reward-card overlay — the #127 surfacing pattern). Announce-only (the win flow continues); the kid finds them
+   in the store. Inert until a new squishy's art ships (newlyUnlockedSquishies is empty otherwise). */
+function showNewStoreCard(items){ if(!items||!items.length||typeof showUnlock!=="function")return;
+  const it=items[0], name = items.length>1 ? (items.length+" NEW SQUISHIES!") : (it.nm||"").toUpperCase();
+  showUnlock('<div style="line-height:1;">'+itemArt(it,170)+'</div>', name, "Now in the store!"); }
 /* a fun one-liner per squishy for the detail card */
 const SQUISH_BLURB={
   banner:"A round little mochi cat. Squish his cheeks!",
@@ -2095,10 +2175,13 @@ function nextChestTier(){ const c=S.chests||{}; return c.gold>0?"gold":c.silver>
 function openChest(tier,done,originEl){ const cfg=CHESTS[tier]; if(!cfg||!(S.chests&&S.chests[tier]>0)){ if(done)done(); return; }
   const coins=cfg.coinMin+Math.floor(Math.random()*(cfg.coinMax-cfg.coinMin+1));
   let item=null;
-  if(Math.random()<cfg.cosmeticChance){ const un=BASE_ITEMS.filter(it=>!(S.owned&&S.owned[it.id]));
-    /* #124: prefer a NEW kind; once everything's owned, grant a DUPLICATE (the count climbs → the ×N badge)
-       instead of falling back to bonus coins, so the collection case keeps rewarding. */
-    item = un.length ? un[Math.floor(Math.random()*un.length)] : BASE_ITEMS[Math.floor(Math.random()*BASE_ITEMS.length)]; }
+  if(Math.random()<cfg.cosmeticChance){
+    /* #145: only ever grant a squishy that's actually AVAILABLE (shipped art + its zone unlocked) so a chest
+       can't hand out a still-locked / un-arted one. #124: prefer a NEW kind; once all available are owned,
+       grant a DUPLICATE (count climbs → ×N badge) rather than bonus coins, so the case keeps rewarding. */
+    const pool=BASE_ITEMS.filter(squishAvail);
+    const un=pool.filter(it=>!(S.owned&&S.owned[it.id]));
+    item = un.length ? un[Math.floor(Math.random()*un.length)] : (pool.length ? pool[Math.floor(Math.random()*pool.length)] : null); }
   const bonus=item?0:Math.round(cfg.coinMin*0.5);   /* only when the cosmetic roll missed entirely → small bonus coins so it's never a dud */
   const gain=coins+bonus; S.coins=(S.coins||0)+gain;
   if(item){ S.owned=S.owned||{}; S.owned[item.id]=(S.owned[item.id]||0)+1; }   /* #124: count, not boolean (dup badge) */
@@ -2500,16 +2583,19 @@ function paintShop(){ $("shopCoins").textContent=S.coins||0;
    dups); un-owned = a faint placeholder (the album/Pokédex collection drive — this case intentionally departs
    from "show only earned", per the #124 spec; the Base #squishShelf stays owned-only so the Base never looks empty). */
 function paintCollection(){ const g=$("shopGrid"); g.innerHTML=""; g.className="shopgrid collection";
-  BASE_ITEMS.forEach(it=>{ const n=ownedCount(it.id), owned=n>0;
-    const d=document.createElement("button"); d.className="shopitem slotitem"+(owned?" owned":" locked");
-    d.innerHTML = owned
-      ? `<div class="ic">${itemArt(it,72)}</div><div class="nm">${it.nm}</div>`+(n>1?`<span class="dupbadge">×${n}</span>`:"")
-      : `<div class="ic faint">${itemArt(it,72)}</div><div class="nm slot-q">?</div>`;
-    d.onclick=()=> owned ? openSquishCard(it) : setShopMode("store");   /* tap an empty slot → go get it in the store */
+  /* #145: only VISIBLE (art-shipped) squishies get a slot; THREE states per slot — owned (filled + ×N badge),
+     unlocked-not-owned (faint, tap → store to buy), zone-locked (fainter + "beat Zone X", not yet buyable). */
+  BASE_ITEMS.filter(squishVisible).forEach(it=>{ const n=ownedCount(it.id), owned=n>0, unlocked=squishUnlocked(it);
+    const state = owned ? "owned" : (unlocked ? "buyable" : "zlocked");
+    const d=document.createElement("button"); d.className="shopitem slotitem "+state;
+    if(owned) d.innerHTML=`<div class="ic">${itemArt(it,72)}</div><div class="nm">${it.nm}</div>`+(n>1?`<span class="dupbadge">×${n}</span>`:"");
+    else if(unlocked) d.innerHTML=`<div class="ic faint">${itemArt(it,72)}</div><div class="nm slot-q">?</div>`;
+    else { const z=ZONES.find(zz=>zz.id===it.unlockZone); d.innerHTML=`<div class="ic faint zlock">${itemArt(it,72)}</div><div class="nm zhint">${z?("Zone "+(ZONES.filter(zz=>zz.act===(z.act||1)).findIndex(zz=>zz.id===z.id)+1)):"?"}</div>`; }
+    d.onclick=()=> owned ? openSquishCard(it) : (unlocked ? setShopMode("store") : Aud.play&&Aud.play("locked_tip"));   /* locked → gentle "finish the path first" cue */
     g.appendChild(d); }); }
-/* STORE = only what he can BUY (un-owned), with coin prices. All collected → a friendly all-done line. */
+/* STORE = only what he can BUY: shipped + zone-unlocked + un-owned, with coin prices. All bought → all-done line. */
 function paintStore(){ const g=$("shopGrid"); g.innerHTML=""; g.className="shopgrid store";
-  const buyable=BASE_ITEMS.filter(it=>ownedCount(it.id)===0);
+  const buyable=BASE_ITEMS.filter(it=>squishAvail(it) && ownedCount(it.id)===0);
   if(!buyable.length){ g.innerHTML='<div class="baselbl shop-alldone" style="font-size:16px;">You collected them ALL! New squishies come from treasure chests now.</div>'; return; }
   buyable.forEach(it=>{ const can=(S.coins||0)>=it.cost;
     const d=document.createElement("button"); d.className="shopitem"+(can?"":" cant");
