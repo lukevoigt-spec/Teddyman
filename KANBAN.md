@@ -6,12 +6,13 @@
 > *(GitHub Projects can't be API-driven here, so this file IS the board.)* — **reconciled + sequenced 2026-06-17 (Trinity);
 > parent: "tackle the rest of the backlog, explicit handoffs, infer my answers, babysit to done."**
 
-## 🎯 BUILD ORDER — the wrap-it-up sequence (only 7 issues left; all enhancement/polish, no blockers)
+## 🎯 BUILD ORDER — the wrap-it-up sequence (7 open issues; all enhancement/polish/ergonomics, no blockers)
 **Decisions are pre-made below (Trinity inferred them from the parent's established preferences) so Neo/Oracle never stall.
 Trinity babysits every PR → gates/coordinates → merged.** The core app (reading ladder, Act 1+2) is DONE + live.
 
-1. **#153 [N] — Anti-gaming re-lock (build FIRST).** The parent's explicit "stop button-mashing" ask + protects learning
-   integrity. Pure code, well-specced. Threshold ~400–600ms (Neo tunes on device). No art.
+1. **#153 [N] — Anti-gaming re-lock — ✅ SHIPPED 2026-06-17** (`sidArm` arms sound-ID rows only after the target audio
+   settles + `SID_MIN_MS=450` floor; `fortAccept` one-shot guard kills fortress double-fire). The parent's "stop
+   button-mashing" ask, landed and verified against current `main`.
 2. **#151 [N] — Uncertain-BONUS reward — ✅ SHIPPED 2026-06-17** (closed mid-session; the crew is actively burning the
    list). Oracle can still polish the "bonus!" visual + Neo tune the rate as a follow-up if it doesn't feel right on device.
 3. **#152 [O+N] — Collection-as-mastery counter** ("N/26 gems mastered" on home/map + the Zeigarnik reachable-gap). #1
@@ -26,6 +27,12 @@ Trinity babysits every PR → gates/coordinates → merged.** The core app (read
 5. **#60 [O] — Ally face-tokens → painted raster** (cheer pops / league shelf / win mini-face). Cosmetic consistency.
 6. **#36 / #37 [O] — Cinematic cutscene pass / portal AI-video spike. DEFERRED — the parent is doing the portal VIDEO
    himself,** so these stay low/optional (ship only if Oracle has spare cycles + it clears §20; SVG fallback stays).
+7. **#162 [N+O] — Map node touch targets <96px in portrait** (hard-constraint #6; current "play next" node measured
+   ~57×59 CSS px). Enlarge the interactive hit geometry only — keep the painted parchment-sign size — + a portrait
+   geometry assertion in the render gate. From the reconciled Morpheus sweep; VERIFIED against current `main`.
+8. **#163 [O] — Render-verify + fix Gem-Dex CTA clip + earned-chest win overflow** (1024×768). Render-dependent, so
+   Oracle confirms at the cited viewports first (the fast crew may already have compacted the win layout) and fixes only
+   what still reproduces. Also seed `S.chests` in the `winchest` harness scene so the gate can see the chest.
 
 > **The one "finish v1" item that's the PARENT's, not the crew's:** record the **letter-sound phonemes + the new friends'
 > voices** in the Voice Studio (TTS can't make a clean schwa-free phoneme — the most pedagogically critical audio). This is
