@@ -15,6 +15,22 @@ resolves before merge; this file keeps the durable before/after record. Shots li
 
 ---
 
+## 2026-06-17 · Act-2 reward-modal medieval reskin (hero card · villain cage · unlock)  ·  PASS
+**Branch:** `oracle/act2-modals` → PR for Neo (off fresh main after #116/#123/#125 merged). DESIGN-ALIGNMENT
+#11. **CSS-only** (`styles.css`) + 3 render scenes — zero `game.js`, zero conflict surface.
+**Problem:** the three reward modals kept the Act-1 superhero VIOLET (`#2c2160`/`#2a1c44`/`#2a2058`) in the
+medieval realm, and the cage bars were the Vex sci-fi blue — a cohesion break against the established
+`body[data-act="2"]` stone/bronze chrome.
+**Fix:** `body[data-act="2"]` overrides → stone+bronze bodies with a warm torch glow; the unlock rays go
+amber; the captured-villain cage gets an ember-danger accent (it's a dragon/the Vixen); cage bars (both the
+big `#bossCage` and the small Base-shelf `.bf-cage`) become IRON grey, not Vex-blue. Gold accents kept
+(reads in both worlds). Act-1 untouched (overrides are act-2-scoped); learning tiles untouched (reward modals).
+**Shots:** `a2herocard` (SIR TEDDY card, stone/bronze, cape picker correctly hidden in Act 2), `a2boss`
+(THE DRAGON, ember frame + iron bars), `a2unlock` (WAR MACE, torch-gold). All cohesive with the medieval
+skin, emoji-free, premium. Tests: ui-emoji 44/44, curriculum 115/115, save 121/121.
+
+---
+
 ## 2026-06-17 · Hero Base — aliveness & growth (gem-dex % · lair grows · tap-hero card)  ·  PASS
 **Branch:** `oracle/lair-growth` → PR for Neo. The lair's last slice (parent picked **glow + staged reveals**
 and **tap-hero → hero card** via AskUserQuestion). `game.js` + `styles.css` only (no index.html — avoids
