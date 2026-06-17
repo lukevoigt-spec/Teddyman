@@ -15,6 +15,28 @@ resolves before merge; this file keeps the durable before/after record. Shots li
 
 ---
 
+## 2026-06-16 · De-emoji pass #2 — titles, NEXT/CHOP, combo/mastered/rank pops  ·  PASS
+**Branch:** `oracle/de-emoji` → PR for Neo. Closes the gap left by #104: an audit (code-checked) found
+child-facing emoji still on main that the `ui-emoji.test` ratchet wasn't scanning — so CI stayed green
+over them (parent: "seeing a lot of emoji still").
+**Surfaces fixed:** Vault/Scroll/Warm-Up screen **titles** (🔋📜🔥), **win/rest buttons** (🗺️🎯😴), the
+**live combo chip** (🔥), **MASTERED** (✦), **RANK UP** (⭐), **CHOP** + syllable gap (✂️/✂), every
+**NEXT** (➜) + homecoming **THE END** (✅), and the legacy map done-node ✓.
+**Fix:** new crafted `UICONS` in the house language — `scroll`, `flame`, `moon`, `spark`, `scissors`
+(+ reuse `bolt`/`chevron`/`map`/`play`/`check`). Static labels cleaned in `index.html`; runtime labels
+inject the crafted glyph in `game.js`. Heart-Word **♥** left as-is (pedagogical content, not chrome).
+**Shots (`tools/shots/chromium-*`):** `vaultfull` (bolt title + charged spark), `juice` (MASTERED spark),
+`bigword` (CHOP scissors), `bigchop` (gap scissors), `intro4` (NEXT chevron), `learn_s` (TRACE chevron),
+`rescue_win` (CONTINUE). All read premium, emoji-free, icons consistent, UI lives in the painting. The
+combo-flame wasn't captured live (the chip auto-fades) but is wired + unit-asserted.
+**Tests:** `ui-emoji` 44/44 (extended: per-screen clean zones + positive runtime-injection assertions),
+`curriculum` 115/115, `save` 121/121. **PASS.**
+**Coordination:** Neo is concurrently rewriting `tests/ui-emoji.test.js` into a full child-scan (#102) —
+our test edits WILL conflict; this code de-emoji and #102 are complementary (his scan catches these, my
+code removes them). Flagged for Neo to reconcile at merge (prefer #102's full-scan where it overlaps).
+
+---
+
 ## 2026-06-16 · Premium UI — in-game controls (home button de-emoji)  ·  PASS
 **Branch:** `oracle/premium-controls` → PR for Neo. Premium UI Overhaul, batch: **in-game controls**.
 **Finding:** of the three in-game controls, **replay** (`.ear`) and **skip** (`#btnSkip`) were ALREADY
