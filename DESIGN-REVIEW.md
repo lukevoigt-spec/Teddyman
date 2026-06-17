@@ -15,6 +15,19 @@ resolves before merge; this file keeps the durable before/after record. Shots li
 
 ---
 
+## 2026-06-17 · #60 Ally cheer-pops → painted raster (last SVG character tokens)  ·  PASS
+**Branch:** `oracle/ally-raster` → PR. The league shelf + win mini-face already used the painted
+`ally-<kind>.png` rasters; the CHEER POPS (`allyPop` in allies.js, `trainPop` in game.js) were the last
+spots still rendering the SVG `allyFace` token. Switched both to `allyRasterImg(kind,76)` with the SVG as
+fallback only for kinds without a raster yet (e.g. jj). `trainPop` returns the SVG element ONLY on the
+fallback path, so the talking mouth-move (`mouthStart`, SVG-only) cleanly skips for raster pops instead of
+breaking. CSS-light (allies.js + game.js render only).
+**Shot:** `cheerpop` — Archie's painted portrait pops bottom-left over a Find round, cast-consistent with
+the shelf/win face. Tests: ui-emoji 44/44, curriculum 116/116, save 129/129. PASS. (Cast is now fully
+raster — no SVG character tokens left in child-facing UI.)
+
+---
+
 ## 2026-06-17 · #126 whole-set collection cards (gem-dex + villains) — §20 styling  ·  PASS
 **Branch:** `oracle/collcard` → PR. Neo shipped the card DOM in #146 ("Oracle owns the painted case look,
 shared with #124"). **CSS-only.** Applied the SAME display-case language as the #124 squishy case to

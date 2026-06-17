@@ -34,7 +34,10 @@ function allyLine(kind){ const L=ALLY[kind].lines; return L[Math.floor(Math.rand
 /* brief celebratory pop of the friend's face + name; auto-removes, no flash */
 function allyPop(kind){ const st=$("stage"); if(!st)return;
   const d=document.createElement("div"); d.className="allypop";
-  d.innerHTML=`<svg viewBox="-34 -40 68 84" width="76" aria-hidden="true">${allyFace(kind)}</svg>`+
+  /* #60: cheer pops use the PAINTED RASTER portrait (ally-<kind>.png) for cast consistency with the
+     league shelf + win face; SVG allyFace only as a fallback for kinds without a raster yet. */
+  const raster=(typeof allyRasterImg==="function") && allyRasterImg(kind,76);
+  d.innerHTML=(raster||`<svg viewBox="-34 -40 68 84" width="76" aria-hidden="true">${allyFace(kind)}</svg>`)+
     `<div class="allyname">${(ALLY[kind].real||"").toUpperCase()}!</div>`;
   st.appendChild(d); setTimeout(()=>d.remove(),2200); }
 /* Full league roster for the Hero Base shelf (mid = mission that frees them).

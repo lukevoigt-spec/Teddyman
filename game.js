@@ -2131,8 +2131,12 @@ let __trainBags={}, __trainNextAt=0;
 function trainBagNext(t){ let bag=__trainBags[t.prefix]; if(!bag||!bag.length){ bag=shuf(Array.from({length:t.n},(_,i)=>i+1)); __trainBags[t.prefix]=bag; } return t.prefix+bag.pop(); }
 function trainPop(kind,name){ const st=$("stage"); if(!st)return null;   /* like allyPop but name-driven (jj/nora/cal aren't in ALLY{}) */
   const d=document.createElement("div"); d.className="allypop";
-  d.innerHTML=`<svg viewBox="-34 -40 68 84" width="76" aria-hidden="true">${allyFace(kind)}</svg><div class="allyname">${name}!</div>`;
-  st.appendChild(d); setTimeout(()=>d.remove(),3200); return d.querySelector("svg"); }
+  /* #60: painted RASTER portrait for cast consistency; SVG allyFace only as fallback (e.g. jj has no raster).
+     Return the SVG only on the fallback path so the talking mouth-move (mouthStart, SVG-only) is skipped —
+     not broken — for raster pops. */
+  const raster=allyRasterImg(kind,76);
+  d.innerHTML=(raster||`<svg viewBox="-34 -40 68 84" width="76" aria-hidden="true">${allyFace(kind)}</svg>`)+`<div class="allyname">${name}!</div>`;
+  st.appendChild(d); setTimeout(()=>d.remove(),3200); return raster ? null : d.querySelector("svg"); }
 function maybeTrainInterrupt(done){ const avail=TRAIN_TELLERS.filter(t=>t.unlocked());
   if(!avail.length || trainReps<__trainNextAt){ done(); return; }
   __trainNextAt = trainReps + 8 + Math.floor(Math.random()*5);   /* next pop-in in ~8–12 reps (jittered, not clockwork) */
