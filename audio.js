@@ -116,6 +116,7 @@ const Aud={
   });},
   ding(){ if(typeof Sfx!=="undefined" && Sfx.correct){ Sfx.correct(); return; }   /* route to the SFX kit (respects its volume/toggle) */
     try{ const ctx=Aud.ctx||(Aud.ctx=new (window.AudioContext||window.webkitAudioContext)());
+    try{ if(ctx.state==="suspended")ctx.resume(); }catch(e){}   /* #86: iOS context born before a gesture is suspended → resume so the ding isn't silent */
     const o=ctx.createOscillator(),gn=ctx.createGain();
     o.frequency.value=740;o.type="sine";
     gn.gain.setValueAtTime(0.0001,ctx.currentTime);
@@ -133,7 +134,8 @@ function flow(p,fn){ __cont=fn; clearTimeout(__skipT);
   __skipT=setTimeout(()=>{ if(__cont&&sk)sk.style.display="flex"; },2600);
   p.then(()=>{ if(__cont===fn){ __cont=null; if(sk)sk.style.display="none"; fn(); } });
 }
-function clearFlow(){ __cont=null; clearTimeout(__skipT); const sk=$("btnSkip"); if(sk)sk.style.display="none"; }
+function clearFlow(){ __cont=null; clearTimeout(__skipT); const sk=$("btnSkip"); if(sk)sk.style.display="none";
+  if(typeof Music!=="undefined"&&Music.unduck)Music.unduck(); }   /* #86: defensively un-duck — a clearFlow not followed by a new Aud.play() must not leave music stuck at 26% */
 function narrate(key,el,ids,display){ lastSeq[key]=ids;
   const txt=(display!==undefined)?display:(Array.isArray(ids)?ids:[ids]).map(id=>(LINES[id]||{t:id}).t).join(" ");
   el.querySelector("span").textContent=txt;
