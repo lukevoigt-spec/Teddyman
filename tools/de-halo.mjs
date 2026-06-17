@@ -38,6 +38,16 @@ const dataUri = await p.evaluate(async ({url,SIZE})=>{
   while(stack.length){ const k=stack.pop(); const i=k*4; if(!bg(i)) continue;  // hit the dark outline → stop
     a[i+3]=0;                                                                  // clear the halo/bg pixel
     const px=k%W, py=(k/W)|0; push(px-1,py); push(px+1,py); push(px,py-1); push(px,py+1); }
+  // EDGE EROSION (2px): the flood-fill stops at near-white, leaving a thin anti-aliased LIGHT fringe
+  // between the cleared halo and the dark outline. Shave it: clear any opaque pixel that touches a
+  // transparent pixel AND is light/semi-transparent (lum>120 OR alpha<250). The dark navy outline
+  // (lum~30) is preserved, so this only eats the light rim down to the outline.
+  const lum=i=>0.3*a[i]+0.59*a[i+1]+0.11*a[i+2];
+  for(let pass=0; pass<2; pass++){ const kill=[];
+    for(let y=0;y<H;y++) for(let xp=0;xp<W;xp++){ const k=y*W+xp, i=k*4; if(a[i+3]===0) continue;
+      const edge = (xp>0&&a[(k-1)*4+3]===0)||(xp<W-1&&a[(k+1)*4+3]===0)||(y>0&&a[(k-W)*4+3]===0)||(y<H-1&&a[(k+W)*4+3]===0);
+      if(edge && (lum(i)>120 || a[i+3]<250)) kill.push(i); }
+    for(const i of kill) a[i+3]=0; }
   x.putImageData(id,0,0);
   // scale to SIZE preserving the square framing + alpha
   const o=document.createElement("canvas"); o.width=SIZE; o.height=SIZE;
