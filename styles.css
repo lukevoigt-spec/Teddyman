@@ -1297,6 +1297,50 @@ body[data-act="2"] .bchip{ border-color:#caa15a; }
 /* Act-2 keep has a LOWER pedestal than the Act-1 lair → seat the knight lower so he stands on it */
 body[data-act="2"] #scrBase .basehero{ bottom:21%; }
 
+/* TAP-THE-HERO — the pedestal hero opens his flip card (override the decorative pointer-events:none) */
+#scrBase .basehero.tappable{ pointer-events:auto; cursor:pointer; }
+#scrBase .basehero.tappable:active{ transform:translateX(-50%) scale(.97); }
+
+/* LAIR GROWS WITH MASTERY (parent 2026-06-17) — a warm light that scales with --lair (0..1) plus STAGED
+   reveals (body.lairR1/2/3 = 25/50/75%): pedestal halo → hearth-side warmth → shelf-side cool glint.
+   Sits over the painted room, BEHIND the hero (z4) + panels (z5); pointer-events:none. Calm dims it,
+   Lite drops it (GPU blur). A long-game "the lair comes alive as you master more" hook — never a drain. */
+#scrBase #lairFx{ position:absolute; inset:0; z-index:1; pointer-events:none; overflow:hidden; }
+#lairFx .lf{ position:absolute; opacity:0; transition:opacity 1.3s ease; filter:blur(18px); border-radius:50%; }
+/* DORMANT dim — a cool shade that's strongest at 0% mastery and lifts to nothing at 100%, so the room
+   visibly wakes from "cool & quiet" to "warm & alive" as he masters more (somewhere to grow FROM). */
+#lairFx .lf-dim{ inset:0; border-radius:0; filter:none; opacity:calc((1 - var(--lair,0)) * .36);
+  background:linear-gradient(180deg, rgba(26,20,54,.82), rgba(12,9,30,.62)); }
+#lairFx .lf-amb{ inset:-12%; border-radius:0; filter:blur(36px); opacity:calc(var(--lair,0) * .62);
+  background:radial-gradient(ellipse 84% 74% at 50% 82%, rgba(255,198,120,.6), transparent 72%); }
+#lairFx .lf-pedestal{ left:26%; bottom:7%; width:48%; height:44%;
+  background:radial-gradient(ellipse at 50% 72%, rgba(255,228,150,.6), transparent 66%); }
+#lairFx .lf-left{ left:-7%; bottom:5%; width:36%; height:54%;
+  background:radial-gradient(circle, rgba(255,150,64,.62), transparent 68%); }
+#lairFx .lf-right{ right:-7%; top:16%; width:34%; height:56%;
+  background:radial-gradient(circle, rgba(150,212,255,.5), transparent 68%); }
+body.lairR1 #lairFx .lf-pedestal{ opacity:.85; }
+body.lairR2 #lairFx .lf-left{ opacity:.8; }
+body.lairR3 #lairFx .lf-right{ opacity:.72; }
+@keyframes lairflick{ 0%,100%{ opacity:.8; } 50%{ opacity:.6; } }   /* hearth flicker once lit */
+body.lairR2:not(.calm) #lairFx .lf-left{ animation:lairflick 3.4s ease-in-out infinite; }
+body.calm #lairFx .lf{ transition:none; }
+body.calm #lairFx .lf-amb{ opacity:calc(var(--lair,0) * .32); }
+body.lite #lairFx{ display:none; }
+@media (prefers-reduced-motion:reduce){ #lairFx .lf{ transition:none; } #lairFx .lf-left{ animation:none; } }
+
+/* Teddy's flip-card cape picker (#heroCard back, openTeddyCard) */
+.hc-capes{ margin-top:4px; }
+.hc-capes-h{ font-family:'Bangers',cursive; color:var(--gold); font-size:14px; letter-spacing:.05em; margin:2px 0 5px; text-align:center; }
+.hc-caperow{ display:flex; gap:8px; justify-content:center; }
+.hc-cape{ display:flex; flex-direction:column; align-items:center; gap:2px; width:64px; padding:5px 4px; cursor:pointer;
+  background:rgba(0,0,0,.26); border:2px solid #3a2d72; border-radius:11px; color:inherit; font:inherit; }
+.hc-cape img{ width:40px; height:40px; object-fit:contain; display:block; }
+.hc-cape span{ font-family:'Baloo 2',sans-serif; font-weight:800; font-size:10px; color:#cfc4f0; }
+.hc-cape.onsel{ border-color:var(--gold); box-shadow:0 0 0 2px var(--gold) inset; }
+.hc-cape.lockd{ filter:grayscale(.55) brightness(.82); }
+.hc-cape:active{ transform:translateY(2px); }
+
 /* painted LETTER GEMS (gemSVG): crystal raster tinted to the grapheme colour (multiply, masked to the
    gem shape) + the Andika letter overlaid crisply on top. */
 .gemwrap{ position:relative; display:inline-block; vertical-align:middle; }

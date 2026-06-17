@@ -1608,7 +1608,9 @@ function paintBase(){
     const base=(o.theme==="knight"?"teddy-knight-m":"teddy-"+outfit+"m")+m;
     const armed=!!(o.weapon&&o.weapon!=="none"), file=armed?base+"-"+o.weapon:base;
     $("baseHero").innerHTML='<img class="baseheroimg" src="art/'+file+'.png" alt="" draggable="false"'
-      +(armed?' onerror="this.onerror=null;this.src=\'art/'+base+'.png\'"':'')+'>'; }
+      +(armed?' onerror="this.onerror=null;this.src=\'art/'+base+'.png\'"':'')+'>';
+    /* tap the hero on his pedestal → his own flip card (rank · gear · cape), the "tap the THING" model */
+    const bh=$("baseHero"); if(bh){ bh.onclick=openTeddyCard; bh.classList.add("tappable"); bh.title="Tap Teddy"; } }
   const o=heroOpts();
   { const hp=heroProgress(); const pl=$("powerLbl"); if(pl)pl.textContent=hp.name; }
   /* status-meter icons: clock = today's practice, lightning = Gem Charge (crafted SVG, no emoji) */
@@ -1658,7 +1660,8 @@ function paintBase(){
        (collection meets durable mastery — a visible "you truly own this one" reward). */
     shelf.innerHTML+=`<span class="gembox${retainedItem(g)?" mastered":""}">${gemSVG(g, GEMCOLOR[g], 48)}</span>`; } });
   if(!any)shelf.innerHTML='<div class="baselbl" style="font-size:15px;">Rescue gems on missions to fill your shelf!</div>';
-  { const got=ORDER.filter(g=>S.done[LETTER_MISSION[g]]).length, gc=$("gemCount"); if(gc)gc.textContent=got+" / "+ORDER.length; }
+  { const got=ORDER.filter(g=>S.done[LETTER_MISSION[g]]).length, gc=$("gemCount");
+    if(gc)gc.textContent=got+" / "+ORDER.length+(got?" · "+Math.round(100*got/ORDER.length)+"%":""); }   /* gem-dex % */
   /* league */
   const lg=$("leagueShelf"); lg.innerHTML="";
   let anyL=false;
@@ -1688,6 +1691,19 @@ function paintBase(){
   { const anyBoss=BOSSES.some(b=>S.done[b.mid]);
     const vb=$("villainsBlock"); if(vb)vb.style.display=anyBoss?"":"none";
     const fb=$("friendsBlock");  if(fb)fb.style.display=anyL?"":"none"; }
+  /* LAIR GROWS WITH MASTERY (parent 2026-06-17): a warm glow scales continuously with this act's
+     progress, plus STAGED light reveals at 25/50/75% (pedestal halo → hearth-side → shelf-side). The
+     room comes alive as he masters more — a long-game hook, never loss-aversion. #lairFx lives INSIDE
+     #scrBase (so it's hidden off-base); pointer-events:none so it never steals a tap. Calm dims it,
+     Lite drops it (GPU blur/blend). */
+  { const am=actMissions(currentAct()), prog=am.length?am.filter(m=>S.done[m.id]).length/am.length:0;
+    document.body.style.setProperty("--lair", prog.toFixed(3));
+    const bc=document.body.classList;
+    bc.toggle("lairR1", prog>=0.25); bc.toggle("lairR2", prog>=0.5); bc.toggle("lairR3", prog>=0.75);
+    const sb=$("scrBase");
+    if(sb && !$("lairFx")){ const fx=document.createElement("div"); fx.id="lairFx"; fx.setAttribute("aria-hidden","true");
+      fx.innerHTML='<div class="lf lf-dim"></div><div class="lf lf-amb"></div><div class="lf lf-pedestal"></div><div class="lf lf-left"></div><div class="lf lf-right"></div>';
+      sb.insertBefore(fx, sb.firstChild); } }
 }
 /* Base layered-hub actions (tap-the-thing): PLAY → next uncompleted level; GEMS → recharge; COINS → train. */
 function playNextMission(){ const ms=playMissions(currentAct()); const m=ms.find(x=>!S.done[x.id])||ms[ms.length-1]; if(m)startMission(m); else toMap(); }
@@ -1738,6 +1754,44 @@ function closeHeroCard(){ Aud.stop(); $("heroCard").classList.remove("on"); }
 $("hcClose").onclick=e=>{ e.stopPropagation(); closeHeroCard(); };
 $("hcFlip").onclick=()=>$("hcFlip").classList.toggle("flip");
 $("heroCard").onclick=e=>{ if(e.target.id==="heroCard")closeHeroCard(); };
+
+/* TAP-THE-HERO → Teddy's own flip card (parent 2026-06-17): reuses the #heroCard flip component.
+   Front = painted hero + rank; back = rank/gem-dex/weapon stats + a cape picker (Act-1 outfits). */
+function openTeddyCard(){
+  const hp=heroProgress(), knight=heroOpts().theme==="knight", alias=knight?"SIR TEDDY":"SUPER TEDDY";
+  $("hcAlias").textContent=alias;
+  $("hcName").textContent=hp.name;            /* his rank reads as the "real name" line */
+  $("hcBackName").textContent=alias;
+  $("hcBio").textContent="Every word you read makes him stronger. Suit up, hero!";
+  renderTeddyCard();
+  $("hcFlip").classList.remove("flip");
+  $("heroCard").classList.add("on");
+  Aud.play("base1");
+}
+/* (re)build Teddy's card art + stats + cape picker in place (no flip reset on cape change) */
+function renderTeddyCard(){
+  $("hcArt").innerHTML=heroNow(180);
+  const hp=heroProgress();
+  const got=ORDER.filter(g=>S.done[LETTER_MISSION[g]]).length, gemPct=Math.round(100*got/ORDER.length);
+  /* read the HELD weapon from S.equip (what the art draws) so the stat never contradicts the picture */
+  const eqw=S.equip.weapon, we=(eqw&&eqw!=="none")?WEAPONS.find(w=>w.k===eqw):null, wpn=we?we.lbl:"Bare hands";
+  let html=`<div class="hc-stat"><b>Rank</b><span>${hp.name}</span></div>`
+    +`<div class="hc-stat"><b>Gem-dex</b><span>${got} / ${ORDER.length} · ${gemPct}%</span></div>`
+    +`<div class="hc-stat"><b>Weapon</b><span>${wpn}</span></div>`;
+  if(currentAct()===1){   /* capes = full Act-1 outfit looks; gated by stars (same rule as the Base loadout) */
+    const capes=[["base","BASE","red",0],["blue","PREMIUM","blue",15],["gold","BOUGIE","gold",30]];
+    html+=`<div class="hc-capes"><div class="hc-capes-h">CAPE</div><div class="hc-caperow">`
+      + capes.map(([k,lbl,img,need])=>{ const locked=S.stars<need, sel=S.equip.cape===k;
+          return `<button class="hc-cape${sel?" onsel":""}${locked?" lockd":""}" data-cape="${k}">`
+            +`<img src="art/cape-${img}.png" alt="${lbl}" draggable="false"><span>${locked?lbl+" · "+need:lbl}</span></button>`; }).join("")
+      + `</div></div>`;
+  }
+  $("hcStats").innerHTML=html;
+  /* stopPropagation so tapping a cape doesn't bubble to hcFlip (which would flip the card) */
+  $("hcStats").querySelectorAll(".hc-cape").forEach(b=>{ b.onclick=e=>{ e.stopPropagation();
+    if(b.classList.contains("lockd")){ Aud.play&&Aud.play("shop_need"); return; }
+    S.equip.cape=b.dataset.cape; save(); Aud.ding(); renderTeddyCard(); paintBase(); }; });
+}
 
 /* ---------------- BOSS TROPHY CAGES ----------------
    Every defeated, NAMED villain lives shrunken in a cage on a Base shelf
