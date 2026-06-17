@@ -1437,3 +1437,12 @@ body[data-act="2"] .hudpill{ border-color:#caa15a; }
 @keyframes winchestBob{ 0%,100%{transform:translateY(0) rotate(-2.5deg);} 50%{transform:translateY(-6px) rotate(2.5deg);} }
 body.calm .winchest,body.lite .winchest{ animation:none; }
 @media (prefers-reduced-motion: reduce){ .winchest{ animation:none; } }
+
+/* #130 FTUE: I-do demo highlight (.demo-hi) + we-do scaffold pulse (.wedo) — FUNCTIONAL placeholder; Oracle
+   owns the premium look (§20). CALM by design — the demo IS the teaching, so no loud reward juice here
+   (seductive-details guardrail). Calm/Lite + reduced-motion drop the motion to a steady glow. */
+.demo-hi{ box-shadow:0 0 0 4px var(--gold), 0 0 18px 5px rgba(255,206,58,.5); border-radius:14px; transition:box-shadow .2s ease; }
+.tile.wedo,.picktile.wedo{ animation:wedoPulse 1.25s ease-in-out infinite; }
+@keyframes wedoPulse{ 0%,100%{box-shadow:0 0 0 0 rgba(127,208,255,0)} 50%{box-shadow:0 0 0 5px rgba(127,208,255,.6)} }
+body.calm .tile.wedo,body.calm .picktile.wedo,body.lite .tile.wedo,body.lite .picktile.wedo{ animation:none; box-shadow:0 0 0 4px rgba(127,208,255,.55); }
+@media (prefers-reduced-motion: reduce){ .tile.wedo,.picktile.wedo{ animation:none; box-shadow:0 0 0 4px rgba(127,208,255,.55); } .demo-hi{ transition:none; } }

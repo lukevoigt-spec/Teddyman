@@ -204,6 +204,11 @@ const LINES={
   daily_goal:{t:"Daily training complete! You trained like a true champion today, Super Teddy!"},
   forge_intro1:{t:"The WORD FORGE is open!"},
   forge_intro2:{t:"Gems together make WORDS. And words forge the mightiest weapons!"},
+  /* #130 FTUE model-demo (I-do): narrator builds one word slowly first, then hands it over. */
+  forge_demo1:{t:"Watch me build it first! I say each sound, then drop the gem in."},
+  forge_demo2:{t:"That's how! Now YOU try it."},
+  read_demo1:{t:"Watch me read it first! I sound it out, then tap the picture it means."},
+  read_demo2:{t:"That's how! Now YOU try it."},
   forge_build:{t:"Build the word! Listen..."},
   forge_next:{t:"Next sound..."},
   forge_listen:{t:"Listen for the next sound..."},
