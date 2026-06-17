@@ -54,7 +54,8 @@ function clipFor(id){
 const Aud={
   voice:null, el:null, token:0, vol:1, _poll:null, _hard:null, _resolve:null,
   hasVP(id){ return !!clipFor(id); },
-  pick(){ const vs=speechSynthesis.getVoices().filter(v=>v.lang&&v.lang.startsWith("en"));
+  pick(){ if(!("speechSynthesis" in window)) return;   /* fail-soft: headless WebKit has no speechSynthesis (#106). Real iOS Safari always does, so the child is unaffected; this only stops a ReferenceError under Playwright. */
+    const vs=window.speechSynthesis.getVoices().filter(v=>v.lang&&v.lang.startsWith("en"));
     this.voice = vs.find(v=>/samantha/i.test(v.name)) || vs.find(v=>/karen|ava|allison|female/i.test(v.name)) || vs[0]||null; },
   _clear(){ if(this._poll){clearInterval(this._poll);this._poll=null;} if(this._hard){clearTimeout(this._hard);this._hard=null;} },
   /* tear down the current sequence (timers + audio + music duck) and resolve its
