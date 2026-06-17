@@ -17,7 +17,9 @@ const Music={
   boot(){
     this.on  = (typeof S!=="undefined" && S.musicOn===false) ? false : true;
     this.vol = (typeof S!=="undefined" && S.musicVol!=null) ? S.musicVol : 0.34;
-    try{ this.el=new Audio(); this.el.loop=true; this.el.volume=0; this.el.preload="auto"; }
+    /* preload="metadata" (NOT "auto"): the boot probe pulls only the track header (~tens of KB), not the
+       full ~5.6MB/act, so boot isn't ~11MB of audio (issue #107). The body downloads on first play(). */
+    try{ this.el=new Audio(); this.el.loop=true; this.el.volume=0; this.el.preload="metadata"; }
     catch(e){ this.el=null; }
   },
   /* swap to the act's theme, probing formats (mp3→ogg→m4a→wav); silent if none. */
@@ -27,9 +29,12 @@ const Music={
     if(i>=this.EXTS.length){ this.srcOk=false; return; }   /* no track file for this act */
     const url="art/bgm-a"+a+"."+this.EXTS[i];
     const onErr=()=>{ cleanup(); this._tryLoad(a,i+1); };
+    /* "loadedmetadata" (not "canplay"): with preload="metadata" the header alone confirms the file exists
+       and is playable, so the probe resolves without pulling the ~5.6MB body (issue #107). play() fetches
+       the body on demand. 404 / wrong-format still fires "error" → try the next extension. */
     const onOk =()=>{ cleanup(); this.srcOk=true; this._apply(); if(this.started&&this.on)this._play(); };
-    const cleanup=()=>{ if(el.removeEventListener){ el.removeEventListener("error",onErr); el.removeEventListener("canplay",onOk); } };
-    if(el.addEventListener){ el.addEventListener("error",onErr); el.addEventListener("canplay",onOk); }
+    const cleanup=()=>{ if(el.removeEventListener){ el.removeEventListener("error",onErr); el.removeEventListener("loadedmetadata",onOk); } };
+    if(el.addEventListener){ el.addEventListener("error",onErr); el.addEventListener("loadedmetadata",onOk); }
     try{ el.src=url; if(el.load)el.load(); }catch(e){ cleanup(); this._tryLoad(a,i+1); }
   },
   /* called on the first user gesture (browsers block autoplay until then) */
