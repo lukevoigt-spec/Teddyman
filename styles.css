@@ -953,12 +953,19 @@ body.calm .panelart.beatin,body.calm .panelart.transformfx{animation:none;}
 #heroCard{position:fixed;inset:0;z-index:72;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;
   background:rgba(6,3,16,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);perspective:1400px;}
 #heroCard.on{display:flex;}
-.hc-flip{position:relative;width:min(330px,82vw);aspect-ratio:3/4.3;transform-style:preserve-3d;cursor:pointer;
+.hc-flip{position:relative;width:min(330px,82vw);aspect-ratio:3/4.3;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;cursor:pointer;
   transition:transform .55s cubic-bezier(.3,.9,.4,1);animation:hcpop .5s cubic-bezier(.18,1.5,.5,1) both;}
 .hc-flip.flip{transform:rotateY(180deg);animation:none;}
 @keyframes hcpop{0%{transform:scale(.5) rotateY(-12deg);opacity:0}100%{transform:scale(1) rotateY(0);opacity:1}}
-.hc-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:22px;}
+/* #136 WebKit-safe flip: Safari leaks the rotated .hc-back onto the DEFAULT open card (backface-visibility
+   alone is unreliable with preserve-3d), so iPad users saw the unreadable back face. Hide the inactive face
+   by STATE instead — engine-agnostic. The visibility flips at the ~90deg midpoint (0s transition + .28s delay)
+   so the 3D flip animation still reads. The tap handler is on #hcFlip, so the flip still works. */
+.hc-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:22px;
+  transition:visibility 0s linear .28s;}
 .hc-back{transform:rotateY(180deg);}
+.hc-flip:not(.flip) .hc-back{visibility:hidden;}
+.hc-flip.flip .hc-front{visibility:hidden;}
 .hc-frame{position:relative;width:100%;height:100%;box-sizing:border-box;border-radius:22px;overflow:hidden;
   border:5px solid var(--gold);background:linear-gradient(165deg,#2c2160,#15102f);
   box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 46px rgba(255,206,58,.3),inset 0 0 0 2px rgba(255,255,255,.08);
