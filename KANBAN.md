@@ -12,9 +12,8 @@ Trinity babysits every PR → gates/coordinates → merged.** The core app (read
 
 1. **#153 [N] — Anti-gaming re-lock (build FIRST).** The parent's explicit "stop button-mashing" ask + protects learning
    integrity. Pure code, well-specced. Threshold ~400–600ms (Neo tunes on device). No art.
-2. **#151 [N] — Uncertain-BONUS reward.** Highest learning-ROI engagement lever, small contained change to the correct-
-   answer path. Bonus ~50% (the *extra*, never the base); coins from correct work only (§6.0); fire off the prompt.
-   *(Oracle can polish the "bonus!" visual after; Neo ships the functional version + tunes rate.)*
+2. **#151 [N] — Uncertain-BONUS reward — ✅ SHIPPED 2026-06-17** (closed mid-session; the crew is actively burning the
+   list). Oracle can still polish the "bonus!" visual + Neo tune the rate as a follow-up if it doesn't feel right on device.
 3. **#152 [O+N] — Collection-as-mastery counter** ("N/26 gems mastered" on home/map + the Zeigarnik reachable-gap). #1
    daily-return hook. Oracle owns the look/placement (§20); Neo wires it to the existing `letterMastered` data. Overlaps
    the merged gem-card #126 — reuse, don't duplicate.
@@ -47,9 +46,12 @@ gates/coordinates any PR the moment it opens, drives it to merged.)*
 ## ✓ DONE (today's merge train — verified against live Issues, 2026-06-17)
 **The app is content-complete + stable + live.** Objective #1 (Teddy learns to read) — full TEKS Grade-2 ladder, Act 1+2 —
 is **DONE**. Today merged: collection cards #124/#126 · Hero-Base lair-growth #123 · Training-Room redesign #125 · XP rank
-meter #131/#137/#140 · FTUE first-time flow #130/#138 · de-emoji pass #116 + full-scan guard #117 · WebKit card-flip #136 ·
-ghost-button unify #148 · boot-perf #107 + Aud.pick #106 · playtest-docs #112 + Base-perf #113 · UI theme #31 · Hero-box
-#44 (de-halo) · Training visual #34 · the engagement research #154 + Trinity's friend-voices/learn-declutter #147.
+meter #131/#137/#140 · FTUE first-time flow #130/#138 + beatIn transitions #132 · de-emoji pass #116 + full-scan guard
+#117 + remaining chrome #104 · WebKit card-flip #136 · ghost-button unify #148 · boot-perf #107 + Aud.pick #106 ·
+playtest-docs #112 + Base-perf #113 · UI theme #31 · Hero-box #44 (de-halo) · Hero-Room redesign #33 · Training visual
+#34 · the Elevation-Loop close-out (#54 Award Bar ratified · #55 Wave-1 eval) · #35 mouth-art · #38 map-allies-grounded ·
+#39 §20 render-gate catch-up · #151 uncertain-bonus reward · the engagement research #154 + Trinity's friend-voices/learn-declutter #147.
+*(Disposition recorded for everything dropped from the active board — all CLOSED/merged 2026-06-17, verified against live Issues; Codex #157 catch. ⚠ `ELEVATION-LOOP.md` + `QA.md` still reference some of these as active → a prose drift-reconcile is queued, low priority.)*
 **Earlier:** the full code sweep #81–88 · parent deep-dive #71–75 · roster #110 + training-lines #111 · painted icon set
 #103/#109 · nav overhaul · #105 re-apply. *(History in git + `QA.md`.)*
 
