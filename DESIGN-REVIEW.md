@@ -15,6 +15,21 @@ resolves before merge; this file keeps the durable before/after record. Shots li
 
 ---
 
+## 2026-06-17 · #132 screen transitions — premium enter + learning-gentle variant  ·  PASS
+**Branch:** `oracle/transitions` → PR. DESIGN-ALIGNMENT #10 / Award Bar A7 (continuous choreography).
+**Finding:** the beatIn push-in was ALREADY generalized — `show()` adds `.fadein` to every screen (the
+`fade` keyframe = opacity + 16px push-in), and reduced-motion is already killed globally
+(`*{animation:none}`). So #132's core was in place; the gaps were *feel* + the learning-screen guardrail.
+**Fix (CSS-only — the `show()` hook already exists, zero game.js):** non-learning screens get a premium
+push-in (`screenIn` .42s cubic-bezier(.2,.85,.25,1), subtle scale .985, transform/opacity only — GPU-cheap);
+**learning screens (`body.learning`) + Calm + Lite get a gentle fade ONLY** (`screenFade`, no push-in/scale)
+so the decoding prompt never "performs" (seductive-details). reduced-motion still disables all of it.
+**Render note:** motion isn't statically capturable; verified (a) the CSS/curve + existing hook, (b)
+no layout regression on `map`/`find`/`win` settled frames (the enter completes before the shot). Tests:
+ui-emoji 44/44, curriculum 115/115, save 121/121. PASS.
+
+---
+
 ## 2026-06-17 · §20 render-gate of Neo's batch + Hero-Rank XP styling  ·  PASS (+1 finding)
 Rule-#8 render-gate of the merged batch (#137/#131 XP, #138/#130 FTUE, #136 hero-flip, #135/#139 win-chest).
 Added scenes: `basexp`, `xpwin`, `winchest`, `ftueforge`, `wedoforge`.
