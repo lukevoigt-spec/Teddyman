@@ -35,7 +35,13 @@ body{
 .btn:active{transform:translateY(2px);box-shadow:0 3px 8px rgba(0,0,0,.4);}
 .btn.blue{background:linear-gradient(180deg,#5ea0ff,#2257c4);color:#fff;box-shadow:0 8px 0 #143a85,0 14px 24px rgba(0,0,0,.35);}
 .btn.blue:active{box-shadow:0 2px 0 #143a85;}
-.btn.ghost{background:transparent;color:var(--txt);border-color:var(--txt);box-shadow:none;font-size:clamp(20px,3vw,26px);padding:10px 24px;}
+/* SECONDARY buttons — a QUIET sibling of the painted plate (not a pale outline pill): dark translucent
+   fill + a gold frame that echoes the plate, so primary (painted) + secondary read as ONE button family,
+   with hierarchy by weight (smaller, no plate texture). Consistent-buttons pass 2026-06-17. */
+.btn.ghost{background:linear-gradient(180deg,rgba(34,22,60,.66),rgba(16,10,34,.66));color:var(--gold);
+  border:3px solid rgba(255,206,58,.66);border-radius:20px;font-size:clamp(20px,3vw,26px);padding:10px 24px;
+  box-shadow:0 5px 0 rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.14);}
+.btn.ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.32);}
 .btn:disabled{opacity:.4;pointer-events:none;}
 /* PREMIUM PAINTED BUTTONS (parent 2026-06-16): a 9-slice painted plate IS the surface; the label stays
    CSS so it scales/localizes. Gold default · blue (.btn.blue) · wood (Act-2). Ghost keeps the flat look. */
@@ -1152,7 +1158,7 @@ body[data-act="2"] .btn.blue{background:
   box-shadow:0 8px 16px rgba(0,0,0,.42),
     inset 0 3px 0 rgba(235,245,255,.4), inset 0 -11px 18px rgba(12,26,38,.55), inset 0 0 0 2px rgba(235,245,255,.12);}
 body[data-act="2"] .btn.blue:active{box-shadow:0 3px 8px rgba(0,0,0,.4), inset 0 2px 0 rgba(235,245,255,.3);}
-body[data-act="2"] .btn.ghost{background:transparent;color:#f0e2c4;border-color:#caa15a;box-shadow:none;}
+body[data-act="2"] .btn.ghost{background:linear-gradient(180deg,rgba(46,32,16,.7),rgba(22,14,8,.7));color:#f0e2c4;border-color:rgba(202,161,90,.72);box-shadow:0 5px 0 rgba(0,0,0,.32), inset 0 1px 0 rgba(255,240,200,.12);}
 body[data-act="2"] .bubble{
   background:rgba(34,26,16,.88);border-color:#c39a54;
   box-shadow:0 12px 30px rgba(0,0,0,.55), 0 0 22px rgba(180,145,84,.28), inset 0 1px 0 rgba(255,235,200,.12);}

@@ -76,6 +76,8 @@ const SCENES = {
   shop:    `(function(){ S.coins=300; S.owned={banner:true,medai:true,crown:true}; openShop(); return 1; })()`,
   shopcard:`(function(){ S.coins=300; openShop(); openSquishCard(BASE_ITEMS.find(function(x){return x.id==='ndglob';})); return 1; })()`,
   win:     `(function(){ CUR=(typeof MISSIONS!=="undefined"&&MISSIONS.find(function(x){return x.type==="learn";}))||{id:1,lbl:"Letter S"}; showWin(false); return 1; })()`,
+  rest: `(function(){ showRest({id:2,lbl:"Letter A"}); return 1; })()`,
+  rest2: `(function(){ S.act=2; showRest({id:101,lbl:"Runes"}); return 1; })()`,
   read:    `(function(){ CUR={id:5}; readWords=["cat"]; readIx=0; readGoal=1; readMiss=0; show('scrRead'); nextRead(); return 1; })()`,
   // Act-2 r-controlled + Big Words (new code paths) — drive the handlers directly to surface any error
   rctrl_learn: `(function(){ S.act=2; CUR={id:150}; startLearn({letter:"ar"}); return 1; })()`,

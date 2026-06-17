@@ -15,6 +15,24 @@ resolves before merge; this file keeps the durable before/after record. Shots li
 
 ---
 
+## 2026-06-17 · Button consistency — unify secondary (ghost) buttons into the plate family  ·  PASS
+**Branch:** `oracle/ghost-btn` → PR. Parent: "evaluate whether any buttons need to be render-painted — we
+want consistent buttons." **Evaluation:** primary actions (all 52 `.btn`) already use the painted 9-slice
+plates (gold/blue/wood) — consistent; nav corners use painted images; tiles/chips are different components
+(correctly differentiated). The ONE gap was `.btn.ghost` secondary buttons (SOUND IT OUT / BACK / CLOSE /
+One more mission / player-switch): a pale outline pill (the base `.btn::after` sheen over a transparent fill)
+that read as a different language. **Verdict: no new painted asset needed** — a flat secondary is valid
+hierarchy and painting everything would dilute the primary plates. **Fix (CSS-only):** restyle `.btn.ghost`
+as a QUIET sibling of the plate — dark translucent fill + a gold frame echoing the plate (bronze under
+`body[data-act="2"]`), lighter-weight than primary so hierarchy holds.
+**Shots:** `rest` (painted gold REST plate beside the gold-framed ghost = one family), `read` ("SOUND IT
+OUT" now a gold-framed button, not a white pill), `rest2` (Act-2 wood plate + bronze ghost). Premium,
+consistent across both acts. Tests: ui-emoji 44/44, curriculum 116/116, save 129/129.
+**Incidental (not buttons, for Neo/Trinity):** the Act-2 Rest narration still reads "Star Force City" —
+should be "Magic Kingdom" in Act 2 (copy, not chrome).
+
+---
+
 ## 2026-06-17 · #132 screen transitions — premium enter + learning-gentle variant  ·  PASS
 **Branch:** `oracle/transitions` → PR. DESIGN-ALIGNMENT #10 / Award Bar A7 (continuous choreography).
 **Finding:** the beatIn push-in was ALREADY generalized — `show()` adds `.fadein` to every screen (the
