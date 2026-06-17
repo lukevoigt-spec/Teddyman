@@ -15,6 +15,24 @@ resolves before merge; this file keeps the durable before/after record. Shots li
 
 ---
 
+## 2026-06-17 · Grown-Up Corner — settings game-feel pass (premium cards)  ·  PASS
+**Branch:** `oracle/settings` → PR for Neo (off fresh main after #128/#118). DESIGN-ENGAGEMENT §9 /
+DESIGN-ALIGNMENT #7 (modal gem-glow). **CSS-only** (`styles.css`) + 1 render scene — parent-requested
+("current Grown-Up Corner isn't intuitive… study how real games lay out settings").
+**Problem:** the section cards were flat translucent rectangles with a thin 1.5px border — readable but
+not "crafted panel" premium; no structure between a header and its controls.
+**Fix:** `.setcard` + `.hubcard` become §4 gem panels — a defined gem-purple border, a soft outer glow,
+a top sheen, richer bg; each `.setcard-h` gets a divider rule under it (header/controls separation). The
+`.danger` (Reset) card gets a matching rose treatment. **Act-2 parity:** warm-bronze glow + bronze hub
+cards + bronze header rules under `body[data-act="2"]` (so the purple glow doesn't bleed onto the medieval skin).
+**Shots:** `hubsettings` (Act-1 gem-purple panels, header dividers, premium depth), `a2settings` (Act-2
+bronze panels, MedievalSharp). Both read like a shipped game's settings; parent emoji in the headers are
+allowed (Grown-Up Corner). Tests: ui-emoji 44/44, curriculum 115/115, save 121/121.
+**Note:** this is the card/chrome polish; the deeper IA rethink (hub flow / "intuitive") is a larger
+separate pass if the parent still wants it after seeing this.
+
+---
+
 ## 2026-06-17 · Act-2 reward-modal medieval reskin (hero card · villain cage · unlock)  ·  PASS
 **Branch:** `oracle/act2-modals` → PR for Neo (off fresh main after #116/#123/#125 merged). DESIGN-ALIGNMENT
 #11. **CSS-only** (`styles.css`) + 3 render scenes — zero `game.js`, zero conflict surface.
