@@ -263,6 +263,7 @@ function toMap(){ sessionTick();
   if(!actMissions(currentAct()).length){ actComingSoon(); return; }  /* act with no content yet → safe landing */
   GEO=geomFor(currentAct()); show("scrMap");
   mapRepaint();
+  if(typeof gemDexFill==="function") gemDexFill($("gemDexMap"));   /* #152: mastery counter on the map hub */
   /* P1: re-render on orientation/resize so landscape (slice, full-bleed) ↔ portrait (meet, no crop)
      stays correct and every node remains on-screen + tappable. Bound once; only repaints on the map. */
   if(typeof window!=="undefined" && !window.__mapResizeBound){ window.__mapResizeBound=true;

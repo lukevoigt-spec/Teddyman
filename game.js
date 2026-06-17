@@ -243,6 +243,21 @@ function record(g,ok){ const m=mast(g); const wasMastered=masteredItem(g); m.see
 const MASTER_STR=4, MASTER_SEEN=5, MASTER_ACC=0.8;
 function masteredItem(key){ const m=S.mastery[key];
   return !!(m && m.str>=MASTER_STR && m.seen>=MASTER_SEEN && (m.ok/m.seen)>=MASTER_ACC); }
+/* #152 COLLECTION-AS-MASTERY (ENGAGEMENT-RESEARCH #2 — the #1 daily-return hook; Pokémon/Zeigarnik). A rising
+   "N / 26 gems MASTERED" — gems count only by getting BETTER at the sound (§6.0 mastery, NOT mere completion),
+   so the counter IS a reading-progress signal. nextReachableGem() = the next earned-but-not-mastered gem, shown
+   ghosted (the Zeigarnik "shape of what's missing"). Neo wires the data + a chip; Oracle owns the look/placement (§20). */
+function masteredGemCount(){ return ORDER.filter(g=>masteredItem(g)).length; }
+function nextReachableGem(){
+  /* prefer an EARNED-but-not-mastered gem (truly "reachable"); guarded because the module-load paintTitle()
+     runs before LETTER_MISSION (a const) is initialized — fall back to the first not-yet-mastered gem. */
+  try{ return ORDER.find(g=>S.done&&S.done[LETTER_MISSION[g]]&&!masteredItem(g)) || ORDER.find(g=>!masteredItem(g)) || null; }
+  catch(e){ return ORDER.find(g=>!masteredItem(g)) || null; } }
+function gemDexFill(el){ if(!el)return; const n=masteredGemCount(), total=ORDER.length, nx=nextReachableGem();
+  if(n<=0){ el.style.display="none"; el.innerHTML=""; return; }   /* no sad "0 / 26" on a fresh save */
+  el.style.display="";
+  const ghost=(n<total&&nx) ? `<span class="gdx-ghost" title="Next to master">${gemSVG(nx, GEMCOLOR[nx], 30)}</span>` : "";
+  el.innerHTML=`<span class="gdx-count"><b class="gdx-n">${n}</b> / ${total} gems mastered</span>${ghost}`; }
 /* RETAINED = DURABLE = proficient AND correct on >=2 different calendar days (#4). Drives the Base
    gold ✦ ("you truly own this one"); the Vault's spaced re-exposures are what EARN the 2nd day.
    NEVER gates a finale (a child can't earn a next-day correct mid-session — that would soft-lock). */
@@ -642,6 +657,7 @@ function vpMsg(){ const n=(typeof VOICEPACK!=="undefined")?Object.keys(VOICEPACK
 /* paint the title for the ACTIVE player (auto-loaded last player) */
 function paintTitle(){ const nm=$("playerName"); if(nm)nm.textContent=profileName(ACTIVE);
   $("titleHero").innerHTML=heroMarquee(210);
+  gemDexFill($("gemDexTitle"));   /* #152: mastery counter on the title */
   $("btnPlayer").style.display=profiles().length>1?"inline-block":"none"; }
 paintTitle();
 setBG("scrTitle");   /* the title is shown via static HTML, so load its painted background at boot */
