@@ -75,6 +75,8 @@ const SCENES = {
   boss:    `(function(){ CUR={id:26,lbl:"Vex Captain"}; startBoss("s"); return 1; })()`,
   shop:    `(function(){ S.coins=300; S.owned={banner:true,medai:true,crown:true}; openShop(); return 1; })()`,
   collection: `(function(){ S.coins=120; S.owned={banner:3,crown:1,medal:2,lamp:1,plant:1}; openShop(); return 1; })()`,
+  gemdex: `(function(){ for(var i=0;i<=18;i++)S.done[i]=true; paintBase(); show("scrBase"); openCollectionCard("gems"); return 1; })()`,
+  villdex: `(function(){ S.done={26:true,48:true,110:true}; show("scrBase"); openCollectionCard("villains"); return 1; })()`,
   store: `(function(){ S.coins=120; S.owned={banner:1}; openShop(); setShopMode("store"); return 1; })()`,
   shopcard:`(function(){ S.coins=300; openShop(); openSquishCard(BASE_ITEMS.find(function(x){return x.id==='ndglob';})); return 1; })()`,
   win:     `(function(){ CUR=(typeof MISSIONS!=="undefined"&&MISSIONS.find(function(x){return x.type==="learn";}))||{id:1,lbl:"Letter S"}; showWin(false); return 1; })()`,
