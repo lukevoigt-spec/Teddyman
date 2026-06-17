@@ -35,6 +35,11 @@ redesign (plinth-first) · #34 Training Room redesign · #35 mouth art on big po
 
 One line each; long detail/spec blocks were removed on consolidation.
 
+- ✅ **Morpheus production-readiness sweep (2026-06-16) — converted to Issues by Trinity:** (1) `Aud.pick()` no-TTS
+  guard → **#106** (verified LOW — headless-only; real iPad always has speechSynthesis). (2) no-emoji not end-to-end →
+  already covered by **#102** (guard→full scan) + **#103/#104** (paint/de-emoji surfaces); no dup opened. (3) 27.5 MB
+  `voicepack.js` blocking boot + BGM `preload=auto` → **#107** (MED, real-iPad cold-load). Broadly-playable verdict noted.
+
 - ✅ **Code-review #1 cloud auth** — parent-entered Family sync code + fail-closed Worker (constant-time, size cap,
   dead `CLOUD_PASSPHRASE` removed); also closed #4 (Trinity, verified, `7cfcce6` + auth commit).
 - ✅ **Code-review #2 reset-resurrection** — `clearBackup()` drops backup on reset/Level-0; snapshots kept (Neo, `7cfcce6`).
