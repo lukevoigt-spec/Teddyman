@@ -600,6 +600,7 @@ document.body.classList.add("scene-ambient");     /* the boot title screen is am
 /* ONE primary action: PLAY → brand-new player gets the origin cutscene→scan→map; a returning
    player resumes on the map. (Replaces START + the duplicate CONTINUE — both only called toMap.)
    Must stay the FIRST user gesture so Aud.pick() unlocks iOS audio. */
+{ const bp=$("btnPlay"); if(bp)bp.innerHTML=(typeof uiIcon==="function"?uiIcon("play",28):"")+" PLAY"; }   /* crafted play triangle, not ▶ */
 $("btnPlay").onclick=()=>{ Aud.pick(); if(!S.intro)startIntro(); else {Aud.play("welcome"); toMap();} };
 /* ---- player picker (select an existing player; add/remove is parent-only) ---- */
 function openPicker(){ paintPicker(); $("playerPicker").classList.add("on"); }
@@ -1533,8 +1534,13 @@ function showWin(firstTime){ show("scrWin");
   const rescuedKind = CUR.rescue ? (LEAGUE.find(t=>t.mid===CUR.id)||{}).kind : null;
   const ally = rescuedKind || (CUR.type==="fortress" ? (currentAct()===2?"kendall":"leighton") : null);
   const allyEnt = ally ? LEAGUE.find(t=>t.kind===ally) : null;
-  $("winHero").innerHTML=heroMarquee(170)+
-    (ally?`<svg viewBox="-32 -36 64 80" width="98" style="vertical-align:bottom;">${allyFace(ally)}<text y="42" text-anchor="middle" font-family="Bangers" font-size="12" fill="#ffc93c">${allyEnt?allyEnt.name:""}</text></svg>`:"");
+  /* On a RESCUE win it's the freed ALLY speaking, so show JUST the ally (their PAINTED raster + name) —
+     no hero Teddy beside them (also removes the hero/ally size mismatch). Every other win shows the hero. */
+  if(ally){
+    const allyArt = (typeof allyRasterImg==="function" && allyRasterImg(ally,200))
+        || `<svg viewBox="-32 -36 64 80" width="150">${allyFace(ally)}</svg>`;
+    $("winHero").innerHTML=`<span class="winally">${allyArt}<span class="winallyname">${allyEnt?allyEnt.name:""}</span></span>`;
+  } else { $("winHero").innerHTML=heroMarquee(170); }
   $("winHero").className="winpose"+(1+Math.floor(Math.random()*4));   /* random victory celebration */
   const gear=GEAR_AT[CUR.id];
   $("winGear").innerHTML=(firstTime&&gear)?`<div class="gearbadge">NEW GEAR: ${gear}</div>`:"";
@@ -1555,27 +1561,24 @@ function showWin(firstTime){ show("scrWin");
   if(__rankedUp){ ids.unshift("rankup"); setTimeout(()=>{ confetti(80); flashScreen("rgba(255,210,90,.4)"); if(typeof Sfx!=="undefined"&&Sfx.rankup)Sfx.rankup(); },340);
     $("winGear").innerHTML='<div class="gearbadge">⭐ RANK UP — '+heroProgress().name+'!</div>'+$("winGear").innerHTML; __rankedUp=false; }
   narrate("win",$("winText"),ids);
-  if(CUR.type==="fortress"){
-    $("btnWinNext").style.display="none";
-    if(currentAct()===2){   /* Act-2 finale = the END → the beat-7 homecoming ending (STORY.md §F) */
-      $("btnWinMap").textContent="CONTINUE ➜";
-      $("btnWinMap").onclick=()=>startHomecoming();
-    } else {                /* Act-1 finale → the Act-1→Act-2 handoff cutscene */
-      $("btnWinMap").textContent="CONTINUE ➜";
-      $("btnWinMap").onclick=()=>startInterlude();
-    }
+  /* ONE button: CONTINUE (parent — the old CITY MAP button was redundant; the map is on the nav).
+     Crafted chevron, never an emoji. Carries the adventure forward. */
+  const setContinue=(fn)=>{ const b=$("btnWinMap"); if(!b)return;
+    b.innerHTML='CONTINUE '+(typeof uiIcon==="function"?uiIcon("chevron",26):""); b.className="btn cta"; b.onclick=fn; };
+  { const bn=$("btnWinNext"); if(bn)bn.style.display="none"; }   /* legacy 2nd button removed from the win screen */
+  if(CUR.type==="fortress"){   /* finale → the story cutscene (Act-1 handoff / Act-2 homecoming ending) */
+    setContinue(currentAct()===2 ? startHomecoming : startInterlude);
     return; }
-  $("btnWinMap").textContent="CITY MAP";
-  /* #84: NEXT follows PLAY ORDER (zones 107/108 append in the 100-range but play AFTER 104), not flat id
-     order — else NEXT could drop the child into an out-of-sequence / locked mission. Mirrors playNextMission(). */
+  /* normal win → next uncompleted level in PLAY ORDER (#84/#97 nextM), honouring the rest gate;
+     falls back to the map when the act is cleared. */
   const pm=playMissions(currentAct()), pix=pm.findIndex(x=>x.id===CUR.id), nextM=(pix>=0)?pm[pix+1]:null;
-  $("btnWinNext").style.display=nextM?"inline-block":"none";
-  $("btnWinNext").onclick=()=>{ if(!nextM)return; if(S.session.count>=3&&!S.session.rest){S.session.rest=true;save();showRest(nextM);} else startMission(nextM); };
-  $("btnWinMap").onclick=()=>{ if(S.session.count>=3&&!S.session.rest){S.session.rest=true;save();showRest(null);} else toMap(); }; }
+  setContinue(()=>{ if(S.session.count>=3 && !S.session.rest){ S.session.rest=true; save(); showRest(nextM); }
+    else if(nextM) startMission(nextM); else toMap(); }); }
 function showRest(nextM){ show("scrRest");
   $("restHero").innerHTML=heroMarquee(160);
   narrate("rest",$("restText"),["rest1","rest2"]);
   $("btnRestDone").onclick=()=>navGo(toMap);   /* Done resting → the MAP (home), not the bare Title (NAV-PLAN slice 4) */
+  { const bm=$("btnRestMore"); if(bm)bm.innerHTML=(typeof uiIcon==="function"?uiIcon("play",22):"")+" One more mission"; }   /* crafted play icon, not 🎯 */
   $("btnRestMore").onclick=()=>{ nextM?startMission(nextM):toMap(); }; }
 
 /* ---------------- HERO BASE ---------------- */

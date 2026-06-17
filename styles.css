@@ -579,6 +579,12 @@ body.calm .gembox>svg,body.calm .trophy,body.calm .gembox.mastered::after{animat
 @keyframes ctaFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 .btn.cta:active{animation:none;}
 body.calm .btn.cta{animation:none;}
+#scrWin .btn.cta svg{ margin-left:6px; }
+/* rescued-ally painted figure on the Victory screen (raster, not the old SVG face) + name beneath */
+.winally{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:bottom; }
+.winally img{ display:block; filter:drop-shadow(0 7px 6px rgba(0,0,0,.45)); }
+.winallyname{ font-family:'Bangers',cursive; color:var(--gold); font-size:16px; margin-top:-4px; letter-spacing:.04em;
+  -webkit-text-stroke:2px var(--ink); paint-order:stroke; }
 
 /* glass HUD chips + round buttons */
 .chip,.roundbtn{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(16,10,38,.5);

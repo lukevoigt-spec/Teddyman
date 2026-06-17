@@ -163,6 +163,15 @@ function mapBanner(x,y,st,zi){
     <rect x="${x-34}" y="${y-76}" width="68" height="96" fill="transparent"/>
   </g>`;
 }
+/* which side of each node is WALKABLE GRASS (away from the river), so a captive friend is grounded on
+   land — never floating over water. Per act, indexed by node (play order); +1 = right, -1 = left. */
+const FRIEND_SIDE={
+  1:[ 1, 1, 1, 1,-1, 1, 1,-1, 1],   // Act 1: idx4 left of the bridge, idx7 onto the castle ledge
+  2:[-1,-1,-1, 1, 1, 1, 1,-1]       // Act 2: idx0-2 left bank, idx3-6 right bank, idx7 onto the keep path
+};
+/* exact-placement overrides (act → node idx → [x,y] translate) when the side-fan would land a friend
+   awkwardly. Cal's zone node sits at the river crossing → put him on the open grass LEFT of the bridge. */
+const FRIEND_POS={ 2:{ 3:[742,706] } };
 /* CAPTIVE friends waiting AT the zone where they're freed (V2 scale, 1536-space). Once a friend
    is freed (allyFreed) they leave the map — they're in your league now, not stranded on the trail. */
 function mapAlliesV2(a, zs, spots){
@@ -176,10 +185,13 @@ function mapAlliesV2(a, zs, spots){
     const zi=zs.findIndex(z=>z.id===m.z); if(zi<0||!spots[zi]) return;
     (byZi[zi]=byZi[zi]||[]).push(r); });
   let out="";
+  const sides=FRIEND_SIDE[a], posOv=FRIEND_POS[a];
   Object.keys(byZi).forEach(zik=>{ const zi=+zik, [x,y]=spots[zi], list=byZi[zi];
-    const dir = x<768?1:-1;                                     // fan toward the open side of the node
-    list.forEach((r,i)=>{ const fx=x+dir*(60+i*46), fy=y+2+((i%2)?-12:8);
-      out+=`<g class="mfriend" pointer-events="none" transform="translate(${fx} ${fy}) scale(.7)">${allyMapFig(r.kind, false)}</g>`; }); });
+    const dir = (sides && sides[zi]!=null) ? sides[zi] : (x<768?1:-1);   // push onto grass, not over the river
+    const pos = posOv && posOv[zi];
+    list.forEach((r,i)=>{ const fx = pos ? pos[0]+i*46 : x+dir*(56+i*46),
+                          fy = pos ? pos[1] : y+6+((i%2)?-12:8);          // feet just below-beside the banner, on the path
+      out+=`<g class="mfriend" pointer-events="none" transform="translate(${fx} ${fy}) scale(.66)">${allyMapFig(r.kind, false)}</g>`; }); });
   return out;
 }
 function mapPaintV2(a){
