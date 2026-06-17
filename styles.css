@@ -1566,3 +1566,7 @@ body[data-act="2"] .collslot .ic.cage .cagebars{ background:repeating-linear-gra
 .gemdex .gdx-n{ color:var(--gold); font-family:'Bangers',cursive; font-size:20px; -webkit-text-stroke:1.5px var(--ink); paint-order:stroke; }
 .gemdex .gdx-ghost{ display:inline-flex; opacity:.42; filter:grayscale(.6); }
 .mapdex{ position:absolute; top:10px; left:50%; transform:translateX(-50%); z-index:6; }
+
+/* #153 anti-gaming re-lock: while the target sound replays (a mash/too-fast tap, or a miss), the gems dim +
+   go un-tappable until it finishes — removes the speed payoff of mashing. No "wrong"/loss; calm, not harsh. */
+.sidwait .tile{ opacity:.5; filter:saturate(.55); pointer-events:none; transition:opacity .15s ease; }
