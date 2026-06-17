@@ -15,6 +15,22 @@ resolves before merge; this file keeps the durable before/after record. Shots li
 
 ---
 
+## 2026-06-17 · #124 Squishy collection-case + store — §20 styling pass  ·  PASS
+**Branch:** `oracle/squishy-case` → PR. Neo shipped the view-split DOM in #142 ("Oracle owns the case/slot/
+badge/cart LOOK §20"); this is that styling pass. **CSS-only** (`styles.css`).
+**Built on the #142 hooks (`#shopTabs`/`.shoptab`/`.slotitem`/`.ic.faint`/`.dupbadge`):**
+- **Collection = a display CASE.** Owned slots POP (gold frame + soft glow); **un-owned slots are sunken
+  dashed empty SOCKETS** (inset shadow, faint silhouette + "?") so they read as "collect me" (album/Pokédex
+  drive — the intentional departure from show-only-earned, per the #124 spec).
+- **×N duplicate badge** → a gold stack pill (Minecraft-style stacked inventory).
+- **Collection/Store toggle** → premium pills; the **painted cart** (`art/cart.png`, my #134) is the Store
+  tab and pops when active — closing the #124 loop (Neo split + Oracle case + the cart art).
+**Shots:** `collection` (owned gold slots + gold ×N badges + dashed empty sockets), `store` (cart-tab active,
+buyable squishies + coin prices). Premium, emoji-free, reads like a real collection screen. Tests: ui-emoji
+44/44, curriculum 116/116, save 129/129.
+
+---
+
 ## 2026-06-17 · #132 screen transitions — premium enter + learning-gentle variant  ·  PASS
 **Branch:** `oracle/transitions` → PR. DESIGN-ALIGNMENT #10 / Award Bar A7 (continuous choreography).
 **Finding:** the beatIn push-in was ALREADY generalized — `show()` adds `.fadein` to every screen (the
