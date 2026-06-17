@@ -174,7 +174,7 @@ const GEMCOLOR={s:"#3b82f0",a:"#ff8a3d",t:"#3ec97e",p:"#a06ae8",i:"#7fd9ff",n:"#
   sh:"#16a085",ch:"#e67e22",th:"#2980b9",wh:"#8e44ad",ck:"#c0392b",ng:"#27ae60"};
 
 /* SAVE/PROFILES/CLOUD/daily-stats layer moved to state-save.js (loaded before game.js). */
-let __lastInteract=Date.now(), __dailyDirty=0, __inTraining=false, __lastTick=0;
+let __lastInteract=Date.now(), __dailyDirty=0, __inTraining=false, __lastTick=0, __dailyGoalPending=false, __screen="";
 /* CLOUD-2: true until the boot cloud pull settles. While set, nothing that bumps S.ts may persist
    (the daily tick + the background save), so a fresh local ts can't out-rank a newer cloud save before
    the pull's comparison. Cleared in the boot cloudPull().then; cloudPull has an 8s fetch timeout so it
@@ -203,7 +203,12 @@ function updateDailyMeter(){ const fill=$("dailyFill"); if(!fill)return;
     t.textContent = pct>=100 ? "— "+m+" min · GOAL!" : "— "+m+" / "+(S.goalMin||15)+" min"; }
   updateTrainDaily();   /* keep the Training-Room practice bar in sync each tick */
 }
-function dailyGoalReached(){ try{Aud.ding();}catch(e){} Aud.play("daily_goal"); }
+/* DEFER the "daily training complete!" announcement out of an active mission (parent 2026-06-17):
+   just FLAG it; maybeAnnounceDaily() speaks it the next time we land on a calm hub screen. */
+const DAILY_SAFE={scrTitle:1, scrMap:1, scrBase:1, scrRest:1};
+function dailyGoalReached(){ __dailyGoalPending=true; maybeAnnounceDaily(); }
+function maybeAnnounceDaily(){ if(!__dailyGoalPending || !DAILY_SAFE[__screen]) return;
+  __dailyGoalPending=false; try{Aud.ding();}catch(e){} Aud.play("daily_goal"); }
 ensureDaily(true);   /* CLOUD-2: roll over the day in-memory but DON'T save yet — a save here would bump
    S.ts and let this (possibly stale) device save out-rank newer cloud progress in the boot pull below.
    The boot cloudPull().then persists the rollover AFTER the pull settles. */
@@ -428,7 +433,8 @@ function tryBG(layer, urls, i, id){
 }
 const AMBIENT_SCREENS=new Set(["scrTitle","scrMap","scrBase","scrWin","scrRest","scrIntro","scrInter"]);
 function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
-  __inTraining=(id==="scrTrain");   /* daily time split: count training-room time separately */
+  __screen=id; __inTraining=(id==="scrTrain");   /* daily time split: count training-room time separately */
+  if(__dailyGoalPending && DAILY_SAFE[id]) setTimeout(maybeAnnounceDaily, 800);   /* speak a deferred "daily complete!" only once we're on a calm hub (parent 2026-06-17) */
   $(id).classList.add("on"); $(id).classList.add("fadein");
   setTimeout(()=>$(id).classList.remove("fadein"),600);
   setBG(id);
@@ -769,7 +775,7 @@ function actComingSoon(){ show("scrInter");
 function hFace(kind,w){ return allyRasterImg(kind,w||190)   /* homecoming showcases the newer raster allies; SVG face only as fallback (e.g. Kendall placeholder) */
   || `<svg viewBox="-34 -40 68 86" width="${w||190}" aria-hidden="true">${allyFace(kind)}</svg>`; }
 function hCast(){ return `<div style="display:flex;justify-content:center;gap:4px;flex-wrap:wrap;max-width:560px;">`
-  + ["tank","flip","sunny","heart","leighton","kendall"].map(k=>hFace(k,84)).join("")+`</div>`; }
+  + ["tank","flip","sunny","heart","leighton","brody","daisy","cal","bryce","nora","kendall"].map(k=>hFace(k,84)).join("")+`</div>`; }
 /* the reading PROOF: the gems Teddy actually mastered, glowing — praise pointed at what he really did */
 function hProof(){ const earned=ORDER.filter(g=>S.done[LETTER_MISSION[g]]);
   return earned.length
@@ -1352,11 +1358,11 @@ function fortSpell(){ const pool=taughtSight().length?taughtSight():["the","a","
 function fortSentence(){ const pool=currentAct()===2?(typeof SENTENCES2!=="undefined"&&SENTENCES2):(typeof SENTENCES!=="undefined"&&SENTENCES);
   if(fRound===0 && pool && pool.length) fortSentencePic(); else fortMaze(); }
 function fortMaze(){ const POOL=currentAct()===2?FORTMAZE2:FORTMAZE; const c=POOL[Math.floor(Math.random()*POOL.length)];
-  narrate("fort",$("fortText"),["sent_prompt"],"Read it to free "+(currentAct()===2?"Miss Kendall":"Leighton")+"… tap the word that fits the blank!");
+  const done=c.t.map(w=>w==="_"?c.ans:w);   /* the completed sentence */
+  narrate("fort",$("fortText"),["cloze_prompt",...done.flatMap(wordAudio)],"Read it to free "+(currentAct()===2?"Miss Kendall":"Leighton")+"… tap the word that fits the blank!");   /* READ the sentence on autoplay so the blank has a cue + a WORD-oriented prompt (parent 2026-06-17: sent_prompt rotated to "tap the picture" + the foils alone don't disambiguate "the _ is big") */
   const wr=$("fortWord"); wr.innerHTML="";
   c.t.forEach(w=>{ if(w==="_"){ const s=document.createElement("div"); s.className="wordslot read"; s.id="fortBlank"; s.textContent="?"; wr.appendChild(s); }
     else { const t=document.createElement("button"); t.className="tile wordtile read"+(SIGHT[w]?" heartword":""); t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>Aud.play(wordAudio(w)); wr.appendChild(t); } });
-  const done=c.t.map(w=>w==="_"?c.ans:w);
   const row=$("fortChoices"); row.innerHTML="";
   [c.ans,...c.foils].sort(()=>Math.random()-.5).forEach(o=>{ const b=document.createElement("button"); b.className="tile wordtile read"; b.dataset.w=o; b.innerHTML=o;
     b.onclick=()=>{ if(o===c.ans){ record("sent_fort",true); const bl=$("fortBlank"); if(bl){bl.textContent=o;bl.classList.add("filled");} b.classList.add("win");
@@ -1966,7 +1972,9 @@ function vaultMilestone(kind){ const dia=(kind==="diamond");
 const TRAIN_TELLERS=[
   {kind:"tank", name:"ARCHIE",  prefix:"train_arch", n:20, unlocked:()=>allyFreed("tank")},
   {kind:"sunny",name:"WILLIAM", prefix:"train_will", n:20, unlocked:()=>allyFreed("sunny")},
-  {kind:"jj",   name:"JJ",      prefix:"train_jj",   n:20, unlocked:()=>allyFreed("jj")},     /* only once RESCUED (TRAIN-INT-1) — no cheering from a cage */
+  /* JJ is DEFERRED (no photo yet — parent 2026-06-16); he is NOT in LEAGUE, so allyFreed("jj")
+     could never unlock his bank (dead teller). His train_jj1-20 lines stay in data-lines.js as
+     dormant data so re-adding him later is a one-liner: just restore this teller row. */
   {kind:"nora", name:"NORA",    prefix:"train_nora", n:20, unlocked:()=>allyFreed("nora")},
   {kind:"cal",  name:"CAL",     prefix:"train_cal",  n:20, unlocked:()=>allyFreed("cal")}
 ];

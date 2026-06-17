@@ -338,8 +338,12 @@ ok("every teller's full bank (20 lines each) exists in LINES with TTS text", tiE
 ok("each teller's lines carry ONE consistent voice role (T/W/J/R/X — no cross-voice drift)",
   TRAIN_TELLERS.every(function(t){ var r=(LINES[t.prefix+1]||{}).v; return r && Array.from({length:t.n},function(_,i){return t.prefix+(i+1);}).every(function(id){ return (LINES[id]||{}).v===r; }); }),
   TRAIN_TELLERS.map(function(t){ return t.kind+":"+((LINES[t.prefix+1]||{}).v||"?"); }));
-ok("the new friend roles J/R/X are actually used (JJ/Nora/Cal banks present)",
+ok("the new friend roles J/R/X are actually used (JJ bank dormant-but-present, Nora/Cal banks live)",
   (LINES.train_jj1||{}).v==="J" && (LINES.train_nora1||{}).v==="R" && (LINES.train_cal1||{}).v==="X");
+(function(){ var bad=[], praise=["train_arch","train_nora"];   /* only the ENCOURAGEMENT banks: William/JJ/Cal are JOKES ("why are fish so smart" is a fish gag, not trait-praise). indexOf (not /\b/) — this whole test body is a template literal, so a backslash-b would be a backspace char, not a word boundary. */
+  Object.keys(LINES).forEach(function(id){ if(!praise.some(function(p){return id.indexOf(p)===0;}))return;
+    var t=(LINES[id].t||"").toLowerCase(); if(t.indexOf("streak")>=0||t.indexOf("smart")>=0) bad.push(id); });
+  ok("encouragement banks (Archie/Nora) use PROCESS praise — no 'streak'/'smart'/'smarter' fixed-trait praise — §6.0 (#111)", bad.length===0, bad); })();
 ok("trainBagNext rotates a teller's bank with NO repeat until exhausted, then reshuffles", (function(){
   __trainBags={}; var t=TRAIN_TELLERS[0], seen={}, ids=[]; for(var i=0;i<t.n;i++){ var id=trainBagNext(t); if(seen[id])return false; seen[id]=1; ids.push(id); }
   return ids.length===t.n && trainBagNext(t).indexOf(t.prefix)===0; })());
@@ -358,7 +362,7 @@ grp("Ally rescue PACING — one friend per zone, spread (parent 2026-06-15)");
   ok("old mission 17 is no longer a rescue (flag MOVED, not duplicated)", !(MISSIONS.find(function(m){return m.id===17;})||{}).rescue);
 })();
 
-grp("Act-2 friend rescues (JJ/Cal/Nora spread across zones + Miss Kendall at the finale) — parent 2026-06-16");
+grp("Act-2 friend rescues (Brody/Daisy/Cal/Bryce/Nora spread across zones + Miss Kendall at the finale) — parent 2026-06-16");
 (function(){
   var a2=LEAGUE.filter(function(t){return Math.floor(t.mid/100)===1;});   // Act-2 allies (mids 100-199)
   ok("every Act-2 ally rescue mid points at a real mission", a2.every(function(t){return MISSIONS.find(function(m){return m.id===t.mid;});}), a2.map(function(t){return t.kind+":"+t.mid;}));
