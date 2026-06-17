@@ -8,6 +8,13 @@
 ## 📥 TRIAGE — candidates awaiting the parent's call
 *(empty — all caught up)*
 
+## 🚫 EMOJI SWEEP — Trinity 2026-06-16 (parent: "seeing a lot of emoji still") — non-negotiable #6
+*Root cause: the ui-emoji guard is a RATCHET (named zones only), so emoji leaked everywhere else. Full child-facing catalog filed:*
+- **#102 [N]** Convert ui-emoji guard ratchet → **full child-facing scan** + parent-only allowlist (the systemic fix; shrinking known-violations list) *(build-now)*
+- **#103 [O]** **PARENT-DIRECTED: generate a PAINTED image for EVERY inventory/content emoji** — learn-screen keyword pictures (LETTERS/GRAPH2 `icon`, `kwIcon`) + all cloze/sentence/read picture tiles (`data-content.js` `pic`/`foil`/READPIC, ~120). Painted raster, one cohesive set, staged. **The dominant visible source.**
+- **#104 [O+N]** De-emoji the child UI CHROME — Vault/Scroll/Warm-Up titles (🔋📜🔥), win/rest buttons (🗺️🎯😴), combo/rank/done glyphs (🔥✦⭐✓➜✂️), map ✓ *(quick; crafted SVG or drop)*
+*(Parent-only emoji — Grown-Up Corner / Settings / Voice Studio / Progress / cloud-status — are ALLOWED, left as-is. SVG→raster character work already tracked: #38 map figures, #60 face-tokens.)*
+
 ## 🔬 FULL CODE SWEEP — Trinity 2026-06-16 (5 parallel specialist reviews; new findings filed)
 *Pedagogy/constraints + security came back CLEAN (no anti-gaming #4 leak, no sequencing violation, profile-name escaping verified, no committed secrets). Save layer solid for single-profile; runtime/perf had consistency-lapse bugs. Build-now first:*
 - **#81 [N] HIGH** Cross-profile cloud clobber — debounced `cloudPush` stringifies live `S` after `switchProfile` reassigns it → one child's data into another's cloud slot (multi-profile wipe, #7)
