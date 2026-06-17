@@ -58,6 +58,15 @@ ok("legacy minimal repaired", legacy && typeof legacy.done==="object" && Array.i
 ok("missing session filled", legacy.session && legacy.session.day==="");
 ok("missing equip filled", legacy.equip && legacy.equip.weapon==="none");
 ok("missing coins/owned filled", legacy.coins===0 && typeof legacy.owned==="object");
+/* #124: S.owned migrated boolean -> COUNT (dup badge). true->1, a positive number kept (floored),
+   any falsy/0 dropped (not owned). Idempotent. */
+ok("#124 migrate() converts owned boolean->count (true->1, num kept, falsy dropped)", (function(){
+  var m=migrate({v:1, owned:{a:true, b:3, c:false, d:0, e:2.9}, done:{}, mastery:{}});
+  return m.owned.a===1 && m.owned.b===3 && m.owned.e===2 && !("c" in m.owned) && !("d" in m.owned); })());
+ok("#124 owned->count migration is idempotent (re-run keeps counts)", (function(){
+  var m1=migrate({v:1, owned:{a:true, b:2}, done:{}, mastery:{}});
+  var m2=migrate({v:1, owned:m1.owned, done:{}, mastery:{}});
+  return m2.owned.a===1 && m2.owned.b===2; })());
 var partial = migrate({v:1, done:{0:true}, equip:{weapon:"sword"}});
 ok("partial keeps real progress", partial.done[0]===true && partial.equip.weapon==="sword");
 ok("fresh() seeds scrolls:{} (Spell Scroll spaced-review state)", (function(){ var f=fresh(); return f.scrolls && typeof f.scrolls==="object" && Object.keys(f.scrolls).length===0; })());
@@ -107,7 +116,7 @@ S = fresh(); S.done = {0:true,1:true,3:true}; S.coins = 42; S.owned = {trophy:tr
 var back = load();
 ok("done preserved", Object.keys(back.done).length===3);
 ok("coins preserved", back.coins===42);
-ok("owned preserved", back.owned.trophy===true);
+ok("owned preserved (legacy boolean -> count 1 on load, #124)", back.owned.trophy===1);
 
 grp("profiles: default + isolation + parent-only removal");
 ok("profiles seed [teddy]", profiles().length>=1 && profiles().some(p=>p.id==="teddy"));

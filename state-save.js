@@ -83,6 +83,13 @@ function migrate(d){ if(!d||typeof d!=="object"||d.v!==1) return null;
   if(d.session.day===undefined)d.session.day=""; if(d.session.count===undefined)d.session.count=0; if(d.session.rest===undefined)d.session.rest=false;
   if(typeof d.stars!=="number")d.stars=0; d.intro=!!d.intro; d.scan=!!d.scan;
   if(typeof d.coins!=="number")d.coins=0; d.owned=(d.owned&&typeof d.owned==="object")?d.owned:{};
+  /* #124: S.owned migrated from a BOOLEAN to a COUNT (how many of each squishy he holds — for the
+     duplicate-count badge in the collection case). true -> 1; an existing positive number is kept
+     (floored); any falsy / 0 entry means not-owned -> drop it. Idempotent (re-running keeps counts). */
+  for(const id in d.owned){ const c=d.owned[id];
+    if(c===true) d.owned[id]=1;
+    else if(typeof c==="number" && c>0) d.owned[id]=Math.floor(c);
+    else delete d.owned[id]; }
   /* TREASURE CHESTS (additive, save-safe): pending unopened counts + a training-rep counter + the last
      daily-gift dayKey. Never wipes an existing save. */
   d.chests=(d.chests&&typeof d.chests==="object")?d.chests:{wood:0,silver:0,gold:0};
