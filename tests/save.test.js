@@ -251,6 +251,21 @@ S.mastery["a"].str=0;
 ok("vaultDue excludes an enrolled item that fell below mastery", vaultDue().indexOf("a")<0);
 ok("vaultCount counts ALL enrolled + still-mastered items (uncapped, not due-filtered)", vaultCount()===8);   // b..h (7) + z (1); a dropped below mastery
 
+// #88: synthetic progress keys (sentence/cloze/fortress rounds) record into S.mastery but can NEVER be
+// reviewed (vaultRoute → null), so they must not enroll, surface as due, or inflate the Gem-Charge meter.
+S=fresh(); __day="2026-06-20";
+ok("vaultReviewable: real grapheme/word/sight keys YES, synthetic sent_/cz keys NO",
+   vaultReviewable("s") && vaultReviewable("w_cat") && vaultReviewable("sw_the")
+   && !vaultReviewable("sent_3") && !vaultReviewable("cz") && !vaultReviewable("sent_fort"));
+S.mastery["sent_3"]={seen:6,ok:6,str:5}; vaultTouch("sent_3",true);   // mastered numbers, but unreviewable
+ok("a mastered-but-unreviewable synthetic key NEVER enrolls in the Vault", S.mastery["sent_3"].box==null);
+S.mastery["cz"]={seen:6,ok:6,str:5, box:1, due:"2026-06-10", last:"2026-06-07"};   // an OLD save that wrongly enrolled it
+ok("a stale enrolled synthetic key is EXCLUDED from vaultCount (meter no longer inflated)",
+   (function(){ S.mastery["w_cat"]={seen:5,ok:5,str:4, box:0, due:"2026-06-19"}; return vaultCount()===1; })());   // only w_cat, not cz
+ok("…and EXCLUDED from vaultDue (won't waste the ADHD-focus cap)", vaultDue().indexOf("cz")<0);
+vaultTouch("cz",true);
+ok("…vaultTouch SELF-HEALS the stale synthetic key (clears box/due so it leaves the Vault)", S.mastery["cz"].box==null && S.mastery["cz"].due==null);
+
 grp("MASTERY-THRESHOLD tune (#4): proficient (in-session, gates finales) vs retained (spaced-correct, drives ✦)");
 S=fresh(); __day="2026-06-14";
 ok("PROFICIENT bar bumped: seen4 no longer counts (needs seen>=5)", (function(){ S.mastery["p"]={seen:4,ok:4,str:4}; return !masteredItem("p"); })());
