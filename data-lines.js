@@ -418,6 +418,7 @@ const LINES={
   train_cal19:{t:"What sound does a poop make in the pool? Plop-plop!", v:"X"},
   train_cal20:{t:"What's a tornado's favorite game? TWISTER!", v:"X"},
   rest1:{t:"The sun is setting over Star Force City..."},
+  rest1_a2:{t:"The sun is setting over the Magic Kingdom..."},   /* Act-2 city name (parent/Oracle 2026-06-17) */
   rest2:{t:"Even heroes rest. Great work today, Super Teddy. The city is safer because of you!"},
   test:{t:"Hello Super Teddy! This is your mentor speaking. Star Force City needs you!"},
   /* ---- LINE VARIATIONS (anti-fatigue, parent 2026-06-14) — the most-repeated cues rotate via
