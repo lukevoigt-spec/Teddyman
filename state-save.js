@@ -94,8 +94,12 @@ function migrate(d){ if(!d||typeof d!=="object"||d.v!==1) return null;
   if(typeof d.hoard!=="number"||d.hoard<0)d.hoard=Math.max(0,d.coins||0);
   /* DAILY-1: the daily target moved 30 -> 15 (parent 2026-06-15). Existing saves persisted the OLD
      default 30 (set by ensureDaily on a prior boot); reconcile that one value to the new default so
-     everyone gets ~15 min/day. A parent who wants more can still nudge it up with +5 in Settings. */
-  if(d.goalMin===30)d.goalMin=15;
+     everyone gets ~15 min/day. A parent who wants more can still nudge it up with +5 in Settings.
+     #87: (a) type-coerce goalMin every boot (a corrupt non-number / <=0 falls back to 15), and
+     (b) the 30->15 reconcile fires ONCE (guarded by _goalReconciled) — so a parent who DELIBERATELY
+     sets it back to 30 in Settings isn't overruled on the next boot. */
+  if(d.goalMin!=null){ const gm=Number(d.goalMin); d.goalMin=(isFinite(gm)&&gm>0)?gm:15; }
+  if(!d._goalReconciled){ if(d.goalMin===30)d.goalMin=15; d._goalReconciled=true; }
   /* #4 grandfather: an OLD save's already-PROFICIENT items have no okDayCount, so their Base ✦ gold
      would vanish the moment ✦ moved to "retained". Seed those to 2 correct-days. The per-item
      "okDayCount===undefined" guard makes this idempotent AND safe for NEW play: record() defines
