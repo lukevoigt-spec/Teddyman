@@ -458,7 +458,8 @@ function shakeStage(big){ const s=stageEl(); if(!s||REDUCE)return; const c=big?"
 function flashScreen(color){ const s=stageEl(); if(!s||REDUCE)return; const f=document.createElement("div");
   f.className="flashfx"; if(color)f.style.background=color; s.appendChild(f); setTimeout(()=>f.remove(),360); }
 const CONFETTI_COLORS=["#ffd75e","#ff5e57","#3ec97e","#5f6dff","#a06ae8","#7fd9ff","#ff8a3d"];
-function confetti(n){ const s=stageEl(); if(!s)return; n=REDUCE?12:(n||64);
+function confetti(n){ const s=stageEl(); if(!s)return;
+  n = REDUCE ? 12 : ((document.body&&document.body.classList.contains("lite")) ? Math.min(n||64,16) : (n||64));   /* #85: cap confetti on Lite (old iPads) — even a big-milestone confetti(90) stays ≤16 nodes */
   const W=s.clientWidth;
   for(let i=0;i<n;i++){ const c=document.createElement("div"); c.className="confetti";
     c.style.left=(Math.random()*W)+"px"; c.style.background=CONFETTI_COLORS[i%CONFETTI_COLORS.length];

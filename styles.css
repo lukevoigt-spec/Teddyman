@@ -673,6 +673,15 @@ body.calm svg *{animation:none!important;}
 body.lite svg [filter]{filter:none!important;}
 body.lite #bgLayer{filter:none!important;}
 body.lite #titleHero>svg,body.lite #baseHero>svg,body.lite #winHero>svg,body.lite #restHero>svg,body.lite .boss>svg{filter:none!important;}
+/* #85: Lite also drops backdrop-filter (WebKit's most expensive compositing primitive) on every glassy
+   surface — incl. #btnSkip (.roundbtn, present on learning screens) + the narration bubble. */
+body.lite .bubble,body.lite .chip,body.lite .roundbtn,body.lite .bchip,body.lite .btn.ghost,
+body.lite .panelart,body.lite .glasscol,body.lite .bpanel,body.lite .pcard,body.lite .shopitem,
+body.lite .gemshelf,body.lite .audrow,body.lite .playercard,body.lite .tabbtn,
+body.lite #parentGate,body.lite #recOverlay,body.lite #heroCard,body.lite #bossCage,body.lite #unlockCard{
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+/* …and bump the low-alpha glass chips to a solid-enough bg so contrast survives without the blur */
+body.lite .chip,body.lite .roundbtn,body.lite .bchip{background-color:rgba(14,9,34,.92)!important;}
 
 /* ===================== VOICE STUDIO (Grown-Up Corner ▸ Audio) ===================== */
 #audDash{display:flex;flex-direction:column;gap:8px;width:min(640px,94vw);margin-bottom:4px;}
