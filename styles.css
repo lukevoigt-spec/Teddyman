@@ -1469,6 +1469,11 @@ body[data-act="2"] .hudpill{ border-color:#caa15a; }
 /* #127 win-screen treasure box (FUNCTIONAL placeholder — Oracle owns the painted closed->open look §20).
    A chest earned this level pops here as a tap-to-open box; a gentle bob draws the eye. */
 #winChest{ display:none; margin:2px auto; }
+/* #163: when the earned chest is in the win stack, tighten the centered column so VICTORY! never clips
+   at 1024x768 (reclaim height via a smaller gap + a capped hero). Only with a chest present. */
+#scrWin.haschest{ gap:8px; }
+#scrWin.haschest #winHero{ max-height:22vh; }
+#scrWin.haschest #winHero img,#scrWin.haschest #winHero svg{ max-height:22vh; width:auto; }
 .winchest{ background:none; border:0; cursor:pointer; padding:0; display:flex; flex-direction:column; align-items:center; gap:2px; animation:winchestBob 1.15s ease-in-out infinite; transform-origin:50% 100%; }
 .winchest-cap{ color:var(--gold); font-size:clamp(16px,2.6vw,22px); -webkit-text-stroke:2px var(--ink); paint-order:stroke; text-shadow:0 2px 4px rgba(0,0,0,.45); }
 #winChest.opened .winchest{ animation:none; transform:scale(1.12); transition:transform .18s ease; }
@@ -1538,10 +1543,15 @@ body.calm .tile.wedo,body.calm .picktile.wedo,body.lite .tile.wedo,body.lite .pi
    case look + faint-slot treatment (§20), shared with the #124 squishy case. Modal modeled on #squishCard. */
 #collCard{ position:fixed; inset:0; z-index:73; display:none; align-items:center; justify-content:center; background:rgba(8,5,20,.66); }
 #collCard.on{ display:flex; }
-.coll-card{ position:relative; width:min(92vw,560px); max-height:88vh; overflow:auto; background:linear-gradient(180deg,#241a44,#160e30); border:4px solid var(--gold); border-radius:26px; padding:22px 22px 24px; text-align:center; box-shadow:0 16px 0 rgba(0,0,0,.4),0 22px 40px rgba(0,0,0,.5); }
-.coll-title{ font-size:30px; color:var(--gold); -webkit-text-stroke:3px var(--ink); paint-order:stroke; }
-.coll-sub{ font-size:15px; color:#cfc6f2; margin:2px 0 12px; }
-.coll-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(78px,1fr)); gap:10px; }
+/* #163 fix: flex COLUMN so the title + Recharge CTA stay PINNED and only the gem GRID scrolls — the CTA
+   was clipped below the card fold at 1024×768 with 26 slots. The close button is absolute to the card
+   (which no longer scrolls), so it never scrolls away. */
+.coll-card{ position:relative; width:min(92vw,560px); max-height:88vh; display:flex; flex-direction:column; overflow:visible;
+  background:linear-gradient(180deg,#241a44,#160e30); border:4px solid var(--gold); border-radius:26px; padding:22px 22px 20px; text-align:center; box-shadow:0 16px 0 rgba(0,0,0,.4),0 22px 40px rgba(0,0,0,.5); }
+.coll-title{ flex:0 0 auto; font-size:30px; color:var(--gold); -webkit-text-stroke:3px var(--ink); paint-order:stroke; }
+.coll-sub{ flex:0 0 auto; font-size:15px; color:#cfc6f2; margin:2px 0 12px; }
+#collAction{ flex:0 0 auto; margin-top:14px; }
+.coll-grid{ flex:1 1 auto; min-height:0; overflow-y:auto; display:grid; grid-template-columns:repeat(auto-fill,minmax(78px,1fr)); gap:10px; }
 .coll-grid.villains{ grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); }
 .collslot{ position:relative; background:rgba(0,0,0,.28); border:3px solid var(--ink); border-radius:14px; padding:6px 4px; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:default; }
 .collslot.owned[onclick],.coll-grid button.collslot{ cursor:pointer; }
