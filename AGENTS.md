@@ -33,7 +33,9 @@ The ground truth for this app is **Teddy actually using it** — that outranks e
 finding. The parent captures it **frictionlessly**: an in-app **Grown-Up Corner ▸ "Playtest notes"** box (free text →
 one tap) commits a **timestamped** entry to the repo and (optionally) opens a trigger Issue. *(Feature spec for Neo is in
 `QA.md`; until it ships, the parent just tells Trinity the notes.)*
-- **Where it lands:** `PLAYTEST.md` (the log + protocol). Each note is a dated entry; status flows `NEW → triaged → done`.
+- **Where it lands:** each note commits as its OWN file **`playtest/<ISO>.md`** (race-free — no two notes ever clobber)
+  + (optionally) a **"Playtest:"** trigger Issue. `PLAYTEST.md` is Trinity's **curated log** of those raw notes; status
+  flows `NEW → triaged → done`.
 - **Review protocol:** a new playtest note **triggers a review**. **Trinity (chief of staff) triages** each note and
   routes it: code → **Neo**, visual → **The Oracle**, process/answer → Trinity. The kid's observed reality wins over any
   doc or agent opinion; if a note contradicts a "shipped/✅" status, the note is right — reconcile the doc.
@@ -75,7 +77,8 @@ one tap) commits a **timestamped** entry to the repo and (optionally) opens a tr
 6. **Trinity checks PRs on re-engagement.** Whenever a Trinity session is re-engaged after being idle,
    her FIRST action is to list open PRs (`list_pull_requests`) and vet → squash-merge any guest QA PRs
    before other work. (Subscriptions are per-PR, so the open event can't auto-notify; the human may also
-   just ping "guest pushed.")
+   just ping "guest pushed.") **Also scan `playtest/*.md` (new parent notes) + open `Playtest:` Issues** — a real
+   playtest note outranks all agent QA (`PLAYTEST.md`), so triage it before other work.
 7. **THE RENDER-GATE — The Oracle owns it (`STYLE.md §20`).** No visual change is **"done"** until The Oracle has
    **rendered** it (`node tools/shot.mjs <scenes>`, Act 1 + 2, 1024×768 + portrait) and signed off against the **Premium
    Bar** rubric: *zero emoji · UI lives in the painting (not list-cards over it) · reads like a shipped game, not a web
