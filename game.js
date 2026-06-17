@@ -1098,6 +1098,25 @@ function traceDone(){ const svg=$("traceSVG");
 
 /* ---------------- FIND ---------------- */
 let findTarget,findRep,findGoal,findMiss,patrolSet=null,afterFind=null;
+/* ============ #153 ANTI-GAMING (punishment-free) — response-time RE-LOCK ============
+   Research (ENGAGEMENT-RESEARCH / Baker): punishment (villain-HP-up on wrong) is clinically ineffective for ADHD,
+   breeds MORE mashing, and can't teach decoding. Instead, remove the SPEED PAYOFF of mashing on the sound-ID
+   handlers: a tap faster than the target sound could be processed (or during a replay) is NOT accepted — the gems
+   dim, the target sound replays, and the next tap won't register until the replay ends. Forces sound→letter
+   processing. ZERO loss / zero "wrong" (#2). Flow-safe: a 4.5s watchdog can't hang it, and ⏭/Home stay live (#8). */
+let __sidAt=0, __sidLock=false, __sidWatch=null;
+const SID_MIN_MS=450;   /* a tap sooner than this after the gems go live = rapid-guessing (tunable) */
+function sidStart(){ __sidAt=Date.now(); }                 /* the gems are live — start the response clock */
+function sidLockReplay(ids,row){ __sidLock=true; if(row)row.classList.add("sidwait");
+  const done=()=>{ __sidLock=false; if(row)row.classList.remove("sidwait"); __sidAt=Date.now(); clearTimeout(__sidWatch); };
+  clearTimeout(__sidWatch); __sidWatch=setTimeout(done,4500);   /* watchdog — never stay locked */
+  try{ const pr=Aud.play(ids); if(pr&&pr.then)pr.then(done).catch(done); else done(); }catch(e){ done(); } }
+/* call FIRST in a sound-ID tile onclick: returns true (=> ignore this tap) for a mid-replay tap or a too-fast
+   tap (which it converts into a dim+replay), so only a processed tap reaches the answer logic. */
+function sidReject(replayIds,row){
+  if(__sidLock) return true;                                /* a tap during the locked replay → ignore */
+  if(Date.now()-__sidAt < SID_MIN_MS){ sidLockReplay(replayIds,row); return true; }   /* too fast → dim + replay + lock */
+  return false; }
 function startFind(g,reps=5,set=null,next=null){ show("scrFind");
   findTarget=g; findRep=0; findGoal=reps; patrolSet=set; afterFind=next; nextFind(); }
 function nextFind(){
@@ -1113,14 +1132,16 @@ function nextFind(){
   const row=$("findTiles"); row.innerHTML="";
   opts.forEach(o=>{ const t=document.createElement("button"); t.className="tile read";
     const upperRound=(findRep%3===2); t.textContent=upperRound?o.toUpperCase():o; t.dataset.g=o;
-    t.onclick=()=>{ if(o===g){ lockRow(row); record(g,true); t.classList.add("win"); burstAt(t); Aud.ding();
+    t.onclick=()=>{ if(sidReject(["almost","snd_"+g],row)) return;   /* #153: ignore a mash/too-fast tap (dims + replays the sound) */
+      if(o===g){ lockRow(row); record(g,true); t.classList.add("win"); burstAt(t); Aud.ding();
         findRep++; let lead="yes";
         if(patrolSet&&allyFreed("sunny")&&Math.random()<0.55){ lead=allyLine("sunny"); allyPop("sunny"); }  /* William owns patrols */
         flow(Aud.play([lead,"snd_"+g]),()=>setTimeout(nextFind,160)); }
       else { record(g,false); findMiss++; t.classList.add("dim");
         if(findMiss>=2){ row.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===g)x.classList.add("hint");}); }
-        Aud.play(["almost","snd_"+g]); } };
-    row.appendChild(t); }); }
+        sidLockReplay(["almost","snd_"+g],row); } };   /* #153: a wrong tap replays the target with taps LOCKED until it ends (no rapid retry) */
+    row.appendChild(t); });
+  sidStart(); }   /* #153: gems are live — start the response clock */
 
 /* ---------------- BOSS ---------------- */
 let bossHP;
@@ -1141,7 +1162,8 @@ function bossRound(g){
   opts.forEach(o=>{ const t=document.createElement("button"); t.className="tile read";
     t.textContent=((3-bossHP)%3===2)?o.toUpperCase():o;   /* an uppercase round each fight (recognise both cases) */
     t.dataset.g=o;
-    t.onclick=()=>{ if(o===g){ lockRow(row); record(g,true); bossHP--; paintPips("bossPips",bossHP,3);
+    t.onclick=()=>{ if(sidReject(["dodge","snd_"+g],row)) return;   /* #153: mash/too-fast → dim + replay, not a hit */
+      if(o===g){ lockRow(row); record(g,true); bossHP--; paintPips("bossPips",bossHP,3);
         const bs=$("bossSprite"); bs.classList.add("hitfx"); setTimeout(()=>bs.classList.remove("hitfx"),380);
         burstAt(bs,"ZAP!"); Aud.ding();
         if(bossHP<=0){ bs.classList.add("flee");
@@ -1149,8 +1171,9 @@ function bossRound(g){
         else { let lead="hit_again";
           if(allyFreed("tank")&&Math.random()<0.55){ lead=allyLine("tank"); allyPop("tank"); }  /* Archie owns boss battles */
           flow(Aud.play([lead,"snd_"+g]),()=>bossRound(g)); } }
-      else { record(g,false); t.classList.add("dim"); Aud.play(["dodge","snd_"+g]); } };
-    row.appendChild(t); }); }
+      else { record(g,false); t.classList.add("dim"); sidLockReplay(["dodge","snd_"+g],row); } };   /* #153: wrong → replay locked (no rapid retry) */
+    row.appendChild(t); });
+  sidStart(); }
 
 /* ---------------- READ IT (DECODE) ----------------
    The reading direction: see the word -> sound it out -> tap the picture it
@@ -1373,10 +1396,12 @@ function fortSound(){ const pool=currentAct()===2?taughtGraphemes():taughtLetter
   const row=$("fortChoices"); row.innerHTML="";
   [g,...foils].sort(()=>Math.random()-.5).forEach(o=>{ const t=document.createElement("button"); t.className="tile read"; t.dataset.g=o;
     t.textContent=(fRound%3===2)?o.toUpperCase():o;
-    t.onclick=()=>{ if(o===g){ record(g,true); t.classList.add("win"); fortHit("ZAP!"); }
+    t.onclick=()=>{ if(sidReject(["snd_"+g],row)) return;   /* #153 */
+      if(o===g){ record(g,true); t.classList.add("win"); fortHit("ZAP!"); }
       else { record(g,false); fortMissHint(); t.classList.add("dim");
-        if(fMiss>=2)row.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===g)x.classList.add("hint");}); Aud.play(["snd_"+g]); } };
-    row.appendChild(t); }); }
+        if(fMiss>=2)row.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===g)x.classList.add("hint");}); sidLockReplay(["snd_"+g],row); } };
+    row.appendChild(t); });
+  sidStart(); }
 function fortRead(){ const RW=readPool(); const ws=Object.keys(RW); const w=ws[Math.floor(Math.random()*ws.length)];
   narrate("fort",$("fortText"),["read_prompt"],"Read the word-lock… tap what it means!");
   const wr=$("fortWord"); wr.innerHTML="";
@@ -2424,12 +2449,14 @@ function vaultFind(it){ const g=it.g;
   const opts=[g,...pickFoils(g, taughtGraphemes(), 3)].sort(()=>Math.random()-.5);
   const row=$("vaultChoices"); row.innerHTML="";
   opts.forEach(o=>{ const t=document.createElement("button"); t.className="tile read"; t.textContent=o; t.dataset.g=o;
-    t.onclick=()=>{ if(o===g){ lockRow(row); record(g,true); t.classList.add("win"); burstAt(t); Aud.ding();
+    t.onclick=()=>{ if(sidReject(["almost","snd_"+g],row)) return;   /* #153 */
+      if(o===g){ lockRow(row); record(g,true); t.classList.add("win"); burstAt(t); Aud.ding();
         vaultPos++; flow(Aud.play(["yes","snd_"+g]),()=>setTimeout(vaultStep,180)); }
       else { record(g,false); vaultMiss++; t.classList.add("dim");
         if(vaultMiss>=2)row.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===g)x.classList.add("hint");});
-        Aud.play(["almost","snd_"+g]); } };
-    row.appendChild(t); }); }
+        sidLockReplay(["almost","snd_"+g],row); } };
+    row.appendChild(t); });
+  sidStart(); }
 function vaultBuild(it){ const w=it.w, sight=!!it.sight, units=vaultUnits(w,sight); let slot=0;
   narrate("vault",$("vaultText"),["vault_build"].concat(wordAudio(w)),"Recharge it — build the word you hear!");
   const wr=$("vaultWord"); wr.innerHTML="";
