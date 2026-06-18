@@ -15,6 +15,16 @@ resolves before merge; this file keeps the durable before/after record. Shots li
 
 ---
 
+## 2026-06-18 · #162 map node touch targets in portrait — §20 confirmation  ·  PASS (no code change)
+Confirmation-only gate (Neo's hit-rect work merged via #164 + #167; #162 was open only for the Oracle's
+§20 sign-off, like #152). Independently MEASURED at 768×1024 portrait with a new `tools/measure-map.mjs`
+(boots the game, seeds done/current/locked states, reads each `.mnode` CSS bounding box): **every node
+state = 102×102 px ≥ 96** (constraint #6). `map-portrait.png` confirms the visual is intact — nodes on the
+golden path, hero at the current zone, the enlarged 208×208-SVG-unit hit areas are transparent (no visual
+harm). No game code change. Closing #162. (`measure-map.mjs` kept as a reusable touch-target gate tool.)
+
+---
+
 ## 2026-06-17 · #163 render-fixes — Gem-Dex CTA clip + win-screen chest overflow (1024×768)  ·  PASS
 **Branch:** `oracle/163-layout` → PR. Morpheus flagged two layout misses; **render-confirmed BOTH still
 present at 1024×768**, then fixed:
