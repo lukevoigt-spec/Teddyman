@@ -6,30 +6,26 @@
 > *(GitHub Projects can't be API-driven here, so this file IS the board.)* — **release-ready state, 2026-06-18 (Trinity);
 > parent confirmed go-live; the backlog is burned down to two parked, optional cinematic items.**
 
-## 🚦 STATUS — LIVE + RELEASE-READY; a PLAYTEST WAVE now in flight (2026-06-19)
-**Objective #1 (Teddy learns to read) is DONE + live** — the full TEKS Grade-2 ladder, Act 1+2. The app ships today and
-stays playable. **A new enhancement wave kicked off from a parent live session (2026-06-19)** — 4 issues below, two of them
-learning-critical (listen-first gating + mastery enforcement), researched + specced. These are improvements ON TOP of a
-shipping app, not blockers.
+## 🚦 STATUS — LIVE + RELEASE-READY; the 2026-06-19 PLAYTEST WAVE is SHIPPED (all 4 merged to main)
+**Objective #1 (Teddy learns to read) is DONE + live** — the full TEKS Grade-2 ladder, Act 1+2. **The 2026-06-19
+enhancement wave (4 issues, two learning-critical) is now fully merged to main + live** — the app keeps shipping and
+stays playable. Next: the PARENT's voice-recording pass (below) + the parked cinematic items; no open engineering blockers.
 
-## 🎯 PLAYTEST WAVE — 2026-06-19 (parent watched Teddy play; PLAYTEST.md + `RESEARCH-GATING-MASTERY.md`)
-**Build order (Trinity sequenced; decisions pre-inferred so Neo/Oracle don't stall). Trinity babysits each PR → merged.**
-1. **#170 [N+O] — Listen-first audio gate (build FIRST; core pedagogy + the parent's #1 ask).** Teddy taps past the sound
-   to grab coins. Extend the existing `sidArm` gate to the **Training Room build** (where coins are earned — currently
-   ungated) + upgrade silent-lock → an **"armed-when-ready"** affordance (gems CHARGE while the sound plays, then arm with
-   a "ready" chime + "your turn" cue; replay always live; lock = prompt length only). Evidence: `RESEARCH-GATING-MASTERY.md`
-   §A — the delay alone doesn't help, *filling the wait with the sound* does (Barker & Munakata 2015).
-2. **#171 [N] — Error-driven Incremental-Rehearsal weighting + session-spanning mastery gate.** "Ensure mastery / reinforce
-   weak areas; misses show up more; no progress until mastered." Extend `record`/`pickWeak`/`masteryReview`/Vault: a miss
-   flags `relearn` + up-weights it, **but spaced ~1-in-9 among wins (never back-to-back)**, expanding interval; errorless
-   pre-prompt; session-spanning gate framed as a CHARGING power meter (never a wall). Evidence: §B (Incremental Rehearsal,
-   Kulik mastery-learning, errorless learning). All additive + save-safe.
-3. **#172 [O+N] — Training Room discoverability.** "Not intuitive that you earn coins there; need another way in." Painted,
-   LABELED Training entry (a gym door/sign with a coin motif) in the Hero Base + clearer per-rep coin signal; keep the
-   gems/bar tap too.
-4. **#173 [O+N] — Win-chest art → painted, matching the squishy page.** The win screen draws a vector `chestSVG`
-   placeholder; the shop uses painted `art/chest-closed.png`. Swap the win chest to the painted art so they match
-   (closes a known §20 deferral).
+## ✅ PLAYTEST WAVE — 2026-06-19 — DONE (parent watched Teddy play; PLAYTEST.md + `RESEARCH-GATING-MASTERY.md`)
+1. **#170 [N+O] — Listen-first audio gate — SHIPPED (`bf4346a`, PR #177).** The `sidArm` gate now covers the **Training
+   Room build** (the coin-rush point): tiles arm only after the word prompt plays; first-letter listen-first, a miss
+   re-plays + re-arms (errorless), replay/skip always live, 4.5s watchdog can't hang. Silent-lock upgraded → "armed-when-
+   ready": gems CHARGE (motion-gated shimmer) then ARM with a brighten/scale-pop + a soft `Sfx.ready` chime — brightness +
+   chime = the non-motion ready channel (Calm/RM). §20 render-confirmed (Training gate, A1+A2, land+portrait).
+2. **#171 [N] — Error-driven Incremental-Rehearsal weighting — SHIPPED (`f57401d`).** `record()` flags a miss with a
+   `relearn` counter that fades only on a SPACED correct (not the instant retry); `pickWeak()` strongly up-weights relearn
+   items so misses re-surface MORE across every adaptive pool (patrol/review/Vault), but excludes the just-shown item so a
+   weak item is never drilled back-to-back (interspersed, never massed — Joseph 2006). Additive + save-safe; +9 save.test
+   assertions. The existing milestone gate (coreWeak→masteryReview) already delivers "no progress until mastered".
+3. **#172 [O+N] — Training Room discoverability — SHIPPED (`f7eb4ff`, PR #176).** Prominent labeled Base Training entry
+   (dumbbell + "TRAINING" + coin) + the coins HUD chip launches Training too; gem/charge/daily taps kept as secondary.
+4. **#173 [O+N] — Win-chest art → painted — SHIPPED (`42bc70b`, PR #175).** Win screen now uses the painted chest so it
+   matches the shop (closed a §20 deferral).
 
 ## 🅿️ PARKED — optional, parent-deferred (do NOT gate go-live)
 1. **#36 [O] — Cinematic SVG cutscene pass** (beats 2–6: Ken Burns + 2.5D parallax). Optional polish; the SVG cutscenes

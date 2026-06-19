@@ -28,7 +28,11 @@ contradicts another doc, **the note wins** — reconcile the doc to reality.
 > Raw notes arrive as `playtest/<ISO>.md` files (+ a `Playtest:` Issue); Trinity reviews those and curates the triaged
 > entries into this log (newest first).
 
-### 2026-06-19 — triaged (parent live session — watching Teddy play; researched + filed)
+### 2026-06-19 — done (parent live session — watching Teddy play; researched, built, SHIPPED)
+→ done: all 4 wave items merged to main + live — **#170** listen-first gate → Training Room + armed-when-ready (`bf4346a`,
+PR #177) · **#171** error-driven Incremental-Rehearsal weighting, save-safe, +9 tests (`f57401d`) · **#172** Training
+discoverability (`f7eb4ff`, PR #176) · **#173** win-chest → painted (`42bc70b`, PR #175). #170 §20 render-confirmed.
+
 RAW: (1) He impulsively clicks to **skip listening to the sounds** just to get to the coins — need nothing clickable
 until the audio finishes (gated). (2) **Ensure mastery** — track incorrect answers; when he gets them wrong they show up
 MORE and he doesn't progress until mastered; reinforce weak areas. (3) Earning coins in the **Training Room wasn't
