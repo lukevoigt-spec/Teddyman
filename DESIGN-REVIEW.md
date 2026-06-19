@@ -15,6 +15,17 @@ resolves before merge; this file keeps the durable before/after record. Shots li
 
 ---
 
+## 2026-06-18 · #173 win-screen chest → painted (matches the shop)  ·  PASS
+**Branch:** `oracle/173-chest` → PR. PLAYTEST 2026-06-19 (parent): the win-screen chest didn't match the
+squishy/shop chest. Root cause: the win used vector `chestSVG` (a flagged placeholder) while the shop uses
+the painted `art/chest-closed.png`. **Fix:** `winChestPop` now renders the painted `chest-closed.png` (and
+swaps to `chest-open.png` on tap, matching the shop), `.winchestimg` sized to the shop chest. CSS/render
+swap only — no new art (the painted chest already existed + is on-style). Single painted chest (no per-tier
+colour) per the issue. **Shot:** `winchest` — painted wood+gold chest on the win screen, VICTORY! still fits
+(the #163 haschest tightening holds). Tests: ui-emoji 44/44, curriculum 116/116, save 129/129.
+
+---
+
 ## 2026-06-18 · #162 map node touch targets in portrait — §20 confirmation  ·  PASS (no code change)
 Confirmation-only gate (Neo's hit-rect work merged via #164 + #167; #162 was open only for the Oracle's
 §20 sign-off, like #152). Independently MEASURED at 768×1024 portrait with a new `tools/measure-map.mjs`

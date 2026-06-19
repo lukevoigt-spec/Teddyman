@@ -2227,10 +2227,13 @@ function winChestPop(tier){
      clips at 1024x768 with the extra reward card in the centered stack. */
   if(!tier || !(S.chests && S.chests[tier]>0)){ box.style.display="none"; box.innerHTML=""; if(sw)sw.classList.remove("haschest"); return; }
   box.style.display="block"; box.classList.remove("opened"); if(sw)sw.classList.add("haschest");   /* explicit (NOT "") — the CSS default is #winChest{display:none}, so clearing the inline style re-hid the chest (Morpheus regression). The .winchest flex-column centers its own content. */
-  box.innerHTML='<button type="button" class="winchest" aria-label="Open your treasure">'+chestSVG(tier,116)+'<span class="winchest-cap comic">TAP TO OPEN!</span></button>';
+  /* #173: the PAINTED chest (art/chest-closed.png) — the canonical look matching the shop chest; the old
+     vector chestSVG was a placeholder. Single painted chest (no per-tier colour) per the issue. */
+  box.innerHTML='<button type="button" class="winchest" aria-label="Open your treasure"><img class="winchestimg" src="art/chest-closed.png" alt="" draggable="false"><span class="winchest-cap comic">TAP TO OPEN!</span></button>';
   let opening=false;
   const btn=box.querySelector(".winchest");
   if(btn) btn.onclick=()=>{ if(opening)return; opening=true; box.classList.add("opened");
+    const im=btn.querySelector(".winchestimg"); if(im)im.src="art/chest-open.png";   /* #173: closed→open painted swap, matching the shop */
     openChest(tier, ()=>{ box.style.display="none"; box.innerHTML=""; if(sw)sw.classList.remove("haschest"); }, btn); };
 }
 let trainReps=0,trainSlot=0,trainCur,trainMiss=0;
