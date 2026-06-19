@@ -15,14 +15,22 @@
    anyone who already freed a friend under the old mids keeps them. */
 /* name === real for everyone: Teddy knows his friends by their REAL names, not hero aliases (parent
    2026-06-16) — the old aliases (Tank/Flip/Sunny) confused him. Voice lines re-recorded to match. */
-const CAGED=[{mid:8,kind:"tank",name:"ARCHIE",real:"ARCHIE"},{mid:26,kind:"flip",name:"ELLIE",real:"ELLIE"},{mid:30,kind:"sunny",name:"WILLIAM",real:"WILLIAM"}];
+/* JJ re-added (parent 2026-06-19): freed in Act 1 like the others, at the zone-2 forge milestone (m17,
+   a rescue-free zone — right after Archie's zone-1 rescue, fitting the two buddies). Quiet CAGED rescue
+   (not rescue:true), exactly like Archie/Ellie/William; his freed line plays via the FREE map (game.js).
+   Save-safe: existing mid, no new id; grandfather() seeds S.freed.jj for anyone who already cleared m17. */
+const CAGED=[{mid:8,kind:"tank",name:"ARCHIE",real:"ARCHIE"},{mid:26,kind:"flip",name:"ELLIE",real:"ELLIE"},{mid:30,kind:"sunny",name:"WILLIAM",real:"WILLIAM"},{mid:17,kind:"jj",name:"JJ",real:"JJ"}];
 /* Hero League: each friend (a REAL person Teddy knows) owns one mission type and
    cheers him BY NAME during it, once freed. Amelia cheers on every win. */
 const ALLY={
   tank: {real:"Archie",  owns:"boss",   lines:["cheer_archie1","cheer_archie2"]},
   flip: {real:"Ellie",   owns:"trace",  lines:["cheer_ellie1","cheer_ellie2"]},
   sunny:{real:"William", owns:"patrol", lines:["cheer_will1","cheer_will2"]},
-  heart:{real:"Amelia",  owns:"win",    lines:["heart_cheer1","heart_cheer2","heart_cheer3"]}
+  heart:{real:"Amelia",  owns:"win",    lines:["heart_cheer1","heart_cheer2","heart_cheer3"]},
+  /* JJ uses Archie's VOICE + LINES (parent 2026-06-19): role-T clips, Archie's cheer lines — no new
+     audio to record. No owned mission cheer (owns:null) so his face never pops over an "Archie"-named
+     line mid-task; he appears captive→freed on the map + speaks his own freed line in Archie's voice. */
+  jj:   {real:"JJ",      owns:null,     lines:["cheer_archie1","cheer_archie2"]}
 };
 /* the mission that frees this friend — resolved from LEAGUE so EVERY kind (incl. leighton/kendall,
    which aren't in CAGED) maps correctly. Used only as the derived fallback below. */
@@ -49,8 +57,7 @@ const LEAGUE=[...CAGED.map(t=>({mid:t.mid,kind:t.kind,name:t.name,real:t.real}))
      (parent 2026-06-16): Brody at the Iron Forge (m118), Daisy at the Enchanter's Tower (m127), Cal at
      the Singing Glade (m137), Bryce at the Pirate Cove (m159), Nora at the Giant's Bridge (m172);
      Miss Kendall at the Dragon Keep finale (m128). NO hero aliases — Teddy knows them by their REAL
-     names (parent 2026-06-16), so name === real. (JJ removed for now — no photo yet; his lines/role
-     stay dormant so re-adding him later is a one-liner.) */
+     names (parent 2026-06-16), so name === real. (JJ is back in ACT 1 via CAGED above — parent 2026-06-19.) */
   {mid:118,kind:"brody",name:"BRODY",real:"BRODY"},
   {mid:127,kind:"daisy",name:"DAISY",real:"DAISY"},
   {mid:137,kind:"cal",name:"CAL",real:"CAL"},
