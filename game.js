@@ -2347,9 +2347,14 @@ function maybeTrainInterrupt(done){ const avail=TRAIN_TELLERS.filter(t=>t.unlock
   const t=avail[Math.floor(Math.random()*avail.length)];
   const pop=trainPop(t.kind,t.name); if(pop)mouthStart(pop);   /* the friend's mouth flaps while they talk */
   flow(Aud.play([trainBagNext(t)]), ()=>{ if(pop)mouthStop(pop); done(); }); }   /* skippable + watchdog'd; resumes after the line */
-function showTrain(){ clearFlow(); trainReps=0; __scrollServed=false; __warmDone=false;
+let __trainCoinShown=false;   /* #172: once-per-session guard for the prominent "first coin" callout */
+function showTrain(){ clearFlow(); trainReps=0; __scrollServed=false; __warmDone=false; __trainCoinShown=false;
   __trainNextAt = 8 + Math.floor(Math.random()*5);   /* first interrupt after ~8–12 reps */
   show("scrTrain"); updateTrainHUD(); updateTrainDaily();
+  /* #172 (PLAYTEST 2026-06-19): make "this is where coins come from" legible ON ENTRY — draw the eye to the
+     treasure stack with a brief cue pulse (clears on the first rep / ~5s). train_intro already SAYS "earn coins"
+     (audio-first); the first correct rep then fires a prominent coin callout (trainWin) so the loop is obvious. */
+  { const th=$("trainHoard"); if(th){ th.classList.add("coincue"); setTimeout(()=>{try{th.classList.remove("coincue");}catch(e){}},5000); } }
   flow(narrate("train",$("trainText"),["train_intro"]),()=>trainRound()); }
 function updateTrainHUD(){ const h=$("trainHoard"); if(h)h.innerHTML=trainHoardHTML(); const rp=$("trainReps"); if(rp)rp.textContent=trainReps; }
 /* gentle "today's practice" fill — grows as he practices toward the daily-split goal; NO countdown,
@@ -2414,6 +2419,12 @@ function trainWin(el,w){ const bonus=combo>=3?2:1; trainReps++;
   /* standardize the coin reward on flyReward (TRAIN-INT/Cypher): the coins ARC from the answered tile
      into the treasure stack + count up + bounce + Sfx.coin (same juicy payoff as base/chest). */
   flyReward(el, $("trainCoinN"), bonus);
+  /* #172: the FIRST correct rep each session fires a prominent +coin callout right at the answered tile, so
+     "you just earned a coin!" is unmistakable the first time he lands here (the eye-cue pulse clears too). */
+  if(!__trainCoinShown){ __trainCoinShown=true;
+    try{ const r=el.getBoundingClientRect(), st=$("stage"); const sr=st?st.getBoundingClientRect():{left:0,top:0};
+      coinPop(r.left-sr.left+r.width/2, r.top-sr.top+r.height/2); }catch(e){}
+    const th=$("trainHoard"); if(th)th.classList.remove("coincue"); }
   if(at.diamonds>bt.diamonds || at.bars>bt.bars){                    /* a tier converted up → the climax */
     setTimeout(()=>{ updateTrainHUD(); vaultMilestone(at.diamonds>bt.diamonds?"diamond":"bar"); }, 460); }
   updateTrainDaily();
