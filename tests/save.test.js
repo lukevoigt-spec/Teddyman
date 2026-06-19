@@ -308,6 +308,44 @@ __day="2026-06-15"; record("x",true);
 ok("…a correct on a NEW day bumps okDayCount to 2", S.mastery["x"].okDayCount===2 && S.mastery["x"].lastOkDay==="2026-06-15");
 record("x",false);
 ok("…a MISS never bumps okDayCount (only correct days count)", S.mastery["x"].okDayCount===2);
+
+// #171 INCREMENTAL REHEARSAL — a miss flags relearn, re-surfaces MORE (pickWeak), fades on SPACED corrects
+(function(){
+  S=fresh(); __day="2026-06-14";
+  record("ar",false);
+  ok("#171 a MISS flags relearn (counter = RELEARN_MISS)", S.mastery["ar"].relearn===2);
+  record("ar",false);
+  ok("#171 relearn accrues + caps at RELEARN_CAP (2 misses -> 4, not 6)", S.mastery["ar"].relearn===4);
+  // a SPACED correct (a different item recorded just before) fades relearn by 1…
+  record("or",true);            // __lastRec becomes "or"
+  record("ar",true);            // ar correct, and the prior record was "or" -> spaced
+  ok("#171 a SPACED correct fades relearn by 1 (4 -> 3)", S.mastery["ar"].relearn===3);
+  // …but an IMMEDIATE same-item retry (the miss-fix) does NOT fade it
+  record("ar",false);           // re-miss -> relearn back to min(4, 3+2)=4, __lastRec="ar"
+  ok("#171 re-miss tops relearn back up (3 -> 4 capped)", S.mastery["ar"].relearn===4);
+  record("ar",true);            // immediate retry: __lastRec was "ar" -> NOT spaced -> no fade
+  ok("#171 an immediate same-item retry does NOT fade relearn (still 4)", S.mastery["ar"].relearn===4);
+  ok("#171 relearn is save-safe/additive: a fresh item has no relearn field", S.mastery["zz"]===undefined && fresh().mastery.ar===undefined);
+})();
+// #171 pickWeak: a relearn item re-surfaces MORE, and the just-picked item is never back-to-back
+(function(){
+  S=fresh();
+  // the real scenario: a recently-MISSED weak item (p) vs an already-MASTERED known (q).
+  // The relearn boost should make p dominate the picks (reinforce weak among knowns).
+  record("p",false); record("p",false);   // p.relearn=4 (a recently-missed weak item)
+  S.mastery["q"]={seen:6,ok:6,str:5};      // q is MASTERED -> low baseline pick weight
+  let pc=0, n=600;
+  for(let i=0;i<n;i++){ __lastWeakPick=null; if(pickWeak(["p","q"])==="p")pc++; }   // reset so the no-repeat rule doesn't skew the up-weight check
+  ok("#171 pickWeak favours a recently-missed item over a mastered one (>80% of picks)", pc/n>0.80);
+  // no back-to-back: over a continuous run on a multi-item pool, the same item is never picked twice in a row
+  __lastWeakPick=null; let prev=null, repeats=0, pool=["a","b","c","d"];
+  for(const g of pool)record(g,false);     // all flagged -> equal strong weight, still must alternate
+  for(let i=0;i<400;i++){ const g=pickWeak(pool); if(g===prev)repeats++; prev=g; }
+  ok("#171 pickWeak NEVER repeats the just-picked item back-to-back (multi-item pool)", repeats===0);
+  // a 1-item pool keeps its only option (the no-repeat exclusion can't dead-lock it)
+  __lastWeakPick="solo";
+  ok("#171 a 1-item pool still returns its only item (no dead-lock)", pickWeak(["solo"])==="solo");
+})();
 // migrate() grandfathers an old proficient item so its ✦ gold survives — but never auto-promotes new/partial items
 (function(){ var mg=migrate({v:1, mastery:{ a:{seen:6,ok:6,str:5}, b:{seen:2,ok:1,str:1}, c:{seen:5,ok:5,str:4,okDayCount:1} }, done:{}});
   ok("migrate grandfathers an already-proficient item to okDayCount=2 (✦ won't vanish on load)", mg.mastery.a.okDayCount===2);

@@ -222,16 +222,29 @@ if(typeof document!=="undefined"){
   setInterval(trainTick,1000);
 }
 function mast(g){ if(!S.mastery[g])S.mastery[g]={seen:0,ok:0,str:0}; return S.mastery[g]; }
+/* #171 INCREMENTAL REHEARSAL (RESEARCH-GATING-MASTERY §B; Joseph 2006): a miss flags the item
+   `relearn` so the adaptive pools (pickWeak) re-surface it MORE — but spaced amid wins, never
+   back-to-back. The flag is a small COUNTER that fades by one on each SPACED correct (a correct
+   that isn't the immediate same-item retry), so the boost relaxes as the item firms (expanding
+   interval). Save-safe + additive: `relearn` defaults undefined on S.mastery[key]; migrate() needs
+   no change. __lastRec tracks the previous recorded key so an instant retry doesn't count as spaced. */
+let __lastRec=null;
+const RELEARN_MISS=2, RELEARN_CAP=4;   /* a miss adds 2 (capped 4); ~2 spaced corrects clear one miss */
 function record(g,ok){ const m=mast(g); const wasMastered=masteredItem(g); m.seen++;
   if(ok){m.ok++;m.str=Math.min(5,m.str+1); combo++; if(combo>=3)comboPop(combo);
     S.xp=(S.xp||0)+XP_PER_CORRECT;   /* #131: Rank-XP from correct work only; the level-up POP fires later, on the win screen */
+    /* #171: fade the relearn boost only on a SPACED correct (not the immediate same-item retry that
+       fixes a miss) — so the item must come back LATER, correct, before its priority relaxes. */
+    if(m.relearn && g!==__lastRec) m.relearn=Math.max(0,m.relearn-1);
     /* #4 RETENTION: count CORRECT CALENDAR DAYS (once per day, never same-day repeats) — the
        "retained" signal (correct across >=2 days) layered on top of in-session "proficient". */
     if(dayKey()!==m.lastOkDay){ m.okDayCount=(m.okDayCount||0)+1; m.lastOkDay=dayKey(); }
     /* MASTERY > PARTICIPATION: the biggest micro-celebration fires the moment an item crosses into
        "mastered" (~5 solid reps) — a genuine, intermittent reward, louder than any coin/cosmetic. */
     if(!wasMastered && masteredItem(g)) masteryFlash(); }
-  else {m.str=Math.max(0,m.str-1); combo=0; curMiss++; if(typeof Sfx!=="undefined")Sfx.wrong();}   /* gentle soft cue, never harsh; curMiss feeds the chest performance-tier */
+  else {m.str=Math.max(0,m.str-1); combo=0; curMiss++; if(typeof Sfx!=="undefined")Sfx.wrong();   /* gentle soft cue, never harsh; curMiss feeds the chest performance-tier */
+    m.relearn=Math.min(RELEARN_CAP,(m.relearn||0)+RELEARN_MISS); }   /* #171: missed → up-weight for several spaced re-encounters */
+  __lastRec=g;
   vaultTouch(g,ok);   /* Memory Vault: enroll on first mastery / advance the spaced schedule on a due review */
   save(); }
 /* ---- MASTERY (proficiency, not just completion) ----
@@ -939,13 +952,21 @@ function taughtGraphemes(){ return taughtLetters().concat(taughtDigraphs()).conc
    magic-e + vowel teams + r-controlled, since the 26 letters are already mastered and carried over) */
 function actGraphemes(){ return currentAct()===2 ? taughtDigraphs().concat(taughtMagicE()).concat(taughtVowelTeams()).concat(taughtRControlled()) : taughtLetters(); }
 /* Adaptive pick: weight toward the child's weakest graphemes (low strength /
-   low accuracy / fewest reps) so patrols self-target what needs work. */
+   low accuracy / fewest reps) so patrols self-target what needs work.
+   #171 INCREMENTAL REHEARSAL (Joseph 2006): a recently-MISSED item (m.relearn>0) is strongly
+   up-weighted so it re-surfaces MORE — but the just-shown item is EXCLUDED when there's an
+   alternative, so a weak item is never drilled back-to-back (interspersed among knowns, never
+   massed). A 1-item pool keeps its only option (no exclusion). __lastWeakPick = the previous pick. */
+let __lastWeakPick=null;
 function pickWeak(pool){ if(!pool.length)return null;
-  const wt=pool.map(g=>{ const m=mast(g); const acc=m.seen?m.ok/m.seen:0;
-    return 1 + (5-(m.str||0))*1.4 + (1-acc)*1.2 + (m.seen<3?1.5:0); });
+  const cand = pool.length>1 ? pool.filter(g=>g!==__lastWeakPick) : pool;   /* no back-to-back repeat */
+  const wt=cand.map(g=>{ const m=mast(g); const acc=m.seen?m.ok/m.seen:0;
+    let w=1 + (5-(m.str||0))*1.4 + (1-acc)*1.2 + (m.seen<3?1.5:0);
+    if(m.relearn) w += 4*m.relearn;          /* missed → favour it for several spaced re-encounters */
+    return w; });
   let r=Math.random()*wt.reduce((a,b)=>a+b,0);
-  for(let i=0;i<pool.length;i++){ if((r-=wt[i])<=0)return pool[i]; }
-  return pool[pool.length-1]; }
+  for(let i=0;i<cand.length;i++){ if((r-=wt[i])<=0){ __lastWeakPick=cand[i]; return cand[i]; } }
+  __lastWeakPick=cand[cand.length-1]; return __lastWeakPick; }
 /* CONFUSABLE pairs (mirror/rotation) — the classic reversal traps. Foils
    preferentially include the target's twin, so every review round quietly
    trains b-vs-d (etc.) discrimination once both are taught. */
