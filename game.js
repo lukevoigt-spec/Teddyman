@@ -1120,9 +1120,17 @@ function sidStart(){ __sidAt=Date.now(); }                 /* the gems are live 
    until then (audio-first, constraint #8; the watchdog can't hang it). `pr` falsy = a round re-entered AFTER its
    prompt audio already settled (e.g. recursive bossRound) → arm immediately. */
 function sidArm(pr,row){ __sidLock=true; if(row)row.classList.add("sidwait");
-  const go=()=>{ __sidLock=false; if(row)row.classList.remove("sidwait"); __sidAt=Date.now(); clearTimeout(__sidWatch); };
+  /* #170 "armed-when-ready": when there was a real prompt-audio WAIT, signal "your turn" on arm — a soft ready
+     chime (Sfx, non-motion channel) + a transient .sidready hook for the Oracle's §20 brighten/scale "your turn"
+     cue. Skipped on the immediate (pr falsy) re-arm so recursive rounds don't chime-spam. Research (RESEARCH-
+     GATING-MASTERY §A / Barker & Munakata 2015): fill the wait with the goal, then a clear ready signal. */
+  const waited=!!(pr&&pr.then);
+  const go=()=>{ if(!__sidLock) return;                          /* idempotent — watchdog + promise can both fire */
+    __sidLock=false; __sidAt=Date.now(); clearTimeout(__sidWatch);
+    if(row){ row.classList.remove("sidwait"); if(waited){ row.classList.add("sidready"); setTimeout(()=>row.classList.remove("sidready"),700); } }
+    if(waited){ try{ Sfx&&Sfx.ready&&Sfx.ready(); }catch(e){} } };
   clearTimeout(__sidWatch); __sidWatch=setTimeout(go,4500);   /* watchdog — never stay locked */
-  if(pr&&pr.then){ pr.then(go).catch(go); } else { go(); } }
+  if(waited){ pr.then(go).catch(go); } else { go(); } }
 function sidLockReplay(ids,row){ __sidLock=true; if(row)row.classList.add("sidwait");
   const done=()=>{ __sidLock=false; if(row)row.classList.remove("sidwait"); __sidAt=Date.now(); clearTimeout(__sidWatch); };
   clearTimeout(__sidWatch); __sidWatch=setTimeout(done,4500);   /* watchdog — never stay locked */
@@ -2339,21 +2347,29 @@ function trainRound(){
   if(!w){ flow(narrate("train",$("trainText"),["train_none"]),()=>{ __inTraining=false; showBase(); }); return; }
   (trainReps%2===0) ? trainBuild(w) : trainDecode(w); }
 function trainBuild(w){ trainCur=w; trainSlot=0; trainMiss=0;
-  narrate("train",$("trainText"),["train_build"].concat(wordAudio(w)),"Build the word you hear!");
+  /* #170: trainBuild is a sound→letter ENCODE task (hear the word, build it) — exactly where Teddy rushes past
+     the audio to grab coins. GATE it with the listen-first arm: the choices stay .sidwait until the word prompt
+     finishes, then arm (chime + "your turn"). Gate the FIRST tap only (via `armed`) so the multi-letter build
+     flows freely once he's listened; an impulsive early tap re-plays the WORD (hear-it-again), never a dead zone.
+     trainDecode stays UNGATED — the word is on screen there (research §A). */
+  const _pr=narrate("train",$("trainText"),["train_build"].concat(wordAudio(w)),"Build the word you hear!");
   const wr=$("trainWord"); wr.innerHTML="";
   w.split("").forEach(()=>{ const s=document.createElement("div"); s.className="slot read"; wr.appendChild(s); });
   const need=w.split("");
   const choices=shuf([...new Set(need)].concat(shuf(taughtLetters().filter(x=>!need.includes(x))).slice(0,2)));
   const cr=$("trainChoices"); cr.innerHTML="";
+  let armed=false;   /* #170: becomes true once the gate releases the first tap; the build is free thereafter */
   choices.forEach(c=>{ const b=document.createElement("button"); b.className="tile read"; b.textContent=c; b.dataset.g=c;
     b.style.width=b.style.height="clamp(72px,12vw,108px)"; b.style.fontSize="clamp(40px,6.5vw,60px)";
-    b.onclick=()=>{ const want=w[trainSlot];
+    b.onclick=()=>{ if(!armed){ if(sidReject(["train_build"].concat(wordAudio(w)),cr)) return; armed=true; }   /* #170: first tap gated on hearing the word */
+      const want=w[trainSlot];
       if(c===want){ record(c,true); const slot=wr.children[trainSlot]; slot.textContent=c; slot.classList.add("filled"); Aud.ding(); trainSlot++;
         if(trainSlot>=w.length){ record("w_"+w,true); trainWin(b,w); } else Aud.play("snd_"+c); }
       else { record(c,false); trainMiss++; b.classList.add("dim");
         if(trainMiss>=2)cr.querySelectorAll(".tile").forEach(x=>{if(x.dataset.g===want)x.classList.add("hint");});
         Aud.play(["snd_"+want]); setTimeout(()=>b.classList.remove("dim"),900); } };
-    cr.appendChild(b); }); }
+    cr.appendChild(b); });
+  sidArm(_pr,cr); }   /* #170: lock the choices until the word prompt settles, then arm */
 function trainDecode(w){ trainCur=w; trainMiss=0;
   narrate("train",$("trainText"),["train_read"],"Read the word… tap what it means!");
   const wr=$("trainWord"); wr.innerHTML="";

@@ -1612,3 +1612,11 @@ body[data-act="2"] .collslot .ic.cage .cagebars{ background:repeating-linear-gra
 /* #153 anti-gaming re-lock: while the target sound replays (a mash/too-fast tap, or a miss), the gems dim +
    go un-tappable until it finishes — removes the speed payoff of mashing. No "wrong"/loss; calm, not harsh. */
 .sidwait .tile{ opacity:.5; filter:saturate(.55); pointer-events:none; transition:opacity .15s ease; }
+/* #170 "armed-when-ready": when the gate releases (prompt sound finished) the choices get a brief "your turn"
+   pop — a brightness lift (the NON-MOTION ready channel, so reduced-motion/Lite still read "ready" via brightness
+   + the Sfx.ready chime) plus a gentle scale-in. Functional Neo default; The Oracle owns the §20 polish (a
+   "your turn" SVG hand/arrow cue). Motion gated. */
+.sidready .tile{ animation:sidReadyPop .5s ease; }
+@keyframes sidReadyPop{ 0%{ filter:brightness(1.35) saturate(1.1); transform:scale(.94); } 55%{ transform:scale(1.04); } 100%{ filter:brightness(1); transform:scale(1); } }
+body.calm .sidready .tile, body.lite .sidready .tile{ animation:none; filter:brightness(1.28); transition:filter .28s ease; }
+@media (prefers-reduced-motion:reduce){ .sidready .tile{ animation:none; filter:brightness(1.28); transition:filter .28s ease; } }
