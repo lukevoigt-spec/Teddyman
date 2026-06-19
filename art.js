@@ -200,6 +200,7 @@ const RASTER={ "teddy-m0":true,"teddy-m1":true,"teddy-m2":true,
   "ally-tank":true, "ally-sunny":true, "ally-heart":true, "ally-flip":true, "ally-leighton":true,
   "ally-cal":true, "ally-nora":true,      /* cousins Cal + Nora — flat-2D house-style rasters (Oracle 2026-06-15) */
   "ally-brody":true, "ally-daisy":true, "ally-bryce":true,   /* friends Brody, Daisy, Bryce — flat-2D house-style rasters from their photos (Oracle 2026-06-16) */
+  "ally-jj":true,                         /* JJ — re-added to Act 1; black-bg cut + outline preserved from the parent's painted portrait (Oracle 2026-06-19) */
   "ally-kendall":true,                    /* Miss Kendall — warm teacher, flat-2D raster from her photo (Oracle 2026-06-16) */
   "mom":true, "dad":true,                 /* parents have raster art (mom.png/dad.png) */
   "vex":true, "vixen":true, "dragon":true, "noah":true };   /* villains + mentor (already used directly by their SVG fns; flagged here for the resolver) */

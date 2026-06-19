@@ -288,7 +288,9 @@ const LINES={
   m2_done:{t:"AMELIA has joined the Hero League! Lord Vex is furious... and Star Force City shines brighter than ever!"},
   /* ACT 2 friend rescues (spread across zones, parent 2026-06-16): the dragon falls + the friend is freed.
      Best in the real kids' voices via the Studio (roles J/R/X). */
-  jj_freed:{t:"The Iron Wyrm is down — and you freed ME! Whoa, that was AWESOME reading! JJ is on the team!", v:"J"},
+  /* JJ re-added to ACT 1 (parent 2026-06-19): freed at m17, spoken in ARCHIE's voice (role T) — JJ reuses
+     Archie's voice + lines, so no new audio to record. Reworded off the old Act-2 "Iron Wyrm" text. */
+  jj_freed:{t:"You busted the cage — and you freed ME! Whoa, that was AWESOME reading! JJ is on the team!", v:"T"},
   cal_freed:{t:"You beat the dragon AND busted me out? Ha! Knew you'd do it. Cal has joined the league!", v:"X"},
   nora_freed:{t:"You read your way right to me — thank you, Super Teddy! Nora is so proud to join your team!", v:"R"},
   brody_freed:{t:"The Iron Wyrm let me go — because of YOU! That was super reading, Teddy! Brody's on the team!", v:"D"},
@@ -302,6 +304,7 @@ const LINES={
   card_flip:{t:"Hi Teddy! Did you see that flip? Keep reading like a champ — you've totally got this!", v:"F"},
   card_sunny:{t:"Teddy! Up high! Your reading is out of this WORLD, little buddy! Ha ha!", v:"W"},
   card_heart:{t:"I'm so proud of you, Teddy. You're reading so beautifully — keep it up, sweetheart!", v:"B"},
+  card_jj:{t:"Yo Teddy! JJ here! High five, buddy — your reading is SO awesome. Let's go!", v:"T"},   /* JJ: Archie's voice (role T), re-added 2026-06-19 */
   card_leighton:{t:"You saved me, Super Teddy! And now you can READ — I always knew you could do it!", v:"L"},
   card_kendall:{t:"Look at you reading, Teddy — my brave knight and my star student. I'm so proud of you!", v:"K"},
   card_brody:{t:"Hey Teddy! Up high for a big high-five! You're reading like a total champ — I'm so proud of you, buddy!", v:"D"},

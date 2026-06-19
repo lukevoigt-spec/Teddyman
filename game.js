@@ -1763,7 +1763,7 @@ function showWin(firstTime){ show("scrWin");
   else if(CUR.finale) ids = currentAct()===2 ? ["act2_win"] : (CUR.z===4 ? ["m4_letters"] : (CUR.z===3 ? ["m3_done"] : ["finale1","finale2","finale3"]));
   else if(firstTime&&gear) ids=[currentAct()===2?"win_grow2":"win_grow","win_gear",GEARLINE[gear]];
   else ids=[currentAct()===2?"win_grow2":"win_grow"];
-  const FREE={8:"free_tank",26:"free_flip",30:"free_sunny"};   /* current CAGED rescue mids (was the stale legacy 3/6/8 → played the wrong friend's line) */
+  const FREE={8:"free_tank",26:"free_flip",30:"free_sunny",17:"jj_freed"};   /* current CAGED rescue mids (was the stale legacy 3/6/8 → played the wrong friend's line); 17 = JJ, re-added 2026-06-19 */
   if(firstTime&&FREE[CUR.id])ids.unshift(FREE[CUR.id]);
   /* Amelia, once rescued, is the league's cheerleader on every win (re-pace-proof: gate on allyFreed,
      not the stale old Heart-Tower mid 17 — Amelia is freed at m36 now) */
