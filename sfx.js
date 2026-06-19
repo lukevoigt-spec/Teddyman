@@ -43,6 +43,10 @@ const Sfx={
     this.note(b*0.5,0,0.12,"sine",0.14);                                   /* sub body = fuller "ding" */
     this.note(b,0,0.12,"sine",0.5); this.note(b*1.5,0.085,0.16,"sine",0.42); }); },
   wrong(){   this._go(()=>{ this.glide(330,235,0,0.20,"sine",0.30); }); },  /* unchanged: soft, low, gentle (#2) */
+  /* #170 "your turn" — a soft, quiet two-note rising blip fired when the listen-first gate ARMS (the choices go
+     live after the prompt). Gentler than correct/coin (it's a cue, not a reward) so it reads as "ready" without
+     competing with the answer feedback; respects S.sfxOn/_v() like every other cue. */
+  ready(){   this._go(()=>{ const v=this._v(); this.note(523*v,0,0.08,"sine",0.10); this.note(784*v,0.075,0.12,"sine",0.13); }); },
   combo(n){  this._go(()=>{ n=n||3; const b=(620+Math.min(12,n)*40)*this._v();   /* rises in pitch with the streak */
     this.note(b,0,0.10,"triangle",0.4); this.note(b*1.5,0.055,0.12,"triangle",0.32); if(n>=5)this.note(b*2,0.11,0.13,"triangle",0.28); }); },
   /* MASTERY — the most triumphant cue (a rising arpeggio + sparkle top + sub layer); louder/sweeter
