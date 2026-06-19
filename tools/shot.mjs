@@ -131,6 +131,13 @@ const SCENES = {
   a2freed: `(function(){ S.act=2; [118,127,137,159,172].forEach(function(i){S.done[i]=true;}); S.freed={brody:1,daisy:1,cal:1,bryce:1,nora:1}; S.coins=30; paintBase(); show('scrBase'); return 1; })()`,
   // Brody's rescue win screen (new freed line + raster)
   brody_win: `(function(){ S.act=2; CUR={id:118,rescue:true,finale:true,lbl:"Iron Wyrm: Free Brody!"}; showWin(true); return 1; })()`,
+  // JJ re-added to Act 1 (2026-06-19): cohesion vs the cast, captive + freed on the Act-1 map, hero card
+  jj_cast: `(function(){ document.body.innerHTML='<div id="cz" style="display:flex;gap:16px;align-items:flex-end;justify-content:center;background:#241a3e;padding:44px 20px;height:100%;box-sizing:border-box;"></div>'; var k=[['tank','Archie'],['jj','JJ'],['brody','Brody'],['cal','Cal']]; document.getElementById('cz').innerHTML=k.map(function(p){return '<div style="text-align:center;">'+(allyRasterImg(p[0],200)||allyBody(p[0],200))+'<div style="color:#fff;font-family:sans-serif;font-size:15px;margin-top:6px;">'+p[1]+'</div></div>';}).join(''); return 1; })()`,
+  jj_map_captive: `(function(){ S.act=1; S.intro=true; S.freed={}; for(var i=0;i<=13;i++)S.done[i]=true; toMap(); return 1; })()`,
+  jj_map_freed: `(function(){ S.act=1; S.intro=true; for(var i=0;i<=17;i++)S.done[i]=true; S.freed={tank:1,jj:1}; toMap(); return 1; })()`,
+  jj_card: `(function(){ S.act=1; for(var i=1;i<=20;i++)S.done[i]=true; S.freed={jj:1}; paintBase(); show('scrBase'); openHeroCard('jj'); return 1; })()`,
+  jj_win: `(function(){ S.act=1; CUR={id:17,lbl:"Forge: Free JJ!"}; showWin(true); return 1; })()`,
+  jj_mapfig: `(function(){ document.body.innerHTML='<div style="display:flex;gap:40px;align-items:flex-end;justify-content:center;background:#3a7d2f;height:100%;box-sizing:border-box;padding-bottom:40px;"><svg viewBox="-60 -90 120 160" width="220"><g class="mfriend">'+allyMapFig("jj",false)+'</g></svg><svg viewBox="-60 -90 120 160" width="220"><g class="mfriend">'+allyMapFig("jj",true)+'</g></svg></div>'; return 1; })()`,
   // Miss Kendall full-body raster (replaces the old placeholder SVG)
   kendall: `(function(){ document.body.innerHTML='<div id="cz" style="display:flex;align-items:flex-end;justify-content:center;background:#241a3e;padding:30px;height:100%;box-sizing:border-box;"></div>'; document.getElementById('cz').innerHTML='<div style="text-align:center;">'+allyBody('kendall',260)+'<div style="color:#fff;font-family:sans-serif;font-size:16px;margin-top:6px;">Miss Kendall</div></div>'; return 1; })()`,
 };

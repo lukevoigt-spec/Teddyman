@@ -594,3 +594,18 @@ central pedestal) — matches the new map/bg style and reinforces the collection
 `bg-base-a2.jpeg` (act-agnostic hall). Render-gated the Base hub (Act 1 + 2): backdrop reads as a hero room, cards/
 action-rail stay legible. `curriculum` green. (`bg-base-room.png` left untouched per the DESIGN-ALIGNMENT "don't
 delete the staged room" note — relevant only if the layered hub is revived.)
+
+## 2026-06-19 · JJ re-added to Act 1 (painted ally, render-gated)
+Parent provided a painted JJ portrait (cheerful boy, brown hair, blue eyes, red/navy "J" tee) on a SOLID-BLACK
+background — the cast cutouts are transparent, and the comic outline is itself near-black, so a naive flood-fill
+would eat the outline. New tool `tools/black-cut.mjs` (inverse of de-halo): flood-fills the near-black bg from the
+edges, then PROTECTS an N-px ring of near-black pixels adjacent to the coloured character (= the outline), then
+auto-crops + reframes into a 560² square matching the cast. Output `art/ally-jj.png`.
+- **Render-gate (Chromium @2x):** `jj_cast` — JJ sits cohesively beside Archie/Brody/Cal (same outline weight,
+  gloss, proportions, grounded feet). `jj_card` — premium hero card (painted portrait + name + flip). `jj_mapfig` —
+  raster map token renders correctly captive (ball-and-chain) AND freed (clean). `jj_map_captive`/`jj_map_freed` —
+  JJ appears on the Act-1 map at zone 2 (between Archie z1 and Ellie z3). Zero emoji, reads like a shipped game.
+- **Wiring (Oracle-ownable, save-safe):** CAGED += JJ@m17 (existing mid, no new save id; grandfather() seeds
+  S.freed.jj). Uses Archie's voice (role T) + lines; `jj_freed`/`card_jj` retagged role T, freed line reworded off
+  the old Act-2 "Iron Wyrm" text. `owns:null` so his face never pops over an "Archie"-named line mid-task.
+  Both suites green (curriculum 128, save 141).
