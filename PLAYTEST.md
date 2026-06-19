@@ -28,6 +28,25 @@ contradicts another doc, **the note wins** — reconcile the doc to reality.
 > Raw notes arrive as `playtest/<ISO>.md` files (+ a `Playtest:` Issue); Trinity reviews those and curates the triaged
 > entries into this log (newest first).
 
+### 2026-06-19 — triaged (parent live session — watching Teddy play; researched + filed)
+RAW: (1) He impulsively clicks to **skip listening to the sounds** just to get to the coins — need nothing clickable
+until the audio finishes (gated). (2) **Ensure mastery** — track incorrect answers; when he gets them wrong they show up
+MORE and he doesn't progress until mastered; reinforce weak areas. (3) Earning coins in the **Training Room wasn't
+intuitive** — make it more prominent, and add **another way to get to that page** (tapping the gems/bar can stay).
+(4) The **chest on the win screen doesn't match** the one on the squishy page — update the art.
+→ Researched (web + PubMed, two syntheses with citations) → `RESEARCH-GATING-MASTERY.md`. Key findings: the audio gate
+should be **"armed-when-ready," not a frozen screen** — gems CHARGE while the sound plays, then arm with a "your turn"
+cue (the delay alone doesn't curb impulsivity; *filling it with the goal* does — Barker & Munakata 2015); and weak items
+should re-surface via **Incremental Rehearsal** (more, but ~1-in-9 among wins, never back-to-back) with a session-spanning
+mastery gate framed as a charging power meter (no wall, no shame — constraint #2).
+→ Verified against code: the `sidArm` audio gate exists for find/boss/fortress/vault but is **silent + NOT wired into the
+Training Room** (`trainBuild`, where coins are earned — the exact rush point); error re-surfacing today is only in
+patrol/review and gating is only at milestones; the win chest is a vector `chestSVG` placeholder while the shop uses the
+painted `art/chest-closed.png` (a known §20 deferral).
+→ routed: **#170** listen-first gate [Neo+Oracle] · **#171** error-driven IR weighting + mastery gate [Neo] · **#172**
+Training discoverability [Oracle+Neo] · **#173** win-chest art [Oracle+Neo]. Sequenced in `KANBAN.md` (gate first). Trinity
+babysits to merged.
+
 ### 2026-06-17 — fixed-on-branch (parent live session — Fortress finale + Training Room)
 RAW: (1) Fortress maze "the _ is big" → bed/van/fox "doesn't make sense, there's no picture"; the audio
 says "tap the picture / which picture fits" and the autoplay doesn't read the sentence. (2) "Daily training
