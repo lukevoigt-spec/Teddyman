@@ -1900,6 +1900,10 @@ function playNextMission(){ const ms=playMissions(currentAct()); const m=ms.find
 { const cm=$("chargeMeter"); if(cm)cm.onclick=()=>{ Aud.pick&&Aud.pick(); startVault(); }; }      /* Gem Charge meter → recharge */
 { const sp=$("squishPanel"); if(sp)sp.onclick=()=>{ Aud.pick&&Aud.pick(); openShop(); }; }        /* SQUISHIES → inventory + shop */
 { const dm=$("baseDailyMeter");  if(dm)dm.onclick=()=>{ Aud.pick&&Aud.pick(); showTrain(); }; }   /* Today meter → train */
+/* #172: the prominent labeled Training entry — dumbbell + "TRAINING" + a coin so "earn coins here" reads
+   at a glance; crafted icons (no emoji), big touch target. The gems/charge/daily taps stay as secondary. */
+{ const tb=$("baseTrainBtn"); if(tb){ tb.innerHTML=uiIcon("dumbbell",30)+'<span class="bt-lbl">TRAINING</span>'+gicon("coin",26);
+    tb.onclick=()=>{ Aud.pick&&Aud.pick(); showTrain(); }; } }
 { const cc=$("hudCoins"); if(cc){ cc.style.cursor="pointer"; cc.title="Earn coins in the Training Room"; cc.onclick=()=>{ Aud.pick&&Aud.pick(); showTrain(); }; } }
 { const bb=$("btnBaseBack"); if(bb)bb.onclick=()=>{Aud.stop();toMap();}; }   /* CITY MAP button removed from the Base (map-exit lives in ☰ MENU); guard kept for safety */
 
