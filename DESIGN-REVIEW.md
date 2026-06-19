@@ -15,6 +15,20 @@ resolves before merge; this file keeps the durable before/after record. Shots li
 
 ---
 
+## 2026-06-18 · #172 Training-Room discoverability — prominent labeled Base entry  ·  PASS
+**Branch:** `oracle/172-training` → PR. PLAYTEST 2026-06-19: it wasn't intuitive that coins come from the
+Training Room (only entries were the small gems/coins chip + daily bar). **Oracle build:** a prominent
+BLUE plate `#baseTrainBtn` top-centre of the Hero Base — crafted gold **dumbbell** (new `UICONS.dumbbell`)
++ "TRAINING" + a **coin** — so "earn coins here" reads at a glance. Blue distinguishes it from the gold PLAY
+CTA; gentle pulse (calm/Lite/reduced-motion gated) for discoverability; big touch target; no emoji. Wired
+→ `showTrain`; the gems/charge/daily taps stay as secondary paths (parent: "can stay").
+**Shots:** `basedaily` (Act-1) + `base2` (Act-2) — prominent, clear, doesn't crowd the hero/panels.
+Tests: ui-emoji 44/44, curriculum 116/116, save 129/129.
+**Neo (still open on #172):** make the coin-earning legible ON entry to the Training Room (a clear "earn
+coins!" affordance + prominent per-rep coin reward) so the loop is obvious the first time he lands there.
+
+---
+
 ## 2026-06-18 · #162 map node touch targets in portrait — §20 confirmation  ·  PASS (no code change)
 Confirmation-only gate (Neo's hit-rect work merged via #164 + #167; #162 was open only for the Oracle's
 §20 sign-off, like #152). Independently MEASURED at 768×1024 portrait with a new `tools/measure-map.mjs`

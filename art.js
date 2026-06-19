@@ -688,7 +688,9 @@ const UICONS={
   /* SPARK — 4-point sparkle (replaces ✦/✨ on MASTERED + vault-charged); gold star-burst */
   spark:(s=22)=>`<svg viewBox="0 0 100 100" width="${s}" height="${s}" aria-hidden="true" style="vertical-align:-3px"><path d="M50 5 C54 34 66 46 95 50 C66 54 54 66 50 95 C46 66 34 54 5 50 C34 46 46 34 50 5 Z" fill="${UI_GOLD}" stroke="${PI_INK}" stroke-width="4" stroke-linejoin="round"/></svg>`,
   /* SCISSORS — crafted shears (replaces ✂ on the CHOP button + syllable gap); gold blades */
-  scissors:(s=22)=>`<svg viewBox="0 0 100 100" width="${s}" height="${s}" aria-hidden="true" style="vertical-align:-5px"><g stroke="${PI_INK}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><line x1="34" y1="60" x2="82" y2="20" fill="none"/><line x1="66" y1="60" x2="18" y2="20" fill="none"/><circle cx="28" cy="70" r="12" fill="${UI_GOLD}"/><circle cx="72" cy="70" r="12" fill="${UI_GOLD}"/></g></svg>`
+  scissors:(s=22)=>`<svg viewBox="0 0 100 100" width="${s}" height="${s}" aria-hidden="true" style="vertical-align:-5px"><g stroke="${PI_INK}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><line x1="34" y1="60" x2="82" y2="20" fill="none"/><line x1="66" y1="60" x2="18" y2="20" fill="none"/><circle cx="28" cy="70" r="12" fill="${UI_GOLD}"/><circle cx="72" cy="70" r="12" fill="${UI_GOLD}"/></g></svg>`,
+  /* DUMBBELL — the Training-Room "get stronger / earn coins" motif (#172); gold weights + dark bar */
+  dumbbell:(s=22)=>`<svg viewBox="0 0 100 100" width="${s}" height="${s}" aria-hidden="true" style="vertical-align:-5px"><g stroke="${PI_INK}" stroke-width="5" stroke-linejoin="round"><rect x="40" y="44" width="20" height="12" fill="${PI_INK}"/><rect x="14" y="32" width="16" height="36" rx="4" fill="${UI_GOLD}"/><rect x="4" y="40" width="10" height="20" rx="3" fill="${UI_GOLD}"/><rect x="70" y="32" width="16" height="36" rx="4" fill="${UI_GOLD}"/><rect x="86" y="40" width="10" height="20" rx="3" fill="${UI_GOLD}"/></g></svg>`
 };
 function uiIcon(k,s){ return (UICONS[k]?UICONS[k](s):""); }
 
