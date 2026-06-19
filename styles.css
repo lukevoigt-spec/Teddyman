@@ -1488,6 +1488,7 @@ body[data-act="2"] .hudpill{ border-color:#caa15a; }
 #scrWin.haschest #winHero{ max-height:22vh; }
 #scrWin.haschest #winHero img,#scrWin.haschest #winHero svg{ max-height:22vh; width:auto; }
 .winchest{ background:none; border:0; cursor:pointer; padding:0; display:flex; flex-direction:column; align-items:center; gap:2px; animation:winchestBob 1.15s ease-in-out infinite; transform-origin:50% 100%; }
+.winchestimg{ width:clamp(112px,17vw,138px); height:auto; display:block; pointer-events:none; -webkit-user-drag:none; filter:drop-shadow(0 6px 10px rgba(0,0,0,.4)); }   /* #173: painted chest, matches the shop chest */
 .winchest-cap{ color:var(--gold); font-size:clamp(16px,2.6vw,22px); -webkit-text-stroke:2px var(--ink); paint-order:stroke; text-shadow:0 2px 4px rgba(0,0,0,.45); }
 #winChest.opened .winchest{ animation:none; transform:scale(1.12); transition:transform .18s ease; }
 @keyframes winchestBob{ 0%,100%{transform:translateY(0) rotate(-2.5deg);} 50%{transform:translateY(-6px) rotate(2.5deg);} }
