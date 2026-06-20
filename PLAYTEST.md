@@ -28,7 +28,20 @@ contradicts another doc, **the note wins** — reconcile the doc to reality.
 > Raw notes arrive as `playtest/<ISO>.md` files (+ a `Playtest:` Issue); Trinity reviews those and curates the triaged
 > entries into this log (newest first).
 
-### 2026-06-19 (b) — triaged (parent follow-up — "mastery above all")
+### 2026-06-20 — done (parent note — "he's STILL rushing to skip through")
+RAW (`playtest/2026-06-20T00-12-45-283Z.md`, Dad): "He's still rushing to skip through… make sure he can't progress
+until the audio finishes playing."
+→ VERIFIED: #170 gated the find/boss/training tasks, but the READ / SENTENCE / CLOZE reading tasks still let a fast tap
+beat the prompt, AND a tap on a word-tile / sound button / ear-replay mid-prompt called `Aud.stop()` which prematurely
+resolved the prompt promise and unlocked the choices early (the rush path Codex flagged).
+→ done: **#180** extends the listen-first `sidArm`/`sidReject` gate to read/sentence/cloze (choices arm only after the
+prompt; ⏭/Home/replay stay live; 4.5s watchdog can't hang) + **#181** closes the re-arm hole — a `__sidGen` generation
+counter supersedes a stale unlock, and `sidArmTap`/`sidReArm` re-arm the gate to the NEW audio so an interrupting tap
+locks until THAT finishes. Shipped to main (`b41d0bf`, `fa65786`); +17 curriculum tests; boot-verified (gate locks, early
+tap can't advance, word-tap re-arms not short-circuits, watchdog releases). Reuses the confirmed `.sidwait`/`.sidready`
+affordance (no new visual).
+
+### 2026-06-19 (b) — done (parent follow-up — "mastery above all"); shipped as #182 (`871a426`, PR #183)
 RAW: "It seems like we introduce words using letters he hasn't yet mastered — need to make sure he's mastering the letters
 before moving on. **Mastery above all.** If he errors out on a word, reinforce it more until he's nailing it 100%
 consistently."
