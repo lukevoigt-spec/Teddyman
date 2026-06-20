@@ -144,5 +144,5 @@ function narrate(key,el,ids,display){ lastSeq[key]=ids;
 }
 document.addEventListener("click",e=>{
   const ear=e.target.closest(".ear"); if(!ear)return;
-  const k=ear.dataset.ear; if(lastSeq[k])Aud.play(lastSeq[k]);
+  const k=ear.dataset.ear; if(lastSeq[k]){ const p=Aud.play(lastSeq[k]); if(typeof sidReArm==="function")sidReArm(p); }   /* #181: replaying the prompt must re-arm a pending listen-gate, not short-circuit it */
 });
