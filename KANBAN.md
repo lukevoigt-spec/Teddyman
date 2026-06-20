@@ -6,12 +6,22 @@
 > *(GitHub Projects can't be API-driven here, so this file IS the board.)* — **release-ready state, 2026-06-18 (Trinity);
 > parent confirmed go-live; the backlog is burned down to two parked, optional cinematic items.**
 
-## 🚦 STATUS — LIVE + RELEASE-READY; the 2026-06-19 PLAYTEST WAVE is SHIPPED (all 4 merged to main)
-**Objective #1 (Teddy learns to read) is DONE + live** — the full TEKS Grade-2 ladder, Act 1+2. **The 2026-06-19
-enhancement wave (4 issues, two learning-critical) is now fully merged to main + live** — the app keeps shipping and
-stays playable. Next: the PARENT's voice-recording pass (below) + the parked cinematic items; no open engineering blockers.
+## 🚦 STATUS — LIVE + RELEASE-READY; 2026-06-19 (a) wave SHIPPED; (b) MASTERY-ABOVE-ALL wave active (#182)
+**Objective #1 (Teddy learns to read) is DONE + live** — the full TEKS Grade-2 ladder, Act 1+2. **The 2026-06-19 (a) wave
+(4 issues, two learning-critical) is fully merged to main + live.** A parent follow-up opened the **(b) MASTERY-ABOVE-ALL
+wave — #182** (per-word letter-mastery gate, build first), now the one active engineering item. App keeps shipping/playable
+throughout. Also pending: the PARENT's voice-recording pass (below) + the parked cinematic items.
 
-## ✅ PLAYTEST WAVE — 2026-06-19 — DONE (parent watched Teddy play; PLAYTEST.md + `RESEARCH-GATING-MASTERY.md`)
+## 🎯 PLAYTEST WAVE — 2026-06-19 (b) — MASTERY-ABOVE-ALL (active; parent follow-up). Trinity babysits → merged.
+1. **#182 [N] — Per-word letter-mastery gate (build FIRST; THE objective-#1 item).** Verified gap: the mastery gate fires
+   only at milestones; regular word missions advance on letters *taught*, not *mastered* (a drift from `PEDAGOGY.md`'s
+   "re-teach weak items before advancing"). Fix per `RESEARCH-GATING-MASTERY.md` §C: a word graduates only when **its own**
+   letters are mastered to **automaticity** (extend `masteredItem` with latency); raise the floor to ~0.9; an errored word
+   must be correct on **2+ spaced days**; **per-word, never a global wall** + momentum guardrails (3–5 easy wins before a
+   hard item, ~80–85% prompt success) — over-gating harms an ADHD learner *more* than under-gating. **Builds ON the
+   now-shipped #171 engine** (`relearn`/IR weighting) — generalizes its gate from milestones to per-word.
+
+## ✅ PLAYTEST WAVE — 2026-06-19 (a) — DONE (parent watched Teddy play; PLAYTEST.md + `RESEARCH-GATING-MASTERY.md`)
 1. **#170 [N+O] — Listen-first audio gate — SHIPPED (`bf4346a`, PR #177).** The `sidArm` gate now covers the **Training
    Room build** (the coin-rush point): tiles arm only after the word prompt plays; first-letter listen-first, a miss
    re-plays + re-arms (errorless), replay/skip always live, 4.5s watchdog can't hang. Silent-lock upgraded → "armed-when-
@@ -21,7 +31,8 @@ stays playable. Next: the PARENT's voice-recording pass (below) + the parked cin
    `relearn` counter that fades only on a SPACED correct (not the instant retry); `pickWeak()` strongly up-weights relearn
    items so misses re-surface MORE across every adaptive pool (patrol/review/Vault), but excludes the just-shown item so a
    weak item is never drilled back-to-back (interspersed, never massed — Joseph 2006). Additive + save-safe; +9 save.test
-   assertions. The existing milestone gate (coreWeak→masteryReview) already delivers "no progress until mastered".
+   assertions. The existing milestone gate (coreWeak→masteryReview) delivers "no progress until mastered" AT MILESTONES —
+   **#182 generalizes it to per-word.**
 3. **#172 [O+N] — Training Room discoverability — SHIPPED (`f7eb4ff`, PR #176).** Prominent labeled Base Training entry
    (dumbbell + "TRAINING" + coin) + the coins HUD chip launches Training too; gem/charge/daily taps kept as secondary.
 4. **#173 [O+N] — Win-chest art → painted — SHIPPED (`42bc70b`, PR #175).** Win screen now uses the painted chest so it

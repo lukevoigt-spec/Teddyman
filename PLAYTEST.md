@@ -28,11 +28,26 @@ contradicts another doc, **the note wins** — reconcile the doc to reality.
 > Raw notes arrive as `playtest/<ISO>.md` files (+ a `Playtest:` Issue); Trinity reviews those and curates the triaged
 > entries into this log (newest first).
 
+### 2026-06-19 (b) — triaged (parent follow-up — "mastery above all")
+RAW: "It seems like we introduce words using letters he hasn't yet mastered — need to make sure he's mastering the letters
+before moving on. **Mastery above all.** If he errors out on a word, reinforce it more until he's nailing it 100%
+consistently."
+→ VERIFIED (the note is right, and it's a drift from our own spec): the mastery gate fires ONLY at milestones
+(`missionComplete` → `if(CUR.finale||CUR.rescue)`); regular forge/read word missions have **no mastery gate**, and
+`curriculum.test` only guarantees a word's letters are **taught**, never **mastered**. `PEDAGOGY.md` already says
+"mastery-paced: re-teach weak items BEFORE advancing" — so the code drifted from the doc.
+→ Researched (web fan-out) → `RESEARCH-GATING-MASTERY.md` §C. Key correction to the instinct: gate **per-word** (only THIS
+word's letters), to **automaticity** (not just accuracy), with errored items reinforced across **spaced days** — NEVER a
+global "master all letters first" wall (over-gating is the *bigger* documented risk for an ADHD learner: helplessness/
+avoidance). Plus momentum guardrails (3–5 easy wins before a hard item, ~80–85% prompt success; Rosenshine/Burns/Lee).
+→ routed: **#182** [Neo] the per-word mastery gate (lead, build FIRST) — builds ON the now-shipped **#171** engine
+(relearn/IR weighting), generalizing its gate from milestones to per-word. PEDAGOGY.md honesty note added; `curriculum.test`
+to gain a "graduates on mastery not just taught" guard. Trinity babysits.
+
 ### 2026-06-19 — done (parent live session — watching Teddy play; researched, built, SHIPPED)
 → done: all 4 wave items merged to main + live — **#170** listen-first gate → Training Room + armed-when-ready (`bf4346a`,
 PR #177) · **#171** error-driven Incremental-Rehearsal weighting, save-safe, +9 tests (`f57401d`) · **#172** Training
 discoverability (`f7eb4ff`, PR #176) · **#173** win-chest → painted (`42bc70b`, PR #175). #170 §20 render-confirmed.
-
 RAW: (1) He impulsively clicks to **skip listening to the sounds** just to get to the coins — need nothing clickable
 until the audio finishes (gated). (2) **Ensure mastery** — track incorrect answers; when he gets them wrong they show up
 MORE and he doesn't progress until mastered; reinforce weak areas. (3) Earning coins in the **Training Room wasn't

@@ -87,13 +87,13 @@ ADHD / language delay) and **pace to the child, not the syndrome.** The variabil
 
 | Our mechanic | Evidence it implements | Verdict |
 |---|---|---|
-| SATPIN order + `curriculum.test` "no untaught grapheme" gate | systematic/cumulative phonics (the #1 lever) | ✅✅ strongest decision |
+| SATPIN order + `curriculum.test` "no untaught grapheme" gate | systematic/cumulative phonics (the #1 lever) | ✅✅ strongest decision *(but gates on TAUGHT, not MASTERED — per-word mastery gate in progress, #182)* |
 | forge (build from grapheme tiles) | **segmenting / encoding** | ✅✅ high-yield |
 | read (decode → tap meaning) | **blending / decoding** + comprehension check | ✅✅ |
 | scan/find/boss (sound→letter, audio-only target) | PA **with letters**; no three-cueing (anti-gaming #4) | ✅✅ |
 | spell — Heart Word Method (sound-map, flag ♥, BUILD not recognize; "no word-shape matching anywhere") | **orthographic mapping** (Ehri) | ✅✅ textbook |
 | sentence / cloze / maze / scramble | decodable connected text + comprehension/syntax | ✅ (the language strand — see gap #3) |
-| mastery gate (str≥4 & seen≥4 & acc≥0.75) before milestones; `masteryReview` loops | **mastery learning** (Bloom) | ✅✅ |
+| mastery gate (str≥4 & seen≥5 & acc≥0.8) before milestones; `masteryReview` loops | **mastery learning** (Bloom) | ✅✅ *but MILESTONES ONLY — generalizing to a per-word automaticity gate so words aren't introduced before their letters are mastered (#182; the §C drift-fix the parent flagged 2026-06-19)* |
 | adaptive patrols (`pickWeak`, weak-weighting) | **spaced retrieval of weak items** (Dunlosky top-2) | ✅✅ |
 | gentle wrong = dim + **replay the sound** + retry, pulse after 2 misses | **immediate corrective feedback supplying the answer** | ✅✅ |
 | no timers / no fail (constraints #1/#2) | ADHD: preserves willingness to do reps | ✅✅ |
