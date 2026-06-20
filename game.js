@@ -1237,7 +1237,7 @@ function nextRead(){
     flow(Aud.play(champ?["rally_champ"]:["read_yes"]), missionComplete); return; }
   const w=readWords[readIx]; readMiss=0; const POOL=readPool();
   $("readProg").textContent=readIx+" / "+readGoal;
-  narrate("read",$("readText"),["read_prompt"],"Read the word… then tap what it means!");
+  const _pr=narrate("read",$("readText"),["read_prompt"],"Read the word… then tap what it means!");
   /* the word, as tappable grapheme tiles (a digraph is ONE tile = one sound;
      in a magic-e word the silent E is dimmed and the vowel marked "long") */
   const wr=$("readWord"); wr.innerHTML=""; const me=magicE(w), snds=graphemeSounds(w);
@@ -1251,13 +1251,15 @@ function nextRead(){
   const opts=[w,...foils].sort(()=>Math.random()-.5);
   const cr=$("readChoices"); cr.innerHTML="";
   opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"+(wedo&&o===w?" wedo":""); b.innerHTML=picIcon(o, POOL[o]); b.dataset.w=o;
-    b.onclick=()=>{ if(o===w){ lockRow(cr); record("w_"+w,true); b.classList.add("win"); burstAt(b); Aud.ding();   /* #82: lock so a fast double-tap can't re-fire record() during the async flow */
+    b.onclick=()=>{ if(sidReject([...graphemeSounds(w),"word_"+w],cr)) return;   /* #180: gate the answer until the word prompt finishes (no rush-guess) */
+      if(o===w){ lockRow(cr); record("w_"+w,true); b.classList.add("win"); burstAt(b); Aud.ding();   /* #82: lock so a fast double-tap can't re-fire record() during the async flow */
         if(magicE(w))record(magicE(w).unit,true);   /* credit the long-vowel rule */
         readIx++; flow(Aud.play(["read_yes",...graphemeSounds(w),"word_"+w]),()=>setTimeout(nextRead,200)); }
       else { record("w_"+w,false); readMiss++; b.classList.add("dim");
         if(readMiss>=2){ cr.querySelectorAll(".picktile").forEach(x=>{ if(x.dataset.w===w)x.classList.add("hint"); }); }
         readSoundOut(w); } };
-    cr.appendChild(b); }); }
+    cr.appendChild(b); });
+  sidArm(_pr,cr); }   /* #180: arm read choices only after the word prompt settles (#8-safe: 4.5s watchdog + ⏭/Home live) */
 $("btnReadSound").onclick=()=>{ const w=readWords&&readWords[readIx]; if(w)readSoundOut(w); };
 
 /* ---------------- INSTANT SPELLS (sight words) ----------------
@@ -1328,7 +1330,7 @@ function nextSentence(){
     flow(Aud.play(champ?["sent_champ"]:["sent_yes"]),missionComplete); return; }
   const s=(currentAct()===2?SENTENCES2:SENTENCES)[sentList[sentIx]]; sentCur=s; sentMiss=0;
   $("sentProg").textContent=sentIx+" / "+sentGoal;
-  narrate("sent",$("sentText"),["sent_prompt"],"Read the sentence… then tap the picture!");
+  const _pr=narrate("sent",$("sentText"),["sent_prompt"],"Read the sentence… then tap the picture!");
   const wr=$("sentWords"); wr.innerHTML="";
   s.t.forEach(w=>{ const t=document.createElement("button");
     t.className="tile wordtile read"+(SIGHT[w]?" heartword":"");
@@ -1336,12 +1338,14 @@ function nextSentence(){
   const opts=[{e:s.pic,ok:true},{e:s.foil,ok:false}].sort(()=>Math.random()-.5);
   const cr=$("sentChoices"); cr.innerHTML="";
   opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.dataset.pic=o.e; b.innerHTML=emojiArt(o.e);
-    b.onclick=()=>{ if(o.ok){ lockRow(cr); record("sent_"+sentIx,true); b.classList.add("win"); burstAt(b); Aud.ding(); sentIx++;   /* #82: lock so a double-tap can't re-fire record() during the async flow */
+    b.onclick=()=>{ if(sidReject(sentenceAudio(s),cr)) return;   /* #180: gate the picture choice until the sentence prompt finishes (no rush-guess) */
+      if(o.ok){ lockRow(cr); record("sent_"+sentIx,true); b.classList.add("win"); burstAt(b); Aud.ding(); sentIx++;   /* #82: lock so a double-tap can't re-fire record() during the async flow */
         flow(Aud.play([...sentenceAudio(s),"sent_yes"]),()=>setTimeout(nextSentence,200)); }
       else { record("sent_"+sentIx,false); sentMiss++; b.classList.add("dim");
         if(sentMiss>=2)cr.querySelectorAll(".picktile").forEach(x=>{ if(x.dataset.pic===s.pic)x.classList.add("hint"); });
         Aud.play(sentenceAudio(s)); } };
-    cr.appendChild(b); }); }
+    cr.appendChild(b); });
+  sidArm(_pr,cr); }   /* #180: arm sentence choices only after the prompt settles (#8-safe: watchdog + ⏭/Home live) */
 
 /* ---------------- READING DOJO · CLOZE (fill the word that fits) ----------------
    Read the sentence (picture-anchored), pick the word for the blank. Research-
@@ -1352,18 +1356,20 @@ function startCloze(m){ show("scrCloze"); clozeList=m.items.slice(); clozeIx=0; 
 function nextCloze(){ if(clozeIx>=clozeGoal){ flow(Aud.play(["dojo_yes"]),missionComplete); return; }
   const c=(currentAct()===2?CLOZE2:CLOZE)[clozeList[clozeIx]]; clozeMiss=0;
   $("clozeProg").textContent=clozeIx+" / "+clozeGoal; $("clozePic").innerHTML=emojiArt(c.pic);
-  narrate("cloze",$("clozeText"),["cloze_prompt"],"Read it… tap the word that fits the blank!");
+  const _pr=narrate("cloze",$("clozeText"),["cloze_prompt"],"Read it… tap the word that fits the blank!");
   const sw=$("clozeSent"); sw.innerHTML="";
   c.t.forEach(w=>{ if(w==="_"){ const s=document.createElement("div"); s.className="wordslot read"; s.id="clozeBlank"; s.textContent="?"; sw.appendChild(s); }
     else { const t=document.createElement("button"); t.className="tile wordtile read"+(SIGHT[w]?" heartword":""); t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>Aud.play(wordAudio(w)); sw.appendChild(t); } });
   const done=c.t.map(w=>w==="_"?c.ans:w);
   const cr=$("clozeChoices"); cr.innerHTML="";
   [c.ans,...c.foils].sort(()=>Math.random()-.5).forEach(o=>{ const b=document.createElement("button"); b.className="tile wordtile read"; b.dataset.w=o; b.innerHTML=o;
-    b.onclick=()=>{ if(o===c.ans){ lockRow(cr); record("cz",true); const bl=$("clozeBlank"); if(bl){bl.textContent=o;bl.classList.add("filled");} b.classList.add("win"); burstAt(b); Aud.ding(); clozeIx++;   /* #82: lock so a double-tap can't re-fire record() during the async flow */
+    b.onclick=()=>{ if(sidReject(["almost",...done.flatMap(wordAudio)],cr)) return;   /* #180: gate the word choice until the cloze prompt finishes (no rush-guess) */
+      if(o===c.ans){ lockRow(cr); record("cz",true); const bl=$("clozeBlank"); if(bl){bl.textContent=o;bl.classList.add("filled");} b.classList.add("win"); burstAt(b); Aud.ding(); clozeIx++;   /* #82: lock so a double-tap can't re-fire record() during the async flow */
         flow(Aud.play([...done.flatMap(wordAudio),"dojo_yes"]),()=>setTimeout(nextCloze,250)); }
       else { record("cz",false); clozeMiss++; b.classList.add("dim");
         if(clozeMiss>=2)cr.querySelectorAll(".wordtile").forEach(x=>{if(x.dataset.w===c.ans)x.classList.add("hint");}); Aud.play(["almost",...done.flatMap(wordAudio)]); } };
-    cr.appendChild(b); }); }
+    cr.appendChild(b); });
+  sidArm(_pr,cr); }   /* #180: arm cloze choices only after the prompt settles (#8-safe: watchdog + ⏭/Home live) */
 
 /* ---------------- READING DOJO · SCRAMBLE (build the sentence) ----------------
    Hear the sentence, then tap the scrambled words into order — syntax/word-order

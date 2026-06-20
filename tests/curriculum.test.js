@@ -442,6 +442,23 @@ grp("#162 Map node touch targets — EVERY interactive node (current/done/locked
 vm.runInContext(fs.readFileSync(path.join(ROOT, "data-missions.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-content.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "data-lines.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "state-save.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "audio.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "allies.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "game.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "map.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "sfx.js"), "utf8") + "\n" + fs.readFileSync(path.join(ROOT, "music.js"), "utf8") + "\n" + TEST, ctx, { filename: "game.js" });
 
 const R = ctx.RESULT;
+
+/* ---- #180 listen-first gate ratchet (source-level; the gate is runtime DOM behavior,
+   proven by the tools probe, but this stops a future edit silently dropping it). Each
+   picture/word-CHOICE handler must (a) gate taps via sidReject and (b) arm only after the
+   prompt audio settles via sidArm — so a rush-tap can't beat the audio (CLAUDE.md #4/#8). */
+(function(){
+  const src = fs.readFileSync(path.join(ROOT, "game.js"), "utf8");
+  function body(name){ const i = src.indexOf("function "+name+"("); if(i<0) return ""; return src.slice(i, i+2600); }
+  function okN(name, cond){ if(cond){R.pass++; R.lines.push("  ok  "+name);} else {R.fail++; R.lines.push("  XX  "+name);} }
+  R.lines.push("\n• #180 listen-first gate is wired in every choice handler (read/sentence/cloze)");
+  ["nextRead","nextSentence","nextCloze"].forEach(function(fn){
+    const b = body(fn);
+    okN(fn+" gates the answer tap with sidReject (no rush-guess)", b.indexOf("sidReject(")>=0);
+    okN(fn+" arms the choices only after the prompt settles (sidArm)", b.indexOf("sidArm(")>=0);
+  });
+})();
+
 console.log(R.lines.join("\n"));
 console.log("\n" + (R.fail === 0 ? "ALL PASS" : R.fail + " FAILED") + " (" + R.pass + " passed, " + R.fail + " failed)");
 process.exit(R.fail === 0 ? 0 : 1);
