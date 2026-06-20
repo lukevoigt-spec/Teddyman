@@ -1132,7 +1132,7 @@ let findTarget,findRep,findGoal,findMiss,patrolSet=null,afterFind=null;
    handlers: a tap faster than the target sound could be processed (or during a replay) is NOT accepted — the gems
    dim, the target sound replays, and the next tap won't register until the replay ends. Forces sound→letter
    processing. ZERO loss / zero "wrong" (#2). Flow-safe: a 4.5s watchdog can't hang it, and ⏭/Home stay live (#8). */
-let __sidAt=0, __sidLock=false, __sidWatch=null;
+let __sidAt=0, __sidLock=false, __sidWatch=null, __sidGen=0, __sidRow=null;
 const SID_MIN_MS=450;   /* a tap sooner than this after the gems go live = rapid-guessing (tunable) */
 function sidStart(){ __sidAt=Date.now(); }                 /* the gems are live — start the response clock (legacy; sidArm preferred) */
 /* #153 FIX (Morpheus QA 2026-06-17): ARM the answer rows only AFTER the target-sound prompt actually finishes
@@ -1140,18 +1140,29 @@ function sidStart(){ __sidAt=Date.now(); }                 /* the gems are live 
    response clock (__sidAt) now starts at the real unlock, not at render. Rows stay .sidwait/pointer-events:none
    until then (audio-first, constraint #8; the watchdog can't hang it). `pr` falsy = a round re-entered AFTER its
    prompt audio already settled (e.g. recursive bossRound) → arm immediately. */
-function sidArm(pr,row){ __sidLock=true; if(row)row.classList.add("sidwait");
+function sidArm(pr,row,quiet){ __sidLock=true; __sidRow=row||__sidRow; const gen=++__sidGen; if(row)row.classList.add("sidwait");
   /* #170 "armed-when-ready": when there was a real prompt-audio WAIT, signal "your turn" on arm — a soft ready
      chime (Sfx, non-motion channel) + a transient .sidready hook for the Oracle's §20 brighten/scale "your turn"
-     cue. Skipped on the immediate (pr falsy) re-arm so recursive rounds don't chime-spam. Research (RESEARCH-
-     GATING-MASTERY §A / Barker & Munakata 2015): fill the wait with the goal, then a clear ready signal. */
-  const waited=!!(pr&&pr.then);
-  const go=()=>{ if(!__sidLock) return;                          /* idempotent — watchdog + promise can both fire */
+     cue. Skipped on the immediate (pr falsy) re-arm so recursive rounds don't chime-spam, and on a `quiet`
+     re-arm (#181/Codex: a word-tile/sound tap re-arms the gate to that audio — see sidArmTap — and must not
+     chime-spam). Research (RESEARCH-GATING-MASTERY §A / Barker & Munakata 2015): fill the wait with the goal,
+     then a clear ready signal. GEN counter (#181): a tap that interrupts the prompt starts NEW audio and calls
+     Aud.stop(), which resolves THIS pr early; a fresh sidArm bumps __sidGen so this stale go() is superseded and
+     can't drop the new lock — the gate follows the latest audio instead of short-circuiting. */
+  const waited=!!(pr&&pr.then), cue=waited&&!quiet;
+  const go=()=>{ if(gen!==__sidGen) return;                      /* superseded by a newer arm (re-arm on tap) */
+    if(!__sidLock) return;                                       /* idempotent — watchdog + promise can both fire */
     __sidLock=false; __sidAt=Date.now(); clearTimeout(__sidWatch);
-    if(row){ row.classList.remove("sidwait"); if(waited){ row.classList.add("sidready"); setTimeout(()=>row.classList.remove("sidready"),700); } }
-    if(waited){ try{ Sfx&&Sfx.ready&&Sfx.ready(); }catch(e){} } };
+    if(row){ row.classList.remove("sidwait"); if(cue){ row.classList.add("sidready"); setTimeout(()=>row.classList.remove("sidready"),700); } }
+    if(cue){ try{ Sfx&&Sfx.ready&&Sfx.ready(); }catch(e){} } };
   clearTimeout(__sidWatch); __sidWatch=setTimeout(go,4500);   /* watchdog — never stay locked */
   if(waited){ pr.then(go).catch(go); } else { go(); } }
+/* #181/Codex: a tap on a word tile / sound button while the gate is still WAITING plays audio whose Aud.stop()
+   would prematurely resolve the prompt promise and unlock the choices mid-audio. Re-arm the gate to the NEW
+   audio (quietly) so the answers stay locked until THAT finishes — closing the rush path. After the gate has
+   released (__sidLock false) it's free exploration, so play passes through untouched. */
+function sidArmTap(pr,row){ if(__sidLock&&row) sidArm(pr,row,true); return pr; }
+function sidReArm(pr){ if(__sidLock&&__sidRow) sidArm(pr,__sidRow,true); return pr; }   /* ear-replay path (audio.js) */
 function sidLockReplay(ids,row){ __sidLock=true; if(row)row.classList.add("sidwait");
   const done=()=>{ __sidLock=false; if(row)row.classList.remove("sidwait"); __sidAt=Date.now(); clearTimeout(__sidWatch); };
   clearTimeout(__sidWatch); __sidWatch=setTimeout(done,4500);   /* watchdog — never stay locked */
@@ -1243,7 +1254,7 @@ function nextRead(){
   const wr=$("readWord"); wr.innerHTML=""; const me=magicE(w), snds=graphemeSounds(w);
   toGraphemes(w).forEach((c,j)=>{ const t=document.createElement("button"); t.className="tile read rletter"; t.textContent=c;
     if(me&&j===me.e)t.classList.add("silente"); if(me&&j===me.v)t.classList.add("longv");
-    const s=snds[j]; t.onclick=()=>Aud.play(s); wr.appendChild(t); });
+    const s=snds[j]; t.onclick=()=>sidArmTap(Aud.play(s),cr); wr.appendChild(t); });   /* #181: re-arm the gate to this sound (no short-circuit) */
   /* three picture choices (the word + two foils); #130 we-do: the first reps after the demo show ONE fewer
      foil + pulse the right picture, then it fades to full difficulty. */
   const wedo=__wedo.read>0; if(wedo)__wedo.read=Math.max(0,__wedo.read-1);
@@ -1260,7 +1271,7 @@ function nextRead(){
         readSoundOut(w); } };
     cr.appendChild(b); });
   sidArm(_pr,cr); }   /* #180: arm read choices only after the word prompt settles (#8-safe: 4.5s watchdog + ⏭/Home live) */
-$("btnReadSound").onclick=()=>{ const w=readWords&&readWords[readIx]; if(w)readSoundOut(w); };
+$("btnReadSound").onclick=()=>{ const w=readWords&&readWords[readIx]; if(w)sidArmTap(readSoundOut(w),$("readChoices")); };   /* #181: re-arm, don't short-circuit the gate */
 
 /* ---------------- INSTANT SPELLS (sight words) ----------------
    Heart-word method: introduce a word (flag the tricky "heart" letters), then
@@ -1334,7 +1345,7 @@ function nextSentence(){
   const wr=$("sentWords"); wr.innerHTML="";
   s.t.forEach(w=>{ const t=document.createElement("button");
     t.className="tile wordtile read"+(SIGHT[w]?" heartword":"");
-    t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>Aud.play(wordAudio(w)); wr.appendChild(t); });
+    t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>sidArmTap(Aud.play(wordAudio(w)),cr); wr.appendChild(t); });   /* #181: re-arm the gate to this word */
   const opts=[{e:s.pic,ok:true},{e:s.foil,ok:false}].sort(()=>Math.random()-.5);
   const cr=$("sentChoices"); cr.innerHTML="";
   opts.forEach(o=>{ const b=document.createElement("button"); b.className="tile picktile"; b.dataset.pic=o.e; b.innerHTML=emojiArt(o.e);
@@ -1359,7 +1370,7 @@ function nextCloze(){ if(clozeIx>=clozeGoal){ flow(Aud.play(["dojo_yes"]),missio
   const _pr=narrate("cloze",$("clozeText"),["cloze_prompt"],"Read it… tap the word that fits the blank!");
   const sw=$("clozeSent"); sw.innerHTML="";
   c.t.forEach(w=>{ if(w==="_"){ const s=document.createElement("div"); s.className="wordslot read"; s.id="clozeBlank"; s.textContent="?"; sw.appendChild(s); }
-    else { const t=document.createElement("button"); t.className="tile wordtile read"+(SIGHT[w]?" heartword":""); t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>Aud.play(wordAudio(w)); sw.appendChild(t); } });
+    else { const t=document.createElement("button"); t.className="tile wordtile read"+(SIGHT[w]?" heartword":""); t.innerHTML=SIGHT[w]?spellWordHTML(w):w; t.onclick=()=>sidArmTap(Aud.play(wordAudio(w)),cr); sw.appendChild(t); } });   /* #181: re-arm the gate to this word */
   const done=c.t.map(w=>w==="_"?c.ans:w);
   const cr=$("clozeChoices"); cr.innerHTML="";
   [c.ans,...c.foils].sort(()=>Math.random()-.5).forEach(o=>{ const b=document.createElement("button"); b.className="tile wordtile read"; b.dataset.w=o; b.innerHTML=o;
