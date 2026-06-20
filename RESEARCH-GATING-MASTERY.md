@@ -111,3 +111,59 @@ spanned before the gate opens. These extend `record()` cleanly and are save-safe
 ---
 
 — Trinity, 2026-06-19 · evidence base for the 2026-06-19 playtest wave (Issues linked from `KANBAN.md`)
+
+---
+
+## C. Mastery-gated SEQUENCING — master the letters before the words (added 2026-06-19, parent follow-up)
+
+**Trigger (PLAYTEST 2026-06-19, watching Teddy):** "We introduce words using letters he hasn't mastered yet — make sure
+he's mastering the letters before moving on. Mastery above all. If he errors on a word, reinforce it until he's nailing
+it 100% consistently." **Verified in code:** the mastery gate fires ONLY at milestones (`missionComplete` →
+`if(CUR.finale||CUR.rescue)`); regular forge/read word missions have **no mastery gate**, and `curriculum.test` only
+guarantees a word's letters are **taught** (introduced), never **mastered**. This also drifted from our own north star —
+`PEDAGOGY.md` says *"mastery-paced: re-teach weak items BEFORE advancing."* So this closes a doc-vs-code gap.
+
+**Headline finding (focused web review):** the instinct is right, with one critical correction — the gate must be
+**PER-WORD (only the letters in *this* word), to AUTOMATICITY (not just accuracy), with errored items reinforced across
+SPACED days — never a global "master all letters first" wall.** Over-gating is the *larger documented risk* for an ADHD
+learner.
+
+1. **Secure letter-sounds to AUTOMATICITY before blending — accuracy AND speed.** A merely-accurate child still spends
+   working memory decoding letters and has none left to blend (LaBerge & Samuels, *Cognitive Psychology* 1974); GPC
+   automaticity is the prerequisite for orthographic mapping (Ehri 2017). DI secures ~4–6 GPCs before blending, ~2–4 new
+   GPCs/week (slower for a possibly-dyslexic child). **Gap:** `masteredItem` (str≥4, seen≥5, acc≥0.8) captures accuracy +
+   exposure but **not speed** — add a latency/automaticity component. **RESPECTS** mastery-above-all.
+2. **Over-gating is the bigger danger here.** Early words are low-risk (kids safely blend SATPIN words in week one; phonics'
+   effect is *largest* early + for at-risk readers). The real hazards are *chopped* blending and *failing to reach* the
+   alphabetic insight (Matthew effect, Stanovich 1986). Faster GPC pacing produced *better* letter AND word reading (Sunde
+   et al. 2020); a global "master every letter first" wall stalls momentum and, for ADHD, competence-frustration breeds
+   **helplessness** (SDT; Ryan et al. 2006). **A global gate RISKS both momentum and engagement.**
+3. **Per-word gate (strongly supported).** Decodable text = words matching *GPCs taught/mastered so far*; the strictest
+   published bar is ~**95%** of a word's elements, never 100% of the curriculum. Require mastery of **just this word's
+   letters**, not all 26. Irregular words (the/said) stay the sanctioned heart-word exception (app already does this).
+   **RESPECTS** without stalling.
+4. **"100% consistent" = SUCCESSIVE RELEARNING, not same-session grind.** One correct trial isn't mastery; raise the floor
+   toward **~90% accuracy**, and require an errored item to be hit correctly across **2+ *different days* (spaced)** to
+   graduate (Rawson & Dunlosky 2022) — re-queue it into later sessions, never force-repeat it until correct in the moment.
+   Keep errorless (dim→replay→retry→pulse). **RISK only if** the same word is hammered in one session (that's the wall);
+   spacing across days is what prevents it.
+5. **Momentum guardrails (so "mastery above all" never reads as "stuck").** 3–5 easy known items before each hard/weak one
+   (behavioral momentum / the existing "power-up patrol"); keep active-prompt success ~80–85% (new) / 90%+ (word reading);
+   immediate every-rep reward (ADHD steeply discounts delayed reward — ≥4:1 positive-to-corrective); spaced review
+   disguised as new missions; **gate on *inferred* mastery, never a visible "you're stuck" wall.**
+
+**TOP RECOMMENDATION (the gate design):**
+1. **Per-word automaticity prerequisite.** A forge/read word "counts" / its mission graduates only when *its own* graphemes
+   are **fast-and-accurate** — extend `masteredItem` with a latency/automaticity check; ignore unrelated untaught letters.
+   If a word's letters aren't there yet, run a short supportive **letter warm-up first** (the `masteryReview` "power-up
+   patrol", IR-weighted from #171), *then* the word — he still plays, but masters the letters right before blending them.
+2. **Raise the graduation floor to ~90% accuracy** (from 0.8) for graphemes/words.
+3. **Errored word → flagged → must be correct on 2+ spaced days** (successive relearning, via the Memory Vault) to clear.
+4. **Momentum protections** baked in (3–5 wins before a hard item, ~80–85% prompt success, immediate reward, spaced review
+   as new missions, visible forward progress) so the gate is FUEL, never a wall.
+
+*Sourcing note (agent): WebFetch was 403-blocked this session, so figures come from search-engine extracts of the cited
+primary sources; the DIBELS NWF automaticity cut + a DI seconds-per-letter figure should be confirmed against the UO PDF
+before hard-coding any specific latency threshold.*
+
+— Trinity, 2026-06-19 (§C added the same day, parent follow-up)
