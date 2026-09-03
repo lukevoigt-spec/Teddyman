@@ -6,11 +6,36 @@
 > *(GitHub Projects can't be API-driven here, so this file IS the board.)* — **release-ready state, 2026-06-18 (Trinity);
 > parent confirmed go-live; the backlog is burned down to two parked, optional cinematic items.**
 
-## 🚦 STATUS — LIVE + RELEASE-READY; 2026-06-19 (a)+(b) waves SHIPPED; 2026-06-20 listen-gate follow-up SHIPPED
-**Objective #1 (Teddy learns to read) is DONE + live** — the full TEKS Grade-2 ladder, Act 1+2. **All recent playtest work
-is merged to main + live:** the 2026-06-19 (a) wave (#170–#173), the (b) mastery-above-all gate (#182/PR #183), and the
-**2026-06-20 follow-up #180/#181** (the parent's "he's STILL rushing" note — listen-gate extended to read/sentence/cloze +
-the re-arm hole closed). No open engineering blockers. Pending: the PARENT's voice-recording pass (below) + parked cinematics.
+## 🚦 STATUS — LIVE; the 2026-06-20 FULL CODEBASE REVIEW opened a new wave (3 P0s) + a FALSE-DONE was caught (#182)
+**Objective #1 (Teddy learns to read) is DONE + live** — the full TEKS Grade-2 ladder, Act 1+2. The 2026-06-19 (a) wave
+(#170–#173) and the 2026-06-20 listen-gate follow-up (#180/#181) are merged + live. **Correction:** `#182` (the parent's
+"mastery above all" per-word gate) was mislabeled SHIPPED — the cited `871a426` is the docs-only PR that *filed* it; **no
+gate exists in code** (verified: `masteredItem` unchanged, gate still milestone-only). It is OPEN and the lead pedagogy
+item. The **full codebase review** (`CODEBASE-REVIEW-2026-06-20.md`, five parallel reviews, all `file:line`-verified)
+filed **#184–#195** — 3 P0s (write-token on the public site · CI can't block a bad deploy · a cloud progress-loss path),
+learning-integrity holes, one structural root-cause fix, perf, and hygiene. App stays live/playable throughout.
+
+## 🎯 CODEBASE-REVIEW WAVE — 2026-06-20 (Trinity sequenced; `CODEBASE-REVIEW-2026-06-20.md` has the evidence)
+**Build order — pedagogy integrity first (small + objective #1), then the P0s, then the root-cause fix, then perf.**
+1. **#182 [N] — Per-word letter-mastery gate (OPEN — the false-done is corrected).** Spec `RESEARCH-GATING-MASTERY.md` §C.
+2. **#187 [N] — Pedagogy-integrity holes (S).** Mastery review mashable with ONE gem (1-item foil pool; fresh profile gets
+   1–2-tile rounds) · participation taps recorded as mastery (magic-e cast / chop / scroll — can clear the Act-2 finale by
+   tapping) · bonus coins on non-answers · missing 2-miss pulse in boss/forge/scramble · scramble records nothing.
+3. **#188 [N] — Finish the listen-first gate (S).** Still missing on every encode task (forge/spell/fortSpell/vault/warm-ups)
+   AND the finale reading proof (fortRead/fortMaze/fortSentencePic); stop rejecting fast-CORRECT taps.
+4. **#184 [N+parent] — P0 SECURITY:** GitHub write-token to `main` in localStorage + Studio publishes straight to `main`.
+5. **#185 [N] — P0 CI:** gated Pages deploy + Playwright boot/regression smoke + lint (fix the `word_tent` dup) + invariants.
+6. **#186 [N] — P0 DATA-LOSS:** boot-window cloud clobber + `migrate()` wipes any `v≠1` save.
+7. **#189 [N] — ROOT CAUSE: `choiceRound()`** — the answer round is hand-copied across ~15 handlers; one helper makes every
+   gate/wrong-answer rule uniform by construction. Prerequisite for slimming `game.js`.
+8. **#190 [N] — Robustness:** reset/restore mid-mission fires `missionComplete` on the fresh save · stale timers after Home ·
+   combo/wedo leaks · null-sprite crash strands a word · TTS guard · swallowed catches · `TUNE` config.
+9. **#191 [N] — Service worker:** versioned shell + LRU art cap (today: rewrites 40 MB every boot; offline version skew).
+10. **#192 [N] — Voicepack split** (28 MB → 2.8 MB core + lazy IndexedDB chunks) + self-hosted fonts (Andika must never FOUT).
+11. **#193 [O] — Asset diet** 183 MB → ~25 MB · touch targets under 96 px (skip 72, tiles 72–92) · ♥ glyph · CSS tokens/dead CSS.
+12. **#194 [N] — Worker hardening** (origin allowlist, validate PUT, rate limit).
+13. **#195 [T+N] — Hygiene:** docs drift + `ARCHITECTURE.md` + archive specs · dead code + dev pages off the public site ·
+    `"use strict"` + load-order guard · `sent_` key bug · branch prune · then the `game.js` extraction order.
 
 ## ✅ PLAYTEST FOLLOW-UP — 2026-06-20 — DONE (parent note: "he's STILL rushing to skip through")
 1. **#180 [N] — Listen-first gate on read/sentence/cloze — SHIPPED (`b41d0bf`).** The reading tasks now arm the answer
@@ -18,11 +43,13 @@ the re-arm hole closed). No open engineering blockers. Pending: the PARENT's voi
 2. **#181 [N] — Close the re-arm hole Codex flagged — SHIPPED (`fa65786`).** A word-tile / sound / ear-replay tap mid-prompt
    no longer short-circuits the gate: a `__sidGen` generation counter supersedes the stale unlock and `sidArmTap`/`sidReArm`
    re-arm the gate to the NEW audio, so an interrupting tap locks the answers until THAT finishes.
+   *(The 2026-06-20 review found the sweep still incomplete — encode tasks + the finale reading proof → **#188**.)*
 
-## ✅ PLAYTEST WAVE — 2026-06-19 (b) — MASTERY-ABOVE-ALL — DONE (parent follow-up)
-1. **#182 [N] — Per-word letter-mastery gate — SHIPPED (`871a426`, PR #183).** A word now graduates only when its own
-   letters are mastered (per-word, never a global wall; momentum guardrails per `RESEARCH-GATING-MASTERY.md` §C). Built on
-   the #171 `relearn`/IR engine, generalizing its gate from milestones to per-word.
+## ⚠️ PLAYTEST WAVE — 2026-06-19 (b) — MASTERY-ABOVE-ALL — **NOT SHIPPED** (false-done corrected 2026-06-20)
+1. **#182 [N] — Per-word letter-mastery gate — OPEN.** Was marked "SHIPPED (`871a426`, PR #183)" — that commit is the
+   docs-only PR that filed the issue (4 doc files, 0 game code). Verified on `main`: no per-word gate, `masteredItem` still
+   `str≥4 && seen≥5 && acc≥0.8` with no automaticity component, gate fires only at milestones. Builds on the shipped #171
+   `relearn`/IR engine. **Lead item of the review wave above.**
 
 ## ✅ PLAYTEST WAVE — 2026-06-19 (a) — DONE (parent watched Teddy play; PLAYTEST.md + `RESEARCH-GATING-MASTERY.md`)
 1. **#170 [N+O] — Listen-first audio gate — SHIPPED (`bf4346a`, PR #177).** The `sidArm` gate now covers the **Training

@@ -41,7 +41,10 @@ locks until THAT finishes. Shipped to main (`b41d0bf`, `fa65786`); +17 curriculu
 tap can't advance, word-tap re-arms not short-circuits, watchdog releases). Reuses the confirmed `.sidwait`/`.sidready`
 affordance (no new visual).
 
-### 2026-06-19 (b) — done (parent follow-up — "mastery above all"); shipped as #182 (`871a426`, PR #183)
+### 2026-06-19 (b) — triaged → **STILL OPEN as #182** (parent follow-up — "mastery above all"; false-done corrected 2026-06-20)
+*(Was logged as "done; shipped as #182 (`871a426`, PR #183)" — that commit is the docs-only PR that FILED #182. Verified on
+`main` 2026-06-20: no per-word gate exists, `masteredItem` is unchanged, the gate still fires only at milestones. #182 is
+open and is the lead item of the 2026-06-20 codebase-review wave — see `CODEBASE-REVIEW-2026-06-20.md`.)*
 RAW: "It seems like we introduce words using letters he hasn't yet mastered — need to make sure he's mastering the letters
 before moving on. **Mastery above all.** If he errors out on a word, reinforce it more until he's nailing it 100%
 consistently."
